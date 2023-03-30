@@ -47,26 +47,7 @@ bool BitwiseCheck(const T& value, const T& checkValue)
 	return ((value & checkValue) == checkValue);
 }
 
-class OpenXRTutorial_Ch2_1
-{
-public:
-	OpenXRTutorial_Ch2_1() = default;
-	~OpenXRTutorial_Ch2_1() = default;
-
-	void Run()
-	{
-		CreateInstance();
-		CreateDebugMessenger();
-
-		GetInstanceProperties();
-		GetSystemID();
-
-		DestroyDebugMessenger();
-		DestroyInstance();
-	}
-
-private:
-	static XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
 	auto GetMessageSeverityString = [](XrDebugUtilsMessageSeverityFlagsEXT messageSeverity)->std::string
 	{
@@ -142,13 +123,33 @@ private:
 	}
 	return XrBool32();
 }
+
+class OpenXRTutorial_Ch2_1
+{
+public:
+	OpenXRTutorial_Ch2_1() = default;
+	~OpenXRTutorial_Ch2_1() = default;
+
+	void Run()
+	{
+		CreateInstance();
+		CreateDebugMessenger();
+
+		GetInstanceProperties();
+		GetSystemID();
+
+		DestroyDebugMessenger();
+		DestroyInstance();
+	}
+
+private:
 	
 	void CreateInstance()
 	{
 		XrApplicationInfo AI;
-		strcpy_s(AI.applicationName, "OpenXR Tutorial Chapter 2.1");
+		strcpy(AI.applicationName, "OpenXR Tutorial Chapter 2.1");
 		AI.applicationVersion = 1;
-		strcpy_s(AI.engineName, "Teleport VR OpenXR Engine");
+		strcpy(AI.engineName, "Teleport VR OpenXR Engine");
 		AI.engineVersion = 1;
 		AI.apiVersion = XR_CURRENT_API_VERSION;
 
@@ -241,9 +242,9 @@ private:
 			XrDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCI;
 			debugUtilsMessengerCI.type = XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 			debugUtilsMessengerCI.next = nullptr;
-			debugUtilsMessengerCI.messageSeverities = /*XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |*/ XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+			debugUtilsMessengerCI.messageSeverities = XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 			debugUtilsMessengerCI.messageTypes = XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-			debugUtilsMessengerCI.userCallback = OpenXRMessageCallbackFunction;
+			debugUtilsMessengerCI.userCallback = (PFN_xrDebugUtilsMessengerCallbackEXT)OpenXRMessageCallbackFunction;
 			debugUtilsMessengerCI.userData = nullptr;
 
 			PFN_xrCreateDebugUtilsMessengerEXT xrCreateDebugUtilsMessengerEXT;
@@ -298,10 +299,9 @@ int main(int argc, char** argv)
 {
 	OpenXRTutorial_Main();
 }
-#else(__ANDROID__) 
+#elif(__ANDROID__)
 #include "android_native_app_glue.h"
 
-extern "C" { void android_main(struct android_app* app); }
 void android_main(struct android_app* app)
 {
 	OpenXRTutorial_Main();
