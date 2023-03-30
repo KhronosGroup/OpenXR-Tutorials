@@ -6037,6 +6037,7 @@ html
     margin-bottom: .809em;
     z-index: 200;
     background-color: #782B90;
+	background-image: url("OpenXR-landing-page-banner.png");
     text-align: center;
     color: #fcfcfc
 }
@@ -6176,7 +6177,7 @@ html
     overflow-y: hidden;
     min-height: 100%;
     color: #9b9b9b;
-    background: #782B90;
+    background-image: url("shutterstock_532086997.jpg");
     z-index: 200
 }
 

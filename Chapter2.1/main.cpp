@@ -24,6 +24,13 @@
 #define DEBUG_BREAK raise(SIGTRAP)
 #endif
 
+const char *GetXRErrorString(XrInstance	xr_instance,XrResult res)
+{
+	static char str[XR_MAX_RESULT_STRING_SIZE];
+	xrResultToString(xr_instance, res, str);
+	return str;
+}
+
 //Helper Functions
 #define OPENXR_CHECK(x, y) { if (!XR_SUCCEEDED(x)) { std::cout << "ERROR: OPENXR: " << y << std::endl; } }
 
