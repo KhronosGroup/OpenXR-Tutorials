@@ -5740,7 +5740,7 @@ html
 
 .wy-menu-vertical header, .wy-menu-vertical p.caption
 {
-    color: #55a5d9;
+    color: white;
     height: 32px;
     line-height: 32px;
     padding: 0 1.618em;
@@ -5769,19 +5769,19 @@ html
 
 .wy-menu-vertical li.current
 {
-    background: #e3e3e3
+    background: #e3e3e310
 }
 
 .wy-menu-vertical li.current a
 {
-    color: grey;
+    color: white;
     border-right: 1px solid #c9c9c9;
     padding: .4045em 2.427em
 }
 
 .wy-menu-vertical li.current a:hover
 {
-    background: #d6d6d6
+    background: #ffffff10
 }
 
 .rst-content .wy-menu-vertical li tt, .wy-menu-vertical li .rst-content tt, .wy-menu-vertical li code
@@ -5807,17 +5807,17 @@ html
 
 .wy-menu-vertical li.current > a, .wy-menu-vertical li.on a
 {
-    color: #101010;
+    color: inherit;
     font-weight: 700;
     position: relative;
-    background: #fcfcfc;
+    background: #ffffff18;
     border: none;
     padding: .4045em 1.618em
 }
 
 .wy-menu-vertical li.current > a:hover, .wy-menu-vertical li.on a:hover
 {
-    background: #fcfcfc
+    background: #ffffff10
 }
 
 .wy-menu-vertical li.current > a:hover button.toctree-expand, .wy-menu-vertical li.on a:hover button.toctree-expand
@@ -5855,12 +5855,12 @@ html
 
 .wy-menu-vertical li.toctree-l2 a, .wy-menu-vertical li.toctree-l3 a, .wy-menu-vertical li.toctree-l4 a, .wy-menu-vertical li.toctree-l5 a, .wy-menu-vertical li.toctree-l6 a, .wy-menu-vertical li.toctree-l7 a, .wy-menu-vertical li.toctree-l8 a, .wy-menu-vertical li.toctree-l9 a, .wy-menu-vertical li.toctree-l10 a
 {
-    color: #101010
+    color: white
 }
 
 .wy-menu-vertical li.toctree-l2 a:hover button.toctree-expand, .wy-menu-vertical li.toctree-l3 a:hover button.toctree-expand, .wy-menu-vertical li.toctree-l4 a:hover button.toctree-expand, .wy-menu-vertical li.toctree-l5 a:hover button.toctree-expand, .wy-menu-vertical li.toctree-l6 a:hover button.toctree-expand, .wy-menu-vertical li.toctree-l7 a:hover button.toctree-expand, .wy-menu-vertical li.toctree-l8 a:hover button.toctree-expand, .wy-menu-vertical li.toctree-l9 a:hover button.toctree-expand, .wy-menu-vertical li.toctree-l10 a:hover button.toctree-expand
 {
-    color: grey
+    color: white
 }
 
 .wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a, .wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a, .wy-menu-vertical li.toctree-l4.current li.toctree-l5 > a, .wy-menu-vertical li.toctree-l5.current li.toctree-l6 > a, .wy-menu-vertical li.toctree-l6.current li.toctree-l7 > a, .wy-menu-vertical li.toctree-l7.current li.toctree-l8 > a, .wy-menu-vertical li.toctree-l8.current li.toctree-l9 > a, .wy-menu-vertical li.toctree-l9.current li.toctree-l10 > a, .wy-menu-vertical li.toctree-l10.current li.toctree-l11 > a
@@ -6008,7 +6008,7 @@ html
 
 .wy-menu-vertical a:hover
 {
-    background-color: #4e4a4a;
+    background-color: #ffffff10;
     cursor: pointer
 }
 
@@ -6019,7 +6019,7 @@ html
 
 .wy-menu-vertical a:active
 {
-    background-color: #782B90;
+    background-color: #782B9040;
     cursor: pointer;
     color: #fff
 }
@@ -6176,7 +6176,8 @@ html
     overflow-x: hidden;
     overflow-y: hidden;
     min-height: 100%;
-    color: #9b9b9b;
+    color: white;
+	background-color: #363636;
     background-image: url("shutterstock_532086997.jpg");
     z-index: 200
 }
