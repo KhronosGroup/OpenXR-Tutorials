@@ -38,7 +38,7 @@ author = 'Simul Software Ltd'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["myst_parser",'sphinx.ext.autosectionlabel']
+extensions = ["myst_parser",'sphinx.ext.autosectionlabel',"sphinxcontrib.jquery"]
 source_suffix = {
     '.rst': 'restructuredtext',
 }
@@ -71,3 +71,7 @@ html_theme_path = ["."]
 html_static_path = ['_static']
 
 master_doc = 'index'
+
+html_sidebars = {
+   '**': ['globaltoc.html', 'sourcelink.html', 'searchbox.html']
+}
