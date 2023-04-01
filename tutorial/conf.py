@@ -29,7 +29,7 @@ def configureDoxyfile(input_dir, output_dir):
 # -- Project information -----------------------------------------------------
 
 project = 'OpenXR Tutorial'
-copyright = '2023'
+copyright = '"OpenXR" and the OpenXR logo are trademarks owned by The Khronos Group Inc. and are registered as a trademark in China, the European Union, Japan and the United Kingdom'
 author = 'Simul Software Ltd'
 
 
@@ -51,11 +51,13 @@ templates_path = ['_templates']
 exclude_patterns = ["**/README.md","**/Readme.md","ReadMe.md","**/*.md","External/**/*.*"]
 
 html_static_path = ['_static']
-html_logo = "images/openxr-wht.svg"
+html_logo = "images/OpenXR_White_Feb17.svg"
 html_theme_options = {
     'logo_only': False,
     'display_version': False,
 }
+
+html_favicon = 'favicon.ico'
 
 # -- Options for HTML output -------------------------------------------------
 
