@@ -95,29 +95,29 @@
     {%- if use_opensearch %}
     <link rel="search" type="application/opensearchdescription+xml"
           title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}"
-          href="{{ pathto('_static/opensearch.xml', 1) }}"/>
+          href="{{ pathto('_static/opensearch.xml', 1) }}">
     {%- endif %}
   {%- endif %}
   {%- endblock %}
 
   {%- block linktags %}
     {%- if hasdoc('about') %}
-    <link rel="author" title="{{ _('About these documents') }}" href="{{ pathto('about') }}" />
+    <link rel="author" title="{{ _('About these documents') }}" href="{{ pathto('about') }}" >
     {%- endif %}
     {%- if hasdoc('genindex') %}
-    <link rel="index" title="{{ _('Index') }}" href="{{ pathto('genindex') }}" />
+    <link rel="index" title="{{ _('Index') }}" href="{{ pathto('genindex') }}" >
     {%- endif %}
     {%- if hasdoc('search') %}
-    <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}" />
+    <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}" >
     {%- endif %}
     {%- if hasdoc('copyright') %}
-    <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" />
+    <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" >
     {%- endif %}
     {%- if next %}
-    <link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}" />
+    <link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}" >
     {%- endif %}
     {%- if prev %}
-    <link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}" />
+    <link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}" >
     {%- endif %}
   {%- endblock %}
   {%- block extrahead %} {% endblock %}
