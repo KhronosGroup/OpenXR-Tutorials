@@ -114,3 +114,59 @@ Now repeat the process for the Release build. Select "Release" from the Configur
 amd build the solution. This time, the library openxr_loader.lib will be built.
 
 You can now close this solution, you're ready to start creating your first OpenXR project.
+
+
+PCVR: Linux
+~~~~~~~~~~~
+.. rubric:: Visual Studio Code
+
+...
+
+.. rubric::  OpenXR SDK
+You'll need a copy of the OpenXR SDK, which is distributed as a Git repository. If you're familiar with Git, you can use your preferred command-line or GUI Git tool to get
+the SDK from *git@github.com:KhronosGroup/OpenXR-SDK.git*.
+
+In the downloaded repo, you'll find a file called README.md, which contains up-to-date instructions
+for building the libraries. So follow these instructions in the *Linux* section. In
+general, you will first want to install the required packages, which at the time of writing were:
+
+.. code-block:: bash
+
+	sudo apt install build-essential
+	sudo apt install cmake
+	sudo apt install libgl1-mesa-dev
+	sudo apt install libvulkan-dev
+	sudo apt install libx11-xcb-dev
+	sudo apt install libxcb-dri2-0-dev
+	sudo apt install libxcb-glx0-dev
+	sudo apt install libxcb-icccm4-dev
+	sudo apt install libxcb-keysyms1-dev
+	sudo apt install libxcb-randr0-dev
+	sudo apt install libxrandr-dev
+	sudo apt install libxxf86vm-dev
+	sudo apt install mesa-common-dev
+
+From the OpenXR-SDK directory,
+
+.. code-block:: bash
+
+	mkdir -p build/linux_debug
+	cd build/linux_debug
+	cmake -DCMAKE_BUILD_TYPE=Debug ../..
+	make
+
+Now return to the OpenXR-SDK directory, and build the release library:
+
+.. code-block:: bash
+
+	mkdir -p build/linux_release
+	cd build/linux_release
+	cmake -DCMAKE_BUILD_TYPE=Release ../..
+	make
+
+This builds libopenxr_loader.so, in Debug and Release flavours, in the directories:
+OpenXR-SDK/build/linux_debug/src/loader and OpenXR-SDK/build/linux_release/src/loader.
+Both files have the same name on Linux - the debug one is substantially larger however.
+And both are *dynamic* libraries by default, which will be loaded at runtime.
+
+Now you're ready to start creating your first OpenXR project.
