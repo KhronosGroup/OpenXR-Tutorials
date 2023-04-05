@@ -11,8 +11,7 @@
         android:label="@string/app_name"
         android:hasCode="false">
         <activity
-            android:name="android.app.MainActivity"
-            android:label="@string/app_name"
+            android:name="android.app.NativeActivity"
             android:configChanges="orientation|keyboardHidden"
             android:debuggable="true">
             <meta-data

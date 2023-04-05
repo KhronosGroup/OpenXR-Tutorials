@@ -55,7 +55,10 @@ target_link_libraries( # Specifies the target library.
         openxrtutorialch2_1
         android
         native_app_glue
-        openxr_loader
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})
+
+add_library(openxr_loader SHARED IMPORTED)
+set_target_properties(openxr_loader PROPERTIES IMPORTED_LOCATION "../../../../../../thirdparty/openxr-sdk/android/libs/android.arm64-v8a/libopenxr_loader.so")
+target_link_libraries(openxrtutorialch2_1 openxr_loader)

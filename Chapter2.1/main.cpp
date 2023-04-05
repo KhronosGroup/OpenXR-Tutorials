@@ -156,7 +156,7 @@ private:
 		XrApplicationInfo AI;
 		strcpy(AI.applicationName, "OpenXR Tutorial Chapter 2.1");
 		AI.applicationVersion = 1;
-		strcpy(AI.engineName, "Teleport VR OpenXR Engine");
+		strcpy(AI.engineName, "OpenXR Engine");
 		AI.engineVersion = 1;
 		AI.apiVersion = XR_CURRENT_API_VERSION;
 
