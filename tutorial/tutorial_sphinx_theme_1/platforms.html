@@ -11,16 +11,7 @@
 <script>
 	$('input:radio').on('change', function ()
 	{
-		Cookies.set('name', 'value', { expires: 365 })
-		console.log($(this).val());
-		if ($(this).val() === "windows")
-		{
-			Cookies.set('platform', $(this).val())
-			var platform = Cookies.get("platform")
-			console.log("platform = " + platform);
-			$(".linux").hide();
-			$(".android").hide();
-			$(".windows").show();
-		}
+		Cookies.set('platform', $(this).val(), { expires: 365 })
+		updatePlatform();
 	});
 </script>
