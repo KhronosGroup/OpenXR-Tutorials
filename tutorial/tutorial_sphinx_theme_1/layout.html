@@ -43,9 +43,9 @@
 	favicon_url is the only context var necessary since Sphinx 4.
 	In Sphinx
 	<4, we use favicon but need to prepend path info.
-		#}
-		{%- set _favicon_url=favicon_url | default(pathto('_static /' + (favicon or "" ), 1)) %}
-		{%- if favicon_url or favicon %}
+	#}
+	{%- set _favicon_url=favicon_url | default(pathto('_static /' + (favicon or "" ), 1)) %}
+	{%- if favicon_url or favicon %}
 	<link rel="shortcut icon" href="{{ _favicon_url }}">
 	{%- endif %}
 
@@ -121,38 +121,38 @@
 	{%- endif %}
 	{%- endblock %}
 	{%- block extrahead %} {% endblock %}
-	<script type="module" src="_static/js/js.cookie.mjs"></script>
+	<script type="module" src="_static/js/js.cookie.min.mjs"></script>
 	<script nomodule defer src="_static/js/js.cookie.js"></script>
 	<script type="module">
-  import Cookies from '/_static/js/js.cookie.mjs'
+	import Cookies from '/_static/js/js.cookie.min.mjs'
 	function updatePlatform()
 	{
-		var platform = Cookies.get("platform")
-		console.log("platform = " + platform);
-		if (platform == "windows") {
-			$(".linux").hide();
-			$(".android").hide();
-			$(".windows").show();
-		}
-		if (platform == "linux") {
-			$(".linux").show();
-			$(".android").hide();
-			$(".windows").hide();
-		}
-		if (platform == "android") {
-			$(".linux").hide();
-			$(".android").show();
-			$(".windows").hide();
-		}
+	var platform = Cookies.get("platform")
+	console.log("platform = " + platform);
+	if (platform == "windows") {
+	$(".linux").hide();
+	$(".android").hide();
+	$(".windows").show();
+	}
+	if (platform == "linux") {
+	$(".linux").show();
+	$(".android").hide();
+	$(".windows").hide();
+	}
+	if (platform == "android") {
+	$(".linux").hide();
+	$(".android").show();
+	$(".windows").hide();
+	}
 	}</script>
 	<script type="module">
-		import Cookies from '/_static/js/js.cookie.mjs'
-		var platform = Cookies.get("platform")
-		if (platform==undefined) {
-			Cookies.set('platform', 'windows',{ expires: 365})
-			platform='windows';
-		}
-		updatePlatform()
+	import Cookies from '/_static/js/js.cookie.min.mjs'
+	var platform = Cookies.get("platform")
+	if (platform==undefined) {
+	Cookies.set('platform', 'windows',{ expires: 365})
+	platform='windows';
+	}
+	updatePlatform()
 	</script>
 </head>
 
