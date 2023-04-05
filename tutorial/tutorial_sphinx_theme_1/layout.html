@@ -150,10 +150,10 @@
 	import Cookies from '/_static/js/js.cookie.min.mjs'
 	var platform = Cookies.get("platform")
 	if (platform==undefined) {
-	Cookies.set('platform', 'windows',{ expires: 365})
-	platform='windows';
+		Cookies.set('platform', 'windows',{ expires: 365})
+		platform='windows';
 	}
-	updatePlatform()
+	window.updatePlatform()
 	</script>
 </head>
 
