@@ -9,6 +9,9 @@
 	</div>
 </form>
 <script>
+	platform = Cookies.get('platform')
+	radiobtn = document.getElementById(platform);
+	radiobtn.checked = true;
 	$('input:radio').on('change', function ()
 	{
 		Cookies.set('platform', $(this).val(), { expires: 365 })
