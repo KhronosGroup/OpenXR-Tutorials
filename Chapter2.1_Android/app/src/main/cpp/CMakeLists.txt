@@ -30,9 +30,9 @@ add_library( # Sets the name of the library.
 
 target_include_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/include)
 target_link_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/android/libs/android.arm64-v8a)
-target_link_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/android/libs/android.armeabi-v7a)
-target_link_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/android/libs/android.x86)
-target_link_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/android/libs/android.x86_64)
+#target_link_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/android/libs/android.armeabi-v7a)
+#target_link_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/android/libs/android.x86)
+#target_link_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/android/libs/android.x86_64)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
