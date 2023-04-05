@@ -24,7 +24,7 @@ Setup
 	   :align: center
 	   :scale: 55%
    
-		The File menu of Visual Studio Code, with the command "Open Folder..." selected
+	The File menu of Visual Studio Code, with the command "Open Folder..." selected
 
 	Select your *workspace* folder, which is now empty.
 	Install the CMake extension for Visual Studio Code.
