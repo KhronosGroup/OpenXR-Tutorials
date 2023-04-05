@@ -125,7 +125,7 @@
 	<script nomodule defer src="_static/js/js.cookie.js"></script>
 	<script type="module">
 	import Cookies from '/_static/js/js.cookie.min.mjs'
-	function updatePlatform()
+	export function updatePlatform()
 	{
 	var platform = Cookies.get("platform")
 	console.log("platform = " + platform);
