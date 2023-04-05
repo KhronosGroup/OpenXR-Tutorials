@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 29
-    ndkVersion '22.1.7171670'
+    ndkVersion '23.1.7779620'
 
     defaultConfig {
         applicationId "com.simul.openxrtutorialch2_1"
@@ -21,6 +21,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            jniDebuggable true
+            debuggable true
+            renderscriptDebuggable true
+            minifyEnabled false
         }
     }
     externalNativeBuild {
