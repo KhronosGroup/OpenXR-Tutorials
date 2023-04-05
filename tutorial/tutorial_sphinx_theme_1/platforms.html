@@ -9,6 +9,7 @@
 	</div>
 </form>
 <script>
+	import Cookies from '/_static/js/js.cookie.mjs'
 	platform = Cookies.get('platform')
 	radiobtn = document.getElementById(platform);
 	radiobtn.checked = true;
