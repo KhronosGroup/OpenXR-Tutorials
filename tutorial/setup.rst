@@ -2,10 +2,10 @@
 Setup
 #####
 
-.. rubric:: Windows
-
 .. container:: windows
     :name: windows-id-1
+
+	.. rubric:: Windows
 
 	For your Windows OpenXR project, we'll use CMake to create some project files for Visual Studio.
 	Create a directory where your code will go, we'll call this the *workspace* directory.
@@ -19,44 +19,47 @@ Setup
 	Create a directory where your code will go, we'll call this the *workspace* directory. Open VS Code and from
 	the File menu, select "Open Folder..."
 
-.. figure:: linux-vscode-open-folder.png
-   :alt: The File menu of Visual Studio Code is shown, with the command "Open Folder..." selected.
-   :align: center
-   :scale: 55%
+	.. figure:: linux-vscode-open-folder.png
+	   :alt: The File menu of Visual Studio Code is shown, with the command "Open Folder..." selected.
+	   :align: center
+	   :scale: 55%
    
-   The File menu of Visual Studio Code, with the command "Open Folder..." selected
+		The File menu of Visual Studio Code, with the command "Open Folder..." selected
 
-Select your *workspace* folder, which is now empty.
-Install the CMake extension for Visual Studio Code.
+	Select your *workspace* folder, which is now empty.
+	Install the CMake extension for Visual Studio Code.
+	
+.. container:: windows-linux
+    :name: windows-linux-id-1
 
-.. rubric:: Windows and Linux
+	.. rubric:: Windows and Linux
 
-Create a text file in the *workspace* folder called CMakeLists.txt.
+	Create a text file in the *workspace* folder called CMakeLists.txt.
 
-In it, put the following:
+	In it, put the following:
 
-.. highlight:: cmake
-.. code-block:: cmake
+	.. highlight:: cmake
+	.. code-block:: cmake
 
-	cmake_minimum_required(VERSION 3.15)
-	project(openxr-tutorial)
-	set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
-	set(OPENXR_DIR "" CACHE PATH "Location of OpenXR-SDK repository.")
-	add_subdirectory(Chapter_2)
+		cmake_minimum_required(VERSION 3.15)
+		project(openxr-tutorial)
+		set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
+		set(OPENXR_DIR "" CACHE PATH "Location of OpenXR-SDK repository.")
+		add_subdirectory(Chapter_2)
 
-Now let's create a folder called Chapter_2, and in it put another CMakeLists.txt file,
-this one containing:
+	Now let's create a folder called Chapter_2, and in it put another CMakeLists.txt file,
+	this one containing:
 
-.. code-block:: cmake
+	.. code-block:: cmake
 
-	file(GLOB SOURCES "main.cpp" )
-	add_executable(Chapter_2 ${SOURCES})
-	target_include_directories( Chapter_2 PUBLIC ${OPENXR_DIR}/include )
-	target_link_directories( Chapter_2 PUBLIC ${OPENXR_DIR}/build/src/loader/Debug ${OPENXR_DIR}/build/src/loader/Release )
-	target_link_libraries( Chapter_2 openxr_loader$<$<CONFIG:Debug>:d> )
+		file(GLOB SOURCES "main.cpp" )
+		add_executable(Chapter_2 ${SOURCES})
+		target_include_directories( Chapter_2 PUBLIC ${OPENXR_DIR}/include )
+		target_link_directories( Chapter_2 PUBLIC ${OPENXR_DIR}/build/src/loader/Debug ${OPENXR_DIR}/build/src/loader/Release )
+		target_link_libraries( Chapter_2 openxr_loader$<$<CONFIG:Debug>:d> )
 
-That's all we need for CMake. Now we'll create our source file. Create a new text file called "main.cpp"
-and put it in the Chapter2 directory. In this file, place the following code:
+	That's all we need for CMake. Now we'll create our source file. Create a new text file called "main.cpp"
+	and put it in the Chapter2 directory. In this file, place the following code:
 
 .. highlight:: cpp
 .. code-block:: cpp

@@ -131,16 +131,19 @@
 		$(".linux").hide();
 		$(".android").hide();
 		$(".windows").show();
+		$(".windows-linux").show();
 		}
 		if (platform == "linux") {
 		$(".linux").show();
 		$(".android").hide();
 		$(".windows").hide();
+		$(".windows-linux").show();
 		}
 		if (platform == "android") {
 		$(".linux").hide();
 		$(".android").show();
 		$(".windows").hide();
+		$(".windows-linux").hide();
 		}
 		window.updatePlatform=updatePlatform;
 	}</script>
@@ -150,7 +153,6 @@
 	Cookies.set('platform', 'windows',{ expires: 365})
 	platform='windows';
 	}
-	updatePlatform();
 	</script>
 </head>
 
