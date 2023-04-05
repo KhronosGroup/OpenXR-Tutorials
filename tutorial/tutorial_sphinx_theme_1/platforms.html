@@ -1,0 +1,26 @@
+<form>
+	<div id='selectplatform'>
+		<label for="windows">Windows*</label>
+		<input type='radio' id='windows' name='type' value='windows' />
+		<label for="linux">Linux*</label>
+		<input type='radio' id='linux' name='type' value='linux' />
+		<label for="android">Android*</label>
+		<input type='radio' id='android' name='type' value='android' />
+	</div>
+</form>
+<script>
+	$('input:radio').on('change', function ()
+	{
+		Cookies.set('name', 'value', { expires: 365 })
+		console.log($(this).val());
+		if ($(this).val() === "windows")
+		{
+			Cookies.set('platform', $(this).val())
+			var platform = Cookies.get("platform")
+			console.log("platform = " + platform);
+			$(".linux").hide();
+			$(".android").hide();
+			$(".windows").show();
+		}
+	});
+</script>

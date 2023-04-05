@@ -7508,3 +7508,7 @@ span[id*=MathJax-Span]
     src: url(fonts/Roboto-Slab-Bold.woff2?9984f4a9bda09be08e83f2506954adbe) format("woff2"),url(fonts/Roboto-Slab-Bold.woff?bed5564a116b05148e3b3bea6fb1162a) format("woff");
     font-display: block
 }
+
+#selectplatform input, #selectplatform label{
+    display: inline;
+}

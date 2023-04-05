@@ -46,81 +46,90 @@
 		#}
 		{%- set _favicon_url=favicon_url | default(pathto('_static /' + (favicon or "" ), 1)) %}
 		{%- if favicon_url or favicon %}
-    <link rel="shortcut icon" href="{{ _favicon_url }}">
-  {%- endif %}
+	<link rel="shortcut icon" href="{{ _favicon_url }}">
+	{%- endif %}
 
-  {#- CANONICAL URL (deprecated) #}
-  {%- if theme_canonical_url and not pageurl %}
-    <link rel="canonical" href="{{ theme_canonical_url }}{{ pagename }}.html">
-  {%- endif -%}
+	{#- CANONICAL URL (deprecated) #}
+	{%- if theme_canonical_url and not pageurl %}
+	<link rel="canonical" href="{{ theme_canonical_url }}{{ pagename }}.html">
+	{%- endif -%}
 
-  {#- CANONICAL URL #}
-  {%- if pageurl %}
-    <link rel="canonical" href="{{ pageurl|e }}" >
-  {%- endif -%}
+	{#- CANONICAL URL #}
+	{%- if pageurl %}
+	<link rel="canonical" href="{{ pageurl|e }}" >
+	{%- endif -%}
 
-  {#- JAVASCRIPTS #}
-  {%- block scripts %}
-  <!--[if lt IE 9]>
-    <script src="{{ pathto('_static/js/html5shiv.min.js', 1) }}"></script>
-  <![endif]-->
-  {%- if not embedded %}
-  {# XXX Sphinx 1.8.0 made this an external js-file, quick fix until we refactor the template to inherert more blocks directly from sphinx #}
-    {%- if sphinx_version_info >= (1, 8) -%}
-      {%- if sphinx_version_info < (4, 0) -%}
-      <script id="documentation_options" data-url_root="{{ url_root }}" src="{{ pathto('_static/documentation_options.js', 1) }}"></script>
-      {%- endif -%}
-      {%- for scriptfile in script_files %}
-        {{ js_tag(scriptfile) }}
-      {%- endfor %}
-    {%- else %}
-      <script>
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'{{ url_root }}',
-              VERSION:'{{ release|e }}',
-              LANGUAGE:'{{ language }}',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'{{ '' if no_search_suffix else file_suffix }}',
-              HAS_SOURCE:  {{ has_source|lower }},
-              SOURCELINK_SUFFIX: '{{ sourcelink_suffix }}'
-          };
-      </script>
-      {%- for scriptfile in script_files %}
-        <script src="{{ pathto(scriptfile, 1) }}"></script>
-      {%- endfor %}
-    {%- endif %}
-    <script src="{{ pathto('_static/js/theme.js', 1) }}"></script>
+	{#- JAVASCRIPTS #}
+	{%- block scripts %}
+	<!--[if lt IE 9]>
+	  <script src="{{ pathto('_static/js/html5shiv.min.js', 1) }}"></script>
+	<![endif]-->
+	{%- if not embedded %}
+	{# XXX Sphinx 1.8.0 made this an external js-file, quick fix until we refactor the template to inherert more blocks directly from sphinx #}
+	{%- if sphinx_version_info >= (1, 8) -%}
+	{%- if sphinx_version_info < (4, 0) -%}
+	<script id="documentation_options" data-url_root="{{ url_root }}" src="{{ pathto('_static/documentation_options.js', 1) }}"></script>
+	{%- endif -%}
+	{%- for scriptfile in script_files %}
+	{{ js_tag(scriptfile) }}
+	{%- endfor %}
+	{%- else %}
+	<script>
+	var DOCUMENTATION_OPTIONS = {
+	URL_ROOT:'{{ url_root }}',
+	VERSION:'{{ release|e }}',
+	LANGUAGE:'{{ language }}',
+	COLLAPSE_INDEX:false,
+	FILE_SUFFIX:'{{ '' if no_search_suffix else file_suffix }}',
+	HAS_SOURCE:  {{ has_source|lower }},
+	SOURCELINK_SUFFIX: '{{ sourcelink_suffix }}'
+	};
+	</script>
+	{%- for scriptfile in script_files %}
+	<script src="{{ pathto(scriptfile, 1) }}"></script>
+	{%- endfor %}
+	{%- endif %}
+	<script src="{{ pathto('_static/js/theme.js', 1) }}"></script>
 
-    {#- OPENSEARCH #}
-    {%- if use_opensearch %}
-    <link rel="search" type="application/opensearchdescription+xml"
-          title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}"
-          href="{{ pathto('_static/opensearch.xml', 1) }}">
-    {%- endif %}
-  {%- endif %}
-  {%- endblock %}
+	{#- OPENSEARCH #}
+	{%- if use_opensearch %}
+	<link rel="search" type="application/opensearchdescription+xml"
+	title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}"
+	href="{{ pathto('_static/opensearch.xml', 1) }}">
+	{%- endif %}
+	{%- endif %}
+	{%- endblock %}
 
-  {%- block linktags %}
-    {%- if hasdoc('about') %}
-    <link rel="author" title="{{ _('About these documents') }}" href="{{ pathto('about') }}" >
-    {%- endif %}
-    {%- if hasdoc('genindex') %}
-    <link rel="index" title="{{ _('Index') }}" href="{{ pathto('genindex') }}" >
-    {%- endif %}
-    {%- if hasdoc('search') %}
-    <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}" >
-    {%- endif %}
-    {%- if hasdoc('copyright') %}
-    <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" >
-    {%- endif %}
-    {%- if next %}
-    <link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}" >
-    {%- endif %}
-    {%- if prev %}
-    <link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}" >
-    {%- endif %}
-  {%- endblock %}
-  {%- block extrahead %} {% endblock %}
+	{%- block linktags %}
+	{%- if hasdoc('about') %}
+	<link rel="author" title="{{ _('About these documents') }}" href="{{ pathto('about') }}" >
+	{%- endif %}
+	{%- if hasdoc('genindex') %}
+	<link rel="index" title="{{ _('Index') }}" href="{{ pathto('genindex') }}" >
+	{%- endif %}
+	{%- if hasdoc('search') %}
+	<link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}" >
+	{%- endif %}
+	{%- if hasdoc('copyright') %}
+	<link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" >
+	{%- endif %}
+	{%- if next %}
+	<link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}" >
+	{%- endif %}
+	{%- if prev %}
+	<link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}" >
+	{%- endif %}
+	{%- endblock %}
+	{%- block extrahead %} {% endblock %}
+	<script type="module">!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e=e||self,function(){var n=e.Cookies,o=e.Cookies=t();o.noConflict=function(){return e.Cookies=n,o}}())}(this,(function(){"use strict";function e(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var o in n)e[o]=n[o]}return e}return function t(n,o){function r(t,r,i){if("undefined"!=typeof document){"number"==typeof(i=e({},o,i)).expires&&(i.expires=new Date(Date.now()+864e5*i.expires)),i.expires&&(i.expires=i.expires.toUTCString()),t=encodeURIComponent(t).replace(/%(2[346B]|5E|60|7C)/g,decodeURIComponent).replace(/[()]/g,escape);var c="";for(var u in i)i[u]&&(c+="; "+u,!0!==i[u]&&(c+="="+i[u].split(";")[0]));return document.cookie=t+"="+n.write(r,t)+c}}return Object.create({set:r,get:function(e){if("undefined"!=typeof document&&(!arguments.length||e)){for(var t=document.cookie?document.cookie.split("; "):[],o={},r=0;r<t.length;r++){var i=t[r].split("="),c=i.slice(1).join("=");try{var u=decodeURIComponent(i[0]);if(o[u]=n.read(c,u),e===u)break}catch(e){}}return e?o[e]:o}},remove:function(t,n){r(t,"",e({},n,{expires:-1}))},withAttributes:function(n){return t(this.converter,e({},this.attributes,n))},withConverter:function(n){return t(e({},this.converter,n),this.attributes)}},{attributes:{value:Object.freeze(o)},converter:{value:Object.freeze(n)}})}({read:function(e){return'"'===e[0]&&(e=e.slice(1,-1)),e.replace(/(%[\dA-F]{2})+/gi,decodeURIComponent)},write:function(e){return encodeURIComponent(e).replace(/%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g,decodeURIComponent)}},{path:"/"})}));</script>
+	<script type="module">
+		Cookies.set('platform', 'windows')
+		var platform = Cookies.get("platform")
+		$('input:radio').on('change', function ()
+		{
+		Cookies.set('platform', $(this).val())
+		});
+	</script>
 </head>
 
 <body class="wy-body-for-nav">
@@ -204,6 +213,7 @@
         <div class="rst-content">
         {%- endif %}
           {% include "breadcrumbs.html" %}
+          {% include "platforms.html" %}
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
           {%- block document %}
            <div itemprop="articleBody">

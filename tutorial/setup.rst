@@ -4,14 +4,20 @@ Setup
 
 .. rubric:: Windows
 
-For your Windows OpenXR project, we'll use CMake to create some project files for Visual Studio.
-Create a directory where your code will go, we'll call this the *workspace* directory.
+.. container:: windows
+    :name: windows-id-1
 
-.. rubric:: Linux
+	For your Windows OpenXR project, we'll use CMake to create some project files for Visual Studio.
+	Create a directory where your code will go, we'll call this the *workspace* directory.
 
-For your Linux OpenXR project, we'll use CMake alongside Visual Studio Code to build your project.
-Create a directory where your code will go, we'll call this the *workspace* directory. Open VS Code and from
-the File menu, select "Open Folder..."
+.. container:: linux
+    :name: linux-id-1
+
+	.. rubric:: Linux
+
+	For your Linux OpenXR project, we'll use CMake alongside Visual Studio Code to build your project.
+	Create a directory where your code will go, we'll call this the *workspace* directory. Open VS Code and from
+	the File menu, select "Open Folder..."
 
 .. figure:: linux-vscode-open-folder.png
    :alt: The File menu of Visual Studio Code is shown, with the command "Open Folder..." selected.
