@@ -109,6 +109,12 @@ Now add the following:
 This defines the macro DEBUG_BREAK, according to what platform we're building for. This macro will
 stop execution of your program when an error occurs, so you can see where it happened and fix it.
 
+.. code-block:: cpp
+
+	#define OPENXR_CHECK(x, y) { if (!XR_SUCCEEDED(x)) { std::cout << "ERROR: OPENXR: " << y << std::endl; } }
+
+This defines the macro OPENXR_CHECK. Many OpenXR functions return a XrResult. This macro will check if the call has failed and logs a message to stdout. This can be modified to suit your needs.
+
 Now we will define the main class of your application. It's just a stub for now, with an empty Run() method:
 
 .. code-block:: cpp
@@ -225,7 +231,47 @@ Creating an XrInstance
 ----------------------
 2.1. Creating an XrInstance / xrGetSystem (xrCreateInstance)
 
-The `XrInstance` is the fundational object that we need to create first. The `XrInstance` encompasses the application setup state, OpenXR API version and any layers and extensions. First we will look at the `XrApplicationInfo`.
+Firstly, add to the `OpenXRTutorial` class the methods: `CreateInstance()`, `GetInstanceProperties()` and `DestroyInstance()`. Update `OpenXRTutorial::Run()` to call those methods in that order and add to the class in a private section the following members.
+
+.. code-block::
+	
+	class OpenXRTutorial
+	{
+	public:
+		OpenXRTutorial() = default;
+		~OpenXRTutorial() = default;
+	
+		Run()
+		{
+			CreateInstance();
+			
+			GetInstanceProperties();
+			
+			DestroyInstance();
+		}
+
+	private:
+		void CreateInstance() 
+		{
+		} 
+		
+		void DestroyInstance();
+		{
+		}
+	
+		void GetInstanceProperties()
+		{
+		}
+	
+	private:
+		XrInstance instance = {};
+		std::vector<const char*> activeAPILayers = {};
+		std::vector<const char*> activeInstanceExtensions = {};
+		std::vector<std::string> apiLayers = {};
+		std::vector<std::string> instanceExtensions = {};
+	}
+
+The `XrInstance` is the foundational object that we need to create first. The `XrInstance` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the `CreateInstance()` method, we will first look at the `XrApplicationInfo`.
 
 .. code-block:: cpp
 
@@ -236,9 +282,113 @@ The `XrInstance` is the fundational object that we need to create first. The `Xr
 	AI.engineVersion = 1;
 	AI.apiVersion = XR_CURRENT_API_VERSION;
 
-This structure allows you specify both the name and the version for your application and engine. These members are solely for your use as application developer. The main member here is the apiVersion. Here we use the `XR_CURRENT_API_VERSION` macro to specific the OpenXR version that we want to run. Also note here the use of `strcpy()` to set the applicationName and engineName. If you look at `XrApplicationInfo::applicationName` and `XrApplicationInfo::engineName` they are of type `char[]`, hence you must copy your string into that `char[]` and you must also by aware of the allowable length.
+This structure allows you specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the `XrApplicationInfo::apiVersion`. Here we use the `XR_CURRENT_API_VERSION` macro to specific the OpenXR version that we want to run. Also note here the use of `strcpy()` to set the applicationName and engineName. If you look at `XrApplicationInfo::applicationName` and `XrApplicationInfo::engineName` members, they are of type `char[]`, hence you must copy your string into that `char[]` and you must also by aware of the allowable length.
 
-Similar to Vulkan, OpenXR allows application to extend functionality provided by the core specification. These could extra functionality provided by the hardware. Most vital of course is which Graphics API to use with OpenXR. OpenXR supports D3D11, D3D12, Vulkan, OpenGL and OpenGL ES. Due the extensible nature of specification, it allows newer Graphics APIs and hardware functionality to be added with ease.
+Similar to Vulkan, OpenXR allows applications to extend functionality past what is provided by the core specification. The functionality could be hardware/vendor specific. Most vital of course is which Graphics API to use with OpenXR. OpenXR supports D3D11, D3D12, Vulkan, OpenGL and OpenGL ES. Due the extensible nature of specification, it allows newer Graphics APIs and hardware functionality to be added with ease.
+
+.. code-block:: cpp
+
+	instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+	#if defined(XR_USE_GRAPHICS_API_D3D11)
+		instanceExtensions.push_back(XR_KHR_D3D11_ENABLE_EXTENSION_NAME);
+	#elif defined(XR_USE_GRAPHICS_API_D3D12)
+		instanceExtensions.push_back(XR_KHR_D3D12_ENABLE_EXTENSION_NAME);
+	#elif defined(XR_USE_GRAPHICS_API_OPENGL)
+		instanceExtensions.push_back(XR_KHR_OPENGL_ENABLE_EXTENSION_NAME);
+	#elif defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+		instanceExtensions.push_back(XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
+	#elif defined(XR_USE_GRAPHICS_API_VULKAN)
+		instanceExtensions.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
+	#endif
+
+Here, we store in a `std::vector<std::string>` the extension names that we would like to use. `XR_EXT_DEBUG_UTILS_EXTENSION_NAME` is a macro of a string defined in openxr.h. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in Chapter 5.1. Depending on which `XR_USE_GRAPHICS_API_...` macro that you have defined, this code will add the relevant extension.
+
+Not all API layers and extensions are available to use, so we much check which ones can use. We will use `xrEnumerateApiLayerProperties()` and `xrEnumerateInstanceExtensionProperties()` to check which ones the runtime can provide.
+
+.. code-block:: cpp
+
+	uint32_t apiLayerCount = 0;
+	std::vector<XrApiLayerProperties> apiLayerProperties;
+	OPENXR_CHECK(xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr), "Failed to enumerate ApiLayerProperties.");
+	apiLayerProperties.resize(apiLayerCount);
+	for (auto& apiLayerProperty : apiLayerProperties)
+		apiLayerProperty.type = XR_TYPE_API_LAYER_PROPERTIES;
+	OPENXR_CHECK(xrEnumerateApiLayerProperties(apiLayerCount, &apiLayerCount, apiLayerProperties.data()), "Failed to enumerate ApiLayerProperties.");
+
+	for (auto& requestLayer : apiLayers)
+	{
+		for (auto& layerProperty : apiLayerProperties)
+		{
+			if (strcmp(requestLayer.c_str(), layerProperty.layerName))
+				continue;
+			else
+				activeAPILayers.push_back(requestLayer.c_str()); break;
+		}
+	}
+
+	uint32_t extensionCount = 0;
+	std::vector<XrExtensionProperties> extensionProperties;
+	OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, 0, &extensionCount, nullptr), "Failed to enumerate InstanceExtensionProperties.");
+	extensionProperties.resize(extensionCount);
+	for (auto& extensionProperty : extensionProperties)
+		extensionProperty.type = XR_TYPE_EXTENSION_PROPERTIES;
+	OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
+
+	for (auto& requestExtension : instanceExtensions)
+	{
+		for (auto& extensionProperty : extensionProperties)
+		{
+			if (strcmp(requestExtension.c_str(), extensionProperty.extensionName))
+				continue;
+			else
+				activeInstanceExtensions.push_back(requestExtension.c_str()); break;
+		}
+	}
+
+These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures. Before the second call, we need set `XrApiLayerProperties::type` or `XrExtensionProperties::type` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layers and extensions, we use a nested loop to check to see whether an API layers or extensions is availble and add it to the activeAPILayers and/or activeInstanceExtensions respectively. Note the activeAPILayers and activeInstanceExtensions are of type `std::vector<const char*>`. This will help us when fill out the next structure `XrInstanceCreateInfo`.
+
+.. code-block:: cpp
+
+	XrInstanceCreateInfo instanceCI;
+	instanceCI.type = XR_TYPE_INSTANCE_CREATE_INFO;
+	instanceCI.next = nullptr;
+	instanceCI.createFlags = 0;
+	instanceCI.applicationInfo = AI;
+	instanceCI.enabledApiLayerCount = static_cast<uint32_t>(activeAPILayers.size());
+	instanceCI.enabledApiLayerNames = activeAPILayers.data();
+	instanceCI.enabledExtensionCount = static_cast<uint32_t>(activeInstanceExtensions.size());
+	instanceCI.enabledExtensionNames = activeInstanceExtensions.data();
+	OPENXR_CHECK(xrCreateInstance(&instanceCI, &instance), "Failed to create Instance.");
+
+This section is fairly simple, as we now just collect data from before and assign them to members in the `XrInstanceCreateInfo` structure. Finally, we get to call `xrCreateInstance()` where we take pointers to thr stack `XrInstanceCreateInfo` and `XrInstance` objects. If the function succeeded, the result will be XR_SUCCESS and `XrInstance` will be non-null.
+
+At the end of the program, we should destroy the `XrInstance`. This is simple done with the function `xrDestroyInstance()`.
+
+.. code-block:: cpp
+
+	void DestroyInstance()
+	{
+		OPENXR_CHECK(xrDestroyInstance(instance), "Failed to destroy Instance.");
+	}
+
+Whilst we have an `XrInstance`, lets check its properties. We fill out the type and next members of the structure `XrInstanceProperties` and pass it along with the `XrInstance` to `xrGetInstanceProperties()`. This function will fill out the rest of that structure for us to use. Here, we simply log to stdout the runtime's name, and with the use of the `XR_VERSION_MAJOR`, `XR_VERSION_MINOR` and `XR_VERSION_PATCH` macros, we parse and log the runtime version.
+
+.. code-block:: cpp																								  
+
+	void GetInstanceProperties()
+	{
+		XrInstanceProperties instanceProperties;
+		instanceProperties.type = XR_TYPE_INSTANCE_PROPERTIES;
+		instanceProperties.next = nullptr;
+		OPENXR_CHECK(xrGetInstanceProperties(instance, &instanceProperties), "Failed to get InstanceProperties.");
+
+		std::cout << "OpenXR Runtime: " << instanceProperties.runtimeName << " - ";
+		std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
+		std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
+		std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion);
+	}
+
 
 Creating an XrSession
 ---------------------
