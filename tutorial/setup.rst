@@ -245,9 +245,26 @@ Click the "Gear" icon to edit the file launch.json, and enter the following:
 
 2. SETUP (Basic structure ready)
 
+Now that we have a basic application up and running with the OpenXR header files and libraries, we can start to set the core aspects of OpenXR. As a modern Khronos API, the OpenXR is heavily influcencd by the Vulkan API. So those who are familiar with the style of the Vulkan API will find OpenXR easy to follow.
+
 Creating an XrInstance
 ----------------------
 2.1. Creating an XrInstance / xrGetSystem (xrCreateInstance)
+
+The `XrInstance` is the fundational object that we need to create first. The `XrInstance` encompasses the application setup state, OpenXR API version and any layers and extensions. First we will look at the `XrApplicationInfo`.
+
+.. code-block:: cpp
+
+	XrApplicationInfo AI;
+	strcpy(AI.applicationName, "OpenXR Tutorial Chapter 2.1");
+	AI.applicationVersion = 1;
+	strcpy(AI.engineName, "OpenXR Engine");
+	AI.engineVersion = 1;
+	AI.apiVersion = XR_CURRENT_API_VERSION;
+
+This structure allows you specify both the name and the version for your application and engine. These members are solely for your use as application developer. The main member here is the apiVersion. Here we use the `XR_CURRENT_API_VERSION` macro to specific the OpenXR version that we want to run. Also note here the use of `strcpy()` to set the applicationName and engineName. If you look at `XrApplicationInfo::applicationName` and `XrApplicationInfo::engineName` they are of type `char[]`, hence you must copy your string into that `char[]` and you must also by aware of the allowable length.
+
+Similar to Vulkan, OpenXR allows application to extend functionality provided by the core specification. These could extra functionality provided by the hardware. Most vital of course is which Graphics API to use with OpenXR. OpenXR supports D3D11, D3D12, Vulkan, OpenGL and OpenGL ES. Due the extensible nature of specification, it allows newer Graphics APIs and hardware functionality to be added with ease.
 
 Creating an XrSession
 ---------------------

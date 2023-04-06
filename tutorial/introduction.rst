@@ -200,3 +200,214 @@ Both files have the same name on Linux - the debug one is substantially larger h
 And both are *dynamic* libraries by default, which will be loaded at runtime.
 
 Now you're ready to start creating your first OpenXR project.
+
+Android VR
+~~~~~~~~~~~
+.. rubric:: Android Studio
+
+Android Studio is available to download here: `https://developer.android.com/studio <https://developer.android.com/studio>`_.
+
+.. rubric::  OpenXR SDK
+For Android, you can download the OpenXR loader libraries from here: `https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27 <https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27>`_.
+Using the .aar file and a program like 7-Zip, you can extract the header files and libraries. Under prefab/modules/openxr_loader/include/openxr, you'll find the headers, and under prefab/modules/openxr_loader/libs/, you'll find the libraries for arm64-v8a, armeabi-v7a, x86 and x86_64.
+
+.. image:: android-7Zip-include.png
+   :alt: 7-Zip internal file structure showing the OpenXR headers. prefab/modules/openxr_loader/include/openxr
+   :align: right
+
+.. image:: android-7Zip-libs.png
+   :alt: 7-Zip internal file structure showing the OpenXR libraries. prefab/modules/openxr_loader/libs
+   :align: right
+
+.. rubric:: Vulkan
+I recommend using Vulkan for Android VR for its modern, low-level API and extension support for multiview. Vulkan is included as part of the NDK provided Google and is supported on Android 7.0 (Nougat), API level 24 or higher. `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_. OpenGL ES is also option for Android, but we will only be exploring Vulkan.
+
+.. rubric:: Project Generation
+Here, I'll show how to hand build an Android Studio project that runs a C++ Native Activity.
+Open Android Studio, select New Project and choose an Empty Activity. Set the names and save location. The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0(Nougat). Complete set up.
+
+.. image:: android-studio-newproject.png
+   :alt: Android Studio - New Project - Empty Activity.
+   :align: right
+
+.. rubric:: CMake
+With the Android Studio project now set up, we need to modify some of the files and folders so as to set up the project to support the C++ Native Activity.
+Under the `app` folder, you can delete the `libs` folder, and under the `app/src` you can also delete the `androidTest` and `test` folders. Finally under `app/src/main`, delete the `java` folder and add a `cpp` folder. Under the `app/src/main/res`, delete the `values-night` and `xml` folders. Under the `values` modify colors.xml and theme.xml as shown.
+
+.. code-block:: xml
+
+	<!-- colors.xml -->
+	<?xml version="1.0" encoding="utf-8"?>
+	<resources>
+	    <color name="colorPrimary">#008577</color>
+	    <color name="colorPrimaryDark">#00574B</color>
+	    <color name="colorAccent">#D81B60</color>
+	</resources>
+
+	<!-- theme.xml -->
+	<resources>
+
+	    <!-- Base application theme. -->
+	    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+	        <!-- Customize your theme here. -->
+	        <item name="colorPrimary">@color/colorPrimary</item>
+	        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+	        <item name="colorAccent">@color/colorAccent</item>
+	    </style>
+
+	</resources>
+
+Within the `app/src/main/cpp` folder, create a CMakeLists.txt. We will use this file to specific how our Native C++ code will be built. This CMakeList will be invoked by Android Studio's Gradle build system. 
+
+.. code-block:: cmake 
+
+	# For more information about using CMake with Android Studio, read the
+	# documentation: https://d.android.com/studio/projects/add-native-code.html
+
+	cmake_minimum_required(VERSION 3.22.1)
+	project("openxrtutorialch2_1")
+
+	# native_app_glue
+	add_library(native_app_glue STATIC ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+	target_include_directories(native_app_glue PUBLIC ${ANDROID_NDK}/sources/android/native_app_glue)
+
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
+	add_library(openxrtutorialch2_1 SHARED ../../../../../Chapter2.1/main.cpp)
+
+	# import openxr_loader
+	add_library(openxr_loader SHARED IMPORTED)
+	set_target_properties(openxr_loader PROPERTIES IMPORTED_LOCATION "../../../../../../thirdparty/openxr-sdk/android/libs/android.arm64-v8a/libopenxr_loader.so")
+	target_include_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/include)
+
+	# vulkan - Found in the NDK
+	find_library(vulkan-lib vulkan)
+	target_include_directories(openxrtutorialch2_1 PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
+
+	# log - Found in the NDK
+	find_library(log-lib log)
+
+	target_link_libraries(openxrtutorialch2_1
+	        android
+	        native_app_glue
+	        openxr_loader
+	        ${vulkan-lib}
+	        ${log-lib})
+
+First, we set the minimum required cmake version, here we are using 3.22.1 and the project's name. Next, we need to add a static library called native_app_glue. The native_app_glue library is compiled from a single source file android_native_app_glue.c. This interfaces between the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the `void android_main(struct android_app*)` entry point. We also include that directory as we need access to the android_native_app_glue.h header file. Next, we need to set the `CMAKE_SHARED_LINKER_FLAGS` so that `ANativeActivity_onCreate()` is exported for the Java Virtual Machine to call. Next, we add our shared library openxrtutorialch2_1 that houses our code. Here, I have a relative path to our single C++ file.
+
+Now, we import the openxr_loader library. We need to do this, because it's external to the NDK library, and won't be automatically picked up. We call `set_target_properties()` to specific the location of libopenxr_loader.so. We also include the directory to the OpenXR headers. Next, we find the Vulkan library in the NDK and include the directory to the Android Vulkan headers. At this time, we also find the log library. Finally we link the android, native_app_glue, openxr_loader, vulkan and log libraries to our openxrtutorialch2_1 library. Our libopenxrtutorialch2_1.so will packageed inside our apk along with any shared libraries that we have linked.
+
+.. rubric:: AndroidManifest.xml
+
+.. code-block:: xml
+
+	<?xml version="1.0" encoding="utf-8"?>
+	<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	    package="com.simul.openxrtutorialch2_1"
+	    android:versionCode="1"
+	    android:versionName="1.0">
+
+	    <application
+	        android:allowBackup="false"
+	        android:fullBackupContent="false"
+	        android:icon="@mipmap/ic_launcher"
+	        android:label="@string/app_name"
+	        android:hasCode="false">
+	        <activity
+	            android:name="android.app.NativeActivity"
+	            android:configChanges="orientation|keyboardHidden"
+	            android:debuggable="true">
+	            <meta-data
+	                android:name="android.app.lib_name"
+	                android:value="openxrtutorialch2_1" />
+
+	            <intent-filter>
+	                <action android:name="android.intent.action.MAIN" />
+	                <category android:name="android.intent.category.LAUNCHER" />
+	            </intent-filter>
+	        </activity>
+	    </application>
+	</manifest>
+
+We now need to modify our AndroidManifest.xml file to tell Android to run a Native Activity. We set `android:name` to "android.app.NativeActivity" and update `android:configChanges` to "orientation|keyboardHidden" to not close the activity on those changes. Next under the meta-data section, we set these values: `android:name` to "android.app.lib_name" and `android:value` to "openxrtutorialch2_1", where `android:value` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
+
+.. rubric:: Gradle
+
+.. code-block:: groovy
+
+	apply plugin: 'com.android.application'
+
+	android {
+	    compileSdkVersion 29
+	    ndkVersion '23.1.7779620'
+
+	    defaultConfig {
+	        applicationId "com.simul.openxrtutorialch2_1"
+	        minSdkVersion 29
+	        targetSdkVersion 29
+	        versionCode 1
+	        versionName "1.0"
+	        ndk {
+	            abiFilters 'arm64-v8a'
+	        }
+	    }
+	    buildFeatures {
+	        prefab true
+	    }
+	    buildTypes {
+	        release {
+	            minifyEnabled false
+	            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+	        }
+	        debug {
+	            jniDebuggable true
+	            debuggable true
+	            renderscriptDebuggable true
+	            minifyEnabled false
+	        }
+	    }
+	    externalNativeBuild {
+	        cmake {
+	            version '3.22.1'
+	            path 'src/main/cpp/CMakeLists.txt'
+	        }
+	    }
+	}
+
+	dependencies {
+	    implementation fileTree(dir: 'libs', include: ['*.jar'])
+	    implementation 'androidx.appcompat:appcompat:1.0.2'
+	    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+	    implementation 'org.khronos.openxr:openxr_loader_for_android:1.0.27'
+	}
+
+Now, we can config our build.gradle file in the `app` folder. First remove any references to Java, Kotlin and to testing. Next add in the `externalNativeBuild` section specifying CMake, its version and the location of the CMakeLists.txt that we created earlier. Also specify under the `ndk` section the `abiFilters`. We will just be using arm64-v8a in this tutorial. `ndkVersion` should also be specified.
+
+.. code-block:: groovy
+
+	// Top-level build file where you can add configuration options common to all sub-projects/modules.
+	buildscript {
+	    repositories {
+	       google()
+	       mavenCentral()
+	    }
+	    dependencies {
+	        classpath 'com.android.tools.build:gradle:4.2.2'
+	    }
+	}
+
+	allprojects {
+	    repositories {
+	        google()
+	        mavenCentral()
+	    }
+	}
+
+	task clean(type: Delete) {
+	    delete rootProject.buildDir
+	}
+
+Now, we can config our build.gradle file in the root folder of the project. This is a complete replacement the default one provided by Android Studio. This file stipulates the repositories and gradle version to be used.
+The settings.gradle can be reduce to just: `include ':app'`, and in the gradle.properties we need to remove `kotlin.code.style=official` and `android.nonTransitiveRClass=true`.
+
+With that completed, we should now be able to sync the Gradle file and build the project.
