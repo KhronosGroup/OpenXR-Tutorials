@@ -190,7 +190,7 @@ Using the .aar file and a program like 7-Zip, you can extract the header files a
    :align: right
 
 .. rubric:: Vulkan
-I recommend using Vulkan for Android VR for its modern, low-level API and extension support for multiview. Vulkan is included as part of the NDK provided Google and is supported on Android 7.0 (Nougat), API level 24 or higher. `https://developer.android.com/ndk/guides/graphics<https://developer.android.com/ndk/guides/graphics>`_. OpenGL ES is also option for Android, but we will only be exploring Vulkan.
+I recommend using Vulkan for Android VR for its modern, low-level API and extension support for multiview. Vulkan is included as part of the NDK provided Google and is supported on Android 7.0 (Nougat), API level 24 or higher. `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_. OpenGL ES is also option for Android, but we will only be exploring Vulkan.
 
 .. rubric:: Project Generation
 Here, I'll show how to hand build an Android Studio project that runs a C++ Native Activity.
@@ -205,6 +205,7 @@ With the Android Studio project now set up, we need to modify some of the files 
 Under the `app` folder, you can delete the `libs` folder, and under the `app/src` you can also delete the `androidTest` and `test` folders. Finally under `app/src/main`, delete the `java` folder and add a `cpp` folder. Under the `app/src/main/res`, delete the `values-night` and `xml` folders. Under the `values` modify colors.xml and theme.xml as shown.
 
 .. code-block:: xml
+
 	<!-- colors.xml -->
 	<?xml version="1.0" encoding="utf-8"?>
 	<resources>
@@ -229,6 +230,7 @@ Under the `app` folder, you can delete the `libs` folder, and under the `app/src
 Within the `app/src/main/cpp` folder, create a CMakeLists.txt. We will use this file to specific how our Native C++ code will be built. This CMakeList will be invoked by Android Studio's Gradle build system. 
 
 .. code-block:: cmake 
+
 	# For more information about using CMake with Android Studio, read the
 	# documentation: https://d.android.com/studio/projects/add-native-code.html
 
@@ -268,6 +270,7 @@ Now, we import the openxr_loader library. We need to do this, because it's exter
 .. rubric:: AndroidManifest.xml
 
 .. code-block:: xml
+
 	<?xml version="1.0" encoding="utf-8"?>
 	<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	    package="com.simul.openxrtutorialch2_1"
@@ -298,9 +301,10 @@ Now, we import the openxr_loader library. We need to do this, because it's exter
 
 We now need to modify our AndroidManifest.xml file to tell Android to run a Native Activity. We set `android:name` to "android.app.NativeActivity" and update `android:configChanges` to "orientation|keyboardHidden" to not close the activity on those changes. Next under the meta-data section, we set these values: `android:name` to "android.app.lib_name" and `android:value` to "openxrtutorialch2_1", where `android:value` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
 
-.. rebric:: Gradle
+.. rubric:: Gradle
 
 .. code-block:: groovy
+
 	apply plugin: 'com.android.application'
 
 	android {
@@ -350,6 +354,7 @@ We now need to modify our AndroidManifest.xml file to tell Android to run a Nati
 Now, we can config our build.gradle file in the `app` folder. First remove any references to Java, Kotlin and to testing. Next add in the `externalNativeBuild` section specifying CMake, its version and the location of the CMakeLists.txt that we created earlier. Also specify under the `ndk` section the `abiFilters`. We will just be using arm64-v8a in this tutorial. `ndkVersion` should also be specified.
 
 .. code-block:: groovy
+
 	// Top-level build file where you can add configuration options common to all sub-projects/modules.
 	buildscript {
 	    repositories {
