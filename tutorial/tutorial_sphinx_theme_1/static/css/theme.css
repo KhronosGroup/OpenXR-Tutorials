@@ -7383,8 +7383,10 @@ html.writer-html4 .rst-content dl:not(.docutils) .descclassname, html.writer-htm
 
 .rst-content p.rubric
 {
-    margin-bottom: 12px;
-    font-weight: 700
+    margin-bottom: 8px;
+	font-size:11px;
+    font-weight: 700;
+	color: #444;
 }
 
 .rst-content code.download, .rst-content tt.download
@@ -7508,7 +7510,81 @@ span[id*=MathJax-Span]
     src: url(fonts/Roboto-Slab-Bold.woff2?9984f4a9bda09be08e83f2506954adbe) format("woff2"),url(fonts/Roboto-Slab-Bold.woff?bed5564a116b05148e3b3bea6fb1162a) format("woff");
     font-display: block
 }
+#selectplatform{
+	margin: 10px;
+  display: flex;
+  justify-content: center;
+}
 
 #selectplatform input, #selectplatform label{
     display: inline;
+}
+
+.windows
+{
+	border-left-color: #266db1;
+	border-left-style:solid;
+	border-left-width:3px;
+}
+
+.linux
+{
+	border-left-color: #782B90;
+	border-left-style:solid;
+	border-left-width:3px;
+}
+
+.android
+{
+	border-left-color: #27ae60;
+	border-left-style:solid;
+	border-left-width:3px;
+}
+
+.windows-linux
+{
+	border-left-color: #266db1;
+	border-left-style:solid;
+	border-left-width:3px;
+	border-right-color: #782B90;
+	border-right-style:solid;
+	border-right-width:3px;
+}
+
+#selectwindows, #selectlinux, #selectandroid
+{
+	padding: 10px;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	vertical-align: top;
+    width:30%;
+	color:white;
+	font-weight:800;
+}
+
+
+#selectwindows label, 
+#selectlinux label, 
+#selectandroid label
+{
+	width:90%;
+	float:right;
+    color: white;
+    font-size: 100%
+}
+
+#selectwindows
+{
+	background-color:#266db1;
+}
+
+#selectlinux
+{
+	background-color:#782B90;
+}
+
+#selectandroid
+{
+	background-color: #27ae60;
 }
