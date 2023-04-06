@@ -40,9 +40,7 @@ author = 'Simul Software Ltd'
 # ones.
 extensions = ["myst_parser",'sphinx.ext.autosectionlabel',"sphinxcontrib.mermaid","sphinxcontrib.jquery"]
 mermaid_output_format='png'
-source_suffix = {
-    '.rst': 'restructuredtext',
-}
+source_suffix = {'.rst': 'restructuredtext'}
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 

@@ -43,87 +43,123 @@
 	favicon_url is the only context var necessary since Sphinx 4.
 	In Sphinx
 	<4, we use favicon but need to prepend path info.
-		#}
-		{%- set _favicon_url=favicon_url | default(pathto('_static /' + (favicon or "" ), 1)) %}
-		{%- if favicon_url or favicon %}
-    <link rel="shortcut icon" href="{{ _favicon_url }}">
-  {%- endif %}
+	#}
+	{%- set _favicon_url=favicon_url | default(pathto('_static /' + (favicon or "" ), 1)) %}
+	{%- if favicon_url or favicon %}
+	<link rel="shortcut icon" href="{{ _favicon_url }}">
+	{%- endif %}
 
-  {#- CANONICAL URL (deprecated) #}
-  {%- if theme_canonical_url and not pageurl %}
-    <link rel="canonical" href="{{ theme_canonical_url }}{{ pagename }}.html">
-  {%- endif -%}
+	{#- CANONICAL URL (deprecated) #}
+	{%- if theme_canonical_url and not pageurl %}
+	<link rel="canonical" href="{{ theme_canonical_url }}{{ pagename }}.html">
+	{%- endif -%}
 
-  {#- CANONICAL URL #}
-  {%- if pageurl %}
-    <link rel="canonical" href="{{ pageurl|e }}" >
-  {%- endif -%}
+	{#- CANONICAL URL #}
+	{%- if pageurl %}
+	<link rel="canonical" href="{{ pageurl|e }}" >
+	{%- endif -%}
 
-  {#- JAVASCRIPTS #}
-  {%- block scripts %}
-  <!--[if lt IE 9]>
-    <script src="{{ pathto('_static/js/html5shiv.min.js', 1) }}"></script>
-  <![endif]-->
-  {%- if not embedded %}
-  {# XXX Sphinx 1.8.0 made this an external js-file, quick fix until we refactor the template to inherert more blocks directly from sphinx #}
-    {%- if sphinx_version_info >= (1, 8) -%}
-      {%- if sphinx_version_info < (4, 0) -%}
-      <script id="documentation_options" data-url_root="{{ url_root }}" src="{{ pathto('_static/documentation_options.js', 1) }}"></script>
-      {%- endif -%}
-      {%- for scriptfile in script_files %}
-        {{ js_tag(scriptfile) }}
-      {%- endfor %}
-    {%- else %}
-      <script>
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'{{ url_root }}',
-              VERSION:'{{ release|e }}',
-              LANGUAGE:'{{ language }}',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'{{ '' if no_search_suffix else file_suffix }}',
-              HAS_SOURCE:  {{ has_source|lower }},
-              SOURCELINK_SUFFIX: '{{ sourcelink_suffix }}'
-          };
-      </script>
-      {%- for scriptfile in script_files %}
-        <script src="{{ pathto(scriptfile, 1) }}"></script>
-      {%- endfor %}
-    {%- endif %}
-    <script src="{{ pathto('_static/js/theme.js', 1) }}"></script>
+	{#- JAVASCRIPTS #}
+	{%- block scripts %}
+	<!--[if lt IE 9]>
+	  <script src="{{ pathto('_static/js/html5shiv.min.js', 1) }}"></script>
+	<![endif]-->
+	{%- if not embedded %}
+	{# XXX Sphinx 1.8.0 made this an external js-file, quick fix until we refactor the template to inherert more blocks directly from sphinx #}
+	{%- if sphinx_version_info >= (1, 8) -%}
+	{%- if sphinx_version_info < (4, 0) -%}
+	<script id="documentation_options" data-url_root="{{ url_root }}" src="{{ pathto('_static/documentation_options.js', 1) }}"></script>
+	{%- endif -%}
+	{%- for scriptfile in script_files %}
+	{{ js_tag(scriptfile) }}
+	{%- endfor %}
+	{%- else %}
+	<script>
+	var DOCUMENTATION_OPTIONS = {
+	URL_ROOT:'{{ url_root }}',
+	VERSION:'{{ release|e }}',
+	LANGUAGE:'{{ language }}',
+	COLLAPSE_INDEX:false,
+	FILE_SUFFIX:'{{ '' if no_search_suffix else file_suffix }}',
+	HAS_SOURCE:  {{ has_source|lower }},
+	SOURCELINK_SUFFIX: '{{ sourcelink_suffix }}'
+	};
+	</script>
+	{%- for scriptfile in script_files %}
+	<script src="{{ pathto(scriptfile, 1) }}"></script>
+	{%- endfor %}
+	{%- endif %}
+	<script src="{{ pathto('_static/js/theme.js', 1) }}"></script>
 
-    {#- OPENSEARCH #}
-    {%- if use_opensearch %}
-    <link rel="search" type="application/opensearchdescription+xml"
-          title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}"
-          href="{{ pathto('_static/opensearch.xml', 1) }}">
-    {%- endif %}
-  {%- endif %}
-  {%- endblock %}
+	{#- OPENSEARCH #}
+	{%- if use_opensearch %}
+	<link rel="search" type="application/opensearchdescription+xml"
+	title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}"
+	href="{{ pathto('_static/opensearch.xml', 1) }}">
+	{%- endif %}
+	{%- endif %}
+	{%- endblock %}
 
-  {%- block linktags %}
-    {%- if hasdoc('about') %}
-    <link rel="author" title="{{ _('About these documents') }}" href="{{ pathto('about') }}" >
-    {%- endif %}
-    {%- if hasdoc('genindex') %}
-    <link rel="index" title="{{ _('Index') }}" href="{{ pathto('genindex') }}" >
-    {%- endif %}
-    {%- if hasdoc('search') %}
-    <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}" >
-    {%- endif %}
-    {%- if hasdoc('copyright') %}
-    <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" >
-    {%- endif %}
-    {%- if next %}
-    <link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}" >
-    {%- endif %}
-    {%- if prev %}
-    <link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}" >
-    {%- endif %}
-  {%- endblock %}
-  {%- block extrahead %} {% endblock %}
+	{%- block linktags %}
+	{%- if hasdoc('about') %}
+	<link rel="author" title="{{ _('About these documents') }}" href="{{ pathto('about') }}" >
+	{%- endif %}
+	{%- if hasdoc('genindex') %}
+	<link rel="index" title="{{ _('Index') }}" href="{{ pathto('genindex') }}" >
+	{%- endif %}
+	{%- if hasdoc('search') %}
+	<link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}" >
+	{%- endif %}
+	{%- if hasdoc('copyright') %}
+	<link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" >
+	{%- endif %}
+	{%- if next %}
+	<link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}" >
+	{%- endif %}
+	{%- if prev %}
+	<link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}" >
+	{%- endif %}
+	{%- endblock %}
+	{%- block extrahead %} {% endblock %}
+	<script  src="_static/js/js.cookie.min.js"></script>
+	<script >
+	function updatePlatform()
+	{
+	var platform = Cookies.get("platform")
+	console.log("platform = " + platform);
+	if (platform == "windows") {
+	$(".linux").hide();
+	$(".android").hide();
+	$(".windows").show();
+	$(".windows-linux").show();
+	}
+	if (platform == "linux") {
+	$(".linux").show();
+	$(".android").hide();
+	$(".windows").hide();
+	$(".windows-linux").show();
+	}
+	if (platform == "android") {
+	$(".linux").hide();
+	$(".android").show();
+	$(".windows").hide();
+	$(".windows-linux").hide();
+	}
+	window.updatePlatform=updatePlatform;
+	}</script>
+	<script >
+	var platform = Cookies.get("platform")
+	if (platform==undefined) {
+	Cookies.set('platform', 'windows',{ expires: 365})
+	platform='windows';
+	}
+	</script>
+	<script defer>
+		updatePlatform();
+	</script>
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" onload="updatePlatform();">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
@@ -204,6 +240,7 @@
         <div class="rst-content">
         {%- endif %}
           {% include "breadcrumbs.html" %}
+          {% include "platforms.html" %}
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
           {%- block document %}
            <div itemprop="articleBody">
