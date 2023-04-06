@@ -5,6 +5,7 @@ set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 set(TUTORIAL_SPHINX_BUILD "" CACHE PATH "Set the location of the HTML build." )
 
 file(GLOB_RECURSE RST_FILES  "*.rst")
+file(GLOB HTM_FILES  "*.html")
 
 file(GLOB_RECURSE THEME_FILES  "tutorial_sphinx_theme_1/*.html")
 
@@ -22,7 +23,7 @@ add_custom_target(Sphinx ALL
 					${DOXYGEN_INDEX_FILE} conf.py tutorial/tutorial_sphinx_theme_1/static/css/theme.css
 					MAIN_DEPENDENCY ${SPHINX_SOURCE}/conf.py
 					COMMENT "Generating documentation with Sphinx"
-					SOURCES ${RST_FILES} ${THEME_FILES} ${CSS_FILES} conf.py) 
+					SOURCES ${RST_FILES} ${THEME_FILES} ${CSS_FILES} ${HTM_FILES} conf.py) 
 set_target_properties( Sphinx PROPERTIES FOLDER Docs)
 
 

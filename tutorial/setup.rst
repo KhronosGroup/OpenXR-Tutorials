@@ -2,6 +2,32 @@
 Setup
 #####
 
+Once again, in case you want to see instructions for a different platform, select it here:
+
+.. raw:: html
+   :file: platforms.html
+
+.. container:: windows
+    :name: windows-intro-1
+
+	.. rubric:: Windows
+
+	Showing instructions for Windows.
+
+.. container:: linux
+    :name: linux-intro-1
+
+	.. rubric:: Linux
+
+	Showing instructions for Linux.
+
+.. container:: android
+    :name: windows-intro-1
+
+	.. rubric:: Android
+
+	Showing instructions for Android.
+
 .. container:: windows
     :name: windows-id-1
 

@@ -25,8 +25,38 @@ Setting Up
 This section will help you set up a development environment.
 ( Visual Studio & Android Studio & Monado for people without HMDs )
 
+The exact procedure will depend on your target platform. So first, let's choose this:
+
+.. raw:: html
+   :file: platforms.html
+
+Select which platform you want to develop for, and click the button to show the instructions for that platform.
+
+.. container:: windows
+    :name: windows-intro-1
+
+	.. rubric:: Windows
+
+	You'll see instructions to build for Windows.
+
+.. container:: linux
+    :name: linux-intro-1
+
+	.. rubric:: Linux
+
+	You'll see instructions to build for Linux.
+
+.. container:: android
+    :name: windows-intro-1
+
+	.. rubric:: Android
+
+	You'll see instructions to build for Android.
+
+ 
 PCVR: Windows
 ~~~~~~~~~~~~~
+
 .. rubric:: Visual Studio
 If you'll be building an OpenXR project for PC-based devices, we'll assume you'll be using Microsoft Visual Studio.
 The free Community edition of Visual Studio is available `here <https://visualstudio.microsoft.com/vs/community/>`_.
