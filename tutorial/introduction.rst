@@ -9,9 +9,10 @@ Goal of OpenXR
 OpenXR aims to help solve the fragmentation of the XR ecosystem. Before the advent of OpenXR, software developers working with multiple
 hardware platforms had to write different code for each platform to address the different hardware.
 Each platform had its own, often proprietary, API, and deploying an existing app to a new platform required a lot of
-adaptation. Developing a new app for a new platform was even more challenging. And yet, in spite of
-their unique features, the platforms had a great many common features. For example, most headsets had a main view seen from two
-slightly different perspectives. Most headsets had a way to track the user's head and hands or hand-controllers. Most had buttons,
+adaptation. Developing a new app for a new platform was even more challenging.
+
+In spite of their unique features, the platforms had a great deal in common. For example, most headsets had a main view seen from two
+slightly different perspectives. Most had a way to track the user's head and hands or hand-controllers. Most had buttons,
 many had analogue controls like triggers or joysticks; many had haptic feedback.
 
 .. figure:: OpenXRBefore.png
@@ -21,8 +22,8 @@ many had analogue controls like triggers or joysticks; many had haptic feedback.
 
 	XR fragmentation before OpenXR
 
-
-OpenXR aims to solve this problem by providing a common API that can be used to address all these common features.
+OpenXR aims to solve this problem by providing a common API to address XR hardware, in reading its inputs
+and outputting to its displays and haptic systems.
 
 .. figure:: OpenXRAfter.png
 	:alt: OpenXR resolves fragmentation by providing a common interface.
@@ -35,8 +36,46 @@ OpenXR aims to solve this problem by providing a common API that can be used to 
 Overview
 ********
 
-1.2. High Level overview of the components of OpenXR (Application - Loader - API
-layers - Runtime - Graphics - Input System)
+We'll start with the main concepts you'll need to be familiar with around OpenXR.
+
+
+.. list-table:: OpenXR Concepts
+	:widths: 1 5
+	:class: longtable
+	:header-rows: 1
+
+	* - Concept
+	  - Description
+	* - API
+	  - The OpenXR API is the set of commands, functions and structures that an OpenXR-compliant runtime is required to offer.
+	* - Application
+	  - The Application is your program, called an "app" for short.
+	* - Runtime
+	  - A Runtime is a specific implementation of the OpenXR functionality. It might be provided by a
+	    hardware vendor, as part of a device's operating system; it might be supplied by a software vendor
+	    to enable OpenXR support with a specific range of hardware. The Loader finds the appropriate Runtime
+	    and loads it when OpenXR is initialized.
+	* - Loader
+	  - The OpenXR loader is a special library that connects your app to whichever OpenXR runtime
+	    you're using. The loader's job is to find the Runtime and initialize it, then allow your app to access
+	    the Runtime's version of the API. Some devices can have multiple Runtimes available, but only one can
+	    be active at any given time.
+	* - Layers
+	  - API layers are optional components that augment an OpenXR system. A Layer might help with debugging,
+	    or filter infromation between the app and the Runtime. API layers are enabled when the OpenXR Instance
+	    is created.
+	* - Instance
+	  - The Instance is an object that allows your app to communicate with a Runtime. You'll ask OpenXR to create an Instance
+	    when initializing XR support in your app. If the Runtime supports it, you might have more than one Instance
+	    at a time, if more than one XR device is in use.
+	* - Graphics
+	  - OpenXR usually needs to connect to a graphics API, in order to permit rendering of headset views for example.
+	    Which Graphics API's are supported depends on the Runtime.
+	* - Input
+	  - The OpenXR Input System allows apps to query what inputs are available. These can then be bound
+	    to Actions or Poses, so the app knows what the user is doing.
+
+	
 
 **********
 Setting Up
@@ -177,6 +216,7 @@ Select which platform you want to develop for, and click the button to show the 
 	...
 
 	.. rubric::  OpenXR SDK
+
 	You'll need a copy of the OpenXR SDK, which is distributed as a Git repository. If you're familiar with Git, you can use your preferred command-line or GUI Git tool to get
 	the SDK from *git@github.com:KhronosGroup/OpenXR-SDK.git*.
 
@@ -232,6 +272,7 @@ Android VR
 Android Studio is available to download here: `https://developer.android.com/studio <https://developer.android.com/studio>`_.
 
 .. rubric::  OpenXR SDK
+
 For Android, you can download the OpenXR loader libraries from here: `https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27 <https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27>`_.
 Using the .aar file and a program like 7-Zip, you can extract the header files and libraries. Under prefab/modules/openxr_loader/include/openxr, you'll find the headers, and under prefab/modules/openxr_loader/libs/, you'll find the libraries for arm64-v8a, armeabi-v7a, x86 and x86_64.
 
@@ -244,6 +285,7 @@ Using the .aar file and a program like 7-Zip, you can extract the header files a
    :align: right
 
 .. rubric:: Vulkan
+
 I recommend using Vulkan for Android VR for its modern, low-level API and extension support for multiview. Vulkan is included as part of the NDK provided Google and is supported on Android 7.0 (Nougat), API level 24 or higher. `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_. OpenGL ES is also option for Android, but we will only be exploring Vulkan.
 
 With the OpenXR loader and your Graphics API selected, Now you're ready to start creating your first OpenXR project.

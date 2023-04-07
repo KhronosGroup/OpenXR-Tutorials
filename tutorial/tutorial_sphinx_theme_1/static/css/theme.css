@@ -220,7 +220,8 @@ textarea
 table
 {
     border-collapse: collapse;
-    border-spacing: 0
+    border-spacing: 0;
+    width: inherit;
 }
 
 td
@@ -5355,7 +5356,6 @@ input[type=checkbox][disabled], input[type=radio][disabled]
 
 .wy-table-responsive table td, .wy-table-responsive table th
 {
-    white-space: nowrap
 }
 
 a

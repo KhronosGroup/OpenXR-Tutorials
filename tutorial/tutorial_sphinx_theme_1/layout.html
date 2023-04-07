@@ -125,27 +125,27 @@
 	<script >
 	function updatePlatform()
 	{
-	var platform = Cookies.get("platform")
-	console.log("platform = " + platform);
-	if (platform == "windows") {
-	$(".linux").hide();
-	$(".android").hide();
-	$(".windows").show();
-	$(".windows-linux").show();
-	}
-	if (platform == "linux") {
-	$(".linux").show();
-	$(".android").hide();
-	$(".windows").hide();
-	$(".windows-linux").show();
-	}
-	if (platform == "android") {
-	$(".linux").hide();
-	$(".android").show();
-	$(".windows").hide();
-	$(".windows-linux").hide();
-	}
-	window.updatePlatform=updatePlatform;
+		var platform = Cookies.get("platform")
+		console.log("platform = " + platform);
+		if (platform == "windows") {
+			$(".linux").hide();
+			$(".android").hide();
+			$(".windows").show();
+			$(".windows-linux").show();
+		}
+		if (platform == "linux") {
+			$(".linux").show();
+			$(".android").hide();
+			$(".windows").hide();
+			$(".windows-linux").show();
+		}
+		if (platform == "android") {
+			$(".linux").hide();
+			$(".android").show();
+			$(".windows").hide();
+			$(".windows-linux").hide();
+		}
+		window.updatePlatform=updatePlatform;
 	}</script>
 	<script >
 	var platform = Cookies.get("platform")
@@ -154,9 +154,7 @@
 	platform='windows';
 	}
 	</script>
-	<script defer>
-		updatePlatform();
-	</script>
+	<script defer src="{{ pathto('_static/js/updatePlatform.js', 1) }}"></script>
 </head>
 
 <body class="wy-body-for-nav" onload="updatePlatform();">
