@@ -172,6 +172,7 @@ method:
 	#endif
 
 .. rubric:: Windows
+
 Now launch Cmake GUI, and point the "Where is the source code" box to your root solution (workspace) directory,
 where your original CMakeLists.txt is located. Point the "Where to build the binaries" box to a subdirectory called "build",
 click Configure, "Yes" to create the build folder, and "OK" to accept the default Generator.
