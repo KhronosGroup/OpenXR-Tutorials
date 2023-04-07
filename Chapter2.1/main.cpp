@@ -123,7 +123,7 @@ XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messa
 	std::stringstream errorMessage;
 	errorMessage << functionName << "(" << messageSeverityStr << " / " << messageTypeStr << "): msgNum: " << messageId << " - " << message;
 
-	std::cerr << errorMessage.str();
+	std::cerr << errorMessage.str() << std::endl;
 	if (messageSeverity == XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
 	{
 		DEBUG_BREAK;
@@ -239,7 +239,7 @@ private:
 		std::cout << "OpenXR Runtime: " << instanceProperties.runtimeName << " - ";
 		std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
 		std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
-		std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion);
+		std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
 	}
 
 	void CreateDebugMessenger()
@@ -250,7 +250,7 @@ private:
 			debugUtilsMessengerCI.type = XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 			debugUtilsMessengerCI.next = nullptr;
 			debugUtilsMessengerCI.messageSeverities = XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-			debugUtilsMessengerCI.messageTypes = XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+			debugUtilsMessengerCI.messageTypes = XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT;
 			debugUtilsMessengerCI.userCallback = (PFN_xrDebugUtilsMessengerCallbackEXT)OpenXRMessageCallbackFunction;
 			debugUtilsMessengerCI.userData = nullptr;
 
