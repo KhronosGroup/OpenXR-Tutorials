@@ -257,7 +257,9 @@ Creating an XrInstance
 ----------------------
 2.1. Creating an XrInstance / xrGetSystem (xrCreateInstance)
 
-Firstly, add to the `OpenXRTutorial` class the methods: `CreateInstance()`, `GetInstanceProperties()` and `DestroyInstance()`. Update `OpenXRTutorial::Run()` to call those methods in that order and add to the class in a private section the following members.
+.. rubric:: XrInstance
+
+Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()`` and ``DestroyInstance()``. Update ``OpenXRTutorial::Run()`` to call those methods in that order and add to the class in a private section the following members.
 
 .. code-block::
 	
@@ -270,9 +272,8 @@ Firstly, add to the `OpenXRTutorial` class the methods: `CreateInstance()`, `Get
 		Run()
 		{
 			CreateInstance();
-			
 			GetInstanceProperties();
-			
+			GetSystemID();
 			DestroyInstance();
 		}
 
@@ -288,6 +289,10 @@ Firstly, add to the `OpenXRTutorial` class the methods: `CreateInstance()`, `Get
 		void GetInstanceProperties()
 		{
 		}
+
+		void GetSystemID()
+		{
+		}
 	
 	private:
 		XrInstance instance = {};
@@ -295,9 +300,10 @@ Firstly, add to the `OpenXRTutorial` class the methods: `CreateInstance()`, `Get
 		std::vector<const char*> activeInstanceExtensions = {};
 		std::vector<std::string> apiLayers = {};
 		std::vector<std::string> instanceExtensions = {};
+		XrSystemId systemID = {};
 	}
 
-The `XrInstance` is the foundational object that we need to create first. The `XrInstance` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the `CreateInstance()` method, we will first look at the `XrApplicationInfo`.
+The ``XrInstance`` is the foundational object that we need to create first. The ``XrInstance`` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the ``CreateInstance()`` method, we will first look at the ``XrApplicationInfo``.
 
 .. code-block:: cpp
 
@@ -308,7 +314,7 @@ The `XrInstance` is the foundational object that we need to create first. The `X
 	AI.engineVersion = 1;
 	AI.apiVersion = XR_CURRENT_API_VERSION;
 
-This structure allows you specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the `XrApplicationInfo::apiVersion`. Here we use the `XR_CURRENT_API_VERSION` macro to specific the OpenXR version that we want to run. Also note here the use of `strcpy()` to set the applicationName and engineName. If you look at `XrApplicationInfo::applicationName` and `XrApplicationInfo::engineName` members, they are of type `char[]`, hence you must copy your string into that `char[]` and you must also by aware of the allowable length.
+This structure allows you specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the ``XrApplicationInfo::apiVersion``. Here we use the ``XR_CURRENT_API_VERSION`` macro to specific the OpenXR version that we want to run. Also note here the use of ``strcpy()`` to set the applicationName and engineName. If you look at ``XrApplicationInfo::applicationName`` and ``XrApplicationInfo::engineName`` members, they are of type ``char[]``, hence you must copy your string into that ``char[]`` and you must also by aware of the allowable length.
 
 Similar to Vulkan, OpenXR allows applications to extend functionality past what is provided by the core specification. The functionality could be hardware/vendor specific. Most vital of course is which Graphics API to use with OpenXR. OpenXR supports D3D11, D3D12, Vulkan, OpenGL and OpenGL ES. Due the extensible nature of specification, it allows newer Graphics APIs and hardware functionality to be added with ease.
 
@@ -328,9 +334,9 @@ Similar to Vulkan, OpenXR allows applications to extend functionality past what 
 		instanceExtensions.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
 	#endif
 
-Here, we store in a `std::vector<std::string>` the extension names that we would like to use. `XR_EXT_DEBUG_UTILS_EXTENSION_NAME` is a macro of a string defined in openxr.h. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in Chapter 5.1. Depending on which `XR_USE_GRAPHICS_API_...` macro that you have defined, this code will add the relevant extension.
+Here, we store in a ``std::vector<std::string>`` the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in openxr.h. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in Chapter 5.1. Depending on which ``XR_USE_GRAPHICS_API_...`` macro that you have defined, this code will add the relevant extension.
 
-Not all API layers and extensions are available to use, so we much check which ones can use. We will use `xrEnumerateApiLayerProperties()` and `xrEnumerateInstanceExtensionProperties()` to check which ones the runtime can provide.
+Not all API layers and extensions are available to use, so we much check which ones can use. We will use ``xrEnumerateApiLayerProperties()`` and ``xrEnumerateInstanceExtensionProperties()`` to check which ones the runtime can provide.
 
 .. code-block:: cpp
 
@@ -372,7 +378,7 @@ Not all API layers and extensions are available to use, so we much check which o
 		}
 	}
 
-These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures. Before the second call, we need set `XrApiLayerProperties::type` or `XrExtensionProperties::type` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layers and extensions, we use a nested loop to check to see whether an API layers or extensions is availble and add it to the activeAPILayers and/or activeInstanceExtensions respectively. Note the activeAPILayers and activeInstanceExtensions are of type `std::vector<const char*>`. This will help us when fill out the next structure `XrInstanceCreateInfo`.
+These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures. Before the second call, we need set ``XrApiLayerProperties::type`` or ``XrExtensionProperties::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layers and extensions, we use a nested loop to check to see whether an API layers or extensions is availble and add it to the activeAPILayers and/or activeInstanceExtensions respectively. Note the activeAPILayers and activeInstanceExtensions are of type ``std::vector<const char*>``. This will help us when fill out the next structure ``XrInstanceCreateInfo``.
 
 .. code-block:: cpp
 
@@ -387,9 +393,9 @@ These functions are called twice. The first time is to get the count of the API 
 	instanceCI.enabledExtensionNames = activeInstanceExtensions.data();
 	OPENXR_CHECK(xrCreateInstance(&instanceCI, &instance), "Failed to create Instance.");
 
-This section is fairly simple, as we now just collect data from before and assign them to members in the `XrInstanceCreateInfo` structure. Finally, we get to call `xrCreateInstance()` where we take pointers to thr stack `XrInstanceCreateInfo` and `XrInstance` objects. If the function succeeded, the result will be XR_SUCCESS and `XrInstance` will be non-null.
+This section is fairly simple, as we now just collect data from before and assign them to members in the ``XrInstanceCreateInfo`` structure. Finally, we get to call ``xrCreateInstance()`` where we take pointers to thr stack ``XrInstanceCreateInfo`` and ``XrInstance`` objects. If the function succeeded, the result will be XR_SUCCESS and ``XrInstance`` will be non-null.
 
-At the end of the program, we should destroy the `XrInstance`. This is simple done with the function `xrDestroyInstance()`.
+At the end of the program, we should destroy the ``XrInstance``. This is simple done with the function ``xrDestroyInstance()``.
 
 .. code-block:: cpp
 
@@ -398,9 +404,9 @@ At the end of the program, we should destroy the `XrInstance`. This is simple do
 		OPENXR_CHECK(xrDestroyInstance(instance), "Failed to destroy Instance.");
 	}
 
-Whilst we have an `XrInstance`, lets check its properties. We fill out the type and next members of the structure `XrInstanceProperties` and pass it along with the `XrInstance` to `xrGetInstanceProperties()`. This function will fill out the rest of that structure for us to use. Here, we simply log to stdout the runtime's name, and with the use of the `XR_VERSION_MAJOR`, `XR_VERSION_MINOR` and `XR_VERSION_PATCH` macros, we parse and log the runtime version.
+Whilst we have an ``XrInstance``, lets check its properties. We fill out the type and next members of the structure ``XrInstanceProperties`` and pass it along with the ``XrInstance`` to ``xrGetInstanceProperties()``. This function will fill out the rest of that structure for us to use. Here, we simply log to stdout the runtime's name, and with the use of the ``XR_VERSION_MAJOR``, ``XR_VERSION_MINOR`` and ``XR_VERSION_PATCH`` macros, we parse and log the runtime version.
 
-.. code-block:: cpp																								  
+.. code-block:: cpp
 
 	void GetInstanceProperties()
 	{
@@ -415,13 +421,69 @@ Whilst we have an `XrInstance`, lets check its properties. We fill out the type 
 		std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion);
 	}
 
+.. rubric:: XrSystemId
+
+The next object that we want to get is the ``XrSystemId``. OpenXR 'separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences'. 
+`OpenXR Specification 5. System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_. 
+
+So, a ``XrSystemId`` could represent VR headset and a pair of contollers, or perhaps mobile device with video pass-through for AR. So we need to decide what type of ``XrFormFactor`` we are wanting to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY`` for a Meta Quest or Pico Neo.
+
+.. code-block:: cpp
+	
+	//From openxr.h
+	typedef enum XrFormFactor {
+	    XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY = 1,
+	    XR_FORM_FACTOR_HANDHELD_DISPLAY = 2,
+	    XR_FORM_FACTOR_MAX_ENUM = 0x7FFFFFFF
+	} XrFormFactor;
+
+We fill out the ``XrSystemGetInfo`` structure as desired and pass it as a pointer along with the ``XrInstance`` and a pointer to the ``XrSystemId`` to ``xrGetSystem()``. If successful, we should now have a non-null ``XrSystemId``.
+
+.. code-block:: cpp
+	
+	void GetSystemID()
+	{
+		XrSystemGetInfo systemGI;
+		systemGI.type = XR_TYPE_SYSTEM_GET_INFO;
+		systemGI.next = nullptr;
+		systemGI.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
+		OPENXR_CHECK(xrGetSystem(instance, &systemGI, &systemID), "Failed to get SystemID.");
+
+		XrSystemProperties systemProperties;
+		systemProperties.type = XR_TYPE_SYSTEM_PROPERTIES;
+		systemProperties.next = nullptr;
+		OPENXR_CHECK(xrGetSystemProperties(instance, systemID, &systemProperties), "Failed to get SystemProperties.");
+	}
+
+We can now also get the system's properties. We partially fill out a ``XrSystemProperties`` structure and pass it as a pointer along with the ``XrInstance`` and the ``XrSystemId`` to ``xrGetSystemProperties()``. This function will fill out the rest of the ``XrSystemProperties`` structure; detailing the vendor's ID, system's name and the system's graphics and tracking properties.
+
+.. code-block:: cpp
+
+	typedef struct XrSystemGraphicsProperties {
+	    uint32_t    maxSwapchainImageHeight;
+	    uint32_t    maxSwapchainImageWidth;
+	    uint32_t    maxLayerCount;
+	} XrSystemGraphicsProperties;
+
+	typedef struct XrSystemTrackingProperties {
+	    XrBool32    orientationTracking;
+	    XrBool32    positionTracking;
+	} XrSystemTrackingProperties;
+
+	typedef struct XrSystemProperties {
+	    XrStructureType               type;
+	    void* XR_MAY_ALIAS            next;
+	    XrSystemId                    systemId;
+	    uint32_t                      vendorId;
+	    char                          systemName[XR_MAX_SYSTEM_NAME_SIZE];
+	    XrSystemGraphicsProperties    graphicsProperties;
+	    XrSystemTrackingProperties    trackingProperties;
+	} XrSystemProperties;
 
 Creating an XrSession
 ---------------------
-
 2.2. Creating an XrSession (xrCreateSession, OpenGL based for code brevity)
 
 Polling the Event Loop
 ----------------------
-
 2.3. 2.3. Polling the Event Loop (xrPollEvent and Session States)
