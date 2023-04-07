@@ -5491,7 +5491,8 @@ p
 {
     line-height: 24px;
     font-size: 16px;
-    margin: 0 0 24px
+    margin: 0 0 24px;
+	padding: 0 15px 0 15px;
 }
 
 h1
@@ -7520,32 +7521,30 @@ span[id*=MathJax-Span]
     display: inline;
 }
 
+.windows, .linux, .android, .windows-linux
+{
+	border-left-style:solid;
+	border-left-width:3px;
+}
+
 .windows
 {
 	border-left-color: #266db1;
-	border-left-style:solid;
-	border-left-width:3px;
 }
 
 .linux
 {
 	border-left-color: #782B90;
-	border-left-style:solid;
-	border-left-width:3px;
 }
 
 .android
 {
-	border-left-color: #27ae60;
-	border-left-style:solid;
-	border-left-width:3px;
+	border-left-color: #147438;
 }
 
 .windows-linux
 {
 	border-left-color: #266db1;
-	border-left-style:solid;
-	border-left-width:3px;
 	border-right-color: #782B90;
 	border-right-style:solid;
 	border-right-width:3px;
@@ -7586,5 +7585,5 @@ span[id*=MathJax-Span]
 
 #selectandroid
 {
-	background-color: #27ae60;
+	background-color: #147438;
 }

@@ -15,22 +15,17 @@ In spite of their unique features, the platforms had a great deal in common. For
 slightly different perspectives. Most had a way to track the user's head and hands or hand-controllers. Most had buttons,
 many had analogue controls like triggers or joysticks; many had haptic feedback.
 
-.. figure:: OpenXRBefore.png
+.. figure:: OpenXRBeforeAfter.png
 	:alt: XR Fragmentation 
 	:align: center
-	:width: 600
+	:width: 99%
 
-	XR fragmentation before OpenXR
+	OpenXR provides a common interface to reduce XR fragmentation.
 
 OpenXR aims to solve this problem by providing a common API to address XR hardware, in reading its inputs
-and outputting to its displays and haptic systems.
+and outputting to its displays and haptic systems. Just as OpenGL and Vulkan provide a common API to access graphics hardware, so OpenXR
+allows you to write code that works with multiple XR platforms, with minimal adaptation.
 
-.. figure:: OpenXRAfter.png
-	:alt: OpenXR resolves fragmentation by providing a common interface.
-	:align: center
-	:width: 600
-
-	OpenXR resolves fragmentation by providing a common interface
 
 ********
 Overview
@@ -81,8 +76,8 @@ We'll start with the main concepts you'll need to be familiar with around OpenXR
 Setting Up
 **********
 
-This section will help you set up a development environment.
-( Visual Studio & Android Studio & Monado for people without HMDs )
+This section will help you set up your development environment. This is the one place where your choice of platform really makes a difference!
+After that, things will be much more consistent.
 
 The exact procedure will depend on your target platform. So first, let's choose this:
 
@@ -96,22 +91,21 @@ Select which platform you want to develop for, and click the button to show the 
 
 	.. rubric:: Windows
 
-	You'll see instructions to build for Windows.
+	You'll see instructions to build on, and for Windows.
 
 .. container:: linux
     :name: linux-intro-1
 
 	.. rubric:: Linux
 
-	You'll see instructions to build for Linux.
+	You'll see instructions to build on, and for Linux.
 
 .. container:: android
     :name: android-intro-1
 
 	.. rubric:: Android
 
-	You'll see instructions to build for Android.
-
+	You'll see instructions to build for Android, using either a Linux or Windows PC.
 
 .. container:: windows
 
