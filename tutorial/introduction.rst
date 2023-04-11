@@ -259,27 +259,27 @@ Select which platform you want to develop for, and click the button to show the 
 
 	Now you're ready to start creating your first OpenXR project.
 
-Android VR
-~~~~~~~~~~~
-.. rubric:: Android Studio
-
-Android Studio is available to download here: `https://developer.android.com/studio <https://developer.android.com/studio>`_.
-
-.. rubric::  OpenXR SDK
-
-For Android, you can download the OpenXR loader libraries from here: `https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27 <https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27>`_.
-Using the .aar file and a program like 7-Zip, you can extract the header files and libraries. Under prefab/modules/openxr_loader/include/openxr, you'll find the headers, and under prefab/modules/openxr_loader/libs/, you'll find the libraries for arm64-v8a, armeabi-v7a, x86 and x86_64.
-
-.. image:: android-7Zip-include.png
-   :alt: 7-Zip internal file structure showing the OpenXR headers. prefab/modules/openxr_loader/include/openxr
-   :align: right
-
-.. image:: android-7Zip-libs.png
-   :alt: 7-Zip internal file structure showing the OpenXR libraries. prefab/modules/openxr_loader/libs
-   :align: right
-
-.. rubric:: Vulkan
-
-I recommend using Vulkan for Android VR for its modern, low-level API and extension support for multiview. Vulkan is included as part of the NDK provided Google and is supported on Android 7.0 (Nougat), API level 24 or higher. `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_. OpenGL ES is also option for Android, but we will only be exploring Vulkan.
-
-With the OpenXR loader and your Graphics API selected, Now you're ready to start creating your first OpenXR project.
+.. container:: android
+	
+	.. rubric:: Android Studio
+	
+	Android Studio is available to download here: `https://developer.android.com/studio <https://developer.android.com/studio>`_.
+	
+	.. rubric::  OpenXR SDK
+	
+	For Android, you can download the OpenXR loader libraries from here: `https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27 <https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27>`_.
+	Using the .aar file and a program like 7-Zip, you can extract the header files and libraries. Under prefab/modules/openxr_loader/include/openxr, you'll find the headers, and under prefab/modules/openxr_loader/libs/, you'll find the libraries for arm64-v8a, armeabi-v7a, x86 and x86_64.
+	
+	.. image:: android-7Zip-include.png
+	   :alt: 7-Zip internal file structure showing the OpenXR headers. prefab/modules/openxr_loader/include/openxr
+	   :align: right
+	
+	.. image:: android-7Zip-libs.png
+	   :alt: 7-Zip internal file structure showing the OpenXR libraries. prefab/modules/openxr_loader/libs
+	   :align: right
+	
+	.. rubric:: Vulkan
+	
+	I recommend using Vulkan for Android VR for its modern, low-level API and extension support for multiview. Vulkan is included as part of the NDK provided Google and is supported on Android 7.0 (Nougat), API level 24 or higher. `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_. OpenGL ES is also option for Android, but we will only be exploring Vulkan.
+	
+	With the OpenXR loader and your Graphics API selected, Now you're ready to start creating your first OpenXR project.
