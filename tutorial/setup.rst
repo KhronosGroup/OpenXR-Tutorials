@@ -8,6 +8,7 @@ Once again, in case you want to see instructions for a different platform, selec
    :file: platforms.html
 
 .. container:: windows
+
     :name: windows-intro-1
 
 	.. rubric:: Windows
@@ -15,6 +16,7 @@ Once again, in case you want to see instructions for a different platform, selec
 	Showing instructions for Windows.
 
 .. container:: linux
+
     :name: linux-intro-1
 
 	.. rubric:: Linux
@@ -22,13 +24,15 @@ Once again, in case you want to see instructions for a different platform, selec
 	Showing instructions for Linux.
 
 .. container:: android
-    :name: windows-intro-1
+
+    :name: android-intro-1
 
 	.. rubric:: Android
 
 	Showing instructions for Android.
 
 .. container:: windows
+
     :name: windows-id-1
 
 	.. rubric:: Windows
@@ -37,6 +41,7 @@ Once again, in case you want to see instructions for a different platform, selec
 	Create a directory where your code will go, we'll call this the *workspace* directory.
 
 .. container:: linux
+
     :name: linux-id-1
 
 	.. rubric:: Linux
@@ -56,6 +61,7 @@ Once again, in case you want to see instructions for a different platform, selec
 	Install the CMake extension for Visual Studio Code.
 	
 .. container:: windows-linux
+
     :name: windows-linux-id-1
 
 	.. rubric:: Windows and Linux
@@ -91,6 +97,7 @@ Once again, in case you want to see instructions for a different platform, selec
     :name: android-id-1
 
 	.. rubric:: Project Generation
+
 	Here, I'll show how to hand build an Android Studio project that runs a C++ Native Activity.
 	Open Android Studio, select New Project and choose an Empty Activity. Set the names and save location. The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0(Nougat). Complete set up.
 
@@ -99,6 +106,7 @@ Once again, in case you want to see instructions for a different platform, selec
 	   :align: right
 
 	.. rubric:: CMake
+
 	With the Android Studio project now set up, we need to modify some of the files and folders so as to set up the project to support the C++ Native Activity.
 	Under the ``app`` folder, you can delete the ``libs`` folder, and under the ``app/src`` you can also delete the ``androidTest`` and ``test`` folders. Finally under ``app/src/main``, delete the ``java`` folder and add a ``cpp`` folder. Under the ``app/src/main/res``, delete the ``values-night`` and ``xml`` folders. Under the ``values`` modify colors.xml and theme.xml as shown.
 
@@ -388,6 +396,7 @@ previously, the click "Generate". When the projects have been generated, open yo
 "Open Project", or by finding the file Tutorial.sln in your build folder and double-clicking it.
 
 .. rubric:: Linux
+
 You now have three files, laid out as follow:
 
 .. image:: linux-vscode-initial-files.png
