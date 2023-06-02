@@ -114,7 +114,7 @@ Select which platform you want to develop for, and click the button to show the 
 	If you'll be building an OpenXR project for PC-based devices, we'll assume you'll be using Microsoft Visual Studio.
 	The free Community edition of Visual Studio is available `here <https://visualstudio.microsoft.com/vs/community/>`_.
 
-	.. rubric:: Direct3D
+	.. rubric:: Direct3D 11 or 12
 
 	Next you'll want to choose which Graphics API you'll be using. Direct3D 11 and 12 are built into the Windows SDK's.
 	If you're using Direct3D, I recommend D3D12, because it supports indexed views: essentially, you can draw both eye views in one call. Vulkan also
@@ -122,12 +122,12 @@ Select which platform you want to develop for, and click the button to show the 
 
 	Whether D3D11 or 12, download and install the latest `Windows SDK <https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/>`_.
 
-	.. rubric:: Vulkan
+	.. rubric:: Vulkan Windows SDK
 
 	If you'll be using Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_. Take a note of the installation location,
 	as this will be needed later.
 
-	.. rubric:: OpenXR SDK
+	.. rubric:: OpenXR SDK for Windows
 
 	You'll need a copy of the OpenXR SDK, which is distributed as a Git repository. If you're familiar with Git, you can use your preferred command-line or GUI Git tool to get
 	the SDK from *git@github.com:KhronosGroup/OpenXR-SDK.git*.
@@ -150,7 +150,7 @@ Select which platform you want to develop for, and click the button to show the 
 	build the binaries", enter a subdirectory of that folder, called "build".
 
 	.. image:: cmake-openxrsdk-1.png
-	   :alt: an image of the CMake GUI, showing that the location of the OpenXR SDK has been entered as the source directory, and that a subdirectory of this, called "build" has been entered as the binary directory.
+	   :alt: CMake GUI: location of the OpenXR SDK has been entered as the source directory, and that a subdirectory "build" has been entered as the binary directory.
 	   :align: right
 
 	Click the button below marked "Configure". A popup will ask if CMake should create the "build" directory. Click "Yes".
@@ -169,16 +169,17 @@ Select which platform you want to develop for, and click the button to show the 
 
 
 	.. image:: cmake-vulkan-vars.png
-	   :alt: The Vulkan variables in CMake GUI should read:    Vulkan_GLSLANG_VALIDATOR_EXECUTABLE C:/VulkanSDK/1.3.239.0/Bin/glslangValidator.exe    Vulkan_GLSLC_EXECUTABLE C:/VulkanSDK/1.3.239.0/Bin/glslc.exe    Vulkan_INCLUDE_DIR C:/VulkanSDK/1.3.239.0/Include    Vulkan_LIBRARY    C:/VulkanSDK/1.3.239.0/Lib/vulkan-1.lib
+	   :alt: Vulkan variable highlighted in the CMake GUI.
 	   :align: right
 
+	The Vulkan variables in CMake GUI should read:    Vulkan_GLSLANG_VALIDATOR_EXECUTABLE C:/VulkanSDK/1.3.239.0/Bin/glslangValidator.exe    Vulkan_GLSLC_EXECUTABLE C:/VulkanSDK/1.3.239.0/Bin/glslc.exe    Vulkan_INCLUDE_DIR C:/VulkanSDK/1.3.239.0/Include    Vulkan_LIBRARY    C:/VulkanSDK/1.3.239.0/Lib/vulkan-1.lib
 	Obviously, the precise directory will depend on which version of the Vulkan SDK you installed.
 
 	Now, we're going to "Generate" the project files for the OpenXR SDK. Click "Generate", and CMake GUI should
 	now read "Generating done" in the output log at the bottom.
 
 	.. image:: cmake-openxrsdk-generate.png
-	   :alt: The Vulkan variables in CMake GUI should read:    Vulkan_GLSLANG_VALIDATOR_EXECUTABLE C:/VulkanSDK/1.3.239.0/Bin/glslangValidator.exe    Vulkan_GLSLC_EXECUTABLE C:/VulkanSDK/1.3.239.0/Bin/glslc.exe    Vulkan_INCLUDE_DIR C:/VulkanSDK/1.3.239.0/Include    Vulkan_LIBRARY    C:/VulkanSDK/1.3.239.0/Lib/vulkan-1.lib
+	   :alt: CMake GUI should read "Generating done" in the output log at the bottom.
 	   :align: right
 
 	Now we can build the SDK. Click "Open Project" in CMake GUI, or navigate to your "build" folder and double-click on
@@ -205,11 +206,11 @@ Select which platform you want to develop for, and click the button to show the 
 	
 .. container:: linux
 
-	.. rubric:: Visual Studio Code
+	.. rubric:: Visual Studio Code for Linux
 
-	...
+	To install Visual Studio Code, go to `code.visualstudio.com <https://code.visualstudio.com/>`_ and click the "Download for Linux" button.
 
-	.. rubric::  OpenXR SDK
+	.. rubric::  OpenXR SDK for Linux
 
 	You'll need a copy of the OpenXR SDK, which is distributed as a Git repository. If you're familiar with Git, you can use your preferred command-line or GUI Git tool to get
 	the SDK from *git@github.com:KhronosGroup/OpenXR-SDK.git*.
@@ -280,6 +281,10 @@ Select which platform you want to develop for, and click the button to show the 
 	
 	.. rubric:: Vulkan
 	
-	I recommend using Vulkan for Android VR for its modern, low-level API and extension support for multiview. Vulkan is included as part of the NDK provided Google and is supported on Android 7.0 (Nougat), API level 24 or higher. `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_. OpenGL ES is also option for Android, but we will only be exploring Vulkan.
 	
-	With the OpenXR loader and your Graphics API selected, Now you're ready to start creating your first OpenXR project.
+
+	Vulkan is recommended for Android VR for its modern, low-level API and extension support for multiview.
+	Vulkan is included as part of the NDK provided Google and is supported on Android 7.0 (Nougat), API level 24 or higher. `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_.
+	Alternatively, OpenGL ES is also an option for Android graphics.
+
+	With the OpenXR loader and your Graphics API selected, you're ready to start creating your first OpenXR project.
