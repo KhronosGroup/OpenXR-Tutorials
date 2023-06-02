@@ -1,0 +1,7 @@
+# Outline
+## Chapter 1.1 
+OpenXR is a royalty-free, open standard developed and maintained by the Khronos Group to enable the easy creation of XR applications across a variety of vendor-specific hardware and XR runtimes. XR, Virtual (V) and Augmented (A) reality, encompasses the two major formats of interactive and immersive graphics applications that incorporate visual input and/or actions from/within the physical world. The OpenXR 1.0 specification was released on July 29th 2019 and addressed the most pressing issue with the XR industry at the time: Fragmentation. 
+The major achievement of OpenXR was in the unification of the XR application interface; removing the need for developers to support multiple vendor-specific APIs, which at the time increased costs, complexity and the time to test applications and thus restricted the ability of developers to port applications to other XR systems. The unified API can target multiple XR runtimes and a multitude of XR systems and Graphics APIs.
+
+## Chapter 1.2
+OpenXR has multiple components that constitute to create the foundation of an XR experience. As a Khronos specification, OpenXR takes a lot of its lexicon and API style from Vulkan; providing a clear and precise common language for developers and hardware vendors to use. The following is a high level overview of the components of OpenXR, which are vital in setting up the groundwork for your XR application.
