@@ -24,20 +24,20 @@
 #define DEBUG_BREAK raise(SIGTRAP)
 #endif
 
-const char *GetXRErrorString(XrInstance xr_instance, XrResult res)
-{
-    static char str[XR_MAX_RESULT_STRING_SIZE];
-    xrResultToString(xr_instance, res, str);
-    return str;
-}
-
-// Helper Functions
+// XR_DOCS_TAG_BEGIN_Helper_Functions
 #define OPENXR_CHECK(x, y)                                    \
     {                                                         \
         if (!XR_SUCCEEDED(x)) {                               \
             std::cout << "ERROR: OPENXR: " << y << std::endl; \
         }                                                     \
     }
+
+const char *GetXRErrorString(XrInstance xr_instance, XrResult res)
+{
+    static char str[XR_MAX_RESULT_STRING_SIZE];
+    xrResultToString(xr_instance, res, str);
+    return str;
+}
 
 bool IsStringInVector(std::vector<const char *> list, const char *name)
 {
@@ -56,6 +56,7 @@ bool BitwiseCheck(const T &value, const T &checkValue)
 {
     return ((value & checkValue) == checkValue);
 }
+// XR_DOCS_TAG_END_Helper_Functions
 
 XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
 {
@@ -144,15 +145,18 @@ public:
 private:
     void CreateInstance()
     {
+        // XR_DOCS_TAG_BEGIN_XrApplicationInfo
         XrApplicationInfo AI;
         strcpy(AI.applicationName, "OpenXR Tutorial Chapter 2.1");
         AI.applicationVersion = 1;
         strcpy(AI.engineName, "OpenXR Engine");
         AI.engineVersion = 1;
         AI.apiVersion = XR_CURRENT_API_VERSION;
+        // XR_DOCS_TAG_END_XrApplicationInfo
 
         // Add additional instance layers/extensions
         {
+            // XR_DOCS_TAG_BEGIN_instanceExtensions
             instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -166,8 +170,10 @@ private:
 #elif defined(XR_USE_GRAPHICS_API_VULKAN)
             instanceExtensions.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
 #endif
+            // XR_DOCS_TAG_END_instanceExtensions
         }
 
+        // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
         uint32_t apiLayerCount = 0;
         std::vector<XrApiLayerProperties> apiLayerProperties;
         OPENXR_CHECK(xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr), "Failed to enumerate ApiLayerProperties.");
@@ -202,7 +208,9 @@ private:
                 }
             }
         }
+        // XR_DOCS_TAG_END_find_apiLayer_extension
 
+        // XR_DOCS_TAG_BEGIN_XrInstanceCreateInfo
         XrInstanceCreateInfo instanceCI;
         instanceCI.type = XR_TYPE_INSTANCE_CREATE_INFO;
         instanceCI.next = nullptr;
@@ -213,6 +221,7 @@ private:
         instanceCI.enabledExtensionCount = static_cast<uint32_t>(activeInstanceExtensions.size());
         instanceCI.enabledExtensionNames = activeInstanceExtensions.data();
         OPENXR_CHECK(xrCreateInstance(&instanceCI, &instance), "Failed to create Instance.");
+        // XR_DOCS_TAG_END_XrInstanceCreateInfo
     }
 
     void DestroyInstance()
