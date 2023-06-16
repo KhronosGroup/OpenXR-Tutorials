@@ -24,7 +24,7 @@
 #define DEBUG_BREAK raise(SIGTRAP)
 #endif
 
-// XR_DOCS_TAG_BEGIN_Helper_Functions
+// XR_DOCS_TAG_BEGIN_Helper_Functions0
 #define OPENXR_CHECK(x, y)                                    \
     {                                                         \
         if (!XR_SUCCEEDED(x)) {                               \
@@ -38,7 +38,9 @@ const char *GetXRErrorString(XrInstance xr_instance, XrResult res)
     xrResultToString(xr_instance, res, str);
     return str;
 }
+// XR_DOCS_TAG_END_Helper_Functions0
 
+// XR_DOCS_TAG_BEGIN_Helper_Functions1
 bool IsStringInVector(std::vector<const char *> list, const char *name)
 {
     bool found = false;
@@ -56,8 +58,9 @@ bool BitwiseCheck(const T &value, const T &checkValue)
 {
     return ((value & checkValue) == checkValue);
 }
-// XR_DOCS_TAG_END_Helper_Functions
+// XR_DOCS_TAG_END_Helper_Functions1
 
+// XR_DOCS_TAG_BEGIN_OpenXRMessageCallbackFunction
 XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
 {
     auto GetMessageSeverityString = [](XrDebugUtilsMessageSeverityFlagsEXT messageSeverity) -> std::string {
@@ -124,6 +127,7 @@ XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messa
     }
     return XrBool32();
 }
+// XR_DOCS_TAG_END_OpenXRMessageCallbackFunction
 
 class OpenXRTutorial_Ch2_1 {
 public:
@@ -242,6 +246,7 @@ private:
         std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
     }
 
+    // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger()
     {
         if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
@@ -266,6 +271,7 @@ private:
             OPENXR_CHECK(xrDestroyDebugUtilsMessengerEXT(debugUtilsMessenger), "Failed to destroy DebugUtilsMessenger.");
         }
     }
+    // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
     void GetSystemID()
     {
