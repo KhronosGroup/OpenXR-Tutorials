@@ -39,135 +39,23 @@ XR_EXT_debug_utils is an extension and as such its functions are not loaded by d
 
 At the end of the program, we should destroy the ``XrDebugUtilsMessengerEXT``. Again, the ``xrDestroyDebugUtilsMessengerEXT()`` function needs to be loaded through the use of ``xrGetInstanceProcAddr()`` (See example below). Once loaded, we can call it by passing the ``XrDebugUtilsMessengerEXT`` and thus destroying it.
 
-.. code-block:: cpp
+.. literalinclude:: ../Chapter2.1/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_Helper_Functions1
+	:end-before: XR_DOCS_TAG_END_Helper_Functions1
 
-	bool IsStringInVector(std::vector<const char*> list, const char* name)
-	{
-		bool found = false;
-		for (auto& item : list)
-		{
-			if (strcmp(name, item) == 0)
-			{
-				found = true;
-				break;
-			}
-		}
-		return found;
-	}
+.. literalinclude:: ../Chapter2.1/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
+	:end-before: XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
-	void CreateDebugMessenger()
-	{
-		if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME))
-		{
-			XrDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCI;
-			debugUtilsMessengerCI.type = XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-			debugUtilsMessengerCI.next = nullptr;
-			debugUtilsMessengerCI.messageSeverities = XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-			debugUtilsMessengerCI.messageTypes = XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT;
-			debugUtilsMessengerCI.userCallback = (PFN_xrDebugUtilsMessengerCallbackEXT)OpenXRMessageCallbackFunction;
-			debugUtilsMessengerCI.userData = nullptr;
+Below is an example of a OpenXR DebugUtilsMessenger Callback function. This function can be completely customised to your liking, but here we simply convert the message's severity and type to strings, and create a string to log to stdout. We also add a ``DEBUG_BREAK`` if the severity is an error. Just one thing to note: Applications should always return ``XR_FALSE`` from this function.
 
-			PFN_xrCreateDebugUtilsMessengerEXT xrCreateDebugUtilsMessengerEXT;
-			OPENXR_CHECK(xrGetInstanceProcAddr(instance, "xrCreateDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrCreateDebugUtilsMessengerEXT), "Failed to get InstanceProcAddr.");
-			OPENXR_CHECK(xrCreateDebugUtilsMessengerEXT(instance, &debugUtilsMessengerCI, &debugUtilsMessenger), "Failed to create DebugUtilsMessenger.");
-		}
-	}
-	void DestroyDebugMessenger()
-	{
-		if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME))
-		{
-			PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugUtilsMessengerEXT;
-			OPENXR_CHECK(xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugUtilsMessengerEXT), "Failed to get InstanceProcAddr.");
-			OPENXR_CHECK(xrDestroyDebugUtilsMessengerEXT(debugUtilsMessenger), "Failed to destroy DebugUtilsMessenger.");
-		}
-	}
+.. literalinclude:: ../Chapter2.1/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_OpenXRMessageCallbackFunction
+	:end-before: XR_DOCS_TAG_END_OpenXRMessageCallbackFunction
 
-Below is an example of a OpenXR DebugUtilsMessenger Callback function. This function can be completely customised to your liking, but here we simply convert the message's severity and type to strings, and create a string to log to stdout. We also add a DEBUG_BREAK if the severity is an error. Just one thing to note: Applications should always return XR_FALSE from this function.
-
-.. code-block:: cpp
-
-	template<typename T>
-	bool BitwiseCheck(const T& value, const T& checkValue)
-	{
-		return ((value & checkValue) == checkValue);
-	}
-
-	XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
-	{
-		auto GetMessageSeverityString = [](XrDebugUtilsMessageSeverityFlagsEXT messageSeverity)->std::string
-		{
-			bool separator = false;
-
-			std::string msg_flags;
-			if (BitwiseCheck(messageSeverity, XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT))
-			{
-				msg_flags += "VERBOSE";
-				separator = true;
-			}
-			if (BitwiseCheck(messageSeverity, XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT))
-			{
-				if (separator)
-					msg_flags += ",";
-				msg_flags += "INFO";
-				separator = true;
-			}
-			if (BitwiseCheck(messageSeverity, XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT))
-			{
-				if (separator)
-					msg_flags += ",";
-				msg_flags += "WARN";
-				separator = true;
-			}
-			if (BitwiseCheck(messageSeverity, XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT))
-			{
-				if (separator)
-					msg_flags += ",";
-				msg_flags += "ERROR";
-			}
-			return msg_flags;
-		};
-		auto GetMessageTypeString = [](XrDebugUtilsMessageTypeFlagsEXT messageType)->std::string
-		{
-			bool separator = false;
-
-			std::string msg_flags;
-			if (BitwiseCheck(messageType, XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT))
-			{
-				msg_flags += "GEN";
-				separator = true;
-			}
-			if (BitwiseCheck(messageType, XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT))
-			{
-				if (separator)
-					msg_flags += ",";
-				msg_flags += "SPEC";
-				separator = true;
-			}
-			if (BitwiseCheck(messageType, XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT))
-			{
-				if (separator)
-					msg_flags += ",";
-				msg_flags += "PERF";
-			}
-			return msg_flags;
-		};
-
-		std::string functionName = (pCallbackData->functionName) ? pCallbackData->functionName : "";
-		std::string messageSeverityStr = GetMessageSeverityString(messageSeverity);
-		std::string messageTypeStr = GetMessageTypeString(messageType);
-		std::string messageId = (pCallbackData->messageId) ? pCallbackData->messageId : "";
-		std::string message = (pCallbackData->message) ? pCallbackData->message : "";
-
-		std::stringstream errorMessage;
-		errorMessage << functionName << "(" << messageSeverityStr << " / " << messageTypeStr << "): msgNum: " << messageId << " - " << message;
-
-		std::cerr << errorMessage.str();
-		if (messageSeverity == XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-		{
-			DEBUG_BREAK;
-		}
-		return XrBool32();
-	}
 
 Extension Examples
 ------------------
