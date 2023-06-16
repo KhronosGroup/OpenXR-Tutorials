@@ -233,19 +233,6 @@ private:
         OPENXR_CHECK(xrDestroyInstance(instance), "Failed to destroy Instance.");
     }
 
-    void GetInstanceProperties()
-    {
-        XrInstanceProperties instanceProperties;
-        instanceProperties.type = XR_TYPE_INSTANCE_PROPERTIES;
-        instanceProperties.next = nullptr;
-        OPENXR_CHECK(xrGetInstanceProperties(instance, &instanceProperties), "Failed to get InstanceProperties.");
-
-        std::cout << "OpenXR Runtime: " << instanceProperties.runtimeName << " - ";
-        std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
-        std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
-        std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
-    }
-
     // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger()
     {
@@ -272,6 +259,19 @@ private:
         }
     }
     // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
+
+    void GetInstanceProperties()
+    {
+        XrInstanceProperties instanceProperties;
+        instanceProperties.type = XR_TYPE_INSTANCE_PROPERTIES;
+        instanceProperties.next = nullptr;
+        OPENXR_CHECK(xrGetInstanceProperties(instance, &instanceProperties), "Failed to get InstanceProperties.");
+
+        std::cout << "OpenXR Runtime: " << instanceProperties.runtimeName << " - ";
+        std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
+        std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
+        std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
+    }
 
     void GetSystemID()
     {
@@ -306,15 +306,19 @@ void OpenXRTutorial_Main()
 }
 
 #if defined(_WIN32)
+// XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv)
 {
     OpenXRTutorial_Main();
 }
+// XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
+// XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 #include "android_native_app_glue.h"
 
 void android_main(struct android_app *app)
 {
     OpenXRTutorial_Main();
 }
+// XR_DOCS_TAG_END_android_main___ANDROID__
 #endif
