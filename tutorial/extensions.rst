@@ -9,11 +9,8 @@ Using Extensions and Layers
 5.1. Using Extensions and Layers xrEnumerateInstanceExtensionProperties,
 xrEnumerateApiLayerProperties,
 
-Using the Debug Utils Messenger Extension
------------------------------------------
-
-5.2. Using xrCreateDebugUtilsMessengerEXT (might consider doing this earlier to
-show how to get debug messages)
+Using xrCreateDebugUtilsMessengerEXT
+------------------------------------
 
 XR_EXT_debug_utils is an instance extension for OpenXR, which allows the application to get more information on any errors or warnings etc. You can specify which message severities and types will checked. If a debug message raised, it is passed to the callback function, which can optionally use the user data pointer provided in the ``XrDebugUtilsMessengerCreateInfoEXT`` structure.
 
@@ -48,6 +45,7 @@ At the end of the program, we should destroy the ``XrDebugUtilsMessengerEXT``. A
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
 	:end-before: XR_DOCS_TAG_END_Create_DestroyDebugMessenger
+	:dedent: 4
 
 Below is an example of a OpenXR DebugUtilsMessenger Callback function. This function can be completely customised to your liking, but here we simply convert the message's severity and type to strings, and create a string to log to stdout. We also add a ``DEBUG_BREAK`` if the severity is an error. Just one thing to note: Applications should always return ``XR_FALSE`` from this function.
 
