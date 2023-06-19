@@ -94,8 +94,8 @@ mark
 
 .rst-content code, .rst-content tt, code, kbd, pre, samp
 {
-    font-family: monospace,serif;
-    _font-family: courier new,monospace;
+    font-family: menlo,monospace,serif;
+    _font-family: menlo,courier new,monospace;
     font-size: 1em
 }
 
@@ -5389,7 +5389,7 @@ body, html
 
 body
 {
-    font-family: Lato,proxima-nova,Helvetica Neue,Arial,sans-serif;
+    font-family: Poppins,Helvetica,Arial,sans-serif;
     font-weight: 400;
     color: #101010;
     min-height: 100%;
@@ -5485,13 +5485,13 @@ a.wy-text-neutral:hover
 {
     margin-top: 0;
     font-weight: 700;
-    font-family: Roboto Slab,ff-tisa-web-pro,Georgia,Arial,sans-serif
+    font-family: Poppins,Helvetica,Arial,sans-serif
 }
 
 p
 {
     line-height: 24px;
-    font-size: 16px;
+    font-size: 14px;
     margin: 0 0 24px;
 	padding: 0 15px 0 15px;
 }
@@ -5677,7 +5677,7 @@ hr
 
 html
 {
-    font-size: 16px
+    font-size: 14px
 }
 
 .wy-affix
@@ -5742,7 +5742,7 @@ html
 
 .wy-menu-vertical header, .wy-menu-vertical p.caption
 {
-    color: white;
+    color: black;
     height: 32px;
     line-height: 32px;
     padding: 0 1.618em;
@@ -5771,7 +5771,8 @@ html
 
 .wy-menu-vertical li.current
 {
-    background: #e3e3e310
+    background: purple;
+    color:white;
 }
 
 .wy-menu-vertical li.current a
@@ -5824,7 +5825,7 @@ html
 
 .wy-menu-vertical li.current > a:hover button.toctree-expand, .wy-menu-vertical li.on a:hover button.toctree-expand
 {
-    color: grey@import url('file:///C:\Simul\openxr-tutorial\openxr-tutorial-src\tutorial\tutorial_sphinx_theme_1\static\css\badge_only.css');
+    color: black;
 }
 
 .wy-menu-vertical li.current > a button.toctree-expand, .wy-menu-vertical li.on a button.toctree-expand
@@ -6005,7 +6006,7 @@ html
     display: block;
     position: relative;
     font-size: 90%;
-    color: #fdfdfd
+    color: black;
 }
 
 .wy-menu-vertical a:hover
@@ -6038,10 +6039,7 @@ html
     padding: .809em;
     margin-bottom: .809em;
     z-index: 200;
-    background-color: #782B90;
-	background-image: url("OpenXR-landing-page-banner.png");
     text-align: center;
-    color: #fcfcfc
 }
 
 .wy-side-nav-search input[type=text]
@@ -6065,7 +6063,6 @@ html
 
 .wy-side-nav-search .wy-dropdown > a, .wy-side-nav-search > a
 {
-    color: #fcfcfc;
     font-size: 100%;
     font-weight: 700;
     display: inline-block;
@@ -6104,7 +6101,6 @@ html
 }
 .search-label
 {
-    color:#fff;
 }
 
 .wy-nav .wy-menu-vertical header
@@ -6178,9 +6174,8 @@ html
     overflow-x: hidden;
     overflow-y: hidden;
     min-height: 100%;
-    color: white;
-	background-color: #363636;
-    background-image: url("shutterstock_532086997.jpg");
+    color: black;
+	background-color: #f6f7fa;
     z-index: 200
 }
 
@@ -6440,7 +6435,7 @@ footer p
     width: 300px;
     color: #fcfcfc;
     background: #1f1d1d;
-    font-family: Lato,proxima-nova,Helvetica Neue,Arial,sans-serif;
+    font-family: Poppins,Helvetica,Arial,sans-serif;
     z-index: 400
 }
 
@@ -7459,59 +7454,6 @@ span[id*=MathJax-Span]
     text-align: center
 }
 
-@font-face
-{
-    font-family: Lato;
-    src: url(fonts/lato-normal.woff2?bd03a2cc277bbbc338d464e679fe9942) format("woff2"),url(fonts/lato-normal.woff?27bd77b9162d388cb8d4c4217c7c5e2a) format("woff");
-    font-weight: 400;
-    font-style: normal;
-    font-display: block
-}
-
-@font-face
-{
-    font-family: Lato;
-    src: url(fonts/lato-bold.woff2?cccb897485813c7c256901dbca54ecf2) format("woff2"),url(fonts/lato-bold.woff?d878b6c29b10beca227e9eef4246111b) format("woff");
-    font-weight: 700;
-    font-style: normal;
-    font-display: block
-}
-
-@font-face
-{
-    font-family: Lato;
-    src: url(fonts/lato-bold-italic.woff2?0b6bb6725576b072c5d0b02ecdd1900d) format("woff2"),url(fonts/lato-bold-italic.woff?9c7e4e9eb485b4a121c760e61bc3707c) format("woff");
-    font-weight: 700;
-    font-style: italic;
-    font-display: block
-}
-
-@font-face
-{
-    font-family: Lato;
-    src: url(fonts/lato-normal-italic.woff2?4eb103b4d12be57cb1d040ed5e162e9d) format("woff2"),url(fonts/lato-normal-italic.woff?f28f2d6482446544ef1ea1ccc6dd5892) format("woff");
-    font-weight: 400;
-    font-style: italic;
-    font-display: block
-}
-
-@font-face
-{
-    font-family: Roboto Slab;
-    font-style: normal;
-    font-weight: 400;
-    src: url(fonts/Roboto-Slab-Regular.woff2?7abf5b8d04d26a2cafea937019bca958) format("woff2"),url(fonts/Roboto-Slab-Regular.woff?c1be9284088d487c5e3ff0a10a92e58c) format("woff");
-    font-display: block
-}
-
-@font-face
-{
-    font-family: Roboto Slab;
-    font-style: normal;
-    font-weight: 700;
-    src: url(fonts/Roboto-Slab-Bold.woff2?9984f4a9bda09be08e83f2506954adbe) format("woff2"),url(fonts/Roboto-Slab-Bold.woff?bed5564a116b05148e3b3bea6fb1162a) format("woff");
-    font-display: block
-}
 #selectplatform{
 	margin: 10px;
   display: flex;
