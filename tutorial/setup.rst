@@ -90,7 +90,7 @@ Select your platform, as the instructions are different depending on your select
 
 	.. rubric:: Android
 
-	Here, I'll show how to hand build an Android Studio project that runs a C++ Native Activity.
+	Here, We'll show how to hand build an Android Studio project that runs a C++ Native Activity.
 	Open Android Studio, select New Project and choose an Empty Activity. Set the names and save location. The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0(Nougat). Complete set up.
 
 	.. image:: android-studio-newproject.png
@@ -130,6 +130,8 @@ Select your platform, as the instructions are different depending on your select
 
 	We now need to modify our ``AndroidManifest.xml`` file to tell Android to run a Native Activity. We set ``android:name`` to "android.app.NativeActivity" and update ``android:configChanges`` to "orientation|keyboardHidden" to not close the activity on those changes. Next under the meta-data section, we set these values: ``android:name`` to "android.app.lib_name" and ``android:value`` to "openxrtutorialch2", where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
 
+	For Meta devices, we need to set this ``<category android:name="com.oculus.intent.category.VR" />`` in the ``AndroidManifest.xml`` file too.
+	
 	.. rubric:: Gradle
 
 	.. literalinclude:: ../Chapter2.1_Android/app/build.gradle
@@ -165,7 +167,8 @@ This is boilerplate for the various platforms. Next, we'll add the header files 
 	:emphasize-lines: 9
 
 Here, we include the main OpenXR header file ``openxr.h`` and the OpenXR platform header file ``openxr_platform.h``.
-For the OpenXR platform header file, note the preceding XR_USE\_ macros. When enabled, we gain access to functionality that interact with the chosen graphics API. We will enable one of these only later in the tutorial.
+For the OpenXR platform header file, note the preceding XR_USE\_ macros. When enabled, we gain access to functionality that interact with the chosen graphics API and/or platform. We will enable one of these graphics ones later in the tutorial. 
+For Android, we include our ``"android_native_app_glue.h"`` header file as well as defining the ``XR_USE_PLATFORM_ANDROID`` macro, which we will need to initialise the load the OpenXR loader.
 
 Next, we'll add the DEBUG_BREAK macro:
 
@@ -233,6 +236,8 @@ Then, we create the actual platform specific main function (our entry point to t
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 		:end-before: XR_DOCS_TAG_END_android_main___ANDROID__
+
+	Before we can use OpenXR for Android, we need to initialise the loader based the application's context and virtual machine. We retrieve the function pointer to ``xrInitializeLoaderKHR``, and with the ``XrLoaderInitInfoAndroidKHR`` filled out call that function to initialise OpenXR for our use.
 
 .. container:: windows
 	:name: windows-id-1
@@ -320,7 +325,18 @@ Then, we create the actual platform specific main function (our entry point to t
 
 .. container:: android
 	:name: android-id-1
-	Add Build and Run steps!
+
+	With all the source and build systems set up, we can now build the Android project. In upper right of Android Studio, you should find the toolbar below. Click the green hammer icon to build the project, if all is successful you should see "BUILD SUCCESSFUL in [...]s" in the Build Output window.
+
+	Next to the green hammer icon is the Run/Debug configuration dropdown menu. If that isn't populated, create a configuration called app.
+
+	Turn on and connect your Android device. Set up any requirments for USB debugging and adb. You device should appear in the dropdown. Here, I am using a Oculus Quest 2.
+
+	.. image:: android-studio-build-run-toolbar.png
+		:alt: Build/Run Toolbar
+		:align: center
+	
+	To debug/run the application click the green bug icon.
 
 Now that we have a basic application up and running with the OpenXR header files and libraries, we can start to set up the core aspects of OpenXR. As a modern Khronos API, the OpenXR is heavily influcencd by the Vulkan API. So those who are familiar with the style of the Vulkan API will find OpenXR easy to follow.
 

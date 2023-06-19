@@ -14,6 +14,12 @@
 // #define XR_USE_GRAPHICS_API_OPENGL
 // #define XR_USE_GRAPHICS_API_OPENGL_ES
 // #define XR_USE_GRAPHICS_API_VULKAN
+
+#if defined(__ANDROID__)
+#include "android_native_app_glue.h"
+#define XR_USE_PLATFORM_ANDROID
+#endif
+
 #include "openxr/openxr_platform.h"
 
 // Debugbreak
@@ -314,10 +320,20 @@ int main(int argc, char **argv)
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
 // XR_DOCS_TAG_BEGIN_android_main___ANDROID__
-#include "android_native_app_glue.h"
-
 void android_main(struct android_app *app)
 {
+    PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
+    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
+    if (!xrInitializeLoaderKHR)
+        return;
+
+    XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid;
+    loaderInitializeInfoAndroid.type = XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR;
+    loaderInitializeInfoAndroid.next = NULL;
+    loaderInitializeInfoAndroid.applicationVM = app->activity->vm;
+    loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
+    OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
+
     OpenXRTutorial_Main();
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__
