@@ -2,7 +2,7 @@
 Setup
 #####
 
-Once again, in case you want to see instructions for a different platform, select it here:
+Select your platform, as the instructions are different depending on your selection.
 
 .. raw:: html
 	:file: platforms.html
@@ -33,17 +33,17 @@ Once again, in case you want to see instructions for a different platform, selec
 
 	.. rubric:: Windows
 
-	For your Windows OpenXR project, we'll use CMake to create some project files for Visual Studio.
-	Create a directory where your code will go, we'll call this the *workspace* directory.
+	For the Windows OpenXR project, we'll use CMake to create some project files for Visual Studio.
+	First, create a directory where the code will go, we'll call this the *workspace* directory.
 
 .. container:: linux
 	:name: linux-id-1
 
 	.. rubric:: Linux
 
-	For your Linux OpenXR project, we'll use CMake alongside Visual Studio Code to build your project.
-	Create a directory where your code will go, we'll call this the *workspace* directory. Open VS Code and from
-	the File menu, select "Open Folder..."
+	You are free to use any code editor and/or compiler; this tutorial will use Visual Studio Code.
+	For the Linux OpenXR project, we'll use CMake alongside Visual Studio Code to build the project.
+	First, Create a directory where the code will go, we'll call this the *workspace* directory. Open Visual Studio Code and from the File menu, select "Open Folder..."
 
 	.. figure:: linux-vscode-open-folder.png
 		:alt: The File menu of Visual Studio Code is shown, with the command "Open Folder..." selected.
@@ -53,16 +53,14 @@ Once again, in case you want to see instructions for a different platform, selec
 	The File menu of Visual Studio Code, with the command "Open Folder..." selected
 
 	Select your *workspace* folder, which is now empty.
-	Install the CMake extension for Visual Studio Code.
+	If you haven't previously done so, install the CMake extension for Visual Studio Code.
 	
 .. container:: windows-linux
 	:name: windows-linux-id-1
 
 	.. rubric:: Windows and Linux
 
-	Create a text file in the *workspace* folder called CMakeLists.txt.
-
-	In it, put the following:
+	Now, create a text file in the *workspace* folder called ``CMakeLists.txt`` and in it, put the following code:
 
 	.. highlight:: cmake
 	.. code-block:: cmake
@@ -73,8 +71,8 @@ Once again, in case you want to see instructions for a different platform, selec
 		set(OPENXR_DIR "" CACHE PATH "Location of OpenXR-SDK repository.")
 		add_subdirectory(Chapter_2)
 
-	Now let's create a folder called Chapter_2, and in it put another CMakeLists.txt file,
-	this one containing:
+	Now let's create a folder called Chapter_2, and in it create another ``CMakeLists.txt`` file.
+	This one contains the following code:
 
 	.. code-block:: cmake
 
@@ -84,8 +82,8 @@ Once again, in case you want to see instructions for a different platform, selec
 		target_link_directories( Chapter_2 PUBLIC ${OPENXR_DIR}/build/src/loader/Debug ${OPENXR_DIR}/build/src/loader/Release )
 		target_link_libraries( Chapter_2 openxr_loader$<$<CONFIG:Debug>:d> )
 
-	That's all we need for CMake. Now we'll create our source file. Create a new text file called "main.cpp"
-	and put it in the Chapter2 directory. In this file, place the following code:
+	That's all we need for CMake, we need for this project. 
+	Now, we'll create our source file. Create a new text file called ``main.cpp`` in the Chapter2 directory.
 
 .. container:: android
 	:name: android-id-1
@@ -102,7 +100,7 @@ Once again, in case you want to see instructions for a different platform, selec
 	.. rubric:: CMake
 
 	With the Android Studio project now set up, we need to modify some of the files and folders so as to set up the project to support the C++ Native Activity.
-	Under the ``app`` folder, you can delete the ``libs`` folder, and under the ``app/src`` you can also delete the ``androidTest`` and ``test`` folders. Finally under ``app/src/main``, delete the ``java`` folder and add a ``cpp`` folder. Under the ``app/src/main/res``, delete the ``values-night`` and ``xml`` folders. Under the ``values`` modify colors.xml and styles.xml as shown.
+	Under the ``app`` folder, you can delete the ``libs`` folder, and under the ``app/src`` you can also delete the ``androidTest`` and ``test`` folders. Finally under ``app/src/main``, delete the ``java`` folder and add a ``cpp`` folder. Under the ``app/src/main/res``, delete the ``values-night`` and ``xml`` folders. Under the ``values`` modify ``colors.xml`` and `styles.xml` as shown.
 
 	.. rubric:: colors.xml
 
@@ -114,7 +112,7 @@ Once again, in case you want to see instructions for a different platform, selec
 	.. literalinclude:: ../Chapter2.1_Android/app/src/main/res/values/styles.xml
 		:language: xml
 
-	Within the ``app/src/main/cpp`` folder, create a CMakeLists.txt. We will use this file to specific how our Native C++ code will be built. This CMakeList will be invoked by Android Studio's Gradle build system. 
+	Within the ``app/src/main/cpp`` folder, create a ``CMakeLists.txt``. We will use this file to specific how our Native C++ code will be built. This CMakeList will be invoked by Android Studio's Gradle build system. 
 
 	.. rubric:: CMakeLists.txt
 
@@ -130,31 +128,34 @@ Once again, in case you want to see instructions for a different platform, selec
 	.. literalinclude:: ../Chapter2.1_Android/app/src/main/AndroidManifest.xml
 		:language: xml
 
-	We now need to modify our AndroidManifest.xml file to tell Android to run a Native Activity. We set ``android:name`` to "android.app.NativeActivity" and update ``android:configChanges`` to "orientation|keyboardHidden" to not close the activity on those changes. Next under the meta-data section, we set these values: ``android:name`` to "android.app.lib_name" and ``android:value`` to "openxrtutorialch2", where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
+	We now need to modify our ``AndroidManifest.xml`` file to tell Android to run a Native Activity. We set ``android:name`` to "android.app.NativeActivity" and update ``android:configChanges`` to "orientation|keyboardHidden" to not close the activity on those changes. Next under the meta-data section, we set these values: ``android:name`` to "android.app.lib_name" and ``android:value`` to "openxrtutorialch2", where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
 
 	.. rubric:: Gradle
 
 	.. literalinclude:: ../Chapter2.1_Android/app/build.gradle
 		:language: groovy
 	
-	Now, we can config our build.gradle file in the ``app`` folder. First remove any references to Java, Kotlin and to testing. Next add in the ``externalNativeBuild`` section specifying CMake, its version and the location of the CMakeLists.txt that we created earlier. Also specify under the ``ndk`` section the ``abiFilters``. We will just be using arm64-v8a in this tutorial. ``ndkVersion`` should also be specified.
+	Now, we can config our ``build.gradle`` file in the ``app`` folder. First remove any references to Java, Kotlin and to testing. Next add in the ``externalNativeBuild`` section specifying CMake, its version and the location of the CMakeLists.txt that we created earlier. Also specify under the ``ndk`` section the ``abiFilters``. We will just be using arm64-v8a in this tutorial. ``ndkVersion`` should also be specified.
 
 	.. literalinclude:: ../Chapter2.1_Android/build.gradle
 		:language: groovy
 
-	Now, we can config our build.gradle file in the root folder of the project. This is a complete replacement the default one provided by Android Studio. This file stipulates the repositories and gradle version to be used.
-	The settings.gradle can be reduce to just: ``include ':app'``, and in the gradle.properties we need to remove ``kotlin.code.style=official`` and ``android.nonTransitiveRClass=true``.
+	Now, we can config our ``build.gradle`` file in the root folder of the project. This is a complete replacement the default one provided by Android Studio. This file stipulates the repositories and gradle version to be used.
+	The settings.gradle can be reduce to just: ``include ':app'``, and in the ``gradle.properties`` we need to remove ``kotlin.code.style=official`` and ``android.nonTransitiveRClass=true``.
 
 	With that completed, we should now be able to sync the Gradle file and build the project.
 
-	Now we’ll create our source file. Create a new text file called “main.cpp” and put it in the Chapter2 directory. This file will be referenced in the CMakeLists file we created, so ensure the path is correct. In this file, place the following code:
+	Now, we'll create our source file. Create a new text file called ``main.cpp`` in the Chapter2 directory.
+	This file will be referenced in the CMakeLists file we created, so ensure the path is correct.
+
+Now, that we have set up the project and source file. Open the source file and add the following code:
 
 .. literalinclude:: ../Chapter2.1/main.cpp
 	:language: cpp
 	:start-at: // C Headers
 	:end-at: #include <vector>
 
-This is boilerplate for the various platforms. Now add the following:
+This is boilerplate for the various platforms. Next, we'll add the header files related to OpenXR:
 
 .. literalinclude:: ../Chapter2.1/main.cpp
 	:language: cpp
@@ -163,17 +164,17 @@ This is boilerplate for the various platforms. Now add the following:
 	:name: xr-headers
 	:emphasize-lines: 9
 
-Here we include the main OpenXR header, openxr.h; and the platform header openxr_platform.h.
-What the latter does, depends on which of the preceding XR_USE\_ macros we enable. We will enable
-one of these only, depending on your choice of graphics API.
-Now add the following:
+Here, we include the main OpenXR header file ``openxr.h`` and the OpenXR platform header file ``openxr_platform.h``.
+For the OpenXR platform header file, note the preceding XR_USE\_ macros. When enabled, we gain access to functionality that interact with the chosen graphics API. We will enable one of these only later in the tutorial.
+
+Next, we'll add the DEBUG_BREAK macro:
 
 .. literalinclude:: ../Chapter2.1/main.cpp
 	:language: cpp
 	:start-at: // Debugbreak
 	:end-at: #endif
 
-This defines the macro ``DEBUG_BREAK``, according to what platform we're building for. This macro will
+This defines the macro ``DEBUG_BREAK``, according to which platform we're building for. This macro will
 stop execution of your program when an error occurs, so you can see where it happened and fix it.
 We use this macro in the ``OpenXRMessageCallbackFunction()`` function, which we will discuss in :doc:`Chapter 5.2. <extensions>` 
 
@@ -189,7 +190,7 @@ We use this macro in the ``OpenXRMessageCallbackFunction()`` function, which we 
 
 This defines the macro ``OPENXR_CHECK``. Many OpenXR functions return a ``XrResult``. This macro will check if the call has failed and logs a message to stdout. This can be modified to suit your needs. There are three additional functions ``GetXRErrorString()``, ``IsStringInVector()`` and ``BitwiseCheck()``, which are just simple wrappers over commonly used code.
 
-Now we will define the main class of your application. It's just a stub for now, with an empty ``Run()`` method:
+Now we will define the main class of the application. It's just a stub for now, with an empty ``Run()`` method:
 
 .. code-block:: cpp
 
@@ -203,14 +204,15 @@ Now we will define the main class of your application. It's just a stub for now,
 		}
 	};
 
-Finally, let's add the main function for your app. It looks slightly different, depending on your
-choice of platform, but in each case, we create an instance of our ``OpenXRTutorial_Ch2_1`` class, and call the ``Run()``
-method:
+Finally, let's add the main function for the application. It will look slightly different, depending on your
+chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial_Ch2_1`` class, and call the ``Run()``method.
 
 .. literalinclude:: ../Chapter2.1/main.cpp
 	:language: cpp
 	:start-at: void OpenXRTutorial_Main()
 	:end-at: }
+
+Then, we create the actual platform specific main function (our entry point to the application), which will call ``OpenXRTutorial_Main()``:
 
 .. container:: windows-linux
 	:name: windows-linux-id-1
@@ -237,18 +239,18 @@ method:
 
 	.. rubric:: Windows
 
-	Now launch Cmake GUI, and point the "Where is the source code" box to your root solution (workspace) directory,
-	where your original CMakeLists.txt is located. Point the "Where to build the binaries" box to a subdirectory called "build",
+	Now launch CMake GUI, and point the "Where is the source code" box to the root of your solution *workspace* directory,
+	where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``,
 	click Configure, "Yes" to create the build folder, and "OK" to accept the default Generator.
 
 	.. image:: cmake-tutorial2-1.png
 		:alt: Select 
 		:align: right
 
-	Now we must tell the tutorial project where to find the OpenXR-SDK, which we built in Section 1.
-	Click on the variable OPENXR_DIR and type in or browse to the location of the OpenXR-SDK repository you downloaded
+	Now, we must tell the tutorial project where to find the OpenXR-SDK, which we built in Section 1.
+	Click on the variable ``OPENXR_DIR`` and type in or browse to the location of the OpenXR-SDK repository you downloaded
 	previously, the click "Generate". When the projects have been generated, open your new project, by clicking
-	"Open Project", or by finding the file Tutorial.sln in your build folder and double-clicking it.
+	"Open Project", or by finding the file Tutorial.sln in your build folder and open it.
 
 .. container:: linux
 	:name: linux-id-1
@@ -261,8 +263,7 @@ method:
 		:alt: Select 
 		:align: right
 
-	Having installed the CMake extension for VS Code, you can now right-click on the main CMakeLists.txt file (the one in the root *workspace* 	folder)
-	and select "Configure All Projects":
+	Having installed the CMake extension for Visual Studio Code, you can now right-click on the main ``CMakeLists.txt`` file (the one in the root *workspace* folder) and select "Configure All Projects":
 
 	.. image:: linux-vscode-cmake-configure.png
 		:alt: Select 
@@ -271,7 +272,6 @@ method:
 	Now the CMake panel will be available by clicking its icon on the leftmost panel. Hover your mouse over the "Project Outline"
 	and click the three dots at the right. An option to "Edit CMake Cache" will appear, click this and you'll see the Cache Editor
 	page.
-
 
 	.. image:: linux-vscode-cmake-more-actions.png
 		:alt: Select 
@@ -282,10 +282,10 @@ method:
 		:alt: Select 
 		:align: right
 
-	NOTE: It's possible to use CMake GUI in Linux, but using VS Code's integrated tools works better with VS Code.
+	NOTE: It's possible to use CMake GUI in Linux, but using Visual Studio Code's integrated tools works better with Visual Studio Code.
 
-	In the CMake Cache editor, find OPENXR_DIR and enter the directory where you downloaded OpenXR-SDK in Chapter 1.
-	Now Configure and Build All.
+	In the CMake Cache editor, find ``OPENXR_DIR`` and enter the directory where you downloaded OpenXR-SDK in Chapter 1.
+	We can now select "Configure and Build All" from the right-click menu of the main ``CMakeLists.txt`` file.
 
 .. container:: windows
 	:name: windows-id-1
@@ -299,7 +299,7 @@ method:
 
 	.. rubric:: Linux
 
-	To enable debugging, select the Run/Debug panel in VS Code. You will now need to create a debugging configuration.
+	To enable debugging, select the Run/Debug panel in Visual Studio Code. You will now need to create a debugging configuration.
 	Click the "Gear" icon to edit the file launch.json, and enter the following:
 
 	.. code-block:: json
@@ -318,7 +318,11 @@ method:
 			]
 		}
 
-Now that we have a basic application up and running with the OpenXR header files and libraries, we can start to set the core aspects of OpenXR. As a modern Khronos API, the OpenXR is heavily influcencd by the Vulkan API. So those who are familiar with the style of the Vulkan API will find OpenXR easy to follow.
+.. container:: android
+	:name: android-id-1
+	Add Build and Run steps!
+
+Now that we have a basic application up and running with the OpenXR header files and libraries, we can start to set up the core aspects of OpenXR. As a modern Khronos API, the OpenXR is heavily influcencd by the Vulkan API. So those who are familiar with the style of the Vulkan API will find OpenXR easy to follow.
 
 Creating an XrInstance / xrGetSystem
 ------------------------------------
