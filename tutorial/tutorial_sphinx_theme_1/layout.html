@@ -43,9 +43,9 @@
 	favicon_url is the only context var necessary since Sphinx 4.
 	In Sphinx
 	<4, we use favicon but need to prepend path info.
-	#}
-	{%- set _favicon_url=favicon_url | default(pathto('_static /' + (favicon or "" ), 1)) %}
-	{%- if favicon_url or favicon %}
+		#}
+		{%- set _favicon_url=favicon_url | default(pathto('_static /' + (favicon or "" ), 1)) %}
+		{%- if favicon_url or favicon %}
 	<link rel="shortcut icon" href="{{ _favicon_url }}">
 	{%- endif %}
 
@@ -155,6 +155,10 @@
 	}
 	</script>
 	<script defer src="{{ pathto('_static/js/updatePlatform.js', 1) }}"></script>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/menlo');
+	</style>
 </head>
 
 <body class="wy-body-for-nav" onload="updatePlatform();">

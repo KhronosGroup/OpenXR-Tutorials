@@ -50,10 +50,10 @@ templates_path = ['_templates']
 exclude_patterns = ["**/README.md","**/Readme.md","ReadMe.md","**/*.md","External/**/*.*"]
 
 html_static_path = ['_static']
-html_logo = "images/OpenXR_500px_Feb17.png"
+html_logo = "images/OpenXR_170px_Feb17.png"
 html_theme_options = {
     'logo_only': False,
-    'display_version': False,
+    'display_version': False
 }
 
 html_favicon = 'favicon.ico'

@@ -119,7 +119,7 @@ Once again, in case you want to see instructions for a different platform, selec
 	.. rubric:: CMakeLists.txt
 
 	.. literalinclude:: ../Chapter2.1_Android/app/src/main/cpp/CMakeLists.txt
-		:code-language: cmake 
+		:language: cmake 
 		
 	First, we set the minimum required cmake version, here we are using 3.22.1 and the project's name. Next, we need to add a static library called native_app_glue. The native_app_glue library is compiled from a single source file android_native_app_glue.c. This interfaces between the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``void android_main(struct android_app*)`` entry point. We also include that directory as we need access to the android_native_app_glue.h header file. Next, we need to set the ``CMAKE_SHARED_LINKER_FLAGS`` so that ``ANativeActivity_onCreate()`` is exported for the Java Virtual Machine to call. Next, we add our shared library openxrtutorialch2 that houses our code. Here, I have a relative path to our single C++ file.
 
