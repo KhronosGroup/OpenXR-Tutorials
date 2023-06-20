@@ -329,7 +329,7 @@ void android_main(struct android_app *app)
 
     XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid;
     loaderInitializeInfoAndroid.type = XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR;
-    loaderInitializeInfoAndroid.next = NULL;
+    loaderInitializeInfoAndroid.next = nullptr;
     loaderInitializeInfoAndroid.applicationVM = app->activity->vm;
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
     OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
