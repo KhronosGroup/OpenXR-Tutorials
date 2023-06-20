@@ -1,10 +1,11 @@
 Language: Cpp
-BasedOnStyle: LLVM
+BasedOnStyle:  Google
 UseTab: Never
-IndentWidth: 4
-TabWidth: 4
+IndentWidth: 2
+TabWidth: 2
 BreakBeforeBraces: Stroustrup
 AllowShortIfStatementsOnASingleLine: false
+Standard: Cpp11
 IndentCaseLabels: false
 ColumnLimit: 0
 AccessModifierOffset: -4
