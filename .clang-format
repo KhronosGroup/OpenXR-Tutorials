@@ -1,9 +1,8 @@
 Language: Cpp
 BasedOnStyle:  Google
 UseTab: Never
-IndentWidth: 2
-TabWidth: 2
-BreakBeforeBraces: Stroustrup
+IndentWidth: 4
+TabWidth: 4
 AllowShortIfStatementsOnASingleLine: false
 Standard: Cpp11
 IndentCaseLabels: false

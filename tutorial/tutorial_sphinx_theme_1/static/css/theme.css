@@ -4036,6 +4036,7 @@ big, small
 .fa:before, .icon:before, .rst-content .admonition-title:before, .rst-content .code-block-caption .headerlink:before, .rst-content .eqno .headerlink:before, .rst-content code.download span:first-child:before, .rst-content dl dt .headerlink:before, .rst-content h1 .headerlink:before, .rst-content h2 .headerlink:before, .rst-content h3 .headerlink:before, .rst-content h4 .headerlink:before, .rst-content h5 .headerlink:before, .rst-content h6 .headerlink:before, .rst-content p.caption .headerlink:before, .rst-content p .headerlink:before, .rst-content table > caption .headerlink:before, .rst-content tt.download span:first-child:before, .wy-dropdown .caret:before, .wy-inline-validate.wy-inline-validate-danger .wy-input-context:before, .wy-inline-validate.wy-inline-validate-info .wy-input-context:before, .wy-inline-validate.wy-inline-validate-success .wy-input-context:before, .wy-inline-validate.wy-inline-validate-warning .wy-input-context:before, .wy-menu-vertical li.current > a button.toctree-expand:before, .wy-menu-vertical li.on a button.toctree-expand:before, .wy-menu-vertical li button.toctree-expand:before
 {
     font-family: FontAwesome;
+    color: white;
     display: inline-block;
     font-style: normal;
     font-weight: 400;
@@ -5771,7 +5772,7 @@ html
 
 .wy-menu-vertical li.current
 {
-    background: purple;
+    background: #782B90;
     color:white;
 }
 
@@ -5963,7 +5964,6 @@ html
 
 .wy-menu-vertical li.toctree-l2.current > a, .wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a
 {
-    background: #c9c9c9
 }
 
 .wy-menu-vertical li.toctree-l2 button.toctree-expand
@@ -5973,7 +5973,6 @@ html
 
 .wy-menu-vertical li.toctree-l3.current > a, .wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a
 {
-    background: #bdbdbd
 }
 
 .wy-menu-vertical li.toctree-l3 button.toctree-expand
@@ -6176,7 +6175,8 @@ html
     min-height: 100%;
     color: black;
 	background-color: #f6f7fa;
-    z-index: 200
+    z-index: 200;
+    border-right: 1px solid silver;
 }
 
 .wy-side-scroll
