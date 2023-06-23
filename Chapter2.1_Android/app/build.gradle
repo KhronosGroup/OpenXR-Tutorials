@@ -35,6 +35,11 @@ android {
             path 'src/main/cpp/CMakeLists.txt'
         }
     }
+
+    // enable prefab support for the OpenXR AAR
+    buildFeatures {
+        prefab true
+    }
 }
 
 dependencies {

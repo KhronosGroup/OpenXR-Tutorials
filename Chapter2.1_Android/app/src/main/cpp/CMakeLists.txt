@@ -11,10 +11,8 @@ target_include_directories(native_app_glue PUBLIC ${ANDROID_NDK}/sources/android
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
 add_library(openxrtutorialch2_1 SHARED ../../../../../Chapter2.1/main.cpp)
 
-# import openxr_loader
-add_library(openxr_loader SHARED IMPORTED)
-set_target_properties(openxr_loader PROPERTIES IMPORTED_LOCATION "../../../../../../thirdparty/openxr-sdk/android/libs/android.arm64-v8a/libopenxr_loader.so")
-target_include_directories(openxrtutorialch2_1 PUBLIC ../../../../../thirdparty/openxr-sdk/include)
+#find openxr_loader
+find_package(OpenXR REQUIRED CONFIG)
 
 # vulkan - Found in the NDK
 find_library(vulkan-lib vulkan)
@@ -26,7 +24,7 @@ find_library(log-lib log)
 target_link_libraries(openxrtutorialch2_1
         android
         native_app_glue
-        openxr_loader
+        OpenXR::openxr_loader
         ${vulkan-lib}
         ${log-lib})
 
