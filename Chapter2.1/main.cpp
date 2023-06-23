@@ -218,9 +218,7 @@ private:
         // XR_DOCS_TAG_END_find_apiLayer_extension
 
         // XR_DOCS_TAG_BEGIN_XrInstanceCreateInfo
-        XrInstanceCreateInfo instanceCI;
-        instanceCI.type = XR_TYPE_INSTANCE_CREATE_INFO;
-        instanceCI.next = nullptr;
+        XrInstanceCreateInfo instanceCI{XR_TYPE_INSTANCE_CREATE_INFO};
         instanceCI.createFlags = 0;
         instanceCI.applicationInfo = AI;
         instanceCI.enabledApiLayerCount = static_cast<uint32_t>(activeAPILayers.size());
@@ -238,9 +236,7 @@ private:
     // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
         if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
-            XrDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCI;
-            debugUtilsMessengerCI.type = XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-            debugUtilsMessengerCI.next = nullptr;
+            XrDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCI{XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
             debugUtilsMessengerCI.messageSeverities = XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
             debugUtilsMessengerCI.messageTypes = XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT;
             debugUtilsMessengerCI.userCallback = (PFN_xrDebugUtilsMessengerCallbackEXT)OpenXRMessageCallbackFunction;
@@ -261,9 +257,7 @@ private:
     // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
     void GetInstanceProperties() {
-        XrInstanceProperties instanceProperties;
-        instanceProperties.type = XR_TYPE_INSTANCE_PROPERTIES;
-        instanceProperties.next = nullptr;
+        XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(instance, &instanceProperties), "Failed to get InstanceProperties.");
 
         std::cout << "OpenXR Runtime: " << instanceProperties.runtimeName << " - ";
@@ -273,15 +267,11 @@ private:
     }
 
     void GetSystemID() {
-        XrSystemGetInfo systemGI;
-        systemGI.type = XR_TYPE_SYSTEM_GET_INFO;
-        systemGI.next = nullptr;
+        XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
         OPENXR_CHECK(xrGetSystem(instance, &systemGI, &systemID), "Failed to get SystemID.");
 
-        XrSystemProperties systemProperties;
-        systemProperties.type = XR_TYPE_SYSTEM_PROPERTIES;
-        systemProperties.next = nullptr;
+        XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(instance, systemID, &systemProperties), "Failed to get SystemProperties.");
     }
 
@@ -313,12 +303,11 @@ int main(int argc, char **argv) {
 void android_main(struct android_app *app) {
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
     OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
-    if (!xrInitializeLoaderKHR)
-        return;
+    if (!xrInitializeLoaderKHR) {
+        return
+    };
 
-    XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid;
-    loaderInitializeInfoAndroid.type = XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR;
-    loaderInitializeInfoAndroid.next = nullptr;
+    XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid{XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
     loaderInitializeInfoAndroid.applicationVM = app->activity->vm;
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
     OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
