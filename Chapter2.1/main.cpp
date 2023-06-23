@@ -184,29 +184,32 @@ private:
         apiLayerProperties.resize(apiLayerCount);
         for (auto &apiLayerProperty : apiLayerProperties)
             apiLayerProperty.type = XR_TYPE_API_LAYER_PROPERTIES;
+
         OPENXR_CHECK(xrEnumerateApiLayerProperties(apiLayerCount, &apiLayerCount, apiLayerProperties.data()), "Failed to enumerate ApiLayerProperties.");
         for (auto &requestLayer : apiLayers) {
             for (auto &layerProperty : apiLayerProperties) {
-                if (strcmp(requestLayer.c_str(), layerProperty.layerName))
+                if (strcmp(requestLayer.c_str(), layerProperty.layerName)) {
                     continue;
-                else {
+                } else {
                     activeAPILayers.push_back(requestLayer.c_str());
                     break;
                 }
             }
         }
+
         uint32_t extensionCount = 0;
         std::vector<XrExtensionProperties> extensionProperties;
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, 0, &extensionCount, nullptr), "Failed to enumerate InstanceExtensionProperties.");
         extensionProperties.resize(extensionCount);
         for (auto &extensionProperty : extensionProperties)
             extensionProperty.type = XR_TYPE_EXTENSION_PROPERTIES;
+
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
         for (auto &requestExtension : instanceExtensions) {
             for (auto &extensionProperty : extensionProperties) {
-                if (strcmp(requestExtension.c_str(), extensionProperty.extensionName))
+                if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
                     continue;
-                else {
+                } else {
                     activeInstanceExtensions.push_back(requestExtension.c_str());
                     break;
                 }
