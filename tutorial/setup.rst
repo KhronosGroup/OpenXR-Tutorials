@@ -112,7 +112,7 @@ Select your platform, as the instructions are different depending on your select
 	.. literalinclude:: ../Chapter2.1_Android/app/src/main/res/values/styles.xml
 		:language: xml
 
-	Within the ``app/src/main/cpp`` folder, create a ``CMakeLists.txt``. We will use this file to specific how our Native C++ code will be built. This CMakeList will be invoked by Android Studio's Gradle build system. 
+	Within the ``app/src/main/cpp`` folder, create a ``CMakeLists.txt``. We will use this file to specific how our Native C++ code will be built. This ``CMakeLists.txt`` file will be invoked by Android Studio's Gradle build system. 
 
 	.. rubric:: CMakeLists.txt
 
