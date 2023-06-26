@@ -70,7 +70,11 @@ We'll start with the main concepts you'll need to be familiar with around OpenXR
 	  - The OpenXR Input System allows apps to query what inputs are available. These can then be bound
 	    to Actions or Poses, so the app knows what the user is doing.
 
-	
+	OpenXR's lexicon and API style are based on the Vulkan API, which provides a clear and precise common language for developers and hardware vendors to use.
+
+	API Layers are additional code layers that are inserted between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function and then calls the next layer down. Some simple examples of API Layers would either log the OpenXR functions to the output or a file, or create trace file of the OpenXR calls for later replay. A validation layer could be used to check that the function calls made to OpenXR are compatible with the specification and the current state of OpenXR, which would be very similar the Vulkan Validation layer.
+
+	OpenXR supports multiple graphics APIs via its extension functionality. Like in Vulkan, OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics API. This idea of absolving the graphics APIs functionality from the main specification, as bold as it might seem, provides us with flexibility choosing the graphics APIs now and into the future. Firstly, OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of the graphics APIs. Secondly, the extensive nature of OpenXR allows revisions of and new graphics APIs to be integrated with ease. Already, There are two mutually exclusive extensions in OpenXR for interacting with Vulkan.
 
 **********
 Setting Up
@@ -280,6 +284,9 @@ Select which platform you want to develop for, and click the button to show the 
 	
 	.. rubric::  OpenXR SDK
 	
+	For Android, we will use the CMake ``FetchContent_Declare()`` command in the ``CMakeLists.txt`` to get the OpenXR package from Khronos's OpenXR-SDK-Source GitHub page.
+
+
 	For Android, you can download the OpenXR loader libraries from here: `https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27 <https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27>`_.
 	Using the .aar file and a program like 7-Zip, you can extract the header files and libraries. Under ``prefab/modules/openxr_loader/include/openxr``, you'll find the header files, and under ``prefab/modules/openxr_loader/libs/``, you'll find the folders for the arm64-v8a, armeabi-v7a, x86 and x86_64 libraries.
 	
