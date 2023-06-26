@@ -3,6 +3,12 @@ html
     box-sizing: border-box
 }
 
+p, figure
+{
+    max-width: 800px;
+
+}
+
 *, :after, :before
 {
     box-sizing: inherit
@@ -6256,7 +6262,6 @@ html
 {
     padding: 0 0 1.618em 0;
     height: 100%;
-    max-width: 800px;
     margin: auto
 }
 
@@ -7475,8 +7480,6 @@ span[id*=MathJax-Span]
 
 .windows, .linux, .android, .windows-linux
 {
-	border-left-style:solid;
-	border-left-width:3px;
 }
 .select-platform
 {
@@ -7493,25 +7496,18 @@ span[id*=MathJax-Span]
 }
 .windows
 {
-	border-left-color: #266db1;
 }
 
 .linux
 {
-	border-left-color: #782B90;
 }
 
 .android
 {
-	border-left-color: #147438;
 }
 
 .windows-linux
 {
-	border-left-color: #266db1;
-	border-right-color: #782B90;
-	border-right-style:solid;
-	border-right-width:3px;
 }
 
 #selectwindows, #selectlinux, #selectandroid

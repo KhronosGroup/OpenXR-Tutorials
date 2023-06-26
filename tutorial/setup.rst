@@ -26,7 +26,6 @@ Select your platform, as the instructions are different depending on your select
 
 	.. figure:: linux-vscode-open-folder.png
 		:alt: The File menu of Visual Studio Code is shown, with the command "Open Folder..." selected.
-		:align: center
 		:scale: 55%
 
 	The File menu of Visual Studio Code, with the command "Open Folder..." selected
@@ -72,7 +71,7 @@ Select your platform, as the instructions are different depending on your select
 	Here, We'll show how to hand build an Android Studio project that runs a C++ Native Activity.
 	Open Android Studio, select New Project and choose an Empty Activity. Set the names and save location. The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0(Nougat). Complete set up.
 
-	.. image:: android-studio-newproject.png
+	.. figure:: android-studio-newproject.png
 		:alt: Android Studio - New Project - Empty Activity.
 		:align: right
 
@@ -227,7 +226,7 @@ Then, we create the actual platform specific main function (our entry point to t
 	where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``,
 	click Configure, "Yes" to create the build folder, and "OK" to accept the default Generator.
 
-	.. image:: cmake-tutorial2-1.png
+	.. figure:: cmake-tutorial2-1.png
 		:alt: Select 
 		:align: right
 
@@ -241,30 +240,27 @@ Then, we create the actual platform specific main function (our entry point to t
 
 	.. rubric:: Linux
 
-	You now have three files, laid out as follow:
+	You now have three files, laid out as follows:
 
-	.. image:: linux-vscode-initial-files.png
-		:alt: Select 
-		:align: right
+	.. figure:: linux-vscode-initial-files.png
+		:alt: Initial files in VS Code 
 
 	Having installed the CMake extension for Visual Studio Code, you can now right-click on the main ``CMakeLists.txt`` file (the one in the root *workspace* folder) and select "Configure All Projects":
 
-	.. image:: linux-vscode-cmake-configure.png
-		:alt: Select 
-		:align: right
+	.. figure:: linux-vscode-cmake-configure.png
+		:alt: Select
 
 	Now the CMake panel will be available by clicking its icon on the leftmost panel. Hover your mouse over the "Project Outline"
 	and click the three dots at the right. An option to "Edit CMake Cache" will appear, click this and you'll see the Cache Editor
 	page.
 
-	.. image:: linux-vscode-cmake-more-actions.png
-		:alt: Select 
-		:align: right
+	.. figure:: linux-vscode-cmake-more-actions.png
+		:alt: Select
 	
 
-	.. image:: linux-vscode-cmake-cache.png
+	.. figure:: linux-vscode-cmake-cache.png
 		:alt: Select 
-		:align: right
+		
 
 	NOTE: It's possible to use CMake GUI in Linux, but using Visual Studio Code's integrated tools works better with Visual Studio Code.
 
@@ -311,9 +307,8 @@ Then, we create the actual platform specific main function (our entry point to t
 
 	Turn on and connect your Android device. Set up any requirments for USB debugging and adb. You device should appear in the dropdown. Here, I am using a Oculus Quest 2.
 
-	.. image:: android-studio-build-run-toolbar.png
+	.. figure:: android-studio-build-run-toolbar.png
 		:alt: Build/Run Toolbar
-		:align: center
 	
 	To debug/run the application click the green bug icon.
 

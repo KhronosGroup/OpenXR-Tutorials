@@ -17,7 +17,7 @@ many had analogue controls like triggers or joysticks; many had haptic feedback.
 
 .. figure:: OpenXRBeforeAfter.png
 	:alt: XR Fragmentation 
-	:align: center
+	:align: left
 	:width: 99%
 
 	OpenXR provides a common interface to reduce XR fragmentation.
@@ -149,25 +149,25 @@ Select which platform you want to develop for, and click the button to show the 
 
 	Once CMake is installed, click the Windows button, and type "cmake" to find the application Cmake GUI.
 
-	.. image:: find_cmake.png
+	.. figure:: find_cmake.png
 	   :alt: Find CMake by clicking the Windows icon and typing "cmake".
-	   :align: right
+	   
 
 	In the CMake Gui, enter the location of the OpenXR SDK in the top text box, marked "Where is the source code". Below, in the box marked "Where to
 	build the binaries", enter a subdirectory of that folder, called "build".
 
-	.. image:: cmake-openxrsdk-1.png
+	.. figure:: cmake-openxrsdk-1.png
 	   :alt: CMake GUI: location of the OpenXR SDK has been entered as the source directory, and that a subdirectory "build" has been entered as the binary directory.
-	   :align: right
+	   
 
 	Click the button below marked "Configure". A popup will ask if CMake should create the "build" directory. Click "Yes".
 	Now a box will appear where you can select a "Generator". This should default to the version of
 	Visual Studio you've just installed. Click Finish.
 	Cmake will now configure the project, and a list of variables will appear in red.
 
-	.. image:: cmake-openxrsdk-2.png
+	.. figure:: cmake-openxrsdk-2.png
 	   :alt: alternate text
-	   :align: right
+	   
 
 	You shouldn't have to change any of these variables, but you can if you want. CMake should have
 	automatically found the installation of the Vulkan SDK that you created previously, and used it to fill in the variables
@@ -175,9 +175,9 @@ Select which platform you want to develop for, and click the button to show the 
 	by clicking on the "Value" entries. The values should look like this:
 
 
-	.. image:: cmake-vulkan-vars.png
+	.. figure:: cmake-vulkan-vars.png
 	   :alt: Vulkan variable highlighted in the CMake GUI.
-	   :align: right
+	   
 
 	The Vulkan variables in CMake GUI should read:
 	 +-----------------------------------------+-----------------------------------------------------+
@@ -194,25 +194,25 @@ Select which platform you want to develop for, and click the button to show the 
 	Now, we're going to "Generate" the project files for the OpenXR SDK. Click "Generate", and CMake GUI should
 	now read "Generating done" in the output log at the bottom.
 
-	.. image:: cmake-openxrsdk-generate.png
+	.. figure:: cmake-openxrsdk-generate.png
 	   :alt: CMake GUI should read "Generating done" in the output log at the bottom.
-	   :align: right
+	   
 
 	Now we can build the SDK. Click "Open Project" in CMake GUI, or navigate to your "build" folder and double-click on
 	the file "OPENXR.sln", and Visual Studio will open the solution.
 
 	Select "Debug" from the Visual Studio "Solution Configurations" dropdown.
 
-	.. image:: visual-studio-openxr-debug.png
+	.. figure:: visual-studio-openxr-debug.png
 	   :alt: In Visual Studio, the Solution Configuration dropdown menu is shown, with "Debug" selected.
-	   :align: right
+	   
 
 	Go to the Build menu and select "Build Solution". The projects will be compiled, and the output
 	from ``openxr_loader.vcxproj`` should be a library called ``openxr_loaderd.lib``.
 
-	.. image:: visual-studio-openxr-build.png
+	.. figure:: visual-studio-openxr-build.png
 	   :alt: In Visual Studio, the "Build" menu is shown, with the "Build Solution" option selected.
-	   :align: right
+	   
 
 	Now repeat the process for the Release build. Select "Release" from the Configurations dropdown,
 	amd build the solution. This time, the library ``openxr_loader.lib`` will be built.
@@ -290,13 +290,13 @@ Select which platform you want to develop for, and click the button to show the 
 	For Android, you can download the OpenXR loader libraries from here: `https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27 <https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/release-1.0.27>`_.
 	Using the .aar file and a program like 7-Zip, you can extract the header files and libraries. Under ``prefab/modules/openxr_loader/include/openxr``, you'll find the header files, and under ``prefab/modules/openxr_loader/libs/``, you'll find the folders for the arm64-v8a, armeabi-v7a, x86 and x86_64 libraries.
 	
-	.. image:: android-7Zip-include.png
+	.. figure:: android-7Zip-include.png
 	   :alt: 7-Zip internal file structure showing the OpenXR headers. prefab/modules/openxr_loader/include/openxr
-	   :align: right
+	   
 	
-	.. image:: android-7Zip-libs.png
+	.. figure:: android-7Zip-libs.png
 	   :alt: 7-Zip internal file structure showing the OpenXR libraries. prefab/modules/openxr_loader/libs
-	   :align: right
+	   
 	
 	.. rubric:: Vulkan
 	
