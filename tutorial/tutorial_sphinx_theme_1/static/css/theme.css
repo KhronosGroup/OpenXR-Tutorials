@@ -6102,6 +6102,15 @@ html
 {
 }
 
+.sticky-breadcrumb-ribbon
+{
+	position: sticky;
+    background-color: #782B90;
+	color:white;
+  width: 100%;
+  top: 0px;
+  padding:10px 20px 0px 20px;
+}
 .wy-nav .wy-menu-vertical header
 {
     color: #782B90
@@ -6152,7 +6161,7 @@ html
 
 .wy-body-for-nav
 {
-    background: #fcfcfc
+    background: #fcfcfc;
 }
 
 .wy-grid-for-nav
@@ -6245,7 +6254,7 @@ html
 
 .wy-nav-content
 {
-    padding: 1.618em 3.236em;
+    padding: 0 0 1.618em 0;
     height: 100%;
     max-width: 800px;
     margin: auto
@@ -7455,7 +7464,7 @@ span[id*=MathJax-Span]
 }
 
 #selectplatform{
-	margin: 10px;
+	margin: 10px 10px 0 10px;
   display: flex;
   justify-content: center;
 }
@@ -7469,7 +7478,19 @@ span[id*=MathJax-Span]
 	border-left-style:solid;
 	border-left-width:3px;
 }
-
+.select-platform
+{
+	border-width:1px 1px 0px 1px;
+	border-color:silver;
+  border-radius: 7px 8px 0 0;
+  margin: 4px 0px 0px 0px;
+    background: silver;
+	color:gray;
+}
+.selected-platform
+{
+    background: #fcfcfc;
+}
 .windows
 {
 	border-left-color: #266db1;
@@ -7495,16 +7516,25 @@ span[id*=MathJax-Span]
 
 #selectwindows, #selectlinux, #selectandroid
 {
-	padding: 10px;
+	padding: 4px 20px 4px 20px;
 	display: inline-block;
 	*display: inline;
 	zoom: 1;
 	vertical-align: top;
     width:30%;
-	color:white;
+	color:black;
 	font-weight:800;
 }
 
+
+#selectwindows img, 
+#selectlinux img, 
+#selectandroid img
+{
+	display: block;
+	padding:0px;
+	margin:0px;
+}
 
 #selectwindows label, 
 #selectlinux label, 
@@ -7512,21 +7542,26 @@ span[id*=MathJax-Span]
 {
 	width:90%;
 	float:right;
-    color: white;
-    font-size: 100%
+    color: black;
+    font-size: 100%;
+	display: none;
+
 }
 
 #selectwindows
 {
-	background-color:#266db1;
 }
 
 #selectlinux
 {
-	background-color:#782B90;
 }
 
 #selectandroid
 {
-	background-color: #147438;
+	
+}
+
+.rst-content
+{
+	margin:20px;
 }

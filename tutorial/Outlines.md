@@ -18,8 +18,14 @@ Discuss how graphics are enabled by Instance extensions, how OpenXR supports var
 Introduce the Input System, show how it enables extensibility, cross-device applications.
 Again, appropriate diagrams, matching site colour scheme and design.
 
-## Chapter 1.3 Setting up a development environment
+## Chapter 1.3 Setting Up
 Rename 1.3 to "Setting up a Development Environment"? Move to Chapter 2?
+Highly platform-dependent. Also API-dependent.
+Perhaps: separate tabs for Windows GL, WIndows D3D12, Windows Vulkan etc.
+Where to get the SDK.
+What dependencies are required, and where to get them. Again, highly platform- and API-dependent.
+Introduce CMake and briefly explain its use.
+For Android, discuss gradle files.
 
 ## Chapter 2
 There is substantial "Setup" that we expect to be needed before "Creating an XrInstance". Perhaps a whole subsection 2.1 on creating CMake projects and building on PC/Linux or building for Android?

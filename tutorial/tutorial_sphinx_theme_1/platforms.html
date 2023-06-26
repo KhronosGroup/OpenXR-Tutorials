@@ -1,27 +1,26 @@
-<form>
-	<div id='selectplatform'>
-		<div id='selectwindows'>
-			<label for="windows">Windows*</label>
-			<input type='radio' id='windows' name='type' value='windows' />
-		</div>
-		<div id='selectlinux'>
-			<label for="linux">Linux*</label>
-			<input type='radio' id='linux' name='type' value='linux' />>
-		</div>
-		<div id='selectwindows'>
-			<label for="android">Android*</label>
-			<input type='radio' id='android' name='type' value='android' />
-		</div>>
-	</div>
-</form>
+<div id='selectplatform'>
+	<button class="select-platform" id='selectwindows' onclick="choosePlatform('windows')">
+		<img src="_static/css/windows.svg" alt="Windows" />
+	</button>
+	<button class="select-platform" id='selectlinux' onclick="choosePlatform('linux')">
+		<img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Linux" />
+	</button>
+	<button class="select-platform" id='selectandroid' onclick="choosePlatform('android')">
+		<img src="_static/css/android-original.svg" alt="Android" />
+	</button>
+</div>
 <script>
-	var platform = Cookies.get('platform')
-	var radiobtn = document.getElementById(platform);
-	if (radiobtn)
-		radiobtn.checked = true;
-	$('input:radio').on('change', function ()
+	function choosePlatform(platformName)
 	{
-		Cookies.set('platform', $(this).val(), { expires: 365 })
+		var platform = Cookies.get('platform')
+		Cookies.set('platform', platformName, { expires: 365 })
 		updatePlatform();
-	});
+		var oldelements = document.getElementsByClassName('selected-platform');
+		for (i = 0; i < oldelements.length; ++i)
+		{
+			oldelements[i].classList.remove('selected-platform');
+		}
+		var element = document.getElementById('select' + platformName);
+		element.classList.add('selected-platform');
+	};
 </script>

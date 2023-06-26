@@ -8,27 +8,6 @@ Select your platform, as the instructions are different depending on your select
 	:file: platforms.html
 
 .. container:: windows
-	:name: windows-intro-1
-
-	.. rubric:: Windows
-
-	Showing instructions for Windows.
-
-.. container:: linux
-	:name: linux-intro-1
-
-	.. rubric:: Linux
-
-	Showing instructions for Linux.
-
-.. container:: android
-	:name: android-intro-1
-
-	.. rubric:: Android
-
-	Showing instructions for Android.
-
-.. container:: windows
 	:name: windows-id-1
 
 	.. rubric:: Windows
