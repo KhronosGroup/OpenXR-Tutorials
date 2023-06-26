@@ -7482,8 +7482,8 @@ span[id*=MathJax-Span]
 {
 	border-width:1px 1px 0px 1px;
 	border-color:silver;
-  border-radius: 7px 8px 0 0;
-  margin: 4px 0px 0px 0px;
+	border-radius: 7px 8px 0 0;
+	margin: 4px 0px 0px 0px;
     background: silver;
 	color:gray;
 }

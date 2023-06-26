@@ -145,6 +145,13 @@
 			$(".windows").hide();
 			$(".windows-linux").hide();
 		}
+		var oldelements = document.getElementsByClassName('selected-platform');
+		for (i = 0; i < oldelements.length; ++i)
+		{
+			oldelements[i].classList.remove('selected-platform');
+		}
+		var element = document.getElementById('select' + platformName);
+		element.classList.add('selected-platform');
 		window.updatePlatform=updatePlatform;
 	}</script>
 	<script >
