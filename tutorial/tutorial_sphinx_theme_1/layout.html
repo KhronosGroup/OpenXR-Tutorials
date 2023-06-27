@@ -128,7 +128,7 @@
 	var platform = Cookies.get("platform")
 	console.log("platform = " + platform);
 	if (typeof platform == 'undefined')
-		platform="linux";
+	platform="linux";
 	if (platform == "windows") {
 	$(".linux").hide();
 	$(".android").hide();
@@ -154,6 +154,8 @@
 	}
 	var element = document.getElementById('select' + platform);
 	element.classList.add('selected-platform');
+	var element2 = document.getElementById('select' + platform +"-inline");
+	element2.classList.add('selected-platform');
 	window.updatePlatform=updatePlatform;
 	}</script>
 	<script >
@@ -232,43 +234,43 @@
       </div>
     </nav>
 
-    <div data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+	<div data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
-      {#- MOBILE NAV, TRIGGLES SIDE NAV ON TOGGLE #}
-      {#- Translators: This is an ARIA section label for the navigation menu that is visible when viewing the page on mobile devices -#}
-      <nav class="wy-nav-top" aria-label="{{ _('Mobile navigation menu') }}" {% if theme_style_nav_header_background %} style="background: {{theme_style_nav_header_background}}" {% endif %}>
-        {%- block mobile_nav %}
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="{{ pathto(master_doc) }}">{{ project }}</a>
-        {%- endblock %}
-      </nav>
+		{#- MOBILE NAV, TRIGGLES SIDE NAV ON TOGGLE #}
+		{#- Translators: This is an ARIA section label for the navigation menu that is visible when viewing the page on mobile devices -#}
+		<nav class="wy-nav-top" aria-label="{{ _('Mobile navigation menu') }}" {% if theme_style_nav_header_background %} style="background: {{theme_style_nav_header_background}}" {% endif %}>
+			{%- block mobile_nav %}
+			<i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+			<a href="{{ pathto(master_doc) }}">{{ project }}</a>
+			{%- endblock %}
+		</nav>
 
-	  <div class="wy-nav-content">
-		  {% include "breadcrumbs.html" %}
-		  {%- block content %}
-		  {%- if theme_style_external_links|tobool %}
-		  <div class="rst-content style-external-links">
-			  {%- else %}
-			  <div class="rst-content">
-				  {%- endif %}
-				  <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-					  {%- block document %}
-					  <div itemprop="articleBody">
-						  {% block body %}{% endblock %}
-					  </div>
-					  {%- if self.comments()|trim %}
-					  <div class="articleComments">
-						  {%- block comments %}{% endblock %}
-					  </div>
-					  {%- endif%}
-				  </div>
-				  {%- endblock %}
-				  {% include "footer.html" %}
-			  </div>
-			  {%- endblock %}
-		  </div>
-	  </div>
-  </div>
+		{% include "breadcrumbs.html" %}
+		<div class="wy-nav-content">
+			{%- block content %}
+			{%- if theme_style_external_links|tobool %}
+			<div class="rst-content style-external-links">
+				{%- else %}
+				<div class="rst-content">
+					{%- endif %}
+					<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+						{%- block document %}
+						<div itemprop="articleBody">
+							{% block body %}{% endblock %}
+						</div>
+						{%- if self.comments()|trim %}
+						<div class="articleComments">
+							{%- block comments %}{% endblock %}
+						</div>
+						{%- endif%}
+					</div>
+					{%- endblock %}
+					{% include "footer.html" %}
+				</div>
+				{%- endblock %}
+			</div>
+		</div>
+	</div>
   {% include "versions.html" -%}
 
   <script>

@@ -1,29 +1,14 @@
-<form>
-	<fieldset>
-		<div id='selectplatform'>
-			<div id='selectwindows'>
-				<label for="windows">Windows</label>
-				<input type='radio' id='windows' name='type' value='windows' />
-			</div>
-			<div id='selectlinux'>
-				<label for="linux">Linux</label>
-				<input type='radio' id='linux' name='type' value='linux' />
-			</div>
-			<div id='selectandroid'>
-				<label for="android">Android</label>
-				<input type='radio' id='android' name='type' value='android' />
-			</div>
-		</div>
-	</fieldset>
-</form>
-<script>
-	var platform = Cookies.get('platform')
-	var radiobtn = document.getElementById(platform);
-	if (radiobtn)
-		radiobtn.checked = true;
-	$('input:radio').on('change', function ()
-	{
-		Cookies.set('platform', $(this).val(), { expires: 365 })
-		updatePlatform();
-	});
-</script>
+<div class='select-platform-container-inline'>
+	<button class="select-platform-inline" id='selectwindows-inline' onclick="choosePlatform('windows')">
+		<img src="_static/css/windows.svg" alt="Windows" />
+		<p>Windows</p>
+	</button>
+	<button class="select-platform-inline" id='selectlinux-inline' onclick="choosePlatform('linux')">
+		<img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Linux" />
+		<p>Linux</p>
+	</button>
+	<button class="select-platform-inline" id='selectandroid-inline' onclick="choosePlatform('android')">
+		<img src="_static/css/android-original.svg" alt="Android" />
+		<p>Android</p>
+	</button>
+</div>

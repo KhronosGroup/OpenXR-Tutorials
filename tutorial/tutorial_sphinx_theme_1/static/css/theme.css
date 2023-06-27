@@ -5551,7 +5551,7 @@ hr
     border: 1px solid #e1e4e5;
     font-size: 75%;
     padding: 0 5px;
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+    font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
     color: #e74c3c;
     overflow-x: auto
 }
@@ -6293,7 +6293,7 @@ footer p
 .rst-content footer span.commit tt, footer span.commit .rst-content tt, footer span.commit code
 {
     padding: 0;
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+    font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
     font-size: 1em;
     background: none;
     border: none;
@@ -6666,7 +6666,7 @@ footer p
     white-space: pre;
     margin: 0;
     padding: 12px;
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+    font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
     display: block;
     overflow: auto
 }
@@ -6695,7 +6695,7 @@ footer p
     border-right: 1px solid #e6e9ea;
     margin: 0;
     padding: 12px;
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+    font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
     user-select: none;
     pointer-events: none
 }
@@ -6718,7 +6718,7 @@ footer p
 
 .rst-content .linenodiv pre, .rst-content div[class^=highlight] pre, .rst-content pre.literal-block
 {
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+    font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
     font-size: 12px;
     line-height: 1.4
 }
@@ -7230,7 +7230,7 @@ html.writer-html5 .rst-content table.docutils td > p, html.writer-html5 .rst-con
 .rst-content code, .rst-content tt
 {
     color: #000;
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+    font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
     padding: 2px 5px
 }
 
@@ -7255,7 +7255,7 @@ html.writer-html5 .rst-content table.docutils td > p, html.writer-html5 .rst-con
 
 .rst-content kbd, .rst-content pre, .rst-content samp
 {
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace
+    font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace
 }
 
 .rst-content a code, .rst-content a tt
@@ -7374,7 +7374,7 @@ html.writer-html4 .rst-content dl:not(.docutils) .k, html.writer-html5 .rst-cont
 
 html.writer-html4 .rst-content dl:not(.docutils) .descclassname, html.writer-html4 .rst-content dl:not(.docutils) .descname, html.writer-html4 .rst-content dl:not(.docutils) .sig-name, html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple) .descclassname, html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple) .descname, html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple) .sig-name
 {
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
+    font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
     color: #000
 }
 
@@ -7556,8 +7556,29 @@ span[id*=MathJax-Span]
 {
 	
 }
-
-.rst-content
+.select-platform-container-inline
 {
+	align-content:center;
+	width:100%;
+	max-width:800px;
+}
+.select-platform-inline
+{
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	vertical-align: top;
+	width:20%;
+	min-width:80px;
 	margin:20px;
+	border-color:silver;
+}
+.select-platform-inline > img
+{
+	max-height:40px;
+}
+
+.wy-nav-content
+{
+	margin: 20px 20px 20px 40px;
 }

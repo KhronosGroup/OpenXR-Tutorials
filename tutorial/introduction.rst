@@ -86,36 +86,34 @@ OpenXR recognised that there is vast and ever changing array of hardware and con
 Setting Up
 **********
 
-This section will help you set up your development environment. This is the one place where your choice of platform really makes a difference!
-After that, things will be much more consistent.
+This section will help you set up your development environment. Here your choice of platform really makes a difference. After that, things will be much more consistent.
 
-The exact procedure will depend on your target platform. So first, let's choose this:
+You can change platform at any time by clicking the tabs at the top of the page. Select the platform you want to develop for
+by clicking a tab, or one of the buttons below.
 
 .. raw:: html
    :file: platforms.html
-
-Select which platform you want to develop for, and click the button to show the instructions for that platform.
 
 .. container:: windows
     :name: windows-intro-1
 
 	.. rubric:: Windows
 
-	You'll see instructions to build on, and for Windows.
+	Windows is the selected platform.
 
 .. container:: linux
     :name: linux-intro-1
 
 	.. rubric:: Linux
 
-	You'll see instructions to build on, and for Linux.
+	Linux is the selected platform.
 
 .. container:: android
     :name: android-intro-1
 
 	.. rubric:: Android
 
-	You'll see instructions to build for Android, using either a Linux or Windows PC.
+	Android is the selected platform.
 
 .. container:: windows
 
@@ -127,18 +125,18 @@ Select which platform you want to develop for, and click the button to show the 
 	.. rubric:: Direct3D 11 or 12
 
 	Next you'll want to choose which Graphics API you'll be using. Direct3D 11 and 12 are built into the Windows SDK's.
-	If you're using Direct3D, I recommend D3D12, because it supports `View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_. Essentially, it allows you to draw both eye views in one call.
+	If you're using Direct3D, D3D12 is recommended because it supports `View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_. Essentially, it allows you to draw both eye views in one call.
 
-	Whether D3D11 or 12, download and install the latest `Windows SDK <https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/>`_.
+	In both cases, download and install the latest `Windows SDK <https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/>`_.
 
 	.. rubric:: Vulkan Windows SDK
 
 	If you'll be using Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_. Take a note of the installation location,
-	as this will be needed later.
-	Vulkan, OpenGL and OpenGL ES also supports rendering to bith eye views with multiview.
-	 * `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
-	 * `OpenGL/OpenGL ES Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
+	as this will be needed later. Vulkan, OpenGL and OpenGL ES also support rendering to both eye views with multiview.
 
+	 * `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
+
+	 * `OpenGL/OpenGL ES Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
 
 	.. rubric:: OpenXR SDK for Windows
 
@@ -148,7 +146,7 @@ Select which platform you want to develop for, and click the button to show the 
 
 	.. rubric:: CMake
 
-	The OpenXR SDK is distributed as source code, and you'll need to build it, using CMake.
+	The OpenXR SDK is distributed as source code, and you'll need to build it using CMake.
 	CMake is a program that generates project files, such as the .vcxproj and .sln files
 	that Visual Studio needs.
 	Install the latest `CMake <https://cmake.org/download/>`_.
