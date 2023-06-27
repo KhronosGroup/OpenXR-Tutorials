@@ -57,7 +57,7 @@ We'll start with the main concepts you'll need to be familiar with around OpenXR
 	    be active at any given time.
 	* - Layers
 	  - API layers are optional components that augment an OpenXR system. A Layer might help with debugging,
-	    or filter infromation between the app and the Runtime. API layers are enabled when the OpenXR Instance
+	    or filter information between the app and the Runtime. API layers are enabled when the OpenXR Instance
 	    is created.
 	* - Instance
 	  - The Instance is an object that allows your app to communicate with a Runtime. You'll ask OpenXR to create an Instance
@@ -70,11 +70,17 @@ We'll start with the main concepts you'll need to be familiar with around OpenXR
 	  - The OpenXR Input System allows apps to query what inputs are available. These can then be bound
 	    to Actions or Poses, so the app knows what the user is doing.
 
-	OpenXR's lexicon and API style are based on the Vulkan API, which provides a clear and precise common language for developers and hardware vendors to use.
+OpenXR's lexicon and API style are based on the Vulkan API, and it provides a clear and precise common language for developers and hardware vendors to use. It was a decision by the OpenXR working group to have APIs similar.
 
-	API Layers are additional code layers that are inserted between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function and then calls the next layer down. Some simple examples of API Layers would either log the OpenXR functions to the output or a file, or create trace file of the OpenXR calls for later replay. A validation layer could be used to check that the function calls made to OpenXR are compatible with the specification and the current state of OpenXR, which would be very similar the Vulkan Validation layer.
+An OpenXR Runtime implements the OpenXR API. There maybe multiple runtime installed on a system, but an OpenXR application can only choose one. The runtime acts to translate the OpenXR function calls into something that the vendor's software/hardware can understand. There is a fully open source OpenXR runtime for Linux in development called `Monado <https://monado.dev/>`_.
 
-	OpenXR supports multiple graphics APIs via its extension functionality. Like in Vulkan, OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics API. This idea of absolving the graphics APIs functionality from the main specification, as bold as it might seem, provides us with flexibility choosing the graphics APIs now and into the future. Firstly, OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of the graphics APIs. Secondly, the extensive nature of OpenXR allows revisions of and new graphics APIs to be integrated with ease. Already, There are two mutually exclusive extensions in OpenXR for interacting with Vulkan.
+The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as ``XR_EXT_debug_utils``, any functions associated with that extension will need to be loaded in with ``xrGetInstanceProcAddr()``. Some platforms like Android require extra work and information to initialise the loader.
+
+API Layers are additional code layers that are inserted between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Some simple examples of API Layers would be logging the OpenXR functions to the output or a file, or creating trace file of the OpenXR calls for later replay. A validation layer could be used to check that the function calls made to OpenXR are compatible with the specification and with the current state of OpenXR, which would be very similar the Vulkan Validation layer.
+
+OpenXR supports multiple graphics APIs via its extension functionality. Like in Vulkan, OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of absolving the core specification of the graphics API functionality, as bold as it might seem, provides us with the flexibility in choosing the graphics APIs now and in the future. Firstly, OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. Secondly, the extensive nature of OpenXR allows revisions of and any new graphics APIs to be integrated with ease. Already, there are two mutually exclusive extensions in OpenXR for interacting with Vulkan.
+	
+OpenXR recognised that there is vast and ever changing array of hardware and configurations in the XR space. With new headsets and contollers coming to the market, an abstraction of the input system was needed so that same application can target difference and newer hardware. The abstraction is done via the concept of an ``XrAction``, which acts as handle to interactive elements of the application. Instead of directly querying the state of any one button, joysticks, trigger, touch pad etc., you create an ``XrAction`` for a specific action such as a "menu_click". You provide a suggested binding along with an interaction profile so that OpenXR can link that action with the available input hardware at runtime.
 
 **********
 Setting Up
