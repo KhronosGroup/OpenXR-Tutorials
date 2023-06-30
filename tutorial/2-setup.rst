@@ -142,11 +142,11 @@ This is boilerplate for the various platforms. Next, we'll add the header files 
 	:start-at: // OpenXR Headers
 	:end-at: #include "openxr/openxr_platform.h"
 	:name: xr-headers
-	:emphasize-lines: 9
+	:emphasize-lines: 15
 
 Here, we include the main OpenXR header file ``openxr.h`` and the OpenXR platform header file ``openxr_platform.h``.
 For the OpenXR platform header file, note the preceding XR_USE\_ macros. When enabled, we gain access to functionality that interact with the chosen graphics API and/or platform. We will enable one of these graphics ones later in the tutorial. 
-For Android, we include our ``"android_native_app_glue.h"`` header file as well as defining the ``XR_USE_PLATFORM_ANDROID`` macro, which we will need to initialise the load the OpenXR loader.
+For Android, we include our ``android_native_app_glue.h`` header file as well as defining the ``XR_USE_PLATFORM_ANDROID`` macro, which we will need to initialise the load the OpenXR loader.
 
 Next, we'll add the DEBUG_BREAK macro:
 
