@@ -11,9 +11,9 @@
 #include "unknwn.h"
 #define XR_USE_PLATFORM_WIN32
 
-// #define XR_USE_GRAPHICS_API_D3D11
-// #define XR_USE_GRAPHICS_API_D3D12
-// #define XR_USE_GRAPHICS_API_OPENGL
+#define XR_USE_GRAPHICS_API_D3D11
+#define XR_USE_GRAPHICS_API_D3D12
+#define XR_USE_GRAPHICS_API_OPENGL
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
 
@@ -31,7 +31,7 @@
 #define XR_USE_PLATFORM_ANDROID
 
 #define XR_USE_GRAPHICS_API_OPENGL_ES
-// #define XR_USE_GRAPHICS_API_VULKAN
+#define XR_USE_GRAPHICS_API_VULKAN
 #endif
 
 // Graphic APIs headers
@@ -64,6 +64,17 @@
 // OpenXR
 #include "openxr/openxr.h"
 #include "openxr/openxr_platform.h"
+
+enum GraphicsAPI_Type : uint8_t {
+    UNKNOWN,
+    D3D11,
+    D3D12,
+    OPENGL,
+    OPENGL_ES,
+    VULKAN
+};
+
+bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type);
 
 #if defined(XR_USE_GRAPHICS_API_D3D11)
 class GraphicsAPI_D3D11 {
@@ -110,6 +121,19 @@ private:
 };
 #endif
 
+#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+class GraphicsAPI_OpenGL_ES {
+public:
+    GraphicsAPI_OpenGL_ES(XrInstance xrInstance, XrSystemId systemId);
+    ~GraphicsAPI_OpenGL_ES();
+
+    ksGpuWindow window{};
+
+private:
+    PFN_xrGetOpenGLESGraphicsRequirementsKHR xrGetOpenGLESGraphicsRequirementsKHR = nullptr;
+};
+#endif
+
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
 class GraphicsAPI_Vulkan {
 public:
@@ -128,27 +152,14 @@ public:
     uint32_t queueFamilyIndex = 0;
     uint32_t queueIndex = 0;
 
-    std::vector<const char*> activeInstanceExtensions;
-    std::vector<const char*> activeDeviceExtensions;
+    std::vector<const char*> activeInstanceExtensions{};
+    std::vector<const char*> activeDeviceExtensions{};
 
 private:
     PFN_xrGetVulkanGraphicsRequirementsKHR xrGetVulkanGraphicsRequirementsKHR = nullptr;
     PFN_xrGetVulkanInstanceExtensionsKHR xrGetVulkanInstanceExtensionsKHR = nullptr;
     PFN_xrGetVulkanDeviceExtensionsKHR xrGetVulkanDeviceExtensionsKHR = nullptr;
     PFN_xrGetVulkanGraphicsDeviceKHR xrGetVulkanGraphicsDeviceKHR = nullptr;
-};
-#endif
-
-#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-class GraphicsAPI_OpenGLES {
-public:
-    GraphicsAPI_OpenGLES(XrInstance xrInstance, XrSystemId systemId);
-    ~GraphicsAPI_OpenGLES();
-
-    ksGpuWindow window{};
-
-private:
-    PFN_xrGetOpenGLESGraphicsRequirementsKHR xrGetOpenGLESGraphicsRequirementsKHR = nullptr;
 };
 #endif
 

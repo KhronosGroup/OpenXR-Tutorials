@@ -104,7 +104,13 @@ XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messa
 
 class OpenXRTutorial_Ch2_2 {
 public:
-    OpenXRTutorial_Ch2_2() = default;
+    OpenXRTutorial_Ch2_2(GraphicsAPI_Type graphicsAPI)
+        : api(graphicsAPI) {
+        if (!CheckGraphicsAPI_TypeIsValidForPlatform(api)) {
+            std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
+            DEBUG_BREAK;
+        }
+    }
     ~OpenXRTutorial_Ch2_2() = default;
 
     void Run() {
@@ -137,17 +143,30 @@ private:
             // XR_DOCS_TAG_BEGIN_instanceExtensions
             instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
+            if (api == D3D11) {
 #if defined(XR_USE_GRAPHICS_API_D3D11)
-            instanceExtensions.push_back(XR_KHR_D3D11_ENABLE_EXTENSION_NAME);
-#elif defined(XR_USE_GRAPHICS_API_D3D12)
-            instanceExtensions.push_back(XR_KHR_D3D12_ENABLE_EXTENSION_NAME);
-#elif defined(XR_USE_GRAPHICS_API_OPENGL)
-            instanceExtensions.push_back(XR_KHR_OPENGL_ENABLE_EXTENSION_NAME);
-#elif defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-            instanceExtensions.push_back(XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
-#elif defined(XR_USE_GRAPHICS_API_VULKAN)
-            instanceExtensions.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
+                instanceExtensions.push_back(XR_KHR_D3D11_ENABLE_EXTENSION_NAME);
 #endif
+            } else if (api == D3D12) {
+#if defined(XR_USE_GRAPHICS_API_D3D12)
+                instanceExtensions.push_back(XR_KHR_D3D12_ENABLE_EXTENSION_NAME);
+#endif
+            } else if (api == OPENGL) {
+#if defined(XR_USE_GRAPHICS_API_OPENGL)
+                instanceExtensions.push_back(XR_KHR_OPENGL_ENABLE_EXTENSION_NAME);
+#endif
+            } else if (api == OPENGL_ES) {
+#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+                instanceExtensions.push_back(XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
+#endif
+            } else if (api == VULKAN) {
+#if defined(XR_USE_GRAPHICS_API_VULKAN)
+                instanceExtensions.push_back(XR_KHR_VULKAN_ENABLE_EXTENSION_NAME);
+#endif
+            } else {
+                std::cout << "ERROR: Unknown Graphics API." << std::endl;
+                DEBUG_BREAK;
+            }
             // XR_DOCS_TAG_END_instanceExtensions
         }
 
@@ -252,63 +271,78 @@ private:
     void CreateSession() {
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
 
+        if (api == D3D11) {
 #if defined(XR_USE_GRAPHICS_API_D3D11)
-        XrGraphicsBindingD3D11KHR graphicsBindingD3D11{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
-        GraphicsAPI_D3D11 d3d11(instance, systemID);
-        graphicsBindingD3D11.device = d3d11.device;
-        sessionCI.next = &graphicsBindingD3D11;
-#elif defined(XR_USE_GRAPHICS_API_D3D12)
-        XrGraphicsBindingD3D12KHR graphicsBindingD3D12{XR_TYPE_GRAPHICS_BINDING_D3D12_KHR};
-        GraphicsAPI_D3D12 d3d12(instance, systemID);
-        graphicsBindingD3D12.device = d3d12.device;
-        graphicsBindingD3D12.queue = d3d12.queue;
-        sessionCI.next = &graphicsBindingD3D12;
-#elif defined(XR_USE_GRAPHICS_API_OPENGL)
-        GraphicsAPI_OpenGL opengl(instance, systemID);
+            d3d11 = std::make_unique<GraphicsAPI_D3D11>(instance, systemID);
+            XrGraphicsBindingD3D11KHR graphicsBindingD3D11{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
+            graphicsBindingD3D11.device = d3d11->device;
+            sessionCI.next = &graphicsBindingD3D11;
+#endif
+        } else if (api == D3D12) {
+#if defined(XR_USE_GRAPHICS_API_D3D12)
+            d3d12 = std::make_unique<GraphicsAPI_D3D12>(instance, systemID);
+            XrGraphicsBindingD3D12KHR graphicsBindingD3D12{XR_TYPE_GRAPHICS_BINDING_D3D12_KHR};
+            graphicsBindingD3D12.device = d3d12->device;
+            graphicsBindingD3D12.queue = d3d12->queue;
+            sessionCI.next = &graphicsBindingD3D12;
+#endif
+        } else if (api == OPENGL) {
+#if defined(XR_USE_GRAPHICS_API_OPENGL)
+            opengl = std::make_unique<GraphicsAPI_OpenGL>(instance, systemID);
+
 #if defined(XR_USE_PLATFORM_WIN32)
-        XrGraphicsBindingOpenGLWin32KHR graphicsBindingOpenGLWin32{XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR};
-        graphicsBindingOpenGLWin32.hDC = opengl.window.context.hDC;
-        graphicsBindingOpenGLWin32.hGLRC = opengl.window.context.hGLRC;
-        sessionCI.next = &graphicsBindingOpenGLWin32;
+            XrGraphicsBindingOpenGLWin32KHR graphicsBindingOpenGLWin32{XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR};
+            graphicsBindingOpenGLWin32.hDC = opengl->window.context.hDC;
+            graphicsBindingOpenGLWin32.hGLRC = opengl->window.context.hGLRC;
+            sessionCI.next = &graphicsBindingOpenGLWin32;
 #elif defined(XR_USE_PLATFORM_XLIB)
-        XrGraphicsBindingOpenGLXlibKHR graphicsBindingOpenGLXlib;
-        sessionCI.next = &graphicsBindingOpenGLXlib;
+            XrGraphicsBindingOpenGLXlibKHR graphicsBindingOpenGLXlib;
+            sessionCI.next = &graphicsBindingOpenGLXlib;
 #elif defined(XR_USE_PLATFORM_XCB)
-        XrGraphicsBindingOpenGLXcbKHR graphicsBindingOpenGLXcb;
-        sessionCI.next = &graphicsBindingOpenGLXcb;
+            XrGraphicsBindingOpenGLXcbKHR graphicsBindingOpenGLXcb;
+            sessionCI.next = &graphicsBindingOpenGLXcb;
 #elif defined(XR_USE_PLATFORM_WAYLAND)
-        XrGraphicsBindingOpenGLWaylandKHR graphicsBindingOpenGLWayland;
-        sessionCI.next = &graphicsBindingOpenGLWayland;
+            XrGraphicsBindingOpenGLWaylandKHR graphicsBindingOpenGLWayland;
+            sessionCI.next = &graphicsBindingOpenGLWayland;
 #endif
-#elif defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-#if defined(XR_USE_PLATFORM_ANDROID)
-        XrGraphicsBindingOpenGLESAndroidKHR graphicsBindingOpenGLESAndroid{XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR};
-        GraphicsAPI_OpenGLES opengles(instance, systemID);
-        graphicsBindingOpenGLESAndroid.display = opengles.window.display;
-        graphicsBindingOpenGLESAndroid.config = opengles.window.context.config;
-        graphicsBindingOpenGLESAndroid.context = opengles.window.context.context;
-        sessionCI.next = &graphicsBindingOpenGLESAndroid;
 #endif
-#elif defined(XR_USE_GRAPHICS_API_VULKAN)
-        XrGraphicsBindingVulkanKHR graphicsBindingVulkan{XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR};
-        GraphicsAPI_Vulkan vulkan(instance, systemID);
-        graphicsBindingVulkan.instance = vulkan.instance;
-        graphicsBindingVulkan.physicalDevice = vulkan.physicalDevice;
-        graphicsBindingVulkan.device = vulkan.device;
-        graphicsBindingVulkan.queueFamilyIndex = vulkan.queueFamilyIndex;
-        graphicsBindingVulkan.queueIndex = vulkan.queueIndex;
-        sessionCI.next = &graphicsBindingVulkan;
+        } else if (api == OPENGL_ES) {
+#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+            opengles = std::make_unique<GraphicsAPI_OpenGL_ES>(instance, systemID);
+            XrGraphicsBindingOpenGLESAndroidKHR graphicsBindingOpenGLESAndroid{XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR};
+            graphicsBindingOpenGLESAndroid.display = opengles->window.display;
+            graphicsBindingOpenGLESAndroid.config = opengles->window.context.config;
+            graphicsBindingOpenGLESAndroid.context = opengles->window.context.context;
+            sessionCI.next = &graphicsBindingOpenGLESAndroid;
 #endif
+        } else if (api == VULKAN) {
+#if defined(XR_USE_GRAPHICS_API_VULKAN)
+            vulkan = std::make_unique<GraphicsAPI_Vulkan>(instance, systemID);
+            XrGraphicsBindingVulkanKHR graphicsBindingVulkan{XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR};
+            graphicsBindingVulkan.instance = vulkan->instance;
+            graphicsBindingVulkan.physicalDevice = vulkan->physicalDevice;
+            graphicsBindingVulkan.device = vulkan->device;
+            graphicsBindingVulkan.queueFamilyIndex = vulkan->queueFamilyIndex;
+            graphicsBindingVulkan.queueIndex = vulkan->queueIndex;
+            sessionCI.next = &graphicsBindingVulkan;
+#endif
+        } else {
+            std::cout << "ERROR: Unknown Graphics API." << std::endl;
+            DEBUG_BREAK;
+        }
         sessionCI.createFlags = 0;
         sessionCI.systemId = systemID;
 
         OPENXR_CHECK(xrCreateSession(instance, &sessionCI, &session), "Failed to create Session.");
-        OPENXR_CHECK(xrDestroySession(session), "Failed to destroy Session.");
     }
+
     void DestroySession() {
+        OPENXR_CHECK(xrDestroySession(session), "Failed to destroy Session.");
     }
 
 private:
+    GraphicsAPI_Type api = UNKNOWN;
+
     XrInstance instance = {};
     std::vector<const char *> activeAPILayers = {};
     std::vector<const char *> activeInstanceExtensions = {};
@@ -316,13 +350,30 @@ private:
     std::vector<std::string> instanceExtensions = {};
     XrDebugUtilsMessengerEXT debugUtilsMessenger = {};
     XrSystemId systemID = {};
+
+#if defined(XR_USE_GRAPHICS_API_D3D11)
+    std::unique_ptr<GraphicsAPI_D3D11> d3d11 = nullptr;
+#endif
+#if defined(XR_USE_GRAPHICS_API_D3D12)
+    std::unique_ptr<GraphicsAPI_D3D12> d3d12 = nullptr;
+#endif
+#if defined(XR_USE_GRAPHICS_API_OPENGL)
+    std::unique_ptr<GraphicsAPI_OpenGL> opengl = nullptr;
+#endif
+#if defined(XR_USE_GRAPHICS_API_VULKAN)
+    std::unique_ptr<GraphicsAPI_Vulkan> vulkan = nullptr;
+#endif
+#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+    std::unique_ptr<GraphicsAPI_OpenGL_ES> opengles = nullptr;
+#endif
+
     XrSession session = {};
 };
 
 void OpenXRTutorial_Main() {
     std::cout << "OpenXR Tutorial Chapter 2.2." << std::endl;
 
-    OpenXRTutorial_Ch2_2 app;
+    OpenXRTutorial_Ch2_2 app(VULKAN);
     app.Run();
 }
 

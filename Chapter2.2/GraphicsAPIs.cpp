@@ -1,5 +1,17 @@
 #include "GraphicsAPIs.h"
 
+bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type) {
+#if defined(XR_USE_PLATFORM_WIN32)
+    return (type == D3D11) || (type == D3D12) || (type == OPENGL) || (type == VULKAN);
+#endif 
+#if defined(XR_USE_PLATFORM_XLIB) || defined(XR_USE_PLATFORM_XCB) || defined(XR_USE_PLATFORM_WAYLAND)
+    return (type == OPENGL) || (type == VULKAN);
+#endif
+#if defined(XR_USE_PLATFORM_ANDROID) || defined(XR_USE_PLATFORM_XCB) || defined(XR_USE_PLATFORM_WAYLAND)
+    return (type == OPENGL_ES) || (type == VULKAN);
+#endif
+}
+
 // D3D11
 #if defined(XR_USE_GRAPHICS_API_D3D11)
 
@@ -129,6 +141,40 @@ GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance xrInstance, XrSystemId systemI
     }
 }
 GraphicsAPI_OpenGL::~GraphicsAPI_OpenGL() {
+    ksGpuWindow_Destroy(&window);
+}
+#endif
+
+// OpenGL ES
+#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES(XrInstance xrInstance, XrSystemId systemId) {
+    OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetOpenGLESGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetOpenGLESGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
+    XrGraphicsRequirementsOpenGLESKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
+    OPENXR_CHECK(xrGetOpenGLESGraphicsRequirementsKHR(xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for OpenGLES.");
+
+    // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengles.cpp#L101-L119
+    // Initialize the gl extensions. Note we have to open a window.
+    ksDriverInstance driverInstance{};
+    ksGpuQueueInfo queueInfo{};
+    ksGpuSurfaceColorFormat colorFormat{KS_GPU_SURFACE_COLOR_FORMAT_B8G8R8A8};
+    ksGpuSurfaceDepthFormat depthFormat{KS_GPU_SURFACE_DEPTH_FORMAT_D24};
+    ksGpuSampleCount sampleCount{KS_GPU_SAMPLE_COUNT_1};
+    if (!ksGpuWindow_Create(&window, &driverInstance, &queueInfo, 0, colorFormat, depthFormat, sampleCount, 640, 480, false)) {
+        std::cout << "ERROR: OPENGL ES: Failed to create Context." << std::endl;
+    }
+
+    GLint glMajorVersion = 0;
+    GLint glMinorVersion = 0;
+    glGetIntegerv(GL_MAJOR_VERSION, &glMajorVersion);
+    glGetIntegerv(GL_MINOR_VERSION, &glMinorVersion);
+
+    const XrVersion glApiVersion = XR_MAKE_VERSION(glMajorVersion, glMinorVersion, 0);
+    if (graphicsRequirements.minApiVersionSupported > glApiVersion) {
+        std::cout << "ERROR: OPENGL ES: The created OpenGL ES version doesn't meet the minimum requried API version for OpenXR." << std::endl;
+    }
+}
+
+GraphicsAPI_OpenGL_ES::~GraphicsAPI_OpenGL_ES() {
     ksGpuWindow_Destroy(&window);
 }
 #endif
@@ -309,38 +355,5 @@ std::vector<std::string> GraphicsAPI_Vulkan::GetDeviceExtensionsForOpenXR(XrInst
         extensions.push_back(extension);
     }
     return extensions;
-}
-#endif
-
-#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-GraphicsAPI_OpenGLES::GraphicsAPI_OpenGLES(XrInstance xrInstance, XrSystemId systemId) {
-    OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetOpenGLESGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetOpenGLESGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
-    XrGraphicsRequirementsOpenGLESKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
-    OPENXR_CHECK(xrGetOpenGLESGraphicsRequirementsKHR(xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for OpenGLES.");
-
-    // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengles.cpp#L101-L119
-    // Initialize the gl extensions. Note we have to open a window.
-    ksDriverInstance driverInstance{};
-    ksGpuQueueInfo queueInfo{};
-    ksGpuSurfaceColorFormat colorFormat{KS_GPU_SURFACE_COLOR_FORMAT_B8G8R8A8};
-    ksGpuSurfaceDepthFormat depthFormat{KS_GPU_SURFACE_DEPTH_FORMAT_D24};
-    ksGpuSampleCount sampleCount{KS_GPU_SAMPLE_COUNT_1};
-    if (!ksGpuWindow_Create(&window, &driverInstance, &queueInfo, 0, colorFormat, depthFormat, sampleCount, 640, 480, false)) {
-        std::cout << "ERROR: OPENGL ES: Failed to create Context." << std::endl;
-    }
-
-    GLint glMajorVersion = 0;
-    GLint glMinorVersion = 0;
-    glGetIntegerv(GL_MAJOR_VERSION, &glMajorVersion);
-    glGetIntegerv(GL_MINOR_VERSION, &glMinorVersion);
-
-    const XrVersion glApiVersion = XR_MAKE_VERSION(glMajorVersion, glMinorVersion, 0);
-    if (graphicsRequirements.minApiVersionSupported > glApiVersion) {
-        std::cout << "ERROR: OPENGL ES: The created OpenGLES version doesn't meet the minimum requried API version for OpenXR." << std::endl;
-    }
-}
-
-GraphicsAPI_OpenGLES::~GraphicsAPI_OpenGLES() {
-    ksGpuWindow_Destroy(&window);
 }
 #endif

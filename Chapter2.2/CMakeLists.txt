@@ -32,7 +32,7 @@ if (ANDROID)
     find_library(vulkan-lib vulkan)
     target_include_directories(openxrtutorialch2_2 PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
 
-    # openxr-gfxwrapper - Manually build from OpenXR
+    # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
     add_library(openxr-gfxwrapper STATIC ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.c ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.h)
     target_include_directories(openxr-gfxwrapper PUBLIC ${openxr_SOURCE_DIR}/external/include)
     find_library(GLES3-lib GLESv3)
