@@ -268,6 +268,8 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemI
 }
 
 GraphicsAPI_Vulkan::~GraphicsAPI_Vulkan() {
+    vkDestroyDevice(device, nullptr);
+    vkDestroyInstance(instance, nullptr);
 }
 
 void GraphicsAPI_Vulkan::LoadPFN_XrFunctions(XrInstance xrInstance) {
