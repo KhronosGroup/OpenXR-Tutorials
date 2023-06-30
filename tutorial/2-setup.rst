@@ -1,5 +1,5 @@
 #####
-Setup
+2 Setup
 #####
 
 Select your platform, as the instructions are different depending on your selection.
@@ -73,7 +73,7 @@ Select your platform, as the instructions are different depending on your select
 
 	.. figure:: android-studio-newproject.png
 		:alt: Android Studio - New Project - Empty Activity.
-		:align: right
+		:align: left
 
 	.. rubric:: CMake
 
@@ -82,19 +82,19 @@ Select your platform, as the instructions are different depending on your select
 
 	.. rubric:: colors.xml
 
-	.. literalinclude:: ../Chapter2.1_Android/app/src/main/res/values/colors.xml
+	.. literalinclude:: ../Chapter2.1/app/src/main/res/values/colors.xml
 		:language: xml
 
 	.. rubric:: styles.xml
 
-	.. literalinclude:: ../Chapter2.1_Android/app/src/main/res/values/styles.xml
+	.. literalinclude:: ../Chapter2.1/app/src/main/res/values/styles.xml
 		:language: xml
 
 	Within the ``app/src/main/cpp`` folder, create a ``CMakeLists.txt``. We will use this file to specific how our Native C++ code will be built. This ``CMakeLists.txt`` file will be invoked by Android Studio's Gradle build system. 
 
 	.. rubric:: CMakeLists.txt
 
-	.. literalinclude:: ../Chapter2.1_Android/app/src/main/cpp/CMakeLists.txt
+	.. literalinclude:: ../Chapter2.1/app/src/main/cpp/CMakeLists.txt
 		:language: cmake 
 		
 	First, we set the minimum required cmake version, here we are using 3.22.1 and the project's name. Next, we need to add a static library called native_app_glue. The native_app_glue library is compiled from a single source file ``android_native_app_glue.c``. This interfaces between the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``void android_main(struct android_app*)`` entry point. We also include that directory as we need access to the android_native_app_glue.h header file. Next, we need to set the ``CMAKE_SHARED_LINKER_FLAGS`` so that ``ANativeActivity_onCreate()`` is exported for the Java Virtual Machine to call. Next, we add our shared library openxrtutorialch2 that houses our code. Here, I have a relative path to our single C++ file.
@@ -103,7 +103,7 @@ Select your platform, as the instructions are different depending on your select
 
 	.. rubric:: AndroidManifest.xml
 
-	.. literalinclude:: ../Chapter2.1_Android/app/src/main/AndroidManifest.xml
+	.. literalinclude:: ../Chapter2.1/app/src/main/AndroidManifest.xml
 		:language: xml
 
 	We now need to modify our ``AndroidManifest.xml`` file to tell Android to run a Native Activity. We set ``android:name`` to "android.app.NativeActivity" and update ``android:configChanges`` to "orientation|keyboardHidden" to not close the activity on those changes. Next under the meta-data section, we set these values: ``android:name`` to "android.app.lib_name" and ``android:value`` to "openxrtutorialch2", where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
@@ -112,12 +112,12 @@ Select your platform, as the instructions are different depending on your select
 
 	.. rubric:: Gradle
 
-	.. literalinclude:: ../Chapter2.1_Android/app/build.gradle
+	.. literalinclude:: ../Chapter2.1/app/build.gradle
 		:language: groovy
 	
 	Now, we can config our ``build.gradle`` file in the ``app`` folder. First remove any references to Java, Kotlin and to testing. Next add in the ``externalNativeBuild`` section specifying CMake, its version and the location of the CMakeLists.txt that we created earlier. Also specify under the ``ndk`` section the ``abiFilters``. We will just be using arm64-v8a in this tutorial. ``ndkVersion`` should also be specified.
 
-	.. literalinclude:: ../Chapter2.1_Android/build.gradle
+	.. literalinclude:: ../Chapter2.1/build.gradle
 		:language: groovy
 
 	Now, we can config our ``build.gradle`` file in the root folder of the project. This is a complete replacement the default one provided by Android Studio. This file stipulates the repositories and gradle version to be used.
@@ -157,7 +157,7 @@ Next, we'll add the DEBUG_BREAK macro:
 
 This defines the macro ``DEBUG_BREAK``, according to which platform we're building for. This macro will
 stop execution of your program when an error occurs, so you can see where it happened and fix it.
-We use this macro in the ``OpenXRMessageCallbackFunction()`` function, which we will discuss in :doc:`Chapter 5.2. <extensions>` 
+We use this macro in the ``OpenXRMessageCallbackFunction()`` function, which we will discuss in :doc:`Chapter 5.2. <5-extensions>` 
 
 .. literalinclude:: ../Chapter2.1/main.cpp
 	:language: cpp
@@ -228,7 +228,7 @@ Then, we create the actual platform specific main function (our entry point to t
 
 	.. figure:: cmake-tutorial2-1.png
 		:alt: Select 
-		:align: right
+		:align: left
 
 	Now, we must tell the tutorial project where to find the OpenXR-SDK, which we built in Section 1.
 	Click on the variable ``OPENXR_DIR`` and type in or browse to the location of the OpenXR-SDK repository you downloaded

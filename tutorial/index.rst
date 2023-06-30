@@ -48,15 +48,14 @@ device.
 
 
 .. toctree::
-	:numbered:
 	:maxdepth: 4
 	:caption: Contents:
 
-	introduction
-	setup
-	graphics
-	actions
-	extensions
+	1-introduction
+	2-setup
+	3-graphics
+	4-actions
+	5-extensions
 
 
    
