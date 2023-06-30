@@ -32,11 +32,24 @@ if (ANDROID)
     find_library(vulkan-lib vulkan)
     target_include_directories(openxrtutorialch2_2 PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
 
+    # openxr-gfxwrapper - Manually build from OpenXR
+    add_library(openxr-gfxwrapper STATIC ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.c ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.h)
+    target_include_directories(openxr-gfxwrapper PUBLIC ${openxr_SOURCE_DIR}/external/include)
+    find_library(GLES3-lib GLESv3)
+    find_library(EGL-lib EGL)
+    target_link_libraries(openxr-gfxwrapper PUBLIC ${GLES3-lib})
+    target_link_libraries(openxr-gfxwrapper PUBLIC ${EGL-lib})
+
+    target_include_directories(openxrtutorialch2_2 PUBLIC ${openxr_SOURCE_DIR}/src/common)
+    target_include_directories(openxrtutorialch2_2 PUBLIC ${openxr_SOURCE_DIR}/external/include)
+
+    # Final link
     target_link_libraries(openxrtutorialch2_2
             android
             native_app_glue
             openxr_loader
-            ${vulkan-lib})
+            ${vulkan-lib}
+            openxr-gfxwrapper)
 
 else()
     add_executable(Chapter_2_2 ${SOURCES} ${HEADERS})

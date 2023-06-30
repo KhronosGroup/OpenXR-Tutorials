@@ -13,8 +13,8 @@
 
 // #define XR_USE_GRAPHICS_API_D3D11
 // #define XR_USE_GRAPHICS_API_D3D12
-#define XR_USE_GRAPHICS_API_OPENGL
-// #define XR_USE_GRAPHICS_API_VULKAN
+// #define XR_USE_GRAPHICS_API_OPENGL
+#define XR_USE_GRAPHICS_API_VULKAN
 #endif
 
 #if defined(__LINIX__)
@@ -31,7 +31,7 @@
 #define XR_USE_PLATFORM_ANDROID
 
 #define XR_USE_GRAPHICS_API_OPENGL_ES
-#define XR_USE_GRAPHICS_API_VULKAN
+// #define XR_USE_GRAPHICS_API_VULKAN
 #endif
 
 // Graphic APIs headers
@@ -55,6 +55,10 @@
 
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
 #include "vulkan/vulkan.h"
+#endif
+
+#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+#include "gfxwrapper_opengl.h"
 #endif
 
 // OpenXR
@@ -137,6 +141,14 @@ private:
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
 class GraphicsAPI_OpenGLES {
+public:
+    GraphicsAPI_OpenGLES(XrInstance xrInstance, XrSystemId systemId);
+    ~GraphicsAPI_OpenGLES();
+
+    ksGpuWindow window{};
+
+private:
+    PFN_xrGetOpenGLESGraphicsRequirementsKHR xrGetOpenGLESGraphicsRequirementsKHR = nullptr;
 };
 #endif
 

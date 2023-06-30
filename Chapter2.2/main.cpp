@@ -282,7 +282,11 @@ private:
 #endif
 #elif defined(XR_USE_GRAPHICS_API_OPENGL_ES)
 #if defined(XR_USE_PLATFORM_ANDROID)
-        XrGraphicsBindingOpenGLESAndroidKHR graphicsBindingOpenGLESAndroid;
+        XrGraphicsBindingOpenGLESAndroidKHR graphicsBindingOpenGLESAndroid{XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR};
+        GraphicsAPI_OpenGLES opengles(instance, systemID);
+        graphicsBindingOpenGLESAndroid.display = opengles.window.display;
+        graphicsBindingOpenGLESAndroid.config = opengles.window.context.config;
+        graphicsBindingOpenGLESAndroid.context = opengles.window.context.context;
         sessionCI.next = &graphicsBindingOpenGLESAndroid;
 #endif
 #elif defined(XR_USE_GRAPHICS_API_VULKAN)
