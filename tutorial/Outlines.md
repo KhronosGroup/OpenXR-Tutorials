@@ -70,3 +70,14 @@ Discuss the use of multiple layer and XR compositor and the compositing modes, w
 Describe the usage of xrAcquireSwapchainImage(), xrWaitSwapchainImage() and xrReleaseSwapchainImage() in rendering to one of the images in swapchain.
 Explain and show code examples for Multiview/ViewInstancing rendering in all APIs (except D3D11), otherwise use normal instanced rendering (This might be in Chapter 4).
 Show calling the Graphics APIs's 'Clear Image/ImageView' function and providing the image back to the swapchain, ending the OpenXR frame for the compositor and runtime to display the image to the screen(s).
+
+## Chapter 5.1 Using Extensions and Layers
+Discuss the reasoning of having an extensible and layered API, i.e. more portability/platform options, future extensibilities, vendor hardware/software support, API debugging and captures files etc. 
+Show the usage of xrEnumerateApiLayerProperties() and xrEnumerateInstanceExtensionProperties(). Show loading in funtion pointers with xrGetInstanceProcAddr() for functions that are not automatically loaded by the Loader - some function don't require an XrInstance.
+Link to OpenXR specification extension section for research and reference documentation on extension and layers.
+
+## Chapter 5.2 Using xrCreateDebugUtilsMessengerEXT
+Introduce the issue that Debug Utils Messenger addresses and describe the extension.
+Show code checks for the extension in the submitted extension list when we created the XrInstance.
+Discuss loading the function pointers from the instance with xrGetInstanceProcAddr() (a quick recap from Chapter 5.1) in order to create and destroy the XrDebugUtilsMessenger.
+Use XrDebugUtilsMessengerCreateInfoEXT to create the XrDebugUtilsMessenger. Discuss the PFN_xrDebugUtilsMessengerCallbackEXT callback function. Show a suitable function and discuss the requirements of the return value and the usage of the parameters.
