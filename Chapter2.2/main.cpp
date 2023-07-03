@@ -174,9 +174,7 @@ private:
         uint32_t apiLayerCount = 0;
         std::vector<XrApiLayerProperties> apiLayerProperties;
         OPENXR_CHECK(xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr), "Failed to enumerate ApiLayerProperties.");
-        apiLayerProperties.resize(apiLayerCount);
-        for (auto &apiLayerProperty : apiLayerProperties)
-            apiLayerProperty.type = XR_TYPE_API_LAYER_PROPERTIES;
+        apiLayerProperties.resize(apiLayerCount, {XR_TYPE_API_LAYER_PROPERTIES});
 
         OPENXR_CHECK(xrEnumerateApiLayerProperties(apiLayerCount, &apiLayerCount, apiLayerProperties.data()), "Failed to enumerate ApiLayerProperties.");
         for (auto &requestLayer : apiLayers) {
@@ -193,9 +191,7 @@ private:
         uint32_t extensionCount = 0;
         std::vector<XrExtensionProperties> extensionProperties;
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, 0, &extensionCount, nullptr), "Failed to enumerate InstanceExtensionProperties.");
-        extensionProperties.resize(extensionCount);
-        for (auto &extensionProperty : extensionProperties)
-            extensionProperty.type = XR_TYPE_EXTENSION_PROPERTIES;
+        extensionProperties.resize(extensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
 
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
         for (auto &requestExtension : instanceExtensions) {
