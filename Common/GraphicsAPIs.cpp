@@ -3,13 +3,42 @@
 bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type) {
 #if defined(XR_USE_PLATFORM_WIN32)
     return (type == D3D11) || (type == D3D12) || (type == OPENGL) || (type == VULKAN);
-#endif 
+#endif
 #if defined(XR_USE_PLATFORM_XLIB) || defined(XR_USE_PLATFORM_XCB) || defined(XR_USE_PLATFORM_WAYLAND)
     return (type == OPENGL) || (type == VULKAN);
 #endif
 #if defined(XR_USE_PLATFORM_ANDROID) || defined(XR_USE_PLATFORM_XCB) || defined(XR_USE_PLATFORM_WAYLAND)
     return (type == OPENGL_ES) || (type == VULKAN);
 #endif
+}
+
+const char *GetGraphicsAPIInstanceExtensionString(GraphicsAPI_Type type) {
+    if (type == D3D11) {
+#if defined(XR_USE_GRAPHICS_API_D3D11)
+        return XR_KHR_D3D11_ENABLE_EXTENSION_NAME;
+#endif
+    } else if (type == D3D12) {
+#if defined(XR_USE_GRAPHICS_API_D3D12)
+        return XR_KHR_D3D12_ENABLE_EXTENSION_NAME;
+#endif
+    } else if (type == OPENGL) {
+#if defined(XR_USE_GRAPHICS_API_OPENGL)
+        return XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
+#endif
+    } else if (type == OPENGL_ES) {
+#if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+        return XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME;
+#endif
+    } else if (type == VULKAN) {
+#if defined(XR_USE_GRAPHICS_API_VULKAN)
+        return XR_KHR_VULKAN_ENABLE_EXTENSION_NAME;
+#endif
+    } else {
+        std::cout << "ERROR: Unknown Graphics API." << std::endl;
+        DEBUG_BREAK;
+        return nullptr;
+    }
+    return nullptr;
 }
 
 // D3D11
@@ -56,6 +85,12 @@ GraphicsAPI_D3D11::~GraphicsAPI_D3D11() {
     D3D11_SAFE_RELEASE(immediateContext);
     D3D11_SAFE_RELEASE(device);
     D3D11_SAFE_RELEASE(factory);
+}
+
+void *GraphicsAPI_D3D11::GetGraphicsBinding() {
+    graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
+    graphicsBinding.device = device;
+    return &graphicsBinding;
 }
 #endif
 
@@ -110,6 +145,13 @@ GraphicsAPI_D3D12 ::~GraphicsAPI_D3D12() {
     D3D12_SAFE_RELEASE(device);
     D3D12_SAFE_RELEASE(queue);
 }
+
+void *GraphicsAPI_D3D12::GetGraphicsBinding() {
+    graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_D3D12_KHR};
+    graphicsBinding.device = device;
+    graphicsBinding.queue = queue;
+    return &graphicsBinding;
+}
 #endif
 
 // OpenGL
@@ -142,6 +184,37 @@ GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance xrInstance, XrSystemId systemI
 }
 GraphicsAPI_OpenGL::~GraphicsAPI_OpenGL() {
     ksGpuWindow_Destroy(&window);
+}
+
+void *GraphicsAPI_OpenGL::GetGraphicsBinding() {
+    // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengl.cpp#L123-L144
+#if defined(XR_USE_PLATFORM_WIN32)
+    graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR};
+    graphicsBinding.hDC = window.context.hDC;
+    graphicsBinding.hGLRC = window.context.hGLRC;
+#elif defined(XR_USE_PLATFORM_XLIB)
+    graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR};
+    graphicsBinding.xDisplay = window.context.xDisplay;
+    graphicsBinding.visualid = window.context.visualid;
+    graphicsBinding.glxFBConfig = window.context.glxFBConfig;
+    graphicsBinding.glxDrawable = window.context.glxDrawable;
+    graphicsBinding.glxContext = window.context.glxContext;
+#elif defined(XR_USE_PLATFORM_XCB)
+    graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_XCB_KHR};
+    // TODO: Still missing the platform adapter, and some items to make this usable.
+    graphicsBinding.connection = window.connection;
+    // m_graphicsBinding.screenNumber = window.context.screenNumber;
+    // m_graphicsBinding.fbconfigid = window.context.fbconfigid;
+    graphicsBinding.visualid = window.context.visualid;
+    graphicsBinding.glxDrawable = window.context.glxDrawable;
+    // m_graphicsBinding.glxContext = window.context.glxContext;
+#elif defined(XR_USE_PLATFORM_WAYLAND)
+    // TODO: Just need something other than NULL here for now (for validation).  Eventually need
+    //       to correctly put in a valid pointer to an wl_display
+    graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND};
+    graphicsBinding.display = reinterpret_cast<wl_display *>(0xFFFFFFFF);
+#endif
+    return &graphicsBinding;
 }
 #endif
 
@@ -176,6 +249,14 @@ GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES(XrInstance xrInstance, XrSystemId s
 
 GraphicsAPI_OpenGL_ES::~GraphicsAPI_OpenGL_ES() {
     ksGpuWindow_Destroy(&window);
+}
+
+void *GraphicsAPI_OpenGL_ES::GetGraphicsBinding() {
+    graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR};
+    graphicsBinding.display = window.display;
+    graphicsBinding.config = window.context.config;
+    graphicsBinding.context = window.context.context;
+    return &graphicsBinding;
 }
 #endif
 
@@ -316,6 +397,16 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemI
 GraphicsAPI_Vulkan::~GraphicsAPI_Vulkan() {
     vkDestroyDevice(device, nullptr);
     vkDestroyInstance(instance, nullptr);
+}
+
+void *GraphicsAPI_Vulkan::GetGraphicsBinding() {
+    graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR};
+    graphicsBinding.instance = instance;
+    graphicsBinding.physicalDevice = physicalDevice;
+    graphicsBinding.device = device;
+    graphicsBinding.queueFamilyIndex = queueFamilyIndex;
+    graphicsBinding.queueIndex = queueIndex;
+    return &graphicsBinding;
 }
 
 void GraphicsAPI_Vulkan::LoadPFN_XrFunctions(XrInstance xrInstance) {

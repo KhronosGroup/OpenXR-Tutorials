@@ -1,8 +1,5 @@
 #pragma once
-
-#include <iostream>
-#include <sstream>
-#include <vector>
+#include "HelperFunctions.h"
 
 // Platform headers
 #if defined(_WIN32)
@@ -62,8 +59,7 @@
 #endif
 
 // OpenXR
-#include "openxr/openxr.h"
-#include "openxr/openxr_platform.h"
+#include "OpenXRHelper.h"
 
 enum GraphicsAPI_Type : uint8_t {
     UNKNOWN,
@@ -76,76 +72,105 @@ enum GraphicsAPI_Type : uint8_t {
 
 bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type);
 
+const char* GetGraphicsAPIInstanceExtensionString(GraphicsAPI_Type type);
+
+class GraphicsAPI {
+public:
+    virtual ~GraphicsAPI() = default;
+
+    virtual void* GetGraphicsBinding() = 0;
+};
+
 #if defined(XR_USE_GRAPHICS_API_D3D11)
-class GraphicsAPI_D3D11 {
+class GraphicsAPI_D3D11 : public GraphicsAPI {
 public:
     GraphicsAPI_D3D11(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_D3D11();
 
-public:
+    virtual void* GetGraphicsBinding() override;
+
+private:
     IDXGIFactory1* factory = nullptr;
     ID3D11Device* device = nullptr;
     ID3D11DeviceContext* immediateContext = nullptr;
 
-private:
     PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR = nullptr;
+    XrGraphicsBindingD3D11KHR graphicsBinding{};
 };
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_D3D12)
-class GraphicsAPI_D3D12 {
+class GraphicsAPI_D3D12 : public GraphicsAPI {
 public:
     GraphicsAPI_D3D12(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_D3D12();
 
-public:
+    virtual void* GetGraphicsBinding() override;
+
+private:
     IDXGIFactory4* factory = nullptr;
     ID3D12Device* device = nullptr;
     ID3D12CommandQueue* queue = nullptr;
 
-private:
     PFN_xrGetD3D12GraphicsRequirementsKHR xrGetD3D12GraphicsRequirementsKHR = nullptr;
+    XrGraphicsBindingD3D12KHR graphicsBinding{};
 };
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
-class GraphicsAPI_OpenGL {
+class GraphicsAPI_OpenGL : public GraphicsAPI {
 public:
     GraphicsAPI_OpenGL(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_OpenGL();
 
-    ksGpuWindow window{};
+    virtual void* GetGraphicsBinding() override;
 
 private:
+    ksGpuWindow window{};
+
     PFN_xrGetOpenGLGraphicsRequirementsKHR xrGetOpenGLGraphicsRequirementsKHR = nullptr;
+#if defined(XR_USE_PLATFORM_WIN32)
+    XrGraphicsBindingOpenGLWin32KHR graphicsBinding{};
+#elif defined(XR_USE_PLATFORM_XLIB)
+    XrGraphicsBindingOpenGLXlibKHR graphicsBinding{};
+#elif defined(XR_USE_PLATFORM_XCB)
+    XrGraphicsBindingOpenGLXcbKHR graphicsBinding{};
+#elif defined(XR_USE_PLATFORM_WAYLAND)
+    XrGraphicsBindingOpenGLWaylandKHR graphicsBinding{};
+#endif
 };
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-class GraphicsAPI_OpenGL_ES {
+class GraphicsAPI_OpenGL_ES : public GraphicsAPI {
 public:
     GraphicsAPI_OpenGL_ES(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_OpenGL_ES();
 
-    ksGpuWindow window{};
+    virtual void* GetGraphicsBinding() override;
 
 private:
+    ksGpuWindow window{};
+
     PFN_xrGetOpenGLESGraphicsRequirementsKHR xrGetOpenGLESGraphicsRequirementsKHR = nullptr;
+    XrGraphicsBindingOpenGLESAndroidKHR graphicsBinding{};
 };
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
-class GraphicsAPI_Vulkan {
+class GraphicsAPI_Vulkan : public GraphicsAPI {
 public:
     GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_Vulkan();
+
+    virtual void* GetGraphicsBinding() override;
 
 private:
     void LoadPFN_XrFunctions(XrInstance xrInstance);
     std::vector<std::string> GetInstanceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId);
     std::vector<std::string> GetDeviceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId);
 
-public:
+private:
     VkInstance instance{};
     VkPhysicalDevice physicalDevice{};
     VkDevice device{};
@@ -155,20 +180,10 @@ public:
     std::vector<const char*> activeInstanceExtensions{};
     std::vector<const char*> activeDeviceExtensions{};
 
-private:
     PFN_xrGetVulkanGraphicsRequirementsKHR xrGetVulkanGraphicsRequirementsKHR = nullptr;
     PFN_xrGetVulkanInstanceExtensionsKHR xrGetVulkanInstanceExtensionsKHR = nullptr;
     PFN_xrGetVulkanDeviceExtensionsKHR xrGetVulkanDeviceExtensionsKHR = nullptr;
     PFN_xrGetVulkanGraphicsDeviceKHR xrGetVulkanGraphicsDeviceKHR = nullptr;
+    XrGraphicsBindingVulkanKHR graphicsBinding{};
 };
 #endif
-
-// XR_DOCS_TAG_BEGIN_Helper_Functions0
-#define OPENXR_CHECK(x, y)                                                       \
-    {                                                                            \
-        XrResult result = (x);                                                   \
-        if (!XR_SUCCEEDED(result)) {                                             \
-            std::cout << "ERROR: OPENXR: (" << result << ") " << y << std::endl; \
-        }                                                                        \
-    }
-// XR_DOCS_TAG_END_Helper_Functions0
