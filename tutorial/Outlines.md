@@ -21,7 +21,7 @@ Again, appropriate diagrams, matching site colour scheme and design.
 ## Chapter 1.3 Setting Up
 Rename 1.3 to "Setting up a Development Environment"? Move to Chapter 2?
 Highly platform-dependent. Also API-dependent.
-Perhaps: separate tabs for Windows GL, WIndows D3D12, Windows Vulkan etc.
+Separate tabs for Windows GL, WIndows D3D12, Windows Vulkan etc.
 Where to get the SDK.
 What dependencies are required, and where to get them. Again, highly platform- and API-dependent.
 Introduce CMake and briefly explain its use.
