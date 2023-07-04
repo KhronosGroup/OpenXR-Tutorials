@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.simul.openxrtutorialch2_2"
+    package="com.simul.OpenXRTutorialChapter2"
     android:versionCode="1"
     android:versionName="1.0">
 
@@ -16,7 +16,7 @@
             android:debuggable="true">
             <meta-data
                 android:name="android.app.lib_name"
-                android:value="openxrtutorialch2_2" />
+                android:value="OpenXRTutorialChapter2" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
