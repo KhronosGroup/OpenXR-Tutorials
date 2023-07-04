@@ -22,10 +22,10 @@ Again, appropriate diagrams, matching site colour scheme and design.
 Rename 1.3 to "Setting up a Development Environment"? Move to Chapter 2?
 Highly platform-dependent. Also API-dependent.
 Separate tabs for Windows GL, WIndows D3D12, Windows Vulkan etc.
-Where to get the SDK.
-What dependencies are required, and where to get them. Again, highly platform- and API-dependent.
+Where/how to get the SDK: FetchContent, say what it does.
+What dependencies are required, and where to get them. Again, highly platform- and API-dependent. Refer to FetchContent where appropriate, not too much detail.
 Introduce CMake and briefly explain its use.
-For Android, discuss gradle files.
+For Android, discuss gradle files, their structure and links to CMake.
 
 ## Chapter 2
 There is substantial "Setup" that we expect to be needed before "Creating an XrInstance". Perhaps a whole subsection 2.1 on creating CMake projects and building on PC/Linux or building for Android?
@@ -70,6 +70,25 @@ Discuss the use of multiple layer and XR compositor and the compositing modes, w
 Describe the usage of xrAcquireSwapchainImage(), xrWaitSwapchainImage() and xrReleaseSwapchainImage() in rendering to one of the images in swapchain.
 Explain and show code examples for Multiview/ViewInstancing rendering in all APIs (except D3D11), otherwise use normal instanced rendering (This might be in Chapter 4).
 Show calling the Graphics APIs's 'Clear Image/ImageView' function and providing the image back to the swapchain, ending the OpenXR frame for the compositor and runtime to display the image to the screen(s).
+
+# Chapter 4: ACTIONS
+General description of Actions as a concept in OpenXR.
+
+## Chapter 4.1 Spaces
+Introduce the concept of Spaces, their purpose and their lifetime.
+Describe the types of space: view, local, (important) Stage Space.
+Example code to create a local space for hands, xrLocateSpace. tracking.
+
+## Chapter 4.2 Interactions
+Introduce the concept of Interactions, interaction profiles and bindings.
+Example code creates the actions/interactions, particular attention to where in the lifecycle of the application this is done.
+Possibly refer to external resources on interaction bindings, or include our table (https://docs.google.com/spreadsheets/d/1w4Me9_yG_TNho4Gmelrc9ILYtG1TELoxCXc622xUiVM/edit#gid=1366774089) as a link or appendix.
+## Chapter 4.3 Creating actions/actionSets.
+Describe types of action: floats, vectors, booleans, poses. Example code for at least poses and booleans. link hand pose to cube position.
+## Chapter 4.4 Checking if a controller is connected.
+Example code of controller detection and fallback behaviour.
+
+# Chapter 5: EXTENSIONS
 
 ## Chapter 5.1 Using Extensions and Layers
 Discuss the reasoning of having an extensible and layered API, i.e. more portability/platform options, future extensibilities, vendor hardware/software support, API debugging and captures files etc. 
