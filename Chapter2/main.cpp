@@ -4,7 +4,7 @@
 #include "GraphicsAPIs.h"
 #include "OpenXRDebugUtils.h"
 
-#define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_2
+#define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
 
 class OpenXRTutorialChapter2 {
 public:
@@ -26,6 +26,21 @@ public:
 
         if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2) {
             CreateSession();
+
+            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3) {
+                while (applicationRunning) {
+
+#if defined(__ANDROID__)
+                    PollAndroidEvents();
+#endif
+
+                    PollEvents();
+                    if (sessionRunning) {
+                        // Draw Frame.
+                    }
+                }
+            }
+
             DestroySession();
         }
 
@@ -129,7 +144,7 @@ private:
 
     void GetSystemID() {
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
-        systemGI.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
+        systemGI.formFactor = formFactor;
         OPENXR_CHECK(xrGetSystem(instance, &systemGI, &systemID), "Failed to get SystemID.");
 
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
@@ -174,19 +189,110 @@ private:
         OPENXR_CHECK(xrDestroySession(session), "Failed to destroy Session.");
     }
 
+    void PollEvents() {
+        XrResult result = XR_SUCCESS;
+        do {
+            XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
+            result = xrPollEvent(instance, &eventData);
+
+            switch (eventData.type) {
+            case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
+                XrEventDataEventsLost *eventsLost = reinterpret_cast<XrEventDataEventsLost *>(&eventData);
+                std::cout << "WARN: OPENXR: Events Lost: " << eventsLost->lostEventCount << std::endl;
+                break;
+            }
+            case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING: {
+                XrEventDataInstanceLossPending *instanceLossPending = reinterpret_cast<XrEventDataInstanceLossPending *>(&eventData);
+                std::cout << "WARN: OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime << std::endl;
+                sessionRunning = false;
+                applicationRunning = false;
+                break;
+            }
+            case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
+                XrEventDataInteractionProfileChanged *interactionProfileChanged = reinterpret_cast<XrEventDataInteractionProfileChanged *>(&eventData);
+                std::cout << "WARN: OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
+                break;
+            }
+            case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
+                XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
+                std::cout << "WARN: OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
+                break;
+            }
+            case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
+                XrEventDataSessionStateChanged *sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged *>(&eventData);
+
+                if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
+                    XrSessionBeginInfo sessionBeginInfo{XR_TYPE_SESSION_BEGIN_INFO};
+                    sessionBeginInfo.primaryViewConfigurationType = viewConfiguration;
+                    OPENXR_CHECK(xrBeginSession(session, &sessionBeginInfo), "Failed to begin Session.");
+                    sessionRunning = true;
+                }
+                if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
+                    OPENXR_CHECK(xrEndSession(session), "Failed to end Session.");
+                    sessionRunning = false;
+                }
+                if (sessionStateChanged->state == XR_SESSION_STATE_EXITING) {
+                    sessionRunning = false;
+                    applicationRunning = false;
+                }
+                sessionState = sessionStateChanged->state;
+                break;
+            }
+            default: {
+                break;
+            }
+            }
+
+        } while (result == XR_SUCCESS);
+    }
+
+#if defined(__ANDROID__)
+public:
+    static android_app *app;
 private:
-    GraphicsAPI_Type apiType = UNKNOWN;
+    void PollAndroidEvents() {
+        /*if (app->destroyRequested == 0) {
+            applicationRunning = false;
+            return;
+        }*/
+        while(true) {
+            struct android_poll_source* source;
+            int events;
+            const int timeoutMilliseconds = (!sessionRunning && app->destroyRequested == 0) ? -1 : 0;
+            if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void**)&source) >= 0) {
+                if (source != nullptr) {
+                    source->process(app, source);
+                }
+            } else {
+                break;
+            }
+
+        }
+    }
+#endif
+
+private:
 
     XrInstance instance = {};
     std::vector<const char *> activeAPILayers = {};
     std::vector<const char *> activeInstanceExtensions = {};
     std::vector<std::string> apiLayers = {};
     std::vector<std::string> instanceExtensions = {};
+
     XrDebugUtilsMessengerEXT debugUtilsMessenger = {};
+
+    XrFormFactor formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     XrSystemId systemID = {};
 
+    GraphicsAPI_Type apiType = UNKNOWN;
     std::unique_ptr<GraphicsAPI> graphicsAPI = nullptr;
+
+    XrViewConfigurationType viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+
     XrSession session = {};
+    XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
+    bool applicationRunning = true;
+    bool sessionRunning = false;
 };
 
 void OpenXRTutorial_Main() {
@@ -203,6 +309,7 @@ int main(int argc, char **argv) {
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
+android_app *OpenXRTutorialChapter2::app = nullptr;
 // XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 void android_main(struct android_app *app) {
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
@@ -216,6 +323,7 @@ void android_main(struct android_app *app) {
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
     OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
 
+    OpenXRTutorialChapter2::app = app;
     OpenXRTutorial_Main();
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__
