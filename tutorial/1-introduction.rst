@@ -3,7 +3,7 @@
 ############
 
 **************
-Goal of OpenXR
+1.1 Goal of OpenXR
 **************
 
 OpenXR aims to help solve the fragmentation of the XR ecosystem. Before the advent of OpenXR, software developers working with multiple
@@ -28,7 +28,7 @@ allows you to write code that works with multiple XR platforms, with minimal ada
 
 
 ********
-Overview
+1.2 Overview
 ********
 
 We'll start with the main concepts you'll need to be familiar with around OpenXR.
@@ -83,7 +83,7 @@ OpenXR supports multiple graphics APIs via its extension functionality. Like in 
 OpenXR recognised that there is vast and ever changing array of hardware and configurations in the XR space. With new headsets and contollers coming to the market, an abstraction of the input system was needed so that same application can target difference and newer hardware. The abstraction is done via the concept of an ``XrAction``, which acts as handle to interactive elements of the application. Instead of directly querying the state of any one button, joysticks, trigger, touch pad etc., you create an ``XrAction`` for a specific action such as a "menu_click". You provide a suggested binding along with an interaction profile so that OpenXR can link that action with the available input hardware at runtime.
 
 **********
-Setting Up
+1.3 Setting Up
 **********
 
 This section will help you set up your development environment. Here your choice of platform really makes a difference. After that, things will be much more consistent.
