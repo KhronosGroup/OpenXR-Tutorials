@@ -90,11 +90,11 @@ Select your platform, as the instructions are different depending on your select
 	.. literalinclude:: ../Chapter2.1/app/src/main/res/values/styles.xml
 		:language: xml
 
-	Within the ``app/src/main/cpp`` folder, create a ``CMakeLists.txt``. We will use this file to specific how our Native C++ code will be built. This ``CMakeLists.txt`` file will be invoked by Android Studio's Gradle build system. 
+	Create a ``CMakeLists.txt`` in the directory above for compatiblity with other platforms. We will use this file to specific how our Native C++ code will be built. This ``CMakeLists.txt`` file will be invoked by Android Studio's Gradle build system and we will point Gradle to this CMake file. 
 
 	.. rubric:: CMakeLists.txt
 
-	.. literalinclude:: ../Chapter2.1/app/src/main/cpp/CMakeLists.txt
+	.. literalinclude:: ../Chapter2.1/CMakeLists.txt
 		:language: cmake 
 		
 	First, we set the minimum required cmake version, here we are using 3.22.1 and the project's name. Next, we need to add a static library called native_app_glue. The native_app_glue library is compiled from a single source file ``android_native_app_glue.c``. This interfaces between the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``void android_main(struct android_app*)`` entry point. We also include that directory as we need access to the android_native_app_glue.h header file. Next, we need to set the ``CMAKE_SHARED_LINKER_FLAGS`` so that ``ANativeActivity_onCreate()`` is exported for the Java Virtual Machine to call. Next, we add our shared library openxrtutorialch2 that houses our code. Here, I have a relative path to our single C++ file.
@@ -414,8 +414,8 @@ Whilst we have an ``XrInstance``, let's check its properties. We fill out the ty
 
 .. literalinclude:: ../Chapter2.1/main.cpp
 	:language: cpp
-	:start-at: void GetInstanceProperties()
-	:end-at: }
+	:start-after: XR_DOCS_TAG_BEGIN_GetInstanceProperties
+	:end-before: XR_DOCS_TAG_END_GetInstanceProperties
 	:dedent: 4
 
 XrSystemId
@@ -426,7 +426,7 @@ The next object that we want to get is the ``XrSystemId``. OpenXR 'separates the
 
 So, a ``XrSystemId`` could represent VR headset and a pair of contollers, or perhaps mobile device with video pass-through for AR. So we need to decide what type of ``XrFormFactor`` we are wanting to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY`` for a Meta Quest or Pico Neo. OpenXR currently offers two option for the ``XrFormFactor``.
 
-.. literalinclude:: ../thirdparty/openxr-sdk/include/openxr/openxr.h
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef enum XrFormFactor {
 	:end-at: } XrFormFactor;
@@ -435,13 +435,13 @@ We fill out the ``XrSystemGetInfo`` structure as desired and pass it as a pointe
 
 .. literalinclude:: ../Chapter2.1/main.cpp
 	:language: cpp
-	:start-at: void GetSystemID()
-	:end-at: }
+	:start-after: XR_DOCS_TAG_BEGIN_GetSystemID
+	:end-before: XR_DOCS_TAG_END_GetSystemID
 	:dedent: 4
 
 We can now also get the system's properties. We partially fill out a ``XrSystemProperties`` structure and pass it as a pointer along with the ``XrInstance`` and the ``XrSystemId`` to ``xrGetSystemProperties()``. This function will fill out the rest of the ``XrSystemProperties`` structure; detailing the vendor's ID, system's name and the system's graphics and tracking properties.
 
-.. literalinclude:: ../thirdparty/openxr-sdk/include/openxr/openxr.h
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XrSystemGraphicsProperties {
 	:end-at: } XrSystemProperties;
