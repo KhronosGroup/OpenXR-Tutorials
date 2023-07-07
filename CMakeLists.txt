@@ -6,3 +6,4 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
 add_subdirectory(tutorial)
 add_subdirectory(Chapter2)
+add_subdirectory(Chapter3)

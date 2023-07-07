@@ -76,9 +76,37 @@ const char* GetGraphicsAPIInstanceExtensionString(GraphicsAPI_Type type);
 
 class GraphicsAPI {
 public:
+    struct ImageCreateInfo {
+        uint32_t dimension;
+        uint32_t width;
+        uint32_t height;
+        uint32_t depth;
+        uint32_t mipLevels;
+        uint32_t arrayLayers;
+        uint32_t sampleCount;
+        int64_t format;
+        bool cubemap;
+        bool colorAttachment;
+        bool depthAttachment;
+        bool sampled;
+    };
+
+public:
     virtual ~GraphicsAPI() = default;
 
+    int64_t SelectSwapchainFormat(const std::vector<int64_t>& formats);
+
+    virtual int64_t GetDepthFormat() = 0;
+
     virtual void* GetGraphicsBinding() = 0;
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) = 0;
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) = 0;
+
+    virtual void* CreateImage(const ImageCreateInfo& imageCI) = 0;
+    virtual void DestroyImage(void*& image) = 0;
+
+protected:
+    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() = 0;
 };
 
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -87,7 +115,17 @@ public:
     GraphicsAPI_D3D11(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_D3D11();
 
+    virtual int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }
+
     virtual void* GetGraphicsBinding() override;
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+
+    virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
+    virtual void DestroyImage(void*& image) override;
+
+private:
+    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
 
 private:
     IDXGIFactory1* factory = nullptr;
@@ -96,6 +134,8 @@ private:
 
     PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR = nullptr;
     XrGraphicsBindingD3D11KHR graphicsBinding{};
+
+    std::vector<XrSwapchainImageD3D11KHR> swapchainImages{};
 };
 #endif
 
@@ -105,7 +145,17 @@ public:
     GraphicsAPI_D3D12(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_D3D12();
 
+    virtual int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }
+
     virtual void* GetGraphicsBinding() override;
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+
+    virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
+    virtual void DestroyImage(void*& image) override;
+
+private:
+    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
 
 private:
     IDXGIFactory4* factory = nullptr;
@@ -114,6 +164,10 @@ private:
 
     PFN_xrGetD3D12GraphicsRequirementsKHR xrGetD3D12GraphicsRequirementsKHR = nullptr;
     XrGraphicsBindingD3D12KHR graphicsBinding{};
+
+    std::vector<XrSwapchainImageD3D12KHR> swapchainImages{};
+
+    std::unordered_map<ID3D12Resource*, ID3D12Heap*> imageResources;
 };
 #endif
 
@@ -123,7 +177,17 @@ public:
     GraphicsAPI_OpenGL(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_OpenGL();
 
+    virtual int64_t GetDepthFormat() override { return (int64_t)GL_DEPTH_COMPONENT32F; }
+
     virtual void* GetGraphicsBinding() override;
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+
+    virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
+    virtual void DestroyImage(void*& image) override;
+
+private:
+    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
 
 private:
     ksGpuWindow window{};
@@ -138,6 +202,8 @@ private:
 #elif defined(XR_USE_PLATFORM_WAYLAND)
     XrGraphicsBindingOpenGLWaylandKHR graphicsBinding{};
 #endif
+
+    std::vector<XrSwapchainImageOpenGLKHR> swapchainImages{};
 };
 #endif
 
@@ -147,13 +213,25 @@ public:
     GraphicsAPI_OpenGL_ES(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_OpenGL_ES();
 
+    virtual int64_t GetDepthFormat() override { return (int64_t)GL_DEPTH_COMPONENT32F; }
+
     virtual void* GetGraphicsBinding() override;
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+
+    virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
+    virtual void DestroyImage(void*& image) override;
+
+private:
+    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
 
 private:
     ksGpuWindow window{};
 
     PFN_xrGetOpenGLESGraphicsRequirementsKHR xrGetOpenGLESGraphicsRequirementsKHR = nullptr;
     XrGraphicsBindingOpenGLESAndroidKHR graphicsBinding{};
+
+    std::vector<XrSwapchainImageOpenGLESKHR> swapchainImages{};
 };
 #endif
 
@@ -163,12 +241,21 @@ public:
     GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemId);
     ~GraphicsAPI_Vulkan();
 
+    virtual int64_t GetDepthFormat() override { return (int64_t)VK_FORMAT_D32_SFLOAT; }
+
     virtual void* GetGraphicsBinding() override;
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+
+    virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
+    virtual void DestroyImage(void*& image) override;
 
 private:
     void LoadPFN_XrFunctions(XrInstance xrInstance);
     std::vector<std::string> GetInstanceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId);
     std::vector<std::string> GetDeviceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId);
+
+    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
 
 private:
     VkInstance instance{};
@@ -185,5 +272,9 @@ private:
     PFN_xrGetVulkanDeviceExtensionsKHR xrGetVulkanDeviceExtensionsKHR = nullptr;
     PFN_xrGetVulkanGraphicsDeviceKHR xrGetVulkanGraphicsDeviceKHR = nullptr;
     XrGraphicsBindingVulkanKHR graphicsBinding{};
+
+    std::vector<XrSwapchainImageVulkanKHR> swapchainImages{};
+
+    std::unordered_map<VkImage, VkDeviceMemory> imageResources;
 };
 #endif

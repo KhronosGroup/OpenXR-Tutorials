@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
+#include <unordered_map>
 
 // Debugbreak
 #if defined(_MSC_VER)
