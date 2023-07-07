@@ -169,6 +169,201 @@ void GraphicsAPI_D3D11::DestroyImage(void *&image) {
     image = nullptr;
 }
 
+void *GraphicsAPI_D3D11::CreateImageView(const ImageViewCreateInfo &imageViewCI) {
+    if (imageViewCI.type == ImageViewCreateInfo::Type::RTV) {
+        D3D11_RENDER_TARGET_VIEW_DESC rtvDesc{};
+        rtvDesc.Format = (DXGI_FORMAT)imageViewCI.format;
+
+        switch (imageViewCI.view) {
+        case ImageViewCreateInfo::View::TYPE_1D: {
+            rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1D;
+            rtvDesc.Texture1D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D: {
+            rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+            rtvDesc.Texture2D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_3D: {
+            rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
+            rtvDesc.Texture3D.MipSlice = imageViewCI.baseMipLevel;
+            rtvDesc.Texture3D.FirstWSlice = imageViewCI.baseArrayLayer;
+            rtvDesc.Texture3D.WSize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_1D_ARRAY: {
+            rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1DARRAY;
+            rtvDesc.Texture1DArray.MipSlice = imageViewCI.baseMipLevel;
+            rtvDesc.Texture1DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            rtvDesc.Texture1DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D_ARRAY: {
+            rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+            rtvDesc.Texture2DArray.MipSlice = imageViewCI.baseMipLevel;
+            rtvDesc.Texture2DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            rtvDesc.Texture2DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        default:
+            DEBUG_BREAK;
+            std::cout << "ERROR: D3D11: Unknown ImageView View." << std::endl;
+            return nullptr;
+        }
+        ID3D11RenderTargetView *rtv = nullptr;
+        D3D11_CHECK(device->CreateRenderTargetView((ID3D11Resource *)imageViewCI.image, &rtvDesc, &rtv), "Failed to create ImageView.")
+        return rtv;
+    } else if (imageViewCI.type == ImageViewCreateInfo::Type::DSV) {
+        D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+        dsvDesc.Format = (DXGI_FORMAT)imageViewCI.format;
+
+        switch (imageViewCI.view) {
+        case ImageViewCreateInfo::View::TYPE_1D: {
+            dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1D;
+            dsvDesc.Texture1D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D: {
+            dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+            dsvDesc.Texture2D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_1D_ARRAY: {
+            dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1DARRAY;
+            dsvDesc.Texture1DArray.MipSlice = imageViewCI.baseMipLevel;
+            dsvDesc.Texture1DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            dsvDesc.Texture1DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D_ARRAY: {
+            dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+            dsvDesc.Texture2DArray.MipSlice = imageViewCI.baseMipLevel;
+            dsvDesc.Texture2DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            dsvDesc.Texture2DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        default:
+            DEBUG_BREAK;
+            std::cout << "ERROR: D3D11: Unknown ImageView View." << std::endl;
+            return nullptr;
+        }
+        ID3D11DepthStencilView *dsv = nullptr;
+        D3D11_CHECK(device->CreateDepthStencilView((ID3D11Resource *)imageViewCI.image, &dsvDesc, &dsv), "Failed to create ImageView.")
+        return dsv;
+    } else if (imageViewCI.type == ImageViewCreateInfo::Type::SRV) {
+        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+        srvDesc.Format = (DXGI_FORMAT)imageViewCI.format;
+
+        switch (imageViewCI.view) {
+        case ImageViewCreateInfo::View::TYPE_1D: {
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+            srvDesc.Texture1D.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture1D.MipLevels = imageViewCI.levelCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D: {
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+            srvDesc.Texture2D.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture2D.MipLevels = imageViewCI.levelCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_3D: {
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
+            srvDesc.Texture3D.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture3D.MipLevels = imageViewCI.levelCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_1D_ARRAY: {
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1DARRAY;
+            srvDesc.Texture1DArray.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture1DArray.MipLevels = imageViewCI.levelCount;
+            srvDesc.Texture1DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            srvDesc.Texture1DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D_ARRAY: {
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+            srvDesc.Texture2DArray.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture2DArray.MipLevels = imageViewCI.levelCount;
+            srvDesc.Texture2DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            srvDesc.Texture2DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        default:
+            DEBUG_BREAK;
+            std::cout << "ERROR: D3D11: Unknown ImageView View." << std::endl;
+            return nullptr;
+        }
+        ID3D11ShaderResourceView *srv = nullptr;
+        D3D11_CHECK(device->CreateShaderResourceView((ID3D11Resource *)imageViewCI.image, &srvDesc, &srv), "Failed to create ImageView.")
+        return srv;
+    } else if (imageViewCI.type == ImageViewCreateInfo::Type::UAV) {
+        D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
+        uavDesc.Format = (DXGI_FORMAT)imageViewCI.format;
+
+        switch (imageViewCI.view) {
+        case ImageViewCreateInfo::View::TYPE_1D: {
+            uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE1D;
+            uavDesc.Texture1D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D: {
+            uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+            uavDesc.Texture2D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_3D: {
+            uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
+            uavDesc.Texture3D.MipSlice = imageViewCI.baseMipLevel;
+            uavDesc.Texture3D.FirstWSlice = imageViewCI.baseArrayLayer;
+            uavDesc.Texture3D.WSize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_1D_ARRAY: {
+            uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE1DARRAY;
+            uavDesc.Texture1DArray.MipSlice = imageViewCI.baseMipLevel;
+            uavDesc.Texture1DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            uavDesc.Texture1DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D_ARRAY: {
+            uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
+            uavDesc.Texture2DArray.MipSlice = imageViewCI.baseMipLevel;
+            uavDesc.Texture2DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            uavDesc.Texture2DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        default:
+            DEBUG_BREAK;
+            std::cout << "ERROR: D3D11: Unknown ImageView View." << std::endl;
+            return nullptr;
+        }
+        ID3D11UnorderedAccessView *uav = nullptr;
+        D3D11_CHECK(device->CreateUnorderedAccessView((ID3D11Resource *)imageViewCI.image, &uavDesc, &uav), "Failed to create ImageView.")
+        return uav;
+    } else {
+        DEBUG_BREAK;
+        std::cout << "ERROR: D3D11: Unknown ImageView Type." << std::endl;
+        return nullptr;
+    }
+}
+
+void GraphicsAPI_D3D11::DestroyImageView(void *&imageView) {
+    ID3D11View *d3d11ImageView = (ID3D11View *)imageView;
+    D3D11_SAFE_RELEASE(d3d11ImageView);
+    imageView = nullptr;
+}
+
+void GraphicsAPI_D3D11::ClearColor(void *imageView, float r, float g, float b, float a) {
+    const FLOAT clearColor[4] = {r, g, b, a};
+    immediateContext->ClearRenderTargetView((ID3D11RenderTargetView *)imageView, clearColor);
+}
+
+void GraphicsAPI_D3D11::ClearDepth(void *imageView, float d) {
+    immediateContext->ClearDepthStencilView((ID3D11DepthStencilView *)imageView, D3D11_CLEAR_DEPTH, d, 0);
+}
+
 const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedSwapchainFormats() {
     return {
         DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -291,6 +486,265 @@ void GraphicsAPI_D3D12::DestroyImage(void *&image) {
     D3D12_SAFE_RELEASE(heap);
     D3D12_SAFE_RELEASE(d3d12Image);
     image = nullptr;
+}
+
+void *GraphicsAPI_D3D12::CreateImageView(const ImageViewCreateInfo &imageViewCI) {
+    if (imageViewCI.type == ImageViewCreateInfo::Type::RTV) {
+        D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+        rtvDesc.Format = (DXGI_FORMAT)imageViewCI.format;
+
+        switch (imageViewCI.view) {
+        case ImageViewCreateInfo::View::TYPE_1D: {
+            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE1D;
+            rtvDesc.Texture1D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D: {
+            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+            rtvDesc.Texture2D.MipSlice = imageViewCI.baseMipLevel;
+            rtvDesc.Texture2D.PlaneSlice = 0;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_3D: {
+            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE3D;
+            rtvDesc.Texture3D.MipSlice = imageViewCI.baseMipLevel;
+            rtvDesc.Texture3D.FirstWSlice = imageViewCI.baseArrayLayer;
+            rtvDesc.Texture3D.WSize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_1D_ARRAY: {
+            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE1DARRAY;
+            rtvDesc.Texture1DArray.MipSlice = imageViewCI.baseMipLevel;
+            rtvDesc.Texture1DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            rtvDesc.Texture1DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D_ARRAY: {
+            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+            rtvDesc.Texture2DArray.MipSlice = imageViewCI.baseMipLevel;
+            rtvDesc.Texture2DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            rtvDesc.Texture2DArray.ArraySize = imageViewCI.layerCount;
+            rtvDesc.Texture2DArray.PlaneSlice = 0;
+            break;
+        }
+        default:
+            DEBUG_BREAK;
+            std::cout << "ERROR: D3D12: Unknown ImageView View." << std::endl;
+            return nullptr;
+        }
+        D3D12_CPU_DESCRIPTOR_HANDLE rtv = {};
+        ID3D12DescriptorHeap* descHeap;
+        D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc;
+        descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+        descHeapDesc.NumDescriptors = 1;
+        descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        descHeapDesc.NodeMask = 0;
+        D3D12_CHECK(device->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap)), "Failed to create DescriptorHeap.");
+        rtv = descHeap->GetCPUDescriptorHandleForHeapStart();
+        device->CreateRenderTargetView((ID3D12Resource *)imageViewCI.image, &rtvDesc, rtv);
+        imageViewResources[rtv.ptr] = descHeap;
+        return (void*)rtv.ptr;
+    } else if (imageViewCI.type == ImageViewCreateInfo::Type::DSV) {
+        D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+        dsvDesc.Format = (DXGI_FORMAT)imageViewCI.format;
+
+        switch (imageViewCI.view) {
+        case ImageViewCreateInfo::View::TYPE_1D: {
+            dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE1D;
+            dsvDesc.Texture1D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D: {
+            dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+            dsvDesc.Texture2D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_1D_ARRAY: {
+            dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE1DARRAY;
+            dsvDesc.Texture1DArray.MipSlice = imageViewCI.baseMipLevel;
+            dsvDesc.Texture1DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            dsvDesc.Texture1DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D_ARRAY: {
+            dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+            dsvDesc.Texture2DArray.MipSlice = imageViewCI.baseMipLevel;
+            dsvDesc.Texture2DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            dsvDesc.Texture2DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        default:
+            DEBUG_BREAK;
+            std::cout << "ERROR: D3D12: Unknown ImageView View." << std::endl;
+            return nullptr;
+        }
+        D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};
+        ID3D12DescriptorHeap *descHeap;
+        D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc;
+        descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+        descHeapDesc.NumDescriptors = 1;
+        descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        descHeapDesc.NodeMask = 0;
+        D3D12_CHECK(device->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap)), "Failed to create DescriptorHeap.");
+        dsv = descHeap->GetCPUDescriptorHandleForHeapStart();
+        device->CreateDepthStencilView((ID3D12Resource *)imageViewCI.image, &dsvDesc, dsv);
+        imageViewResources[dsv.ptr] = descHeap;
+        return (void *)dsv.ptr;
+    } else if (imageViewCI.type == ImageViewCreateInfo::Type::SRV) {
+        D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+        srvDesc.Format = (DXGI_FORMAT)imageViewCI.format;
+        srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+        switch (imageViewCI.view) {
+        case ImageViewCreateInfo::View::TYPE_1D: {
+            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE1D;
+            srvDesc.Texture1D.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture1D.MipLevels = imageViewCI.levelCount;
+            srvDesc.Texture1D.ResourceMinLODClamp = 0.0f;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D: {
+            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+            srvDesc.Texture2D.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture2D.MipLevels = imageViewCI.levelCount;
+            srvDesc.Texture2D.PlaneSlice = 0;
+            srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_3D: {
+            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
+            srvDesc.Texture3D.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture3D.MipLevels = imageViewCI.levelCount;
+            srvDesc.Texture3D.ResourceMinLODClamp = 0.0f;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_1D_ARRAY: {
+            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE1DARRAY;
+            srvDesc.Texture1DArray.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture1DArray.MipLevels = imageViewCI.levelCount;
+            srvDesc.Texture1DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            srvDesc.Texture1DArray.ArraySize = imageViewCI.layerCount;
+            srvDesc.Texture1DArray.ResourceMinLODClamp = 0.0f;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D_ARRAY: {
+            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+            srvDesc.Texture2DArray.MostDetailedMip = imageViewCI.baseMipLevel;
+            srvDesc.Texture2DArray.MipLevels = imageViewCI.levelCount;
+            srvDesc.Texture2DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            srvDesc.Texture2DArray.ArraySize = imageViewCI.layerCount;
+            srvDesc.Texture2DArray.PlaneSlice = 0;
+            srvDesc.Texture2DArray.ResourceMinLODClamp = 0.0f;
+            break;
+        }
+        default:
+            DEBUG_BREAK;
+            std::cout << "ERROR: D3D12: Unknown ImageView View." << std::endl;
+            return nullptr;
+        }
+        D3D12_CPU_DESCRIPTOR_HANDLE srv = {};
+        ID3D12DescriptorHeap *descHeap;
+        D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc;
+        descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        descHeapDesc.NumDescriptors = 1;
+        descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        descHeapDesc.NodeMask = 0;
+        D3D12_CHECK(device->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap)), "Failed to create DescriptorHeap.");
+        device->CreateShaderResourceView((ID3D12Resource *)imageViewCI.image, &srvDesc, srv);
+        srv = descHeap->GetCPUDescriptorHandleForHeapStart();
+        imageViewResources[srv.ptr] = descHeap;
+        return (void *)srv.ptr;
+    } else if (imageViewCI.type == ImageViewCreateInfo::Type::UAV) {
+        D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
+        uavDesc.Format = (DXGI_FORMAT)imageViewCI.format;
+
+        switch (imageViewCI.view) {
+        case ImageViewCreateInfo::View::TYPE_1D: {
+            uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE1D;
+            uavDesc.Texture1D.MipSlice = imageViewCI.baseMipLevel;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D: {
+            uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+            uavDesc.Texture2D.MipSlice = imageViewCI.baseMipLevel;
+            uavDesc.Texture2D.PlaneSlice = 0;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_3D: {
+            uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE3D;
+            uavDesc.Texture3D.MipSlice = imageViewCI.baseMipLevel;
+            uavDesc.Texture3D.FirstWSlice = imageViewCI.baseArrayLayer;
+            uavDesc.Texture3D.WSize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_1D_ARRAY: {
+            uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE1DARRAY;
+            uavDesc.Texture1DArray.MipSlice = imageViewCI.baseMipLevel;
+            uavDesc.Texture1DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            uavDesc.Texture1DArray.ArraySize = imageViewCI.layerCount;
+            break;
+        }
+        case ImageViewCreateInfo::View::TYPE_2D_ARRAY: {
+            uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
+            uavDesc.Texture2DArray.MipSlice = imageViewCI.baseMipLevel;
+            uavDesc.Texture2DArray.FirstArraySlice = imageViewCI.baseArrayLayer;
+            uavDesc.Texture2DArray.ArraySize = imageViewCI.layerCount;
+            uavDesc.Texture2DArray.PlaneSlice = 0;
+            break;
+        }
+        default:
+            DEBUG_BREAK;
+            std::cout << "ERROR: D3D12: Unknown ImageView View." << std::endl;
+            return nullptr;
+        }
+        D3D12_CPU_DESCRIPTOR_HANDLE uav = {};
+        ID3D12DescriptorHeap *descHeap;
+        D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc;
+        descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        descHeapDesc.NumDescriptors = 1;
+        descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        descHeapDesc.NodeMask = 0;
+        D3D12_CHECK(device->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap)), "Failed to create DescriptorHeap.");
+        device->CreateUnorderedAccessView((ID3D12Resource *)imageViewCI.image, nullptr, &uavDesc, uav);
+        uav = descHeap->GetCPUDescriptorHandleForHeapStart();
+        imageViewResources[uav.ptr] = descHeap;
+        return (void *)uav.ptr;
+    } else {
+        DEBUG_BREAK;
+        std::cout << "ERROR: D3D12: Unknown ImageView Type." << std::endl;
+        return nullptr;
+    }
+}
+
+void GraphicsAPI_D3D12::DestroyImageView(void *&imageView) {
+    D3D12_CPU_DESCRIPTOR_HANDLE d3d12ImageView = {(SIZE_T)imageView};
+    ID3D12DescriptorHeap *descHeap = imageViewResources[d3d12ImageView.ptr];
+    imageViewResources.erase(d3d12ImageView.ptr);
+    D3D12_SAFE_RELEASE(descHeap);
+    imageView = nullptr;
+}
+
+void GraphicsAPI_D3D12::BeginRendering() {
+    D3D12_CHECK(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAllocator)), "Failed to create CommandAllocator.");
+    D3D12_CHECK(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAllocator, nullptr, IID_PPV_ARGS(&cmdList)), "Failed to create CommandList.");
+}
+
+void GraphicsAPI_D3D12::EndRendering() {
+    D3D12_CHECK(cmdList->Close(), "Failed to close CommandList");
+    queue->ExecuteCommandLists(1, (ID3D12CommandList **)&cmdList);
+    D3D12_SAFE_RELEASE(cmdList);
+    D3D12_SAFE_RELEASE(cmdAllocator);
+}
+
+void GraphicsAPI_D3D12::ClearColor(void *imageView, float r, float g, float b, float a) {
+    const FLOAT clearColor[4] = {r, g, b, a};
+    D3D12_CPU_DESCRIPTOR_HANDLE d3d12ImageView = {(SIZE_T)imageView};
+    cmdList->ClearRenderTargetView(d3d12ImageView, clearColor, 0, nullptr);
+}
+
+void GraphicsAPI_D3D12::ClearDepth(void *imageView, float d) {
+    D3D12_CPU_DESCRIPTOR_HANDLE d3d12ImageView = {(SIZE_T)imageView};
+    cmdList->ClearDepthStencilView(d3d12ImageView, D3D12_CLEAR_FLAG_DEPTH, d, 0, 0, nullptr);
 }
 
 const std::vector<int64_t> GraphicsAPI_D3D12::GetSupportedSwapchainFormats() {
@@ -446,6 +900,52 @@ void GraphicsAPI_OpenGL::DestroyImage(void *&image) {
     image = nullptr;
 }
 
+void *GraphicsAPI_OpenGL::CreateImageView(const ImageViewCreateInfo &imageViewCI) {
+    GLuint framebuffer = 0;
+    glGenFramebuffers(1, &framebuffer);
+
+    GLenum attachment = imageViewCI.aspect == ImageViewCreateInfo::Aspect::COLOR_BIT ? GL_COLOR_ATTACHMENT0 : GL_DEPTH_ATTACHMENT;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D_ARRAY) {
+        glFramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, attachment, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel, imageViewCI.baseArrayLayer, imageViewCI.layerCount);
+    } else if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D) {
+        glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, attachment, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel, imageViewCI.baseArrayLayer);
+    } else {
+        DEBUG_BREAK;
+        std::cout << "ERROR: OPENGL: Unknown ImageView View type." << std::endl;
+    }
+
+    GLenum result = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+    if (result != GL_FRAMEBUFFER_COMPLETE) {
+        DEBUG_BREAK;
+        std::cout << "ERROR: OPENGL: Framebuffer is not complete" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return (void *)(uint64_t)framebuffer;
+}
+
+void GraphicsAPI_OpenGL::DestroyImageView(void *&imageView) {
+    GLuint framebuffer = (GLuint)(uint64_t)imageView;
+    glDeleteFramebuffers(1, &framebuffer);
+    imageView = nullptr;
+}
+
+void GraphicsAPI_OpenGL::ClearColor(void *image, float r, float g, float b, float a) {
+    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
+    glClearColor(r, g, b, a);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GraphicsAPI_OpenGL::ClearDepth(void *image, float d) {
+    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
+    glClearDepth(d);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 const std::vector<int64_t> GraphicsAPI_OpenGL::GetSupportedSwapchainFormats() {
     // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengl.cpp#L229-L236
     return {
@@ -590,6 +1090,52 @@ const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedSwapchainFormats()
     } else {
         return {GL_RGBA8, GL_RGBA8_SNORM};
     }
+}
+
+void *GraphicsAPI_OpenGL::CreateImageView(const ImageViewCreateInfo &imageViewCI) {
+    GLuint framebuffer = 0;
+    glGenFramebuffers(1, &framebuffer);
+
+    GLenum attachment = imageViewCI.aspect == ImageViewCreateInfo::Aspect::COLOR_BIT ? GL_COLOR_ATTACHMENT0 : GL_DEPTH_ATTACHMENT;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D_ARRAY) {
+        glFramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, attachment, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel, imageViewCI.baseArrayLayer, imageViewCI.layerCount);
+    } else if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D) {
+        glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, attachment, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel, imageViewCI.baseArrayLayer);
+    } else {
+        DEBUG_BREAK;
+        std::cout << "ERROR: OPENGL: Unknown ImageView View type." << std::endl;
+    }
+
+    GLenum result = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+    if (result != GL_FRAMEBUFFER_COMPLETE) {
+        DEBUG_BREAK;
+        std::cout << "ERROR: OPENGL: Framebuffer is not complete" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return (void *)(uint64_t)framebuffer;
+}
+
+void GraphicsAPI_OpenGL::DestroyImageView(void *&imageView) {
+    GLuint framebuffer = (GLuint)(uint64_t)imageView;
+    glDeleteFramebuffers(1, &framebuffer);
+    imageView = nullptr;
+}
+
+void GraphicsAPI_OpenGL::ClearColor(void *image, float r, float g, float b, float a) {
+    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
+    glClearColor(r, g, b, a);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GraphicsAPI_OpenGL::ClearDepth(void *image, float d) {
+    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
+    glClearDepth(d);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 #endif
 
@@ -795,13 +1341,13 @@ void *GraphicsAPI_Vulkan::CreateImage(const ImageCreateInfo &imageCI) {
     VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties{};
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &physicalDeviceMemoryProperties);
     MemoryTypeFromProperties(physicalDeviceMemoryProperties, memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &allocateInfo.memoryTypeIndex);
-   
-    vkAllocateMemory(device, &allocateInfo, nullptr, &memory);
-    vkBindImageMemory(device, image, memory, 0);
+
+    VULKAN_CHECK(vkAllocateMemory(device, &allocateInfo, nullptr, &memory), "Failed to allocate Memory.");
+    VULKAN_CHECK(vkBindImageMemory(device, image, memory, 0), "Failed to bind Memory to Image.");
 
     imageResources[image] = memory;
 
-    return (void*)image;
+    return (void *)image;
 }
 void GraphicsAPI_Vulkan::DestroyImage(void *&image) {
     VkImage vkImage = (VkImage)image;
@@ -811,6 +1357,151 @@ void GraphicsAPI_Vulkan::DestroyImage(void *&image) {
     vkFreeMemory(device, memory, nullptr);
     vkDestroyImage(device, vkImage, nullptr);
     image = nullptr;
+}
+
+void *GraphicsAPI_Vulkan::CreateImageView(const ImageViewCreateInfo &imageViewCI) {
+    VkImageView imageView{};
+    VkImageViewCreateInfo vkImageViewCI;
+    vkImageViewCI.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    vkImageViewCI.pNext = nullptr;
+    vkImageViewCI.flags = 0;
+    vkImageViewCI.image = (VkImage)imageViewCI.image;
+    vkImageViewCI.viewType = VkImageViewType(imageViewCI.view);
+    vkImageViewCI.format = (VkFormat)imageViewCI.format;
+    vkImageViewCI.components = {VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A};
+    vkImageViewCI.subresourceRange.aspectMask = VkImageAspectFlagBits(imageViewCI.aspect);
+    vkImageViewCI.subresourceRange.baseMipLevel = imageViewCI.baseMipLevel;
+    vkImageViewCI.subresourceRange.levelCount = imageViewCI.levelCount;
+    vkImageViewCI.subresourceRange.baseArrayLayer = imageViewCI.baseArrayLayer;
+    vkImageViewCI.subresourceRange.layerCount = imageViewCI.layerCount;
+    VULKAN_CHECK(vkCreateImageView(device, &vkImageViewCI, nullptr, &imageView), "Failed to create ImageView.");
+
+    imageViewResources[imageView] = imageViewCI;
+    return (void*)imageView;
+}
+
+void GraphicsAPI_Vulkan::DestroyImageView(void *&imageView) {
+    vkDestroyImageView(device, (VkImageView)imageView, nullptr);
+}
+
+void GraphicsAPI_Vulkan::BeginRendering() {
+    VkCommandPoolCreateInfo cmdPoolCI;
+    cmdPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    cmdPoolCI.pNext = nullptr;
+    cmdPoolCI.flags = 0;
+    cmdPoolCI.queueFamilyIndex = queueFamilyIndex;
+    VULKAN_CHECK(vkCreateCommandPool(device, &cmdPoolCI, nullptr, &cmdPool), "Failed to create CommandPool.");
+
+    VkCommandBufferAllocateInfo allocateInfo;
+    allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocateInfo.pNext = nullptr;
+    allocateInfo.commandPool = cmdPool;
+    allocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocateInfo.commandBufferCount = 1;
+    VULKAN_CHECK(vkAllocateCommandBuffers(device, &allocateInfo, &cmdBuffer), "Failed to allocate CommandBuffers.");
+
+    VkCommandBufferBeginInfo beginInfo;
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.pNext = nullptr;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    beginInfo.pInheritanceInfo = nullptr;
+    VULKAN_CHECK(vkBeginCommandBuffer(cmdBuffer, &beginInfo), "Failed to begin CommandBuffers.");
+}
+
+void GraphicsAPI_Vulkan::EndRendering() {
+    VULKAN_CHECK(vkEndCommandBuffer(cmdBuffer), "Failed to end CommandBuffer.");
+
+    VkQueue queue{};
+    vkGetDeviceQueue(device, queueFamilyIndex, queueIndex, &queue);
+
+    VkSubmitInfo submitInfo{VK_STRUCTURE_TYPE_SUBMIT_INFO};
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &cmdBuffer;
+    
+    VkFence fence{};
+    VkFenceCreateInfo fenceCI{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+    VULKAN_CHECK(vkCreateFence(device, &fenceCI, nullptr, &fence), "Failed to create Fence.")
+    VULKAN_CHECK(vkQueueSubmit(queue, 1, &submitInfo, fence), "Failed to submit to Queue.");
+    
+    VULKAN_CHECK(vkWaitForFences(device, 1, &fence, true, UINT64_MAX), "Failed to wait for Fence");
+    vkDestroyFence(device, fence, nullptr);
+
+}
+
+void GraphicsAPI_Vulkan::ClearColor(void *image, float r, float g, float b, float a) {
+    const ImageViewCreateInfo &imageViewCI = imageViewResources[(VkImageView)image];
+
+    VkClearColorValue clearColor;
+    clearColor.float32[0] = r;
+    clearColor.float32[1] = g;
+    clearColor.float32[2] = b;
+    clearColor.float32[3] = a;
+
+    VkImageSubresourceRange range;
+    range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    range.baseMipLevel = imageViewCI.baseMipLevel;
+    range.levelCount = imageViewCI.levelCount;
+    range.baseArrayLayer = imageViewCI.baseArrayLayer;
+    range.layerCount = imageViewCI.layerCount;
+
+    VkImage vkImage = (VkImage)(imageViewCI.image);
+
+    VkImageMemoryBarrier imageBarrier;
+    imageBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    imageBarrier.pNext = nullptr;
+    imageBarrier.srcAccessMask = VkAccessFlagBits(0);
+    imageBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    imageBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    imageBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    imageBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    imageBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    imageBarrier.image = vkImage;
+    imageBarrier.subresourceRange = range;
+    vkCmdPipelineBarrier(cmdBuffer, VK_PIPELINE_STAGE_NONE, VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
+
+    vkCmdClearColorImage(cmdBuffer, vkImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &clearColor, 1, &range);
+
+    imageBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    imageBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+    imageBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    imageBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    imageBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    imageBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    imageBarrier.image = vkImage;
+    imageBarrier.subresourceRange = range;
+    vkCmdPipelineBarrier(cmdBuffer, VK_PIPELINE_STAGE_NONE, VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
+}
+
+void GraphicsAPI_Vulkan::ClearDepth(void *image, float d) {
+    const ImageViewCreateInfo &imageViewCI = imageViewResources[(VkImageView)image];
+
+    VkClearDepthStencilValue clearDepth;
+    clearDepth.depth = d;
+    clearDepth.stencil = 0;
+
+    VkImageSubresourceRange range;
+    range.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    range.baseMipLevel = imageViewCI.baseMipLevel;
+    range.levelCount = imageViewCI.levelCount;
+    range.baseArrayLayer = imageViewCI.baseArrayLayer;
+    range.layerCount = imageViewCI.layerCount;
+
+    VkImage vkImage = (VkImage)(imageViewCI.image);
+
+    VkImageMemoryBarrier imageBarrier;
+    imageBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    imageBarrier.pNext = nullptr;
+    imageBarrier.srcAccessMask = VkAccessFlagBits(0);
+    imageBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    imageBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    imageBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    imageBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    imageBarrier.image = vkImage;
+    imageBarrier.subresourceRange = range;
+    vkCmdPipelineBarrier(cmdBuffer, VK_PIPELINE_STAGE_NONE, VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
+
+    vkCmdClearDepthStencilImage(cmdBuffer, vkImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &clearDepth, 1, &range);
 }
 
 void GraphicsAPI_Vulkan::LoadPFN_XrFunctions(XrInstance xrInstance) {

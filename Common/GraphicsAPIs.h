@@ -90,6 +90,34 @@ public:
         bool depthAttachment;
         bool sampled;
     };
+    struct ImageViewCreateInfo {
+        void* image;
+        enum class Type : uint8_t {
+            RTV,
+            DSV,
+            SRV,
+            UAV
+        } type;
+        enum class View : uint8_t {
+            TYPE_1D,
+            TYPE_2D,
+            TYPE_3D,
+            TYPE_CUBE,
+            TYPE_1D_ARRAY,
+            TYPE_2D_ARRAY,
+            TYPE_CUBE_ARRAY,
+        } view;
+        int64_t format;
+        enum class Aspect : uint8_t {
+            COLOR_BIT = 0x01,
+            DEPTH_BIT = 0x02,
+            STENCIL_BIT = 0x04
+        } aspect;
+        uint32_t baseMipLevel;
+        uint32_t levelCount;
+        uint32_t baseArrayLayer;
+        uint32_t layerCount;
+    };
 
 public:
     virtual ~GraphicsAPI() = default;
@@ -101,9 +129,19 @@ public:
     virtual void* GetGraphicsBinding() = 0;
     virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) = 0;
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) = 0;
+    virtual void* GetSwapchainImage(uint32_t index) = 0;
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) = 0;
     virtual void DestroyImage(void*& image) = 0;
+
+    virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) = 0;
+    virtual void DestroyImageView(void*& imageView) = 0;
+
+    virtual void BeginRendering(){};
+    virtual void EndRendering(){};
+
+    virtual void ClearColor(void* imageView, float r, float g, float b, float a) = 0;
+    virtual void ClearDepth(void* imageView, float d) = 0;
 
 protected:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() = 0;
@@ -120,9 +158,16 @@ public:
     virtual void* GetGraphicsBinding() override;
     virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+    virtual void* GetSwapchainImage(uint32_t index) override { return swapchainImages[index].texture; }
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
+
+    virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) override;
+    virtual void DestroyImageView(void*& imageView) override;
+
+    virtual void ClearColor(void* image, float r, float g, float b, float a) override;
+    virtual void ClearDepth(void* image, float d) override;
 
 private:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
@@ -150,9 +195,19 @@ public:
     virtual void* GetGraphicsBinding() override;
     virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+    virtual void* GetSwapchainImage(uint32_t index) override { return swapchainImages[index].texture; }
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
+
+    virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) override;
+    virtual void DestroyImageView(void*& imageView) override;
+
+    virtual void BeginRendering() override;
+    virtual void EndRendering() override;
+
+    virtual void ClearColor(void* image, float r, float g, float b, float a) override;
+    virtual void ClearDepth(void* image, float d) override;
 
 private:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
@@ -162,12 +217,16 @@ private:
     ID3D12Device* device = nullptr;
     ID3D12CommandQueue* queue = nullptr;
 
+    ID3D12CommandAllocator* cmdAllocator = nullptr;
+    ID3D12GraphicsCommandList* cmdList = nullptr;
+
     PFN_xrGetD3D12GraphicsRequirementsKHR xrGetD3D12GraphicsRequirementsKHR = nullptr;
     XrGraphicsBindingD3D12KHR graphicsBinding{};
 
     std::vector<XrSwapchainImageD3D12KHR> swapchainImages{};
 
     std::unordered_map<ID3D12Resource*, ID3D12Heap*> imageResources;
+    std::unordered_map<SIZE_T, ID3D12DescriptorHeap*> imageViewResources;
 };
 #endif
 
@@ -182,9 +241,16 @@ public:
     virtual void* GetGraphicsBinding() override;
     virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+    virtual void* GetSwapchainImage(uint32_t index) override { return (void*)(uint64_t)swapchainImages[index].image; }
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
+
+    virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) override;
+    virtual void DestroyImageView(void*& imageView) override;
+
+    virtual void ClearColor(void* image, float r, float g, float b, float a) override;
+    virtual void ClearDepth(void* image, float d) override;
 
 private:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
@@ -218,9 +284,16 @@ public:
     virtual void* GetGraphicsBinding() override;
     virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+    virtual void* GetSwapchainImage(uint32_t index) override { return (void*)(uint64_t)swapchainImages[index].image; }
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
+
+    virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) override;
+    virtual void DestroyImageView(void*& imageView) override;
+
+    virtual void ClearColor(void* image, float r, float g, float b, float a) override;
+    virtual void ClearDepth(void* image, float d) override;
 
 private:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
@@ -246,9 +319,19 @@ public:
     virtual void* GetGraphicsBinding() override;
     virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
+    virtual void* GetSwapchainImage(uint32_t index) override { return (void*)swapchainImages[index].image; }
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
+
+    virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) override;
+    virtual void DestroyImageView(void*& imageView) override;
+
+    virtual void BeginRendering() override;
+    virtual void EndRendering() override;
+
+    virtual void ClearColor(void* image, float r, float g, float b, float a) override;
+    virtual void ClearDepth(void* image, float d) override;
 
 private:
     void LoadPFN_XrFunctions(XrInstance xrInstance);
@@ -264,6 +347,9 @@ private:
     uint32_t queueFamilyIndex = 0;
     uint32_t queueIndex = 0;
 
+    VkCommandPool cmdPool{};
+    VkCommandBuffer cmdBuffer{};
+
     std::vector<const char*> activeInstanceExtensions{};
     std::vector<const char*> activeDeviceExtensions{};
 
@@ -276,5 +362,6 @@ private:
     std::vector<XrSwapchainImageVulkanKHR> swapchainImages{};
 
     std::unordered_map<VkImage, VkDeviceMemory> imageResources;
+    std::unordered_map<VkImageView, ImageViewCreateInfo> imageViewResources;
 };
 #endif
