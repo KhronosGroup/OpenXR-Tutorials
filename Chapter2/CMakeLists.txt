@@ -19,11 +19,22 @@ FetchContent_MakeAvailable(OpenXR)
 # Files
 set(SOURCES 
     "main.cpp"
-    "../Common/GraphicsAPIs.cpp"
+    "../Common/GraphicsAPI.cpp"
+    "../Common/GraphicsAPI_D3D11.cpp"
+    "../Common/GraphicsAPI_D3D12.cpp"
+    "../Common/GraphicsAPI_OpenGL.cpp"
+    "../Common/GraphicsAPI_OpenGL_ES.cpp"
+    "../Common/GraphicsAPI_Vulkan.cpp"
     "../Common/OpenXRDebugUtils.cpp")
 set(HEADERS 
     "../Common/OpenXRHelper.h" 
     "../Common/GraphicsAPIs.h"
+    "../Common/GraphicsAPI.h"
+    "../Common/GraphicsAPI_D3D11.h"
+    "../Common/GraphicsAPI_D3D12.h"
+    "../Common/GraphicsAPI_OpenGL.h"
+    "../Common/GraphicsAPI_OpenGL_ES.h"
+    "../Common/GraphicsAPI_Vulkan.h"
     "../Common/HelperFunctions.h"
     "../Common/OpenXRDebugUtils.h"
 )
