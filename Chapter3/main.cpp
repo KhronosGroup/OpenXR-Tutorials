@@ -72,7 +72,7 @@ private:
     void CreateInstance() {
         // XR_DOCS_TAG_BEGIN_XrApplicationInfo
         XrApplicationInfo AI;
-        strcpy(AI.applicationName, "OpenXR Tutorial Chapter 2");
+        strcpy(AI.applicationName, "OpenXR Tutorial Chapter 3");
         AI.applicationVersion = 1;
         strcpy(AI.engineName, "OpenXR Engine");
         AI.engineVersion = 1;
@@ -532,7 +532,7 @@ private:
 void OpenXRTutorial_Main() {
     std::cout << "OpenXR Tutorial Chapter 3." << std::endl;
 
-    OpenXRTutorialChapter3 app(OPENGL);
+    OpenXRTutorialChapter3 app(VULKAN);
     app.Run();
 }
 

@@ -1092,7 +1092,7 @@ const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedSwapchainFormats()
     }
 }
 
-void *GraphicsAPI_OpenGL::CreateImageView(const ImageViewCreateInfo &imageViewCI) {
+void *GraphicsAPI_OpenGL_ES::CreateImageView(const ImageViewCreateInfo &imageViewCI) {
     GLuint framebuffer = 0;
     glGenFramebuffers(1, &framebuffer);
 
@@ -1118,22 +1118,22 @@ void *GraphicsAPI_OpenGL::CreateImageView(const ImageViewCreateInfo &imageViewCI
     return (void *)(uint64_t)framebuffer;
 }
 
-void GraphicsAPI_OpenGL::DestroyImageView(void *&imageView) {
+void GraphicsAPI_OpenGL_ES::DestroyImageView(void *&imageView) {
     GLuint framebuffer = (GLuint)(uint64_t)imageView;
     glDeleteFramebuffers(1, &framebuffer);
     imageView = nullptr;
 }
 
-void GraphicsAPI_OpenGL::ClearColor(void *image, float r, float g, float b, float a) {
+void GraphicsAPI_OpenGL_ES::ClearColor(void *image, float r, float g, float b, float a) {
     glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GraphicsAPI_OpenGL::ClearDepth(void *image, float d) {
+void GraphicsAPI_OpenGL_ES::ClearDepth(void *image, float d) {
     glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
-    glClearDepth(d);
+    glClearDepthf(d);
     glClear(GL_DEPTH_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -1457,7 +1457,7 @@ void GraphicsAPI_Vulkan::ClearColor(void *image, float r, float g, float b, floa
     imageBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     imageBarrier.image = vkImage;
     imageBarrier.subresourceRange = range;
-    vkCmdPipelineBarrier(cmdBuffer, VK_PIPELINE_STAGE_NONE, VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
+    vkCmdPipelineBarrier(cmdBuffer, VkPipelineStageFlagBits(0), VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
 
     vkCmdClearColorImage(cmdBuffer, vkImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &clearColor, 1, &range);
 
@@ -1469,7 +1469,7 @@ void GraphicsAPI_Vulkan::ClearColor(void *image, float r, float g, float b, floa
     imageBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     imageBarrier.image = vkImage;
     imageBarrier.subresourceRange = range;
-    vkCmdPipelineBarrier(cmdBuffer, VK_PIPELINE_STAGE_NONE, VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
+    vkCmdPipelineBarrier(cmdBuffer, VkPipelineStageFlagBits(0), VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
 }
 
 void GraphicsAPI_Vulkan::ClearDepth(void *image, float d) {
@@ -1499,7 +1499,7 @@ void GraphicsAPI_Vulkan::ClearDepth(void *image, float d) {
     imageBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     imageBarrier.image = vkImage;
     imageBarrier.subresourceRange = range;
-    vkCmdPipelineBarrier(cmdBuffer, VK_PIPELINE_STAGE_NONE, VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
+    vkCmdPipelineBarrier(cmdBuffer, VkPipelineStageFlagBits(0), VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
 
     vkCmdClearDepthStencilImage(cmdBuffer, vkImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &clearDepth, 1, &range);
 }
