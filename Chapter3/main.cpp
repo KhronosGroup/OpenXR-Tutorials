@@ -305,73 +305,80 @@ private:
         }
         const XrViewConfigurationView &viewConfigurationView = viewConfigurationViews[0];
 
-        XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
-        swapchainCI.createFlags = 0;
-        swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-        swapchainCI.format = graphicsAPI->SelectSwapchainFormat(formats);
-        swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;
-        swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
-        swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
-        swapchainCI.faceCount = 1;
-        swapchainCI.arraySize = static_cast<uint32_t>(viewConfigurationViews.size());
-        swapchainCI.mipCount = 1;
-        OPENXR_CHECK(xrCreateSwapchain(session, &swapchainCI, &swapchain), "Failed to create Swapchain");
-        swapchainFormat = swapchainCI.format;
+        swapchainAndDepthImages.resize(viewConfigurationViews.size());
+        for (SwapchainAndDepthImage &swapchainAndDepthImage : swapchainAndDepthImages) {
+            XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
+            swapchainCI.createFlags = 0;
+            swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+            swapchainCI.format = graphicsAPI->SelectSwapchainFormat(formats);
+            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;
+            swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
+            swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
+            swapchainCI.faceCount = 1;
+            swapchainCI.arraySize = 1;
+            swapchainCI.mipCount = 1;
+            OPENXR_CHECK(xrCreateSwapchain(session, &swapchainCI, &swapchainAndDepthImage.swapchain), "Failed to create Swapchain");
+            swapchainAndDepthImage.swapchainFormat = swapchainCI.format;
 
-        uint32_t swapchainImageCount = 0;
-        OPENXR_CHECK(xrEnumerateSwapchainImages(swapchain, 0, &swapchainImageCount, nullptr), "Failed to enumerate Swapchain Images.");
-        XrSwapchainImageBaseHeader *swapchainImages = graphicsAPI->AllocateSwapchainImageData(swapchainImageCount);
-        OPENXR_CHECK(xrEnumerateSwapchainImages(swapchain, swapchainImageCount, &swapchainImageCount, swapchainImages), "Failed to enumerate Swapchain Images.");
+            uint32_t swapchainImageCount = 0;
+            OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, 0, &swapchainImageCount, nullptr), "Failed to enumerate Swapchain Images.");
+            XrSwapchainImageBaseHeader *swapchainImages = graphicsAPI->AllocateSwapchainImageData(swapchainImageCount);
+            OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, swapchainImageCount, &swapchainImageCount, swapchainImages), "Failed to enumerate Swapchain Images.");
 
-        GraphicsAPI::ImageCreateInfo depthImageCI;
-        depthImageCI.dimension = 2;
-        depthImageCI.width = viewConfigurationView.recommendedImageRectWidth;
-        depthImageCI.height = viewConfigurationView.recommendedImageRectHeight;
-        depthImageCI.depth = 1;
-        depthImageCI.mipLevels = 1;
-        depthImageCI.arrayLayers = static_cast<uint32_t>(viewConfigurationViews.size());
-        depthImageCI.sampleCount = 1;
-        depthImageCI.format = graphicsAPI->GetDepthFormat();
-        depthImageCI.cubemap = false;
-        depthImageCI.colorAttachment = false;
-        depthImageCI.depthAttachment = true;
-        depthImageCI.sampled = false;
-        depthImage = graphicsAPI->CreateImage(depthImageCI);
+            GraphicsAPI::ImageCreateInfo depthImageCI;
+            depthImageCI.dimension = 2;
+            depthImageCI.width = viewConfigurationView.recommendedImageRectWidth;
+            depthImageCI.height = viewConfigurationView.recommendedImageRectHeight;
+            depthImageCI.depth = 1;
+            depthImageCI.mipLevels = 1;
+            depthImageCI.arrayLayers = 1;
+            depthImageCI.sampleCount = 1;
+            depthImageCI.format = graphicsAPI->GetDepthFormat();
+            depthImageCI.cubemap = false;
+            depthImageCI.colorAttachment = false;
+            depthImageCI.depthAttachment = true;
+            depthImageCI.sampled = false;
+            swapchainAndDepthImage.depthImage = graphicsAPI->CreateImage(depthImageCI);
 
-        for (uint32_t i = 0; i < swapchainImageCount; i++) {
+            for (uint32_t i = 0; i < swapchainImageCount; i++) {
+                GraphicsAPI::ImageViewCreateInfo imageViewCI;
+                imageViewCI.image = graphicsAPI->GetSwapchainImage(i);
+                imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::RTV;
+                imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D;
+                imageViewCI.format = swapchainAndDepthImage.swapchainFormat;
+                imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::COLOR_BIT;
+                imageViewCI.baseMipLevel = 0;
+                imageViewCI.levelCount = 1;
+                imageViewCI.baseArrayLayer = 0;
+                imageViewCI.layerCount = 1;
+                swapchainAndDepthImage.colorImageViews.push_back(graphicsAPI->CreateImageView(imageViewCI));
+            }
+
             GraphicsAPI::ImageViewCreateInfo imageViewCI;
-            imageViewCI.image = graphicsAPI->GetSwapchainImage(i);
-            imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::RTV;
-            imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D_ARRAY;
-            imageViewCI.format = swapchainFormat;
-            imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::COLOR_BIT;
+            imageViewCI.image = swapchainAndDepthImage.depthImage;
+            imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::DSV;
+            imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D;
+            imageViewCI.format = graphicsAPI->GetDepthFormat();
+            imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::DEPTH_BIT;
             imageViewCI.baseMipLevel = 0;
             imageViewCI.levelCount = 1;
             imageViewCI.baseArrayLayer = 0;
-            imageViewCI.layerCount = 2;
-            colorImageViews.push_back(graphicsAPI->CreateImageView(imageViewCI));
+            imageViewCI.layerCount = 1;
+            swapchainAndDepthImage.depthImageView = graphicsAPI->CreateImageView(imageViewCI);
         }
-
-        GraphicsAPI::ImageViewCreateInfo imageViewCI;
-        imageViewCI.image = depthImage;
-        imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::DSV;
-        imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D_ARRAY;
-        imageViewCI.format = graphicsAPI->GetDepthFormat();
-        imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::DEPTH_BIT;
-        imageViewCI.baseMipLevel = 0;
-        imageViewCI.levelCount = 1;
-        imageViewCI.baseArrayLayer = 0;
-        imageViewCI.layerCount = 2;
-        depthImageView = graphicsAPI->CreateImageView(imageViewCI);
     }
 
     void DestroySwapchain() {
-        graphicsAPI->DestroyImageView(depthImageView);
-        for (void *&colorImageView : colorImageViews) {
-            graphicsAPI->DestroyImage(colorImageView);
+        for (SwapchainAndDepthImage &swapchainAndDepthImage : swapchainAndDepthImages) {
+            graphicsAPI->DestroyImageView(swapchainAndDepthImage.depthImageView);
+            for (void *&colorImageView : swapchainAndDepthImage.colorImageViews) {
+                graphicsAPI->DestroyImageView(colorImageView);
+            }
+
+            graphicsAPI->DestroyImage(swapchainAndDepthImage.depthImage);
+
+            OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");
         }
-        graphicsAPI->DestroyImage(depthImage);
-        OPENXR_CHECK(xrDestroySwapchain(swapchain), "Failed to destroy Swapchain");
     }
 
     void RenderFrame() {
@@ -425,43 +432,40 @@ private:
             return false;
         }
 
-        uint32_t imageIndex = 0;
-        XrSwapchainImageAcquireInfo acquireInfo{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
-        OPENXR_CHECK(xrAcquireSwapchainImage(swapchain, &acquireInfo, &imageIndex), "Failed to acquire Image from the Swapchian");
+        layerProjectionViews.resize(viewCount, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW});
+        for (uint32_t i = 0; i < viewCount; i++) {
+            uint32_t imageIndex = 0;
+            XrSwapchainImageAcquireInfo acquireInfo{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
+            OPENXR_CHECK(xrAcquireSwapchainImage(swapchainAndDepthImages[i].swapchain, &acquireInfo, &imageIndex), "Failed to acquire Image from the Swapchian");
 
-        XrSwapchainImageWaitInfo waitInfo = {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
-        waitInfo.timeout = XR_INFINITE_DURATION;
-        OPENXR_CHECK(xrWaitSwapchainImage(swapchain, &waitInfo), "Failed to wait for Image from the Swapchian");
+            XrSwapchainImageWaitInfo waitInfo = {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
+            waitInfo.timeout = XR_INFINITE_DURATION;
+            OPENXR_CHECK(xrWaitSwapchainImage(swapchainAndDepthImages[i].swapchain, &waitInfo), "Failed to wait for Image from the Swapchian");
 
-        {
-            const XrViewConfigurationView &viewConfigurationView = viewConfigurationViews[0];
-            layerProjectionViews.resize(viewCount, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW});
-            for (uint32_t i = 0; i < viewCount; i++) {
-                layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
-                layerProjectionViews[i].pose = views[i].pose;
-                layerProjectionViews[i].fov = views[i].fov;
-                layerProjectionViews[i].subImage.swapchain = swapchain;
-                layerProjectionViews[i].subImage.imageRect.offset.x = 0;
-                layerProjectionViews[i].subImage.imageRect.offset.y = 0;
-                layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(viewConfigurationView.recommendedImageRectWidth);
-                layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(viewConfigurationView.recommendedImageRectHeight);
-                layerProjectionViews[i].subImage.imageArrayIndex = i;
-            };
-            layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
-            layerProjection.space = space;
-            layerProjection.viewCount = static_cast<uint32_t>(layerProjectionViews.size());
-            layerProjection.views = layerProjectionViews.data();
+            layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+            layerProjectionViews[i].pose = views[i].pose;
+            layerProjectionViews[i].fov = views[i].fov;
+            layerProjectionViews[i].subImage.swapchain = swapchainAndDepthImages[i].swapchain;
+            layerProjectionViews[i].subImage.imageRect.offset.x = 0;
+            layerProjectionViews[i].subImage.imageRect.offset.y = 0;
+            layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(viewConfigurationViews[i].recommendedImageRectWidth);
+            layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(viewConfigurationViews[i].recommendedImageRectHeight);
+            layerProjectionViews[i].subImage.imageArrayIndex = 0;
 
             graphicsAPI->BeginRendering();
 
-            graphicsAPI->ClearColor(colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
-            graphicsAPI->ClearDepth(depthImageView, 1.0f);
+            graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
+            graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
 
             graphicsAPI->EndRendering();
-        }
 
-        XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
-        OPENXR_CHECK(xrReleaseSwapchainImage(swapchain, &releaseInfo), "Failed to release Image back to the Swapchian");
+            XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
+            OPENXR_CHECK(xrReleaseSwapchainImage(swapchainAndDepthImages[i].swapchain, &releaseInfo), "Failed to release Image back to the Swapchian");
+        };
+        layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
+        layerProjection.space = space;
+        layerProjection.viewCount = static_cast<uint32_t>(layerProjectionViews.size());
+        layerProjection.views = layerProjectionViews.data();
 
         return true;
     }
@@ -561,12 +565,15 @@ private:
     bool applicationRunning = true;
     bool sessionRunning = false;
 
-    XrSwapchain swapchain{};
-    int64_t swapchainFormat = 0;
-    void *depthImage = nullptr;
+    struct SwapchainAndDepthImage {
+        XrSwapchain swapchain{};
+        int64_t swapchainFormat = 0;
+        void *depthImage = nullptr;
 
-    std::vector<void *> colorImageViews;
-    void *depthImageView;
+        std::vector<void *> colorImageViews;
+        void *depthImageView;
+    };
+    std::vector<SwapchainAndDepthImage> swapchainAndDepthImages;
 
     std::vector<XrEnvironmentBlendMode> environmentBlendModes{};
 
