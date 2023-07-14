@@ -142,7 +142,7 @@ void *GraphicsAPI_OpenGL_ES::CreateImageView(const ImageViewCreateInfo &imageVie
     if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D_ARRAY) {
         glFramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, attachment, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel, imageViewCI.baseArrayLayer, imageViewCI.layerCount);
     } else if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D) {
-        glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, attachment, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel, imageViewCI.baseArrayLayer);
+        glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment, GL_TEXTURE_2D, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel);
     } else {
         DEBUG_BREAK;
         std::cout << "ERROR: OPENGL: Unknown ImageView View type." << std::endl;
