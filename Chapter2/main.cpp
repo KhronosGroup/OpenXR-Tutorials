@@ -29,11 +29,7 @@ public:
 
             if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3) {
                 while (applicationRunning) {
-
-#if defined(__ANDROID__)
-                    PollAndroidEvents();
-#endif
-
+                    PollSystemEvents();
                     PollEvents();
                     if (sessionRunning) {
                         // Draw Frame.
@@ -248,31 +244,77 @@ private:
 
 #if defined(__ANDROID__)
 public:
-    static android_app *app;
+    static android_app *androidApp;
+
+    // Modified from https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/d6b6d7a10bdcf8d4fe806b4f415fde3dd5726878/src/tests/hello_xr/main.cpp#L133C1-L189C2
+    struct AndroidAppState {
+        ANativeWindow *nativeWindow = nullptr;
+        bool resumed = false;
+    };
+    static AndroidAppState androidAppState;
+
+    // Process the next main command.
+    static void AndroidAppHandleCmd(struct android_app *app, int32_t cmd) {
+        AndroidAppState *appState = (AndroidAppState *)app->userData;
+
+        switch (cmd) {
+        // There is no APP_CMD_CREATE. The ANativeActivity creates the application thread from onCreate().
+        // The application thread then calls android_main().
+        case APP_CMD_START: {
+            break;
+        }
+        case APP_CMD_RESUME: {
+            appState->resumed = true;
+            break;
+        }
+        case APP_CMD_PAUSE: {
+            appState->resumed = false;
+            break;
+        }
+        case APP_CMD_STOP: {
+            break;
+        }
+        case APP_CMD_DESTROY: {
+            appState->nativeWindow = nullptr;
+            break;
+        }
+        case APP_CMD_INIT_WINDOW: {
+            appState->nativeWindow = app->window;
+            break;
+        }
+        case APP_CMD_TERM_WINDOW: {
+            appState->nativeWindow = nullptr;
+            break;
+        }
+        }
+    }
+
 private:
-    void PollAndroidEvents() {
-        /*if (app->destroyRequested == 0) {
+    void PollSystemEvents() {
+        if (androidApp->destroyRequested != 0) {
             applicationRunning = false;
             return;
-        }*/
-        while(true) {
-            struct android_poll_source* source;
-            int events;
-            const int timeoutMilliseconds = (!sessionRunning && app->destroyRequested == 0) ? -1 : 0;
-            if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void**)&source) >= 0) {
+        }
+        while (true) {
+            struct android_poll_source *source = nullptr;
+            int events = 0;
+            const int timeoutMilliseconds = (!androidAppState.resumed && !sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
+            if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
                 if (source != nullptr) {
-                    source->process(app, source);
+                    source->process(androidApp, source);
                 }
             } else {
                 break;
             }
-
         }
+    }
+#else
+    void PollSystemEvents() {
+        return;
     }
 #endif
 
 private:
-
     XrInstance instance = {};
     std::vector<const char *> activeAPILayers = {};
     std::vector<const char *> activeInstanceExtensions = {};
@@ -309,9 +351,16 @@ int main(int argc, char **argv) {
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
-android_app *OpenXRTutorialChapter2::app = nullptr;
+android_app *OpenXRTutorialChapter2::androidApp = nullptr;
+OpenXRTutorialChapter2::AndroidAppState OpenXRTutorialChapter2::androidAppState = {};
+
 // XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 void android_main(struct android_app *app) {
+    // Allow interaction with JNI and the JVM on this thread.
+    // https://developer.android.com/training/articles/perf-jni#threads
+    JNIEnv *env;
+    app->activity->vm->AttachCurrentThread(&env, nullptr);
+
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
     OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
     if (!xrInitializeLoaderKHR) {
@@ -323,7 +372,10 @@ void android_main(struct android_app *app) {
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
     OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
 
-    OpenXRTutorialChapter2::app = app;
+    app->userData = &OpenXRTutorialChapter2::androidAppState;
+    app->onAppCmd = OpenXRTutorialChapter2::AndroidAppHandleCmd;
+
+    OpenXRTutorialChapter2::androidApp = app;
     OpenXRTutorial_Main();
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__
