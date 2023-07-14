@@ -5,18 +5,18 @@
 #include "OpenXRDebugUtils.h"
 #include "DebugOutput.h"
 
-#define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_3_2
+#define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_1
 
-class OpenXRTutorialChapter3 {
+class OpenXRTutorialChapter4 {
 public:
-    OpenXRTutorialChapter3(GraphicsAPI_Type api)
+    OpenXRTutorialChapter4(GraphicsAPI_Type api)
         : apiType(api) {
         if (!CheckGraphicsAPI_TypeIsValidForPlatform(apiType)) {
             std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
             DEBUG_BREAK;
         }
     }
-    ~OpenXRTutorialChapter3() = default;
+    ~OpenXRTutorialChapter4() = default;
 
     void Run() {
         CreateInstance();
@@ -24,6 +24,10 @@ public:
 
         GetInstanceProperties();
         GetSystemID();
+
+		#if XR_DOCS_CHAPTER_VERSION>= XR_DOCS_CHAPTER_4_1
+		CreateActionSet();
+		#endif
 
         if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1) {
             GetViewConfigurationViews();
@@ -34,6 +38,11 @@ public:
 
         if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2) {
             CreateSession();
+
+			#if XR_DOCS_CHAPTER_VERSION>= XR_DOCS_CHAPTER_4_1
+			AttachActionSet();
+			#endif
+
             if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
                 CreateReferenceSpace();
             }
@@ -70,14 +79,14 @@ private:
     void CreateInstance() {
         // XR_DOCS_TAG_BEGIN_XrApplicationInfo
         XrApplicationInfo AI;
-        strcpy(AI.applicationName, "OpenXR Tutorial Chapter 3");
+        strcpy(AI.applicationName, "OpenXR Tutorial Chapter 4");
         AI.applicationVersion = 1;
         strcpy(AI.engineName, "OpenXR Engine");
         AI.engineVersion = 1;
         AI.apiVersion = XR_CURRENT_API_VERSION;
         // XR_DOCS_TAG_END_XrApplicationInfo
 
-        // Add additional xrInstance layers/extensions
+        // Add additional instance layers/extensions
         {
             // XR_DOCS_TAG_BEGIN_instanceExtensions
             instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -168,7 +177,78 @@ private:
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(xrInstance, systemID, &systemProperties), "Failed to get SystemProperties.");
     }
+	
+	struct InteractionProfileBinding
+	{
+		XrAction action;
+		const char *complete_path=nullptr;
+	};
 
+	struct InteractionProfile
+	{
+		XrPath profilePath;
+		std::vector<XrActionSuggestedBinding> xrActionSuggestedBindings;
+		void Init(XrInstance &xrInstance,const char *pr,std::initializer_list<InteractionProfileBinding> bindings)
+		{
+			OPENXR_CHECK(xrStringToPath(xrInstance, pr, &profilePath),"Failed to create path from string.");
+			xrActionSuggestedBindings.reserve(bindings.size());
+			for (auto elem : bindings)
+			{
+				XrPath actionPath;
+				OPENXR_CHECK(xrStringToPath(xrInstance, elem.complete_path, &actionPath),"Failed to create path from string.");
+				xrActionSuggestedBindings.push_back( {elem.action, actionPath});
+			}
+		}
+	};
+	XrAction xrActionSelect;
+	XrAction xrActionClick;
+	XrAction xrActionLeftGripPose;
+	XrAction xrActionRightHaptic;
+	void CreateActionSet() {
+		XrActionSetCreateInfo actionset_info = { XR_TYPE_ACTION_SET_CREATE_INFO };
+		strcpy_s(actionset_info.actionSetName, XR_MAX_ACTION_SET_NAME_SIZE, "openxr-tutorial-actionset");
+		strcpy_s(actionset_info.localizedActionSetName, XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE, "OpenXR Tutorial ActionSet");
+		OPENXR_CHECK(xrCreateActionSet(xrInstance, &actionset_info, &actionSet),"xrCreateActionSet");
+		// Now we create our actions:
+		
+		auto CreateAction = [this](XrAction &xrAction,const char *name,XrActionType xrActionType) {
+			XrActionCreateInfo action_info = { XR_TYPE_ACTION_CREATE_INFO };
+			action_info.actionType = xrActionType;
+			strcpy_s(action_info.actionName, XR_MAX_ACTION_NAME_SIZE, name);
+			strcpy_s(action_info.localizedActionName, XR_MAX_LOCALIZED_ACTION_NAME_SIZE, name);
+		
+			OPENXR_CHECK(xrCreateAction(actionSet, &action_info, &xrAction),"Failed to create xrAction.");
+		};
+		CreateAction(xrActionSelect,"select",XR_ACTION_TYPE_BOOLEAN_INPUT);
+		CreateAction(xrActionClick,"click",XR_ACTION_TYPE_BOOLEAN_INPUT);
+		CreateAction(xrActionLeftGripPose,"left-grip",XR_ACTION_TYPE_POSE_INPUT);
+		CreateAction(xrActionRightHaptic,"right-haptic",XR_ACTION_TYPE_VIBRATION_OUTPUT);
+		InteractionProfile khrSimpleIP;
+		khrSimpleIP.Init(xrInstance
+				,"/interaction_profiles/khr/simple_controller"
+				,{
+					{xrActionSelect				,"/user/hand/left/input/select/click"}
+					,{xrActionClick				,"/user/hand/right/input/select/click"}
+					,{xrActionLeftGripPose		,"/user/hand/left/input/grip/pose"}
+					,{xrActionRightHaptic		,"/user/hand/right/output/haptic"}
+				
+				});
+			//The application can call xrSuggestInteractionProfileBindings once per interaction profile that it supports.
+		XrInteractionProfileSuggestedBinding suggested_binds = { XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING };
+		suggested_binds.interactionProfile = khrSimpleIP.profilePath;
+		suggested_binds.suggestedBindings = khrSimpleIP.xrActionSuggestedBindings.data();
+		suggested_binds.countSuggestedBindings = (uint32_t)khrSimpleIP.xrActionSuggestedBindings.size();
+		OPENXR_CHECK(xrSuggestInteractionProfileBindings(xrInstance, &suggested_binds),"xrSuggestInteractionProfileBindings failed.");
+	}
+
+	void AttachActionSet()
+	{
+		// Attach the action set we just made to the session. We could attach multiple action sets!
+		XrSessionActionSetsAttachInfo attach_info = { XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO };
+		attach_info.countActionSets = 1;
+		attach_info.actionSets = &actionSet;
+		OPENXR_CHECK(xrAttachSessionActionSets( session, &attach_info),"Failed to attach ActionSet to Session.");
+	}
     void GetEnvirmentBlendModes() {
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate ViewConfigurationViews.");
@@ -579,12 +659,15 @@ private:
     std::vector<XrEnvironmentBlendMode> environmentBlendModes{};
 
     XrSpace local_or_stage_space{};
+
+	
+	XrActionSet	actionSet;
 };
 
 void OpenXRTutorial_Main() {
 	DebugOutput debugOutput;
-    std::cout << "OpenXR Tutorial Chapter 4." << std::endl;
-    OpenXRTutorialChapter3 app(VULKAN);
+    std::cout << "OpenXR Tutorial Chapter 3." << std::endl;
+    OpenXRTutorialChapter4 app(VULKAN);
     app.Run();
 }
 
@@ -595,8 +678,8 @@ int main(int argc, char **argv) {
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
-android_app *OpenXRTutorialChapter3::androidApp = nullptr;
-OpenXRTutorialChapter3::AndroidAppState OpenXRTutorialChapter3::androidAppState = {};
+android_app *OpenXRTutorialChapter4::androidApp = nullptr;
+OpenXRTutorialChapter4::AndroidAppState OpenXRTutorialChapter4::androidAppState = {};
 
 // XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 void android_main(struct android_app *app) {
@@ -616,10 +699,10 @@ void android_main(struct android_app *app) {
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
     OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
 
-    app->userData = &OpenXRTutorialChapter3::androidAppState;
-    app->onAppCmd = OpenXRTutorialChapter3::AndroidAppHandleCmd;
+    app->userData = &OpenXRTutorialChapter4::androidAppState;
+    app->onAppCmd = OpenXRTutorialChapter4::AndroidAppHandleCmd;
 
-    OpenXRTutorialChapter3::androidApp = app;
+    OpenXRTutorialChapter4::androidApp = app;
     OpenXRTutorial_Main();
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__

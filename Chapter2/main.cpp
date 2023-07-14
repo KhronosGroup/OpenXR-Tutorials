@@ -3,6 +3,7 @@
 
 #include "GraphicsAPIs.h"
 #include "OpenXRDebugUtils.h"
+#include "DebugOutput.h"
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
 
@@ -24,26 +25,23 @@ public:
         GetInstanceProperties();
         GetSystemID();
 
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2) {
-            CreateSession();
+        #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
+        CreateSession();
 
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3) {
-                while (applicationRunning) {
-                    PollSystemEvents();
-                    PollEvents();
-                    if (sessionRunning) {
-                        // Draw Frame.
-                    }
-                }
-            }
-
-            DestroySession();
-        }
-
-        DestroyDebugMessenger();
-        DestroyInstance();
-    }
-
+        #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
+		while (applicationRunning) {
+		    PollSystemEvents();
+		    PollEvents();
+		    if (sessionRunning) {
+		        // Draw Frame.
+		    }
+		}
+		#endif
+		DestroySession();
+		#endif
+		DestroyDebugMessenger();
+		DestroyInstance();
+	}
 private:
     void CreateInstance() {
         // XR_DOCS_TAG_BEGIN_XrApplicationInfo
@@ -107,30 +105,30 @@ private:
         instanceCI.enabledApiLayerNames = activeAPILayers.data();
         instanceCI.enabledExtensionCount = static_cast<uint32_t>(activeInstanceExtensions.size());
         instanceCI.enabledExtensionNames = activeInstanceExtensions.data();
-        OPENXR_CHECK(xrCreateInstance(&instanceCI, &instance), "Failed to create Instance.");
+        OPENXR_CHECK(xrCreateInstance(&instanceCI, &xrInstance), "Failed to create Instance.");
         // XR_DOCS_TAG_END_XrInstanceCreateInfo
     }
 
     void DestroyInstance() {
-        OPENXR_CHECK(xrDestroyInstance(instance), "Failed to destroy Instance.");
+        OPENXR_CHECK(xrDestroyInstance(xrInstance), "Failed to destroy Instance.");
     }
 
     // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
         if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
-            debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(instance);
+            debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(xrInstance);
         }
     }
     void DestroyDebugMessenger() {
         if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
-            DestroyOpenXRDebugUtilsMessenger(instance, debugUtilsMessenger);
+            DestroyOpenXRDebugUtilsMessenger(xrInstance, debugUtilsMessenger);
         }
     }
     // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
     void GetInstanceProperties() {
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
-        OPENXR_CHECK(xrGetInstanceProperties(instance, &instanceProperties), "Failed to get InstanceProperties.");
+        OPENXR_CHECK(xrGetInstanceProperties(xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
         std::cout << "OpenXR Runtime: " << instanceProperties.runtimeName << " - ";
         std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
@@ -141,10 +139,10 @@ private:
     void GetSystemID() {
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = formFactor;
-        OPENXR_CHECK(xrGetSystem(instance, &systemGI, &systemID), "Failed to get SystemID.");
+        OPENXR_CHECK(xrGetSystem(xrInstance, &systemGI, &systemID), "Failed to get SystemID.");
 
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
-        OPENXR_CHECK(xrGetSystemProperties(instance, systemID, &systemProperties), "Failed to get SystemProperties.");
+        OPENXR_CHECK(xrGetSystemProperties(xrInstance, systemID, &systemProperties), "Failed to get SystemProperties.");
     }
 
     void CreateSession() {
@@ -152,23 +150,23 @@ private:
 
         if (apiType == D3D11) {
 #if defined(XR_USE_GRAPHICS_API_D3D11)
-            graphicsAPI = std::make_unique<GraphicsAPI_D3D11>(instance, systemID);
+            graphicsAPI = std::make_unique<GraphicsAPI_D3D11>(xrInstance, systemID);
 #endif
         } else if (apiType == D3D12) {
 #if defined(XR_USE_GRAPHICS_API_D3D12)
-            graphicsAPI = std::make_unique<GraphicsAPI_D3D12>(instance, systemID);
+            graphicsAPI = std::make_unique<GraphicsAPI_D3D12>(xrInstance, systemID);
 #endif
         } else if (apiType == OPENGL) {
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
-            graphicsAPI = std::make_unique<GraphicsAPI_OpenGL>(instance, systemID);
+            graphicsAPI = std::make_unique<GraphicsAPI_OpenGL>(xrInstance, systemID);
 #endif
         } else if (apiType == OPENGL_ES) {
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-            graphicsAPI = std::make_unique<GraphicsAPI_OpenGL_ES>(instance, systemID);
+            graphicsAPI = std::make_unique<GraphicsAPI_OpenGL_ES>(xrInstance, systemID);
 #endif
         } else if (apiType == VULKAN) {
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
-            graphicsAPI = std::make_unique<GraphicsAPI_Vulkan>(instance, systemID);
+            graphicsAPI = std::make_unique<GraphicsAPI_Vulkan>(xrInstance, systemID);
 #endif
         } else {
             std::cout << "ERROR: Unknown Graphics API." << std::endl;
@@ -178,7 +176,7 @@ private:
         sessionCI.createFlags = 0;
         sessionCI.systemId = systemID;
 
-        OPENXR_CHECK(xrCreateSession(instance, &sessionCI, &session), "Failed to create Session.");
+        OPENXR_CHECK(xrCreateSession(xrInstance, &sessionCI, &session), "Failed to create Session.");
     }
 
     void DestroySession() {
@@ -189,7 +187,7 @@ private:
         XrResult result = XR_SUCCESS;
         do {
             XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
-            result = xrPollEvent(instance, &eventData);
+            result = xrPollEvent(xrInstance, &eventData);
 
             switch (eventData.type) {
             case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
@@ -315,7 +313,7 @@ private:
 #endif
 
 private:
-    XrInstance instance = {};
+    XrInstance xrInstance = {};
     std::vector<const char *> activeAPILayers = {};
     std::vector<const char *> activeInstanceExtensions = {};
     std::vector<std::string> apiLayers = {};
@@ -338,8 +336,8 @@ private:
 };
 
 void OpenXRTutorial_Main() {
+	DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 2." << std::endl;
-
     OpenXRTutorialChapter2 app(VULKAN);
     app.Run();
 }

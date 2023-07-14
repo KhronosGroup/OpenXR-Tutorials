@@ -11,7 +11,7 @@
     {                                                                            \
         XrResult result = (x);                                                   \
         if (!XR_SUCCEEDED(result)) {                                             \
-            std::cout << "ERROR: OPENXR: (" << result << ") " << y << std::endl; \
+            std::cout << "ERROR: OPENXR: "<<int(result)<<"(" <<(xrInstance?GetXRErrorString(xrInstance,result):"")<< ") " << y << std::endl; \
         }                                                                        \
     }
 

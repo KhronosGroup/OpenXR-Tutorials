@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project("OpenXRTutorialChapter3") # Needed for Android
+project("OpenXRTutorialChapter4") # Needed for Android
 
 # For FetchContent_Declare() and FetchContent_MakeAvailable()
 include(FetchContent)
@@ -41,8 +41,8 @@ set(HEADERS
 
 if (ANDROID)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
-    add_library(OpenXRTutorialChapter3 SHARED ${SOURCES} ${HEADERS})
-    target_include_directories(OpenXRTutorialChapter3 PUBLIC "../Common/")
+    add_library(OpenXRTutorialChapter4 SHARED ${SOURCES} ${HEADERS})
+    target_include_directories(OpenXRTutorialChapter4 PUBLIC "../Common/")
 
     # native_app_glue
     include(AndroidNdkModules)
@@ -50,7 +50,7 @@ if (ANDROID)
 
     # vulkan - Found in the NDK
     find_library(vulkan-lib vulkan)
-    target_include_directories(OpenXRTutorialChapter3 PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
+    target_include_directories(OpenXRTutorialChapter4 PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
 
     # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
     add_library(openxr-gfxwrapper STATIC ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.c ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.h)
@@ -60,11 +60,11 @@ if (ANDROID)
     target_link_libraries(openxr-gfxwrapper PUBLIC ${GLES3-lib})
     target_link_libraries(openxr-gfxwrapper PUBLIC ${EGL-lib})
 
-    target_include_directories(OpenXRTutorialChapter3 PUBLIC ${openxr_SOURCE_DIR}/src/common)
-    target_include_directories(OpenXRTutorialChapter3 PUBLIC ${openxr_SOURCE_DIR}/external/include)
+    target_include_directories(OpenXRTutorialChapter4 PUBLIC ${openxr_SOURCE_DIR}/src/common)
+    target_include_directories(OpenXRTutorialChapter4 PUBLIC ${openxr_SOURCE_DIR}/external/include)
 
     # Final link
-    target_link_libraries(OpenXRTutorialChapter3
+    target_link_libraries(OpenXRTutorialChapter4
             android
             native_app_glue
             openxr_loader
@@ -72,28 +72,29 @@ if (ANDROID)
             openxr-gfxwrapper)
 
 else()
-    add_executable(OpenXRTutorialChapter3 ${SOURCES} ${HEADERS})
+    add_executable(OpenXRTutorialChapter4 ${SOURCES} ${HEADERS})
 
 	# our selected runtime
-	set_target_properties( OpenXRTutorialChapter3 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
-
-    target_include_directories(OpenXRTutorialChapter3 PUBLIC "../Common/")
-    target_link_libraries(OpenXRTutorialChapter3 openxr_loader)
+	set(XR_RUNTIME_JSON "$ENV{XR_RUNTIME_JSON}" CACHE PATH "Optional location of a specific OpenXR runtime configuration file.")
+	set_target_properties( OpenXRTutorialChapter4 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
+	
+    target_include_directories(OpenXRTutorialChapter4 PUBLIC "../Common/")
+    target_link_libraries(OpenXRTutorialChapter4 openxr_loader)
 
     if (WIN32)
-        target_link_libraries(OpenXRTutorialChapter3 "d3d11.lib") 
-        target_link_libraries(OpenXRTutorialChapter3 "d3d12.lib") 
-        target_link_libraries(OpenXRTutorialChapter3 "dxgi.lib") 
+        target_link_libraries(OpenXRTutorialChapter4 "d3d11.lib") 
+        target_link_libraries(OpenXRTutorialChapter4 "d3d12.lib") 
+        target_link_libraries(OpenXRTutorialChapter4 "dxgi.lib") 
     endif()
 
     find_package(Vulkan)
     if (Vulkan_FOUND)
-        target_include_directories(OpenXRTutorialChapter3 PUBLIC ${Vulkan_INCLUDE_DIRS})
-        target_link_libraries(OpenXRTutorialChapter3 ${Vulkan_LIBRARIES})
+        target_include_directories(OpenXRTutorialChapter4 PUBLIC ${Vulkan_INCLUDE_DIRS})
+        target_link_libraries(OpenXRTutorialChapter4 ${Vulkan_LIBRARIES})
     endif()
 
     # Fix redirection to a different project's build folder
-    target_include_directories(OpenXRTutorialChapter3 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2.1/openxr/src/common)
-    target_link_libraries(OpenXRTutorialChapter3 openxr-gfxwrapper)
+    target_include_directories(OpenXRTutorialChapter4 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2.1/openxr/src/common)
+    target_link_libraries(OpenXRTutorialChapter4 openxr-gfxwrapper)
 
 endif()
