@@ -399,7 +399,7 @@ Similar to Vulkan, OpenXR allows applications to extend functionality past what 
 	:end-before: XR_DOCS_TAG_END_instanceExtensions
 	:dedent: 12
 
-Here, we store in a ``std::vector<std::string>`` the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in :doc:`Chapter 5.2. <extensions>` Depending on which ``XR_USE_GRAPHICS_API_...`` macro that you have defined, this code will add the relevant extension.
+Here, we store in a ``std::vector<std::string>`` the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in :doc:`Chapter 5.2. <5-extensions>` Depending on which ``XR_USE_GRAPHICS_API_...`` macro that you have defined, this code will add the relevant extension.
 
 Not all API layers and extensions are available to use, so we much check which ones can use. We will use ``xrEnumerateApiLayerProperties()`` and ``xrEnumerateInstanceExtensionProperties()`` to check which ones the runtime can provide.
 
@@ -466,10 +466,16 @@ We can now also get the system's properties. We partially fill out a ``XrSystemP
 Creating an XrSession
 ---------------------
 
+The next major component of OpenXR that needs to be created in an ``XrSession``. An ``XrSession`` encapulates the state of application from the perspective of OpenXR. When an ``XrSession`` is created, it starts in the ``XR_SESSION_STATE_IDLE``. It is upto the runtime to provide any updates to the ``XrSessionState`` and for the appliaction to query them and react to them. We will explore this in :doc:`Chapter 2.3. <2-Polling the Event Loop>`
+
+For now, we are just going to create an ``XrSession``. At this point, you'll need to select which Graphics API you wish to use. Only one Graphics API can be used with an ``XrSession``. This tutorial demostrates how to use D3D11, D3D12, OpenGL, OpenGL ES and Vulkan in conjunction with OpenXR for the purpose of rendering graphics to the provided views. Ultimately, you will most likely be bringing your own rendering solution to this tutorial, therefore the code examples provided for the Graphics APIs are `placeholders` for you own code base; demostrating in this sub-chapter what objects are needed from your Graphics API in order to create an ``XrSession``. This tutorial uses polymorphic classes ``GraphicsAPI_...`` which derives from ``GraphicsAPI``. There are both compile and runtime checks to select the requested Graphics API, and we construct an apropriate derived classes throught the use of ``std::unique_ptr<>``. 
+
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateDestroySession
 	:end-before: XR_DOCS_TAG_END_CreateDestroySession
+
+Above is the code for creating and destroying an ``XrSession``. ``xrCreateSession()`` takes the ``XrInstance``, ``XrSessionCreateInfo`` and ``XrSession`` return object. If the function call was successful, ``xrCreateSession()`` will return ``XR_SUCCESS`` and ``XrSession`` will be non-null. The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateInfo::createFlags`` and ``XrSessionCreateInfo::systemId`` are easily filled in, but we need to specify what Graphics APIs we wish to use. This is achieved via the use of the ``XrSessionCreateInfo::next`` void pointer. Following the Vulkan API's style of extenibility, structures for creating objects can be extended to enable extra functionality. In our case, the extension is required and thus ``XrSessionCreateInfo::next`` can not be null. That pointer must point to 'exactly one graphics API binding structure (a structure whose name begins with "XrGraphicsBinding")'.
 
 .. container:: d3d11
 	:name: d3d11-id-1
@@ -481,10 +487,23 @@ Creating an XrSession
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11
 
+	Above is the minimum code needed to create a suitable ``ID3D11Device *``. First, we need to get the function pointer for ``xrGetD3D11GraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsD3D11KHR`` struture. 
+	
+	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
+		:language: cpp
+		:start-at: typedef struct XrGraphicsRequirementsD3D11KHR {
+		:end-at: } XrGraphicsRequirementsD3D11KHR;
+
+	From this structure, we use the ``adapterLuid`` to find the approiate ``IDXGIAdapter *``. We create a ``IDXGIFactory1 *`` and then call ``IDXGIFactory1::EnumAdapters()`` and ``IDXGIAdapter::GetDesc()`` to get the ``DXGI_ADAPTER_DESC``, so that we can compare the ``adapterLuid`` s.
+
+	Finally, we call ``D3D11CreateDevice`` with found adapter and the ``minFeatureLevel`` from ``XrGraphicsRequirementsD3D11KHR``, if successful the function will return ``S_OK`` and ``ID3D11Device *`` is non-null.
+
 	.. literalinclude:: ../Common/GraphicsAPI_D3D11.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetGraphicsBinding
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetGraphicsBinding
+
+	Here, we simply fill out the ``XrGraphicsBindingD3D11KHR`` structure and return a pointer to the class member, which will be assigned to ``XrSessionCreateInfo::next``.
 
 .. container:: d3d12
 	:name: d3d12-id-1
@@ -496,10 +515,23 @@ Creating an XrSession
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12
 
+	Above is the minimum code needed to create a suitable ``ID3D12Device *``  and ``ID3D12CommandQueue *``. First, we need to get the function pointer for ``xrGetD3D12GraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsD3D12KHR`` struture. 
+
+	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
+		:language: cpp
+		:start-at: typedef struct XrGraphicsRequirementsD3D12KHR {
+		:end-at: } XrGraphicsRequirementsD3D12KHR;
+
+	From this structure, we use the ``adapterLuid`` to find the approiate ``IDXGIAdapter1 *``. We create a ``IDXGIFactory4 *`` and then call ``IDXGIFactory4::EnumAdapters1()`` and ``IDXGIAdapter1::GetDesc()`` to get the ``DXGI_ADAPTER_DESC``, so that we can compare the ``adapterLuid`` s.
+
+	Finally, we call ``D3D12CreateDevice`` with found adapter and the ``minFeatureLevel`` from ``XrGraphicsRequirementsD3D12KHR``, if successful the function will return ``S_OK`` and ``ID3D12Device *`` is non-null. Next, we create a simple a ``ID3D12CommandQueue *`` of type ``D3D12_COMMAND_LIST_TYPE_DIRECT``.
+
 	.. literalinclude:: ../Common/GraphicsAPI_D3D12.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_GetGraphicsBinding
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetGraphicsBinding
+
+	Here, we simply fill out the ``XrGraphicsBindingD3D12KHR`` structure and return a pointer to the class member, which will be assigned to ``XrSessionCreateInfo::next``.
 	
 .. container:: opengl
 	:name: opengl-id-1
