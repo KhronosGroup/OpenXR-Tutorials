@@ -93,7 +93,7 @@ else()
     endif()
 
     # Fix redirection to a different project's build folder
-    target_include_directories(OpenXRTutorialChapter3 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2.1/openxr/src/common)
+    target_include_directories(OpenXRTutorialChapter3 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
     target_link_libraries(OpenXRTutorialChapter3 openxr-gfxwrapper)
 
 endif()
