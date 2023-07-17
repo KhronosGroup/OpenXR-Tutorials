@@ -7582,3 +7582,20 @@ span[id*=MathJax-Span]
 {
 	margin: 20px 20px 20px 40px;
 }
+
+.d3d11, .d3d12, .opengl, .opengles, .vulkan
+{
+}
+.select-graphics-api
+{
+	border-width:1px 1px 0px 1px;
+	border-color:silver;
+	border-radius: 7px 8px 0 0;
+	margin: 4px 0px 0px 0px;
+    background: silver;
+	color:gray;
+}
+.selected-graphics-api
+{
+    background: #fcfcfc;
+}

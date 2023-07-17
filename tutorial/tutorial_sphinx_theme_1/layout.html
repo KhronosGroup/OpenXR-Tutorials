@@ -166,6 +166,67 @@
 	}
 	</script>
 	<script defer src="{{ pathto('_static/js/updatePlatform.js', 1) }}"></script>
+	<script >
+	function updateGraphicsAPI()
+	{
+	var graphicsApi = Cookies.get("graphicsApi")
+	console.log("graphicsApi = " + graphicsApi);
+	if (typeof graphicsApi == 'undefined')
+	platform="vulkan";
+	if (graphicsApi == "d3d11") {
+	$(".d3d11").show();
+	$(".d3d12").hide();
+	$(".opengl").hide();
+	$(".opengles").hide();
+	$(".vulkan").hide();
+	}
+	if (graphicsApi == "d3d12") {
+	$(".d3d11").hide();
+	$(".d3d12").show();
+	$(".opengl").hide();
+	$(".opengles").hide();
+	$(".vulkan").hide();
+	}
+	if (graphicsApi == "opengl") {
+	$(".d3d11").hide();
+	$(".d3d12").hide();
+	$(".opengl").show();
+	$(".opengles").hide();
+	$(".vulkan").hide();
+	}
+	if (graphicsApi == "opengles") {
+	$(".d3d11").hide();
+	$(".d3d12").hide();
+	$(".opengl").hide();
+	$(".opengles").show();
+	$(".vulkan").hide();
+	}
+	if (graphicsApi == "vulkan") {
+	$(".d3d11").hide();
+	$(".d3d12").hide();
+	$(".opengl").hide();
+	$(".opengles").hide();
+	$(".vulkan").show();
+	}
+	var oldelements = document.getElementsByClassName('selected-graphics-api');
+	for (i = 0; i < oldelements.length; ++i)
+	{
+	oldelements[i].classList.remove('selected-selected-graphics-api');
+	}
+	var element = document.getElementById('select' + graphicsApi);
+	element.classList.add('selected-selected-graphics-api');
+	var element2 = document.getElementById('select' + graphicsApi +"-inline");
+	element2.classList.add('selected-selected-graphics-api');
+	window.updateGraphicsAPI=updateGraphicsAPI;
+	}</script>
+	<script >
+	var graphicsApi = Cookies.get("graphicsApi")
+	if (graphicsApi==undefined) {
+	Cookies.set('graphicsApi', 'vulkan',{ expires: 365})
+	platform='vulkan';
+	}
+	</script>
+	<script defer src="{{ pathto('_static/js/updateGraphicsAPI.js', 1) }}"></script>
 	<style>
 	@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 	@import url('https://fonts.cdnfonts.com/css/menlo');

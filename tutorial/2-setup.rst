@@ -226,7 +226,7 @@ Then, we create the actual platform specific main function (our entry point to t
 		:start-after: XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 		:end-before: XR_DOCS_TAG_END_android_main___ANDROID__
 
-		.. literalinclude:: ../Chapter2/main.cpp
+	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_Android_System_Functionality
 		:end-before: XR_DOCS_TAG_END_Android_System_Functionality
@@ -470,17 +470,37 @@ Creating an XrSession
 .. container:: d3d11
 	:name: d3d11-id-1
 
+	.. rubric:: DirectX 11
+
+	DirectX 11
+
 .. container:: d3d12
 	:name: d3d12-id-1
 	
+	DirectX 12
+
+	.. rubric:: DirectX 12
+	
 .. container:: opengl
-	:name: d3d11-id-1
+	:name: opengl-id-1
+
+	.. rubric:: OpenGL
+		
+	OpenGL
 	
 .. container:: opengles
 	:name: opengles-id-1
+
+	.. rubric:: OpenGL ES
+		
+	OpenGL ES
 	
 .. container:: vulkan
 	:name: vulkan-id-1
+
+	.. rubric:: Vulkan
+		
+	Vulkan
 
 Polling the Event Loop
 ----------------------
