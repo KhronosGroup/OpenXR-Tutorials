@@ -11,6 +11,7 @@
         }                                                                                          \
     }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan
 GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemId) {
     // Instance
     LoadPFN_XrFunctions(xrInstance);
@@ -137,7 +138,9 @@ GraphicsAPI_Vulkan::~GraphicsAPI_Vulkan() {
     vkDestroyDevice(device, nullptr);
     vkDestroyInstance(instance, nullptr);
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetGraphicsBinding
 void *GraphicsAPI_Vulkan::GetGraphicsBinding() {
     graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR};
     graphicsBinding.instance = instance;
@@ -147,6 +150,7 @@ void *GraphicsAPI_Vulkan::GetGraphicsBinding() {
     graphicsBinding.queueIndex = queueIndex;
     return &graphicsBinding;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetGraphicsBinding
 
 XrSwapchainImageBaseHeader *GraphicsAPI_Vulkan::AllocateSwapchainImageData(uint32_t count) {
     swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR});

@@ -19,6 +19,7 @@
         }                     \
     }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
 GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance xrInstance, XrSystemId systemId) {
     OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetD3D12GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D12GraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
     XrGraphicsRequirementsD3D12KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR};
@@ -50,13 +51,16 @@ GraphicsAPI_D3D12 ::~GraphicsAPI_D3D12() {
     D3D12_SAFE_RELEASE(device);
     D3D12_SAFE_RELEASE(queue);
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D12
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_GetGraphicsBinding
 void *GraphicsAPI_D3D12::GetGraphicsBinding() {
     graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_D3D12_KHR};
     graphicsBinding.device = device;
     graphicsBinding.queue = queue;
     return &graphicsBinding;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetGraphicsBinding
 
 XrSwapchainImageBaseHeader *GraphicsAPI_D3D12::AllocateSwapchainImageData(uint32_t count) {
     swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D12_KHR});

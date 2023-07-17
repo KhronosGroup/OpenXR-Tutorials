@@ -150,6 +150,7 @@ private:
     }
     // XR_DOCS_TAG_END_GetSystemID
 
+    // XR_DOCS_TAG_BEGIN_CreateDestroySession
     void CreateSession() {
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
 
@@ -187,6 +188,7 @@ private:
     void DestroySession() {
         OPENXR_CHECK(xrDestroySession(session), "Failed to destroy Session.");
     }
+    // XR_DOCS_TAG_END_CreateDestroySession
 
     void PollEvents() {
         XrResult result = XR_SUCCESS;

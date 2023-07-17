@@ -1,6 +1,8 @@
 #include "GraphicsAPI_OpenGL.h"
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
+
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL
 GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance xrInstance, XrSystemId systemId) {
     OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetOpenGLGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
     XrGraphicsRequirementsOpenGLKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR};
@@ -30,7 +32,9 @@ GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance xrInstance, XrSystemId systemI
 GraphicsAPI_OpenGL::~GraphicsAPI_OpenGL() {
     ksGpuWindow_Destroy(&window);
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetGraphicsBinding
 void *GraphicsAPI_OpenGL::GetGraphicsBinding() {
     // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengl.cpp#L123-L144
 #if defined(XR_USE_PLATFORM_WIN32)
@@ -61,6 +65,7 @@ void *GraphicsAPI_OpenGL::GetGraphicsBinding() {
 #endif
     return &graphicsBinding;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetGraphicsBinding
 
 XrSwapchainImageBaseHeader *GraphicsAPI_OpenGL::AllocateSwapchainImageData(uint32_t count) {
     swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR});

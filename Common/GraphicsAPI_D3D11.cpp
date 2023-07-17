@@ -19,6 +19,7 @@
         }                     \
     }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11
 GraphicsAPI_D3D11::GraphicsAPI_D3D11(XrInstance xrInstance, XrSystemId systemId) {
     OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetD3D11GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D11GraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
     XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
@@ -37,19 +38,22 @@ GraphicsAPI_D3D11::GraphicsAPI_D3D11(XrInstance xrInstance, XrSystemId systemId)
     }
 
     D3D11_CHECK(D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, 0, 0, &graphicsRequirements.minFeatureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &immediateContext), "Failed to create D3D11 Device.");
-};
+}
 
 GraphicsAPI_D3D11::~GraphicsAPI_D3D11() {
     D3D11_SAFE_RELEASE(immediateContext);
     D3D11_SAFE_RELEASE(device);
     D3D11_SAFE_RELEASE(factory);
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D11
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetGraphicsBinding
 void *GraphicsAPI_D3D11::GetGraphicsBinding() {
     graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
     graphicsBinding.device = device;
     return &graphicsBinding;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetGraphicsBinding
 
 XrSwapchainImageBaseHeader *GraphicsAPI_D3D11::AllocateSwapchainImageData(uint32_t count) {
     swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});

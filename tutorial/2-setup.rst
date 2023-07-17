@@ -465,42 +465,86 @@ We can now also get the system's properties. We partially fill out a ``XrSystemP
 
 Creating an XrSession
 ---------------------
-2.2. Creating an XrSession (xrCreateSession, OpenGL based for code brevity)
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateDestroySession
+	:end-before: XR_DOCS_TAG_END_CreateDestroySession
 
 .. container:: d3d11
 	:name: d3d11-id-1
 
 	.. rubric:: DirectX 11
+	
+	.. literalinclude:: ../Common/GraphicsAPI_D3D11.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11
 
-	DirectX 11
+	.. literalinclude:: ../Common/GraphicsAPI_D3D11.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetGraphicsBinding
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetGraphicsBinding
 
 .. container:: d3d12
 	:name: d3d12-id-1
 	
-	DirectX 12
-
 	.. rubric:: DirectX 12
+
+	.. literalinclude:: ../Common/GraphicsAPI_D3D12.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12
+
+	.. literalinclude:: ../Common/GraphicsAPI_D3D12.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_GetGraphicsBinding
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetGraphicsBinding
 	
 .. container:: opengl
 	:name: opengl-id-1
 
 	.. rubric:: OpenGL
-		
-	OpenGL
+	
+	.. literalinclude:: ../Common/GraphicsAPI_OpenGL.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL
+
+	.. literalinclude:: ../Common/GraphicsAPI_OpenGL.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetGraphicsBinding
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetGraphicsBinding
 	
 .. container:: opengles
 	:name: opengles-id-1
 
 	.. rubric:: OpenGL ES
-		
-	OpenGL ES
+
+	.. literalinclude:: ../Common/GraphicsAPI_OpenGL_ES.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES
+
+	.. literalinclude:: ../Common/GraphicsAPI_OpenGL_ES.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
 	
 .. container:: vulkan
 	:name: vulkan-id-1
 
 	.. rubric:: Vulkan
-		
-	Vulkan
+	
+	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan
+
+	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetGraphicsBinding
+		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetGraphicsBinding
 
 Polling the Event Loop
 ----------------------

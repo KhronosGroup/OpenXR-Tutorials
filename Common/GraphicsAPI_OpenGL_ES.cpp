@@ -1,6 +1,8 @@
 #include "GraphicsAPI_OpenGL_ES.h"
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES
 GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES(XrInstance xrInstance, XrSystemId systemId) {
     OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetOpenGLESGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetOpenGLESGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
     XrGraphicsRequirementsOpenGLESKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
@@ -31,7 +33,9 @@ GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES(XrInstance xrInstance, XrSystemId s
 GraphicsAPI_OpenGL_ES::~GraphicsAPI_OpenGL_ES() {
     ksGpuWindow_Destroy(&window);
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
 void *GraphicsAPI_OpenGL_ES::GetGraphicsBinding() {
     graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR};
     graphicsBinding.display = window.display;
@@ -39,6 +43,7 @@ void *GraphicsAPI_OpenGL_ES::GetGraphicsBinding() {
     graphicsBinding.context = window.context.context;
     return &graphicsBinding;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
 
 XrSwapchainImageBaseHeader *GraphicsAPI_OpenGL_ES::AllocateSwapchainImageData(uint32_t count) {
     swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR});
