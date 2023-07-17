@@ -2,17 +2,17 @@
 
 // Define any XR_USE_PLATFORM_... / XR_USE_GRAPHICS_API_...before this header file.
 
-// OpenXR
+// OpenXR Headers
 #include "openxr/openxr.h"
 #include "openxr/openxr_platform.h"
 
 // XR_DOCS_TAG_BEGIN_Helper_Functions0
-#define OPENXR_CHECK(x, y)                                                       \
-    {                                                                            \
-        XrResult result = (x);                                                   \
-        if (!XR_SUCCEEDED(result)) {                                             \
-            std::cout << "ERROR: OPENXR: "<<int(result)<<"(" <<(xrInstance?GetXRErrorString(xrInstance,result):"")<< ") " << y << std::endl; \
-        }                                                                        \
+#define OPENXR_CHECK(x, y)                                                                                                                              \
+    {                                                                                                                                                   \
+        XrResult result = (x);                                                                                                                          \
+        if (!XR_SUCCEEDED(result)) {                                                                                                                    \
+            std::cout << "ERROR: OPENXR: " << int(result) << "(" << (xrInstance ? GetXRErrorString(xrInstance, result) : "") << ") " << y << std::endl; \
+        }                                                                                                                                               \
     }
 
 inline const char* GetXRErrorString(XrInstance xr_instance, XrResult res) {

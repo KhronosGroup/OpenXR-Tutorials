@@ -127,6 +127,7 @@ private:
     }
     // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
+    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
     void GetInstanceProperties() {
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
@@ -136,7 +137,9 @@ private:
         std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
     }
+    // XR_DOCS_TAG_END_GetInstanceProperties
 
+    // XR_DOCS_TAG_BEGIN_GetSystemID
     void GetSystemID() {
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = formFactor;
@@ -145,6 +148,7 @@ private:
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(xrInstance, systemID, &systemProperties), "Failed to get SystemProperties.");
     }
+    // XR_DOCS_TAG_END_GetSystemID
 
     void CreateSession() {
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
@@ -242,6 +246,7 @@ private:
     }
 
 #if defined(__ANDROID__)
+    // XR_DOCS_TAG_BEGIN_Android_System_Functionality
 public:
     static android_app *androidApp;
 
@@ -307,6 +312,7 @@ private:
             }
         }
     }
+    // XR_DOCS_TAG_END_Android_System_Functionality
 #else
     void PollSystemEvents() {
         return;
@@ -350,10 +356,10 @@ int main(int argc, char **argv) {
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
+// XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 android_app *OpenXRTutorialChapter2::androidApp = nullptr;
 OpenXRTutorialChapter2::AndroidAppState OpenXRTutorialChapter2::androidAppState = {};
 
-// XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 void android_main(struct android_app *app) {
     // Allow interaction with JNI and the JVM on this thread.
     // https://developer.android.com/training/articles/perf-jni#threads

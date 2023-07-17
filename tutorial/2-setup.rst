@@ -82,19 +82,19 @@ Select your platform, as the instructions are different depending on your select
 
 	.. rubric:: colors.xml
 
-	.. literalinclude:: ../Chapter2.1/app/src/main/res/values/colors.xml
+	.. literalinclude:: ../Chapter2/app/src/main/res/values/colors.xml
 		:language: xml
 
 	.. rubric:: styles.xml
 
-	.. literalinclude:: ../Chapter2.1/app/src/main/res/values/styles.xml
+	.. literalinclude:: ../Chapter2/app/src/main/res/values/styles.xml
 		:language: xml
 
 	Create a ``CMakeLists.txt`` in the directory above for compatiblity with other platforms. We will use this file to specific how our Native C++ code will be built. This ``CMakeLists.txt`` file will be invoked by Android Studio's Gradle build system and we will point Gradle to this CMake file. 
 
 	.. rubric:: CMakeLists.txt
 
-	.. literalinclude:: ../Chapter2.1/CMakeLists.txt
+	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake 
 		
 	First, we set the minimum required cmake version, here we are using 3.22.1 and the project's name. Next, we need to add a static library called native_app_glue. The native_app_glue library is compiled from a single source file ``android_native_app_glue.c``. This interfaces between the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``void android_main(struct android_app*)`` entry point. We also include that directory as we need access to the android_native_app_glue.h header file. Next, we need to set the ``CMAKE_SHARED_LINKER_FLAGS`` so that ``ANativeActivity_onCreate()`` is exported for the Java Virtual Machine to call. Next, we add our shared library openxrtutorialch2 that houses our code. Here, I have a relative path to our single C++ file.
@@ -103,7 +103,7 @@ Select your platform, as the instructions are different depending on your select
 
 	.. rubric:: AndroidManifest.xml
 
-	.. literalinclude:: ../Chapter2.1/app/src/main/AndroidManifest.xml
+	.. literalinclude:: ../Chapter2/app/src/main/AndroidManifest.xml
 		:language: xml
 
 	We now need to modify our ``AndroidManifest.xml`` file to tell Android to run a Native Activity. We set ``android:name`` to "android.app.NativeActivity" and update ``android:configChanges`` to "orientation|keyboardHidden" to not close the activity on those changes. Next under the meta-data section, we set these values: ``android:name`` to "android.app.lib_name" and ``android:value`` to "openxrtutorialch2", where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
@@ -112,12 +112,12 @@ Select your platform, as the instructions are different depending on your select
 
 	.. rubric:: Gradle
 
-	.. literalinclude:: ../Chapter2.1/app/build.gradle
+	.. literalinclude:: ../Chapter2/app/build.gradle
 		:language: groovy
 	
 	Now, we can config our ``build.gradle`` file in the ``app`` folder. First remove any references to Java, Kotlin and to testing. Next add in the ``externalNativeBuild`` section specifying CMake, its version and the location of the CMakeLists.txt that we created earlier. Also specify under the ``ndk`` section the ``abiFilters``. We will just be using arm64-v8a in this tutorial. ``ndkVersion`` should also be specified.
 
-	.. literalinclude:: ../Chapter2.1/build.gradle
+	.. literalinclude:: ../Chapter2/build.gradle
 		:language: groovy
 
 	Now, we can config our ``build.gradle`` file in the root folder of the project. This is a complete replacement the default one provided by Android Studio. This file stipulates the repositories and gradle version to be used.
@@ -128,29 +128,36 @@ Select your platform, as the instructions are different depending on your select
 	Now, we'll create our source file. Create a new text file called ``main.cpp`` in the Chapter2 directory.
 	This file will be referenced in the CMakeLists file we created, so ensure the path is correct.
 
-Now, that we have set up the project and source file. Open the source file and add the following code:
+Now, that we have set up the project and source file. We will create two header files in a ``/Common`` directory called ``HelperFunctions.h`` and ``OpenXRHelper.h``
+Open the header files and add the following code to ``Helperfunctions.h``:
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Common/HelperFunctions.h
 	:language: cpp
 	:start-at: // C Headers
-	:end-at: #include <vector>
+	:end-at: #include <unordered_map>
 
-This is boilerplate for the various platforms. Next, we'll add the header files related to OpenXR:
+This is boilerplate for the various platforms. Next, we'll add the header files related to OpenXR to ``OpenXRHelper.h``.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Common/OpenXRHelper.h
 	:language: cpp
 	:start-at: // OpenXR Headers
 	:end-at: #include "openxr/openxr_platform.h"
-	:name: xr-headers
-	:emphasize-lines: 15
+	:emphasize-lines: 3
+
+.. code-block:: cpp
+
+	#if defined(__ANDROID__)
+	#include "android_native_app_glue.h"
+	#define XR_USE_PLATFORM_ANDROID
+	#endif
 
 Here, we include the main OpenXR header file ``openxr.h`` and the OpenXR platform header file ``openxr_platform.h``.
 For the OpenXR platform header file, note the preceding XR_USE\_ macros. When enabled, we gain access to functionality that interact with the chosen graphics API and/or platform. We will enable one of these graphics ones later in the tutorial. 
 For Android, we include our ``android_native_app_glue.h`` header file as well as defining the ``XR_USE_PLATFORM_ANDROID`` macro, which we will need to initialise the load the OpenXR loader.
 
-Next, we'll add the DEBUG_BREAK macro:
+Next, we'll add the DEBUG_BREAK macro to ``HelperFunctions.h``:
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Common/HelperFunctions.h
 	:language: cpp
 	:start-at: // Debugbreak
 	:end-at: #endif
@@ -159,12 +166,16 @@ This defines the macro ``DEBUG_BREAK``, according to which platform we're buildi
 stop execution of your program when an error occurs, so you can see where it happened and fix it.
 We use this macro in the ``OpenXRMessageCallbackFunction()`` function, which we will discuss in :doc:`Chapter 5.2. <5-extensions>` 
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+In ``OpenXRHelper.h``, add:
+
+.. literalinclude:: ../Common/OpenXRHelper.h
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_Helper_Functions0
 	:end-before: XR_DOCS_TAG_END_Helper_Functions0
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+and in ``Helperfunctions.h``, add:
+
+.. literalinclude:: ../Common/HelperFunctions.h
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_Helper_Functions1
 	:end-before: XR_DOCS_TAG_END_Helper_Functions1
@@ -175,10 +186,10 @@ Now we will define the main class of the application. It's just a stub for now, 
 
 .. code-block:: cpp
 
-	class OpenXRTutorial_Ch2_1 {
+	class OpenXRTutorialChapter2 {
 	public:
-		OpenXRTutorial_Ch2_1() = default;
-		~OpenXRTutorial_Ch2_1() = default;
+		OpenXRTutorialChapter2() = default;
+		~OpenXRTutorialChapter2() = default;
 
 		void Run()
 		{
@@ -188,7 +199,7 @@ Now we will define the main class of the application. It's just a stub for now, 
 Finally, let's add the main function for the application. It will look slightly different, depending on your
 chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial_Ch2_1`` class, and call the ``Run()``method.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-at: void OpenXRTutorial_Main()
 	:end-at: }
@@ -200,7 +211,7 @@ Then, we create the actual platform specific main function (our entry point to t
 
 	.. rubric:: Windows and Linux
 
-	.. literalinclude:: ../Chapter2.1/main.cpp
+	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 		:end-before: XR_DOCS_TAG_END_main_WIN32___linux__
@@ -210,12 +221,17 @@ Then, we create the actual platform specific main function (our entry point to t
 	
 	.. rubric:: Android
 	
-	.. literalinclude:: ../Chapter2.1/main.cpp
+	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 		:end-before: XR_DOCS_TAG_END_android_main___ANDROID__
 
-	Before we can use OpenXR for Android, we need to initialise the loader based the application's context and virtual machine. We retrieve the function pointer to ``xrInitializeLoaderKHR``, and with the ``XrLoaderInitInfoAndroidKHR`` filled out call that function to initialise OpenXR for our use.
+		.. literalinclude:: ../Chapter2/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_Android_System_Functionality
+		:end-before: XR_DOCS_TAG_END_Android_System_Functionality
+
+	Before we can use OpenXR for Android, we need to initialise the loader based the application's context and virtual machine. We retrieve the function pointer to ``xrInitializeLoaderKHR``, and with the ``XrLoaderInitInfoAndroidKHR`` filled out call that function to initialise OpenXR for our use. At this point, we also attach the current thread to the Java Virtual Machine. We assign our ``AndroidAppState`` static member and our ``AndroidAppHandleCmd()`` static method to the ``android_app *`` and save it to a static member in the class.
 
 .. container:: windows
 	:name: windows-id-1
@@ -324,10 +340,10 @@ Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, 
 
 .. code-block:: cpp
 	
-	class OpenXRTutorial_Ch2_1 {
+	class OpenXRTutorialChapter2 {
 	public:
-		OpenXRTutorial() = default;
-		~OpenXRTutorial() = default;
+		OpenXRTutorialChapter2() = default;
+		~OpenXRTutorialChapter2() = default;
 	
 		Run()
 		{
@@ -367,7 +383,7 @@ Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, 
 
 The ``XrInstance`` is the foundational object that we need to create first. The ``XrInstance`` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the ``CreateInstance()`` method, we will first look at the ``XrApplicationInfo``.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_XrApplicationInfo
 	:end-before: XR_DOCS_TAG_END_XrApplicationInfo
@@ -377,16 +393,17 @@ This structure allows you specify both the name and the version for your applica
 
 Similar to Vulkan, OpenXR allows applications to extend functionality past what is provided by the core specification. The functionality could be hardware/vendor specific. Most vital of course is which Graphics API to use with OpenXR. OpenXR supports D3D11, D3D12, Vulkan, OpenGL and OpenGL ES. Due the extensible nature of specification, it allows newer Graphics APIs and hardware functionality to be added with ease.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_instanceExtensions
 	:end-before: XR_DOCS_TAG_END_instanceExtensions
+	:dedent: 12
 
 Here, we store in a ``std::vector<std::string>`` the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in :doc:`Chapter 5.2. <extensions>` Depending on which ``XR_USE_GRAPHICS_API_...`` macro that you have defined, this code will add the relevant extension.
 
 Not all API layers and extensions are available to use, so we much check which ones can use. We will use ``xrEnumerateApiLayerProperties()`` and ``xrEnumerateInstanceExtensionProperties()`` to check which ones the runtime can provide.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_find_apiLayer_extension
 	:end-before: XR_DOCS_TAG_END_find_apiLayer_extension
@@ -394,7 +411,7 @@ Not all API layers and extensions are available to use, so we much check which o
 
 These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures. Before the second call, we need set ``XrApiLayerProperties::type`` or ``XrExtensionProperties::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layers and extensions, we use a nested loop to check to see whether an API layers or extensions is availble and add it to the activeAPILayers and/or activeInstanceExtensions respectively. Note the activeAPILayers and activeInstanceExtensions are of type ``std::vector<const char *>``. This will help us when fill out the next structure ``XrInstanceCreateInfo``.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_XrInstanceCreateInfo
 	:end-before: XR_DOCS_TAG_END_XrInstanceCreateInfo
@@ -404,7 +421,7 @@ This section is fairly simple, as we now just collect data from before and assig
 
 At the end of the application, we should destroy the ``XrInstance``. This is simple done with the function ``xrDestroyInstance()``.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-at: void DestroyInstance()
 	:end-at: }
@@ -412,7 +429,7 @@ At the end of the application, we should destroy the ``XrInstance``. This is sim
 
 Whilst we have an ``XrInstance``, let's check its properties. We fill out the type and next members of the structure ``XrInstanceProperties`` and pass it along with the ``XrInstance`` to ``xrGetInstanceProperties()``. This function will fill out the rest of that structure for us to use. Here, we simply log to stdout the runtime's name, and with the use of the ``XR_VERSION_MAJOR``, ``XR_VERSION_MINOR`` and ``XR_VERSION_PATCH`` macros, we parse and log the runtime version.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_GetInstanceProperties
 	:end-before: XR_DOCS_TAG_END_GetInstanceProperties
@@ -433,7 +450,7 @@ So, a ``XrSystemId`` could represent VR headset and a pair of contollers, or per
 
 We fill out the ``XrSystemGetInfo`` structure as desired and pass it as a pointer along with the ``XrInstance`` and a pointer to the ``XrSystemId`` to ``xrGetSystem()``. If successful, we should now have a non-null ``XrSystemId``.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_GetSystemID
 	:end-before: XR_DOCS_TAG_END_GetSystemID
@@ -449,6 +466,21 @@ We can now also get the system's properties. We partially fill out a ``XrSystemP
 Creating an XrSession
 ---------------------
 2.2. Creating an XrSession (xrCreateSession, OpenGL based for code brevity)
+
+.. container:: d3d11
+	:name: d3d11-id-1
+
+.. container:: d3d12
+	:name: d3d12-id-1
+	
+.. container:: opengl
+	:name: d3d11-id-1
+	
+.. container:: opengles
+	:name: opengles-id-1
+	
+.. container:: vulkan
+	:name: vulkan-id-1
 
 Polling the Event Loop
 ----------------------
