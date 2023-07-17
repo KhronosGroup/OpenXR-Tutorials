@@ -1,9 +1,9 @@
 // Simul Software Ltd 2023
 // OpenXR Tutorial for Khronos Group
 
+#include "DebugOutput.h"
 #include "GraphicsAPIs.h"
 #include "OpenXRDebugUtils.h"
-#include "DebugOutput.h"
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
 
@@ -25,23 +25,24 @@ public:
         GetInstanceProperties();
         GetSystemID();
 
-        #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
         CreateSession();
 
-        #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
-		while (applicationRunning) {
-		    PollSystemEvents();
-		    PollEvents();
-		    if (sessionRunning) {
-		        // Draw Frame.
-		    }
-		}
-		#endif
-		DestroySession();
-		#endif
-		DestroyDebugMessenger();
-		DestroyInstance();
-	}
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
+        while (applicationRunning) {
+            PollSystemEvents();
+            PollEvents();
+            if (sessionRunning) {
+                // Draw Frame.
+            }
+        }
+#endif
+        DestroySession();
+#endif
+        DestroyDebugMessenger();
+        DestroyInstance();
+    }
+
 private:
     void CreateInstance() {
         // XR_DOCS_TAG_BEGIN_XrApplicationInfo
@@ -336,7 +337,7 @@ private:
 };
 
 void OpenXRTutorial_Main() {
-	DebugOutput debugOutput;
+    DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 2." << std::endl;
     OpenXRTutorialChapter2 app(VULKAN);
     app.Run();

@@ -36,20 +36,25 @@ XR_EXT_debug_utils is an extension and as such its functions are not loaded by d
 
 At the end of the program, we should destroy the ``XrDebugUtilsMessengerEXT``. Again, the ``xrDestroyDebugUtilsMessengerEXT()`` function needs to be loaded through the use of ``xrGetInstanceProcAddr()`` (See example below). Once loaded, we can call it by passing the ``XrDebugUtilsMessengerEXT`` and thus destroying it.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Common/HelperFunctions.h
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_Helper_Functions1
 	:end-before: XR_DOCS_TAG_END_Helper_Functions1
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
 	:end-before: XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 	:dedent: 4
 
+.. literalinclude:: ../Common/OpenXRDebugUtils.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
+	:end-before: XR_DOCS_TAG_END_Create_DestroyDebugMessenger
+
 Below is an example of a OpenXR DebugUtilsMessenger Callback function. This function can be completely customised to your liking, but here we simply convert the message's severity and type to strings, and create a string to log to stdout. We also add a ``DEBUG_BREAK`` if the severity is an error. Just one thing to note: Applications should always return ``XR_FALSE`` from this function.
 
-.. literalinclude:: ../Chapter2.1/main.cpp
+.. literalinclude:: ../Common/OpenXRDebugUtils.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_OpenXRMessageCallbackFunction
 	:end-before: XR_DOCS_TAG_END_OpenXRMessageCallbackFunction
@@ -59,3 +64,4 @@ Extension Examples
 ------------------
 
 5.3. Extension examples including XR_EXT_HAND_TRACKING cubes at joints.
+OpenXR Specification 12.31 XR_EXT_hand_tracking <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking>`_. 
