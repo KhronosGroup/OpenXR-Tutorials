@@ -95,6 +95,11 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemI
         deviceQueueCIs[i].queueFamilyIndex = static_cast<uint32_t>(i);
         deviceQueueCIs[i].queueCount = queueFamilyProperties[i].queueCount;
         deviceQueueCIs[i].pQueuePriorities = queuePriorities[i].data();
+
+        if (BitwiseCheck(queueFamilyProperties[i].queueFlags, VkQueueFlags(VK_QUEUE_GRAPHICS_BIT)) && queueFamilyIndex == 0xFFFFFFFF && queueIndex == 0xFFFFFFFF) {
+            queueFamilyIndex = static_cast<uint32_t>(i);
+            queueIndex = 0;
+        }
     }
 
     uint32_t deviceExtensionCount = 0;
@@ -129,9 +134,6 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemI
     deviceCI.ppEnabledExtensionNames = activeDeviceExtensions.data();
     deviceCI.pEnabledFeatures = &features;
     VULKAN_CHECK(vkCreateDevice(physicalDevice, &deviceCI, nullptr, &device), "Failed to create Device.");
-
-    queueFamilyIndex = 0;
-    queueIndex = 0;
 }
 
 GraphicsAPI_Vulkan::~GraphicsAPI_Vulkan() {
@@ -213,6 +215,7 @@ void *GraphicsAPI_Vulkan::CreateImage(const ImageCreateInfo &imageCI) {
 
     return (void *)image;
 }
+
 void GraphicsAPI_Vulkan::DestroyImage(void *&image) {
     VkImage vkImage = (VkImage)image;
     VkDeviceMemory memory = imageResources[vkImage];
@@ -367,13 +370,16 @@ void GraphicsAPI_Vulkan::ClearDepth(void *image, float d) {
     vkCmdClearDepthStencilImage(cmdBuffer, vkImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &clearDepth, 1, &range);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 void GraphicsAPI_Vulkan::LoadPFN_XrFunctions(XrInstance xrInstance) {
     OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetVulkanGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
     OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetVulkanInstanceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanInstanceExtensionsKHR), "Failed to get InstanceProcAddr.");
     OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetVulkanDeviceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanDeviceExtensionsKHR), "Failed to get InstanceProcAddr.");
     OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetVulkanGraphicsDeviceKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsDeviceKHR), "Failed to get InstanceProcAddr.");
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
 std::vector<std::string> GraphicsAPI_Vulkan::GetInstanceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId) {
     uint32_t extensionNamesSize = 0;
     OPENXR_CHECK(xrGetVulkanInstanceExtensionsKHR(xrInstance, systemId, 0, &extensionNamesSize, nullptr), "Failed to get Vulkan Instance Extensions.");
@@ -389,7 +395,9 @@ std::vector<std::string> GraphicsAPI_Vulkan::GetInstanceExtensionsForOpenXR(XrIn
     }
     return extensions;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 std::vector<std::string> GraphicsAPI_Vulkan::GetDeviceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId) {
     uint32_t extensionNamesSize = 0;
     OPENXR_CHECK(xrGetVulkanDeviceExtensionsKHR(xrInstance, systemId, 0, &extensionNamesSize, nullptr), "Failed to get Vulkan Device Extensions.");
@@ -405,6 +413,7 @@ std::vector<std::string> GraphicsAPI_Vulkan::GetDeviceExtensionsForOpenXR(XrInst
     }
     return extensions;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 
 const std::vector<int64_t> GraphicsAPI_Vulkan::GetSupportedSwapchainFormats() {
     return {

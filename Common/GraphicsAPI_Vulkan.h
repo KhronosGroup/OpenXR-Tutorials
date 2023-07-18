@@ -37,8 +37,8 @@ private:
     VkInstance instance{};
     VkPhysicalDevice physicalDevice{};
     VkDevice device{};
-    uint32_t queueFamilyIndex = 0;
-    uint32_t queueIndex = 0;
+    uint32_t queueFamilyIndex = 0xFFFFFFFF;
+    uint32_t queueIndex = 0xFFFFFFFF;
 
     VkCommandPool cmdPool{};
     VkCommandBuffer cmdBuffer{};
