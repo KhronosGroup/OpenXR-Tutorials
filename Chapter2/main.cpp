@@ -190,6 +190,7 @@ private:
     }
     // XR_DOCS_TAG_END_CreateDestroySession
 
+    // XR_DOCS_TAG_BEGIN_PollEvents
     void PollEvents() {
         XrResult result = XR_SUCCESS;
         do {
@@ -246,6 +247,7 @@ private:
 
         } while (result == XR_SUCCESS);
     }
+    // XR_DOCS_TAG_END_PollEvents
 
 #if defined(__ANDROID__)
     // XR_DOCS_TAG_BEGIN_Android_System_Functionality

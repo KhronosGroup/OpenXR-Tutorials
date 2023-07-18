@@ -182,6 +182,8 @@ and in ``Helperfunctions.h``, add:
 
 This defines the macro ``OPENXR_CHECK``. Many OpenXR functions return a ``XrResult``. This macro will check if the call has failed and logs a message to stdout. This can be modified to suit your needs. There are three additional functions ``GetXRErrorString()``, ``IsStringInVector()`` and ``BitwiseCheck()``, which are just simple wrappers over commonly used code.
 
+We can add the ``GraphicsAPIs.h`` header to include in turn all the Graphics API code along with the ``OpenXRHelper.h`` and ``HelperFunctions.h`` files. You can also include ``OpenXRDebugUtils.h`` to help with set up of ``XrDebugUtilsMessengerEXT``.
+
 Now we will define the main class of the application. It's just a stub for now, with an empty ``Run()`` method:
 
 .. code-block:: cpp
@@ -345,7 +347,7 @@ Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, 
 		OpenXRTutorialChapter2() = default;
 		~OpenXRTutorialChapter2() = default;
 	
-		Run()
+		void Run()
 		{
 			CreateInstance();
 
@@ -378,6 +380,8 @@ Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, 
 		std::vector<const char *> activeInstanceExtensions = {};
 		std::vector<std::string> apiLayers = {};
 		std::vector<std::string> instanceExtensions = {};
+
+		XrFormFactor formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId systemID = {};
 	}
 
@@ -441,7 +445,7 @@ XrSystemId
 The next object that we want to get is the ``XrSystemId``. OpenXR 'separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences'. 
 `OpenXR Specification 5. System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_. 
 
-So, a ``XrSystemId`` could represent VR headset and a pair of contollers, or perhaps mobile device with video pass-through for AR. So we need to decide what type of ``XrFormFactor`` we are wanting to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY`` for a Meta Quest or Pico Neo. OpenXR currently offers two option for the ``XrFormFactor``.
+So, a ``XrSystemId`` could represent VR headset and a pair of contollers, or perhaps mobile device with video pass-through for AR. So we need to decide what type of ``XrFormFactor`` we are wanting to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``, which is initialised in the class, for a Meta Quest or Pico Neo. OpenXR currently offers two option for the ``XrFormFactor``.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
@@ -469,6 +473,49 @@ Creating an XrSession
 The next major component of OpenXR that needs to be created in an ``XrSession``. An ``XrSession`` encapulates the state of application from the perspective of OpenXR. When an ``XrSession`` is created, it starts in the ``XR_SESSION_STATE_IDLE``. It is upto the runtime to provide any updates to the ``XrSessionState`` and for the appliaction to query them and react to them. We will explore this in :doc:`Chapter 2.3. <2-Polling the Event Loop>`
 
 For now, we are just going to create an ``XrSession``. At this point, you'll need to select which Graphics API you wish to use. Only one Graphics API can be used with an ``XrSession``. This tutorial demostrates how to use D3D11, D3D12, OpenGL, OpenGL ES and Vulkan in conjunction with OpenXR for the purpose of rendering graphics to the provided views. Ultimately, you will most likely be bringing your own rendering solution to this tutorial, therefore the code examples provided for the Graphics APIs are `placeholders` for you own code base; demostrating in this sub-chapter what objects are needed from your Graphics API in order to create an ``XrSession``. This tutorial uses polymorphic classes ``GraphicsAPI_...`` which derives from ``GraphicsAPI``. There are both compile and runtime checks to select the requested Graphics API, and we construct an apropriate derived classes throught the use of ``std::unique_ptr<>``. 
+
+Update the Constructor and ``Run()`` method as shown and add the following members:
+- ``CheckGraphicsAPI_TypeIsValidForPlatform()`` is declared in ``GraphicsAPI.h``.
+
+.. code-block:: cpp
+
+	class OpenXRTutorialChapter2 {
+	public:
+		OpenXRTutorialChapter2(GraphicsAPI_Type api)
+			: apiType(api) {
+			if(!CheckGraphicsAPI_TypeIsValidForPlatform(apiType)) {
+				std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
+				DEBUG_BREAK;
+			}
+		}
+		
+		// [...]
+
+		void Run() {
+			CreateInstance();
+			CreateDebugMessenger();
+		
+			GetInstanceProperties();
+			GetSystemID();
+		
+			CreateSession();
+			DestroySession();
+		
+			DestroyDebugMessenger();
+			DestroyInstance();
+		}
+
+		// [...]
+
+	private:
+		// [...]
+
+		GraphicsAPI_Type apiType = UNKNOWN;
+		std::unique_ptr<GraphicsAPI> graphicsAPI = nullptr;
+
+		XrSession session = {};
+	}
+
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -654,3 +701,8 @@ Above is the code for creating and destroying an ``XrSession``. ``xrDestroySessi
 Polling the Event Loop
 ----------------------
 2.3. Polling the Event Loop (xrPollEvent and Session States)
+
+.. figure:: openxr-session-life-cycle.svg
+	:alt: OpenXR Session Life-Cycle
+	:align: left
+	:width: 99%
