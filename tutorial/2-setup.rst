@@ -475,7 +475,7 @@ The next major component of OpenXR that needs to be created in an ``XrSession``.
 For now, we are just going to create an ``XrSession``. At this point, you'll need to select which Graphics API you wish to use. Only one Graphics API can be used with an ``XrSession``. This tutorial demostrates how to use D3D11, D3D12, OpenGL, OpenGL ES and Vulkan in conjunction with OpenXR for the purpose of rendering graphics to the provided views. Ultimately, you will most likely be bringing your own rendering solution to this tutorial, therefore the code examples provided for the Graphics APIs are `placeholders` for you own code base; demostrating in this sub-chapter what objects are needed from your Graphics API in order to create an ``XrSession``. This tutorial uses polymorphic classes ``GraphicsAPI_...`` which derives from ``GraphicsAPI``. There are both compile and runtime checks to select the requested Graphics API, and we construct an apropriate derived classes throught the use of ``std::unique_ptr<>``. 
 
 Update the Constructor and ``Run()`` method as shown and add the following members:
-- ``CheckGraphicsAPI_TypeIsValidForPlatform()`` is declared in ``GraphicsAPI.h``.
+``CheckGraphicsAPI_TypeIsValidForPlatform()`` is declared in ``GraphicsAPI.h``.
 
 .. code-block:: cpp
 
@@ -700,9 +700,122 @@ Above is the code for creating and destroying an ``XrSession``. ``xrDestroySessi
 
 Polling the Event Loop
 ----------------------
-2.3. Polling the Event Loop (xrPollEvent and Session States)
+
+OpenXR uses an event based system to describes changes with the XR system. It's the application's responsibility to poll these events and react to them. The polling of events is done by the function ``xrPollEvent()``. The application should continually call this function throughout its lifetime. Within a single XR frame, the application should continuously call ``xrPollEvent()`` until the internal event queue is 'drained'; multiple events can occurs across the XR frame and the application needs to handle and respond to each accordingly.
+
+Firstly, we will update the class to add the new methods and members.
+
+.. code-block:: cpp
+
+	class OpenXRTutorialChapter2 {
+	public:
+		// [...]
+
+		void Run() {
+			CreateInstance();
+			CreateDebugMessenger();
+		
+			GetInstanceProperties();
+			GetSystemID();
+			CreateSession();
+		
+			while (applicationRunning) {
+				PollSystemEvents();
+				PollEvents();
+				if (sessionRunning) {
+					// Draw Frame.
+				}
+			}
+		
+			DestroySession();
+			DestroyDebugMessenger();
+			DestroyInstance();
+		}
+		// [...]
+
+	private:
+		// [...]
+
+		XrViewConfigurationType viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+		// [...]
+
+		XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
+		bool applicationRunning = true;
+		bool sessionRunning = false;
+	}
+
+Next, we will define the ``PollEvents()`` method. Here, we use a do-while loop to the check the result of ``xrPollEvent()`` - whilst that function returns ``XR_SUCCESS``, there are events for us to process. ``xrPollEvent()`` will fill in the ``XrEventDataBuffer`` structure that we pass to the function call. ``xrPollEvent()`` will update the member variable ``type`` and from this we can use a switch statement to select the appropriate code path. Depending on the updated type, we can use a ``reinterpret_cast<>()`` to get the actual data that ``xrPollEvent()`` returned.
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_PollEvents
+	:end-before: XR_DOCS_TAG_END_PollEvents
+
+The description of the events come from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_xrpollevent>`_.
+
++---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
+| Event Type                                        | Event Structure Type                   | Description                                                                    |
++---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_EVENTS_LOST                    | XrEventDataEventsLost                  | The event queue has overflowed and some events were lost.                      |
++---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING          | XrEventDataInstanceLossPending         | The application is about to lose the instance.                                 |
++---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED    | XrEventDataInteractionProfileChanged   | The active input form factor for one or more top level user paths has changed. |
++---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING | XrEventDataReferenceSpaceChangePending | The runtime will begin operating with updated space bounds.                    |
++---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED          | XrEventDataSessionStateChanged         | The application has changed its lifecycle state.                               |
++---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
+
+As described in the table above, most event are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, after the specified ``lossTime``, until it can create a new instance successfully. ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
+
+The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will focus on for the rest of this chapter. There are currently nine valid ``XrSessionState`` s described:
+
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+		:language: cpp
+		:start-at: typedef enum XrSessionState {
+		:end-at: } XrSessionState;
+
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| Event Type                    | Description                                                                                                             |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| XR_SESSION_STATE_UNKNOWN      | This is an unknown, pseudo-default state and should not be returned by the runtime.                                     |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| XR_SESSION_STATE_IDLE         | This is an inital state after creating or after ending the session.                                                     |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| XR_SESSION_STATE_READY        | This state, raised from the runtime, indicates that the session is ready to begin.                                      |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| XR_SESSION_STATE_SYNCHRONIZED | The application has synced its frame loop with the runtime, but isn't displaying its contents.                          |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| XR_SESSION_STATE_VISIBLE      | The application has synced its frame loop with the runtime and it is displaying its contents.                           |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| XR_SESSION_STATE_FOCUSED      | The application has synced its frame loop with the runtime and it is displaying its contents and can receive XR inputs. |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| XR_SESSION_STATE_STOPPING     | The runtime is requesting that the application stop it frame loop rendering and end the session.                        |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| XR_SESSION_STATE_LOSS_PENDING | The runtime is indicating that current session is no longer valid and should be destroyed. (*)                          |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| XR_SESSION_STATE_EXITING      | The runtime is requesting that the application to destroy the session, usually from the user's request.                 |
++-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+
+(*) Applications may wish to re-create objects like ``XrSystemId`` and ``XrSession``, if hardware changes were detected.
 
 .. figure:: openxr-session-life-cycle.svg
 	:alt: OpenXR Session Life-Cycle
-	:align: left
+	:align: center
 	:width: 99%
+
+If the ``XrSessionState`` is ``XR_SESSION_STATE_READY``, the application can call ``xrBeginSession()``.
+In the ``XrSessionBeginInfo`` structure, we assign to ``XrSessionBeginInfo::primaryViewConfigurationType`` the ``viewConfiguration`` from the class, which in our case is ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye).
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-at: if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
+	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
+
+If the ``XrSessionState`` is ``XR_SESSION_STATE_STOPPING``, the application should call ``xrEndSession()``.
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-at: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
+	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_EXITING) {

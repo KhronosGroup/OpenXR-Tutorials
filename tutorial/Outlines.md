@@ -54,7 +54,7 @@ Describe briefly Beginning and Ending an XrSession.
 Explain that events are queued, so you'd drain the queue and that the .type will be change to XR_TYPE_EVENT_DATA_...
 Code sample showing the function in use and the casting of structures depending on the type.
 Describe the XrEventDataEventsLost, XrEventDataInstanceLossPending, XrEventDataInteractionProfileChanged, XrEventDataReferenceSpaceChangePending, XrEventDataSessionStateChanged.
-Getting the new SxSession from XrEventDataSessionStateChanged - code.
+Getting the new XrSessionState from XrEventDataSessionStateChanged - code.
 
 ## Chapter 3
 The goal is to create and clear colour and depth buffers within the scope of OpenXR render loop and it's interaction with all the Graphics APIs.
