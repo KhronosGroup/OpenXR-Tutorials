@@ -335,9 +335,6 @@ Now that we have a basic application up and running with the OpenXR header files
 Creating an XrInstance / xrGetSystem
 ------------------------------------
 
-XrInstance
-^^^^^^^^^^
-
 Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()`` and ``DestroyInstance()``. Update ``OpenXRTutorial::Run()`` to call those methods in that order and add to the class in a private section the following members.
 
 .. code-block:: cpp
@@ -384,6 +381,10 @@ Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, 
 		XrFormFactor formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId systemID = {};
 	}
+
+	
+XrInstance
+^^^^^^^^^^
 
 The ``XrInstance`` is the foundational object that we need to create first. The ``XrInstance`` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the ``CreateInstance()`` method, we will first look at the ``XrApplicationInfo``.
 
@@ -516,6 +517,8 @@ Update the Constructor and ``Run()`` method as shown and add the following membe
 		XrSession session = {};
 	}
 
+XrSession
+^^^^^^^^^
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -523,6 +526,9 @@ Update the Constructor and ``Run()`` method as shown and add the following membe
 	:end-before: XR_DOCS_TAG_END_CreateDestroySession
 
 Above is the code for creating and destroying an ``XrSession``. ``xrDestroySession()`` will destroy the ``XrSession`` when we have finished and shutting down the application. ``xrCreateSession()`` takes the ``XrInstance``, ``XrSessionCreateInfo`` and ``XrSession`` return object. If the function call was successful, ``xrCreateSession()`` will return ``XR_SUCCESS`` and ``XrSession`` will be non-null. The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateInfo::createFlags`` and ``XrSessionCreateInfo::systemId`` are easily filled in, but we need to specify which Graphics APIs we wish to use. This is achieved via the use of the ``XrSessionCreateInfo::next`` void pointer. Following the Vulkan API's style of extensibility, structures for creating objects can be extended to enable extra functionality. In our case, the extension is required and thus ``XrSessionCreateInfo::next`` can not be a nullptr. That pointer must point to 'exactly one graphics API binding structure (a structure whose name begins with "XrGraphicsBinding")' (`XrSessionCreateInfo(3) Manual Page <https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSessionCreateInfo.html>`_).
+
+GraphicsAPI
+^^^^^^^^^^^
 
 .. container:: d3d11
 	:name: d3d11-id-1
@@ -744,6 +750,9 @@ Firstly, we will update the class to add the new methods and members.
 		bool sessionRunning = false;
 	}
 
+xrPollEvent()
+^^^^^^^^^^^^^
+
 Next, we will define the ``PollEvents()`` method. Here, we use a do-while loop to the check the result of ``xrPollEvent()`` - whilst that function returns ``XR_SUCCESS``, there are events for us to process. ``xrPollEvent()`` will fill in the ``XrEventDataBuffer`` structure that we pass to the function call. ``xrPollEvent()`` will update the member variable ``type`` and from this we can use a switch statement to select the appropriate code path. Depending on the updated type, we can use a ``reinterpret_cast<>()`` to get the actual data that ``xrPollEvent()`` returned.
 
 .. literalinclude:: ../Chapter2/main.cpp
@@ -768,6 +777,9 @@ The description of the events come from `2.22.1. Event Polling of the OpenXR spe
 +---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
 
 As described in the table above, most event are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, after the specified ``lossTime``, until it can create a new instance successfully. ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
+
+XrSessionState
+^^^^^^^^^^^^^^
 
 The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will focus on for the rest of this chapter. There are currently nine valid ``XrSessionState`` s described:
 
@@ -804,6 +816,9 @@ The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will foc
 	:alt: OpenXR Session Life-Cycle
 	:align: center
 	:width: 99%
+
+xrBeginSession() and xrEndSession()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If the ``XrSessionState`` is ``XR_SESSION_STATE_READY``, the application can call ``xrBeginSession()``.
 In the ``XrSessionBeginInfo`` structure, we assign to ``XrSessionBeginInfo::primaryViewConfigurationType`` the ``viewConfiguration`` from the class, which in our case is ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye).
