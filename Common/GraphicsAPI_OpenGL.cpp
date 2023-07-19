@@ -194,6 +194,7 @@ void GraphicsAPI_OpenGL::ClearDepth(void *image, float d) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetSupportedSwapchainFormats
 const std::vector<int64_t> GraphicsAPI_OpenGL::GetSupportedSwapchainFormats() {
     // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengl.cpp#L229-L236
     return {
@@ -205,4 +206,5 @@ const std::vector<int64_t> GraphicsAPI_OpenGL::GetSupportedSwapchainFormats() {
         GL_RGBA8_SNORM,
     };
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetSupportedSwapchainFormats
 #endif

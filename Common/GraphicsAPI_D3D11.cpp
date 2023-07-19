@@ -311,6 +311,7 @@ void GraphicsAPI_D3D11::ClearDepth(void *imageView, float d) {
     immediateContext->ClearDepthStencilView((ID3D11DepthStencilView *)imageView, D3D11_CLEAR_DEPTH, d, 0);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedSwapchainFormats() {
     return {
         DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -318,4 +319,5 @@ const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedSwapchainFormats() {
         DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
         DXGI_FORMAT_B8G8R8A8_UNORM_SRGB};
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 #endif

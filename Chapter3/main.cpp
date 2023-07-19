@@ -160,12 +160,14 @@ private:
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, environmentBlendModes.data()), "Failed to enumerate ViewConfigurationViews.");
     }
 
+    // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
     void GetViewConfigurationViews() {
         uint32_t viewConfigurationViewSize = 0;
         OPENXR_CHECK(xrEnumerateViewConfigurationViews(xrInstance, systemID, viewConfiguration, 0, &viewConfigurationViewSize, nullptr), "Failed to enumerate ViewConfigurationViews.");
         viewConfigurationViews.resize(viewConfigurationViewSize, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
         OPENXR_CHECK(xrEnumerateViewConfigurationViews(xrInstance, systemID, viewConfiguration, viewConfigurationViewSize, &viewConfigurationViewSize, viewConfigurationViews.data()), "Failed to enumerate ViewConfigurationViews.");
     }
+    // XR_DOCS_TAG_END_GetViewConfigurationViews
 
     void CreateSession() {
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
@@ -273,11 +275,14 @@ private:
         OPENXR_CHECK(xrDestroySpace(localOrStageSpace), "Failed to destroy Space.")
     }
 
+    // XR_DOCS_TAG_BEGIN_CreateDestroySwapchain
     void CreateSwapchain() {
+        // XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
         uint32_t formatSize = 0;
         OPENXR_CHECK(xrEnumerateSwapchainFormats(session, 0, &formatSize, nullptr), "Failed to enumerate Swapchain Formats");
         std::vector<int64_t> formats(formatSize);
         OPENXR_CHECK(xrEnumerateSwapchainFormats(session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
+        // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
         // Check the two views for stereo are the same
         if (viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO && viewConfigurationViews.size() == 2) {
@@ -292,6 +297,7 @@ private:
 
         swapchainAndDepthImages.resize(viewConfigurationViews.size());
         for (SwapchainAndDepthImage &swapchainAndDepthImage : swapchainAndDepthImages) {
+            // XR_DOCS_TAG_BEGIN_CreateSwapchain
             XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
@@ -304,11 +310,14 @@ private:
             swapchainCI.mipCount = 1;
             OPENXR_CHECK(xrCreateSwapchain(session, &swapchainCI, &swapchainAndDepthImage.swapchain), "Failed to create Swapchain");
             swapchainAndDepthImage.swapchainFormat = swapchainCI.format;
+            // XR_DOCS_TAG_END_CreateSwapchain
 
+            // XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
             uint32_t swapchainImageCount = 0;
             OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, 0, &swapchainImageCount, nullptr), "Failed to enumerate Swapchain Images.");
             XrSwapchainImageBaseHeader *swapchainImages = graphicsAPI->AllocateSwapchainImageData(swapchainImageCount);
             OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, swapchainImageCount, &swapchainImageCount, swapchainImages), "Failed to enumerate Swapchain Images.");
+            // XR_DOCS_TAG_END_EnumerateSwapchainImages
 
             GraphicsAPI::ImageCreateInfo depthImageCI;
             depthImageCI.dimension = 2;
@@ -365,6 +374,7 @@ private:
             OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");
         }
     }
+    // XR_DOCS_TAG_END_CreateDestroySwapchain
 
     void RenderFrame() {
         if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {

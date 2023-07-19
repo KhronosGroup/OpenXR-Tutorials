@@ -42,6 +42,8 @@ const char *GetGraphicsAPIInstanceExtensionString(GraphicsAPI_Type type) {
 }
 
 // GraphicsAPI
+
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_SelectSwapchainFormat
 int64_t GraphicsAPI::SelectSwapchainFormat(const std::vector<int64_t> &formats) {
     const std::vector<int64_t> &supportSwapchainFormats = GetSupportedSwapchainFormats();
 
@@ -55,3 +57,4 @@ int64_t GraphicsAPI::SelectSwapchainFormat(const std::vector<int64_t> &formats) 
 
     return *swapchainFormatIt;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_SelectSwapchainFormat

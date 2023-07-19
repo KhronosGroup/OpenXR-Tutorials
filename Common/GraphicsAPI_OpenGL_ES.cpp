@@ -126,17 +126,6 @@ void GraphicsAPI_OpenGL_ES::DestroyImage(void *&image) {
     image = nullptr;
 }
 
-const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedSwapchainFormats() {
-    // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengles.cpp#L208-L216
-    GLint glMajorVersion = 0;
-    glGetIntegerv(GL_MAJOR_VERSION, &glMajorVersion);
-    if (glMajorVersion >= 3) {
-        return {GL_RGBA8, GL_RGBA8_SNORM, GL_SRGB8_ALPHA8};
-    } else {
-        return {GL_RGBA8, GL_RGBA8_SNORM};
-    }
-}
-
 void *GraphicsAPI_OpenGL_ES::CreateImageView(const ImageViewCreateInfo &imageViewCI) {
     GLuint framebuffer = 0;
     glGenFramebuffers(1, &framebuffer);
@@ -182,4 +171,17 @@ void GraphicsAPI_OpenGL_ES::ClearDepth(void *image, float d) {
     glClear(GL_DEPTH_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
+const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedSwapchainFormats() {
+    // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengles.cpp#L208-L216
+    GLint glMajorVersion = 0;
+    glGetIntegerv(GL_MAJOR_VERSION, &glMajorVersion);
+    if (glMajorVersion >= 3) {
+        return {GL_RGBA8, GL_RGBA8_SNORM, GL_SRGB8_ALPHA8};
+    } else {
+        return {GL_RGBA8, GL_RGBA8_SNORM};
+    }
+}
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
 #endif
