@@ -57,7 +57,7 @@ Describe the XrEventDataEventsLost, XrEventDataInstanceLossPending, XrEventDataI
 Getting the new XrSessionState from XrEventDataSessionStateChanged - code.
 
 ## Chapter 3
-The goal is to create and clear colour and depth buffers within the scope of OpenXR render loop and it's interaction with all the Graphics APIs.
+The goal is to create and clear colour and depth buffers within the scope of OpenXR render loop and its interaction with all the Graphics APIs.
 
 ## Chapter 3.1 Creating Swapchains
 Introduce XrViewConfigurationView and explain various types of XR systems and their possible view configurations and how to use xrEnumerateViewConfigurationViews() to get the number of view in the system - there's not always 2 views.

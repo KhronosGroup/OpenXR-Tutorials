@@ -1,9 +1,9 @@
 // Simul Software Ltd 2023
 // OpenXR Tutorial for Khronos Group
 
+#include "DebugOutput.h"
 #include "GraphicsAPIs.h"
 #include "OpenXRDebugUtils.h"
-#include "DebugOutput.h"
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_3_2
 
@@ -25,42 +25,36 @@ public:
         GetInstanceProperties();
         GetSystemID();
 
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1) {
-            GetViewConfigurationViews();
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
-                GetEnvirmentBlendModes();
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
+        GetViewConfigurationViews();
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
+        GetEnvirmentBlendModes();
+#endif
+
+        CreateSession();
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
+        CreateReferenceSpace();
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
+        CreateSwapchain();
+#endif
+
+        while (applicationRunning) {
+            PollSystemEvents();
+            PollEvents();
+            if (sessionRunning) {
+                RenderFrame();
             }
         }
 
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2) {
-            CreateSession();
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
-                CreateReferenceSpace();
-            }
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1) {
-                CreateSwapchain();
-            }
-        }
-
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3) {
-            while (applicationRunning) {
-                PollSystemEvents();
-                PollEvents();
-                if (sessionRunning) {
-                    RenderFrame();
-                }
-            }
-        }
-
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2) {
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1) {
-                DestroySwapchain();
-            }
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
-                DestroyReferenceSpace();
-            }
-            DestroySession();
-        }
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
+        DestroySwapchain();
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
+        DestroyReferenceSpace();
+#endif
+        DestroySession();
 
         DestroyDebugMessenger();
         DestroyInstance();
@@ -68,24 +62,19 @@ public:
 
 private:
     void CreateInstance() {
-        // XR_DOCS_TAG_BEGIN_XrApplicationInfo
         XrApplicationInfo AI;
         strcpy(AI.applicationName, "OpenXR Tutorial Chapter 3");
         AI.applicationVersion = 1;
         strcpy(AI.engineName, "OpenXR Engine");
         AI.engineVersion = 1;
         AI.apiVersion = XR_CURRENT_API_VERSION;
-        // XR_DOCS_TAG_END_XrApplicationInfo
 
         // Add additional xrInstance layers/extensions
         {
-            // XR_DOCS_TAG_BEGIN_instanceExtensions
             instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
             instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(apiType));
-            // XR_DOCS_TAG_END_instanceExtensions
         }
 
-        // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
         uint32_t apiLayerCount = 0;
         std::vector<XrApiLayerProperties> apiLayerProperties;
         OPENXR_CHECK(xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr), "Failed to enumerate ApiLayerProperties.");
@@ -119,9 +108,7 @@ private:
                 }
             }
         }
-        // XR_DOCS_TAG_END_find_apiLayer_extension
 
-        // XR_DOCS_TAG_BEGIN_XrInstanceCreateInfo
         XrInstanceCreateInfo instanceCI{XR_TYPE_INSTANCE_CREATE_INFO};
         instanceCI.createFlags = 0;
         instanceCI.applicationInfo = AI;
@@ -130,14 +117,12 @@ private:
         instanceCI.enabledExtensionCount = static_cast<uint32_t>(activeInstanceExtensions.size());
         instanceCI.enabledExtensionNames = activeInstanceExtensions.data();
         OPENXR_CHECK(xrCreateInstance(&instanceCI, &xrInstance), "Failed to create Instance.");
-        // XR_DOCS_TAG_END_XrInstanceCreateInfo
     }
 
     void DestroyInstance() {
         OPENXR_CHECK(xrDestroyInstance(xrInstance), "Failed to destroy Instance.");
     }
 
-    // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
         if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(xrInstance);
@@ -148,7 +133,6 @@ private:
             DestroyOpenXRDebugUtilsMessenger(xrInstance, debugUtilsMessenger);
         }
     }
-    // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
     void GetInstanceProperties() {
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
@@ -282,11 +266,11 @@ private:
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
-        OPENXR_CHECK(xrCreateReferenceSpace(session, &referenceSpaceCI, &local_or_stage_space), "Failed to create ReferenceSpace.");
+        OPENXR_CHECK(xrCreateReferenceSpace(session, &referenceSpaceCI, &localOrStageSpace), "Failed to create ReferenceSpace.");
     }
 
     void DestroyReferenceSpace() {
-        OPENXR_CHECK(xrDestroySpace(local_or_stage_space), "Failed to destroy Space.")
+        OPENXR_CHECK(xrDestroySpace(localOrStageSpace), "Failed to destroy Space.")
     }
 
     void CreateSwapchain() {
@@ -425,7 +409,7 @@ private:
         XrViewLocateInfo viewLocateInfo = {XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = viewConfiguration;
         viewLocateInfo.displayTime = predictedDisplayTime;
-        viewLocateInfo.space = local_or_stage_space;
+        viewLocateInfo.space = localOrStageSpace;
         uint32_t viewCount = 0;
         XrResult result = xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint32_t>(views.size()), &viewCount, views.data());
         if (result != XR_SUCCESS) {
@@ -464,7 +448,7 @@ private:
             OPENXR_CHECK(xrReleaseSwapchainImage(swapchainAndDepthImages[i].swapchain, &releaseInfo), "Failed to release Image back to the Swapchian");
         };
         layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
-        layerProjection.space = local_or_stage_space;
+        layerProjection.space = localOrStageSpace;
         layerProjection.viewCount = static_cast<uint32_t>(layerProjectionViews.size());
         layerProjection.views = layerProjectionViews.data();
 
@@ -578,12 +562,12 @@ private:
 
     std::vector<XrEnvironmentBlendMode> environmentBlendModes{};
 
-    XrSpace local_or_stage_space{};
+    XrSpace localOrStageSpace{};
 };
 
 void OpenXRTutorial_Main() {
-	DebugOutput debugOutput;
-    std::cout << "OpenXR Tutorial Chapter 4." << std::endl;
+    DebugOutput debugOutput;
+    std::cout << "OpenXR Tutorial Chapter 3." << std::endl;
     OpenXRTutorialChapter3 app(VULKAN);
     app.Run();
 }
