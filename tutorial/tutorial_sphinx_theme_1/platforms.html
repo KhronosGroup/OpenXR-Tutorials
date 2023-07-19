@@ -1,12 +1,12 @@
 <div id='selectplatform'>
 	<button class="select-platform" id='selectwindows' onclick="choosePlatform('windows')">
-		<img src="_static/css/windows.svg" alt="Windows" />
+		<img class="platform-tab-img" src="_static/css/windows-mono.svg" alt="Windows" />
 	</button>
 	<button class="select-platform" id='selectlinux' onclick="choosePlatform('linux')">
-		<img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Linux" />
+		<img class="platform-tab-img" src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Linux" />
 	</button>
 	<button class="select-platform" id='selectandroid' onclick="choosePlatform('android')">
-		<img src="_static/css/android-original.svg" alt="Android" />
+		<img class="platform-tab-img" src="_static/css/android-original.svg" alt="Android" />
 	</button>
 </div>
 <script>
@@ -20,26 +20,26 @@
 
 <div id='selectgraphicsapi'>
 	<button class="select-graphics-api" id='selectd3d11' onclick="chooseGraphicsAPI('d3d11')">
-		<img src="_static/css/d3d11.png" alt="DirectX 11" />
+		<img class="api-tab-img" src="_static/css/d3d11.png" alt="DirectX 11" />
 	</button>
 	<button class="select-graphics-api" id='selectd3d12' onclick="chooseGraphicsAPI('d3d12')">
-		<img src="_static/css/d3d12.png" alt="DirectX 12" />
+		<img class="api-tab-img" src="_static/css/d3d12.png" alt="DirectX 12" />
 	</button>
 	<button class="select-graphics-api" id='selectopengl' onclick="chooseGraphicsAPI('opengl')">
-		<img src="_static/css/opengl.png" alt="OpenGL" />
+		<img class="api-tab-img" src="_static/css/opengl.png" alt="OpenGL" />
 	</button>
 	<button class="select-graphics-api" id='selectopengles' onclick="chooseGraphicsAPI('opengles')">
-		<img src="_static/css/opengles.png" alt="OpenGL ES" />
+		<img class="api-tab-img" src="_static/css/opengles.png" alt="OpenGL ES" />
 	</button>
 	<button class="select-graphics-api" id='selectvulkan' onclick="chooseGraphicsAPI('vulkan')">
-		<img src="_static/css/vulkan.png" alt="Vulkan" />
+		<img class="api-tab-img" src="_static/css/vulkan.png" alt="Vulkan" />
 	</button>
 </div>
 <script>
 	function chooseGraphicsAPI(graphicsApiName)
 	{
-		var graphicsApi = Cookies.get('graphicsApi')
-		Cookies.set('graphicsApi', graphicsApiName, { expires: 365 })
+		var graphicsApi = Cookies.get('graphicsapi')
+		Cookies.set('graphicsapi', graphicsApiName, { expires: 365 })
 		updateGraphicsAPI();
 	};
 </script>

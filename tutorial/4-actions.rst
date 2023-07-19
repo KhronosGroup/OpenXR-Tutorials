@@ -28,6 +28,10 @@ Creating Actions and Action Sets
 4.3. Create Actions and Actions Sets (xrCreateActionSet, xrCreateAction,
 xrSuggestInteractionProfileBindings)
 
+ActionSet: A group of related actions for a given context, environment etc.
+Action: A semantic interaction
+
+
 Checking for Connected Controllers
 ----------------------------------
 
