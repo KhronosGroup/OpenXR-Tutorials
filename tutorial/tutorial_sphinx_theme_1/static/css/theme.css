@@ -6418,7 +6418,6 @@ footer p
 {
     .wy-nav-content-wrap
     {
-        background: rgba(0,0,0,.05)
     }
 
     .wy-nav-content
@@ -7489,6 +7488,14 @@ span[id*=MathJax-Span]
 	margin: 4px 0px 0px 0px;
     background: silver;
 	color:gray;
+}
+.platform-tab-img
+{
+	height:40px;
+}
+.api-tab-img
+{
+	height:64px;
 }
 .selected-platform
 {
