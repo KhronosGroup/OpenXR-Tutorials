@@ -217,17 +217,17 @@
 	var oldelements = document.getElementsByClassName('selected-graphics-api');
 	for (i = 0; i < oldelements.length; ++i)
 	{
-	oldelements[i].classList.remove('selected-selected-graphics-api');
+	oldelements[i].classList.remove('selected-graphics-api');
 	}
 	var element = document.getElementById('select' + graphicsApi);
 	if(element)
 	{
-	element.classList.add('selected-selected-graphics-api');
+	element.classList.add('selected-graphics-api');
 	}
 	var element2 = document.getElementById('select' + graphicsApi +"-inline");
 	if (element2)
 	{
-		element2.classList.add('selected-selected-graphics-api');
+		element2.classList.add('selected-graphics-api');
 	}
 	window.updateGraphicsAPI=updateGraphicsAPI;
 	}</script>
