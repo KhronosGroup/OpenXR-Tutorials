@@ -125,44 +125,44 @@
 	<script >
 	function updatePlatform()
 	{
-	var platform = Cookies.get("platform")
-	console.log("platform = " + platform);
-	if (typeof platform == 'undefined')
-	platform="linux";
-	if (platform == "windows") {
-	$(".linux").hide();
-	$(".android").hide();
-	$(".windows").show();
-	$(".windows-linux").show();
-	}
-	if (platform == "linux") {
-	$(".linux").show();
-	$(".android").hide();
-	$(".windows").hide();
-	$(".windows-linux").show();
-	}
-	if (platform == "android") {
-	$(".linux").hide();
-	$(".android").show();
-	$(".windows").hide();
-	$(".windows-linux").hide();
-	}
-	var oldelements = document.getElementsByClassName('selected-platform');
-	for (i = 0; i < oldelements.length; ++i)
-	{
-	oldelements[i].classList.remove('selected-platform');
-	}
-	var element = document.getElementById('select' + platform);
-	if(element)
-	{
-	element.classList.add('selected-platform');
-	}
-	var element2 = document.getElementById('select' + platform + "-inline");
-	if(element2)
-	{
-	element2.classList.add('selected-platform');
-	}
-	window.updatePlatform=updatePlatform;
+		var platform = Cookies.get("platform")
+		console.log("platform = " + platform);
+		if (typeof platform == 'undefined')
+		platform="linux";
+		if (platform == "windows") {
+			$(".linux").hide();
+			$(".android").hide();
+			$(".windows").show();
+			$(".windows-linux").show();
+		}
+		if (platform == "linux") {
+			$(".linux").show();
+			$(".android").hide();
+			$(".windows").hide();
+			$(".windows-linux").show();
+		}
+		if (platform == "android") {
+			$(".linux").hide();
+			$(".android").show();
+			$(".windows").hide();
+			$(".windows-linux").hide();
+		}
+		var oldelements = document.getElementsByClassName('selected-platform');
+		for (i = 0; i < oldelements.length; ++i)
+		{
+			oldelements[i].classList.remove('selected-platform');
+		}
+		var element = document.getElementById('select' + platform);
+		if(element)
+		{
+			element.classList.add('selected-platform');
+		}
+		var element2 = document.getElementById('select' + platform + "-inline");
+		if(element2)
+		{
+			element2.classList.add('selected-platform');
+		}
+		window.updatePlatform=updatePlatform;
 	}</script>
 	<script >
 	var platform = Cookies.get("platform")
@@ -172,69 +172,69 @@
 	}
 	</script>
 	<script defer src="{{ pathto('_static/js/updatePlatform.js', 1) }}"></script>
-	<script >
+	<script>
 	function updateGraphicsAPI()
 	{
-	var graphicsApi = Cookies.get("graphicsApi")
-	console.log("graphicsApi = " + graphicsApi);
-	if (typeof graphicsApi == 'undefined')
-	platform="vulkan";
-	if (graphicsApi == "d3d11") {
-	$(".d3d11").show();
-	$(".d3d12").hide();
-	$(".opengl").hide();
-	$(".opengles").hide();
-	$(".vulkan").hide();
-	}
-	if (graphicsApi == "d3d12") {
-	$(".d3d11").hide();
-	$(".d3d12").show();
-	$(".opengl").hide();
-	$(".opengles").hide();
-	$(".vulkan").hide();
-	}
-	if (graphicsApi == "opengl") {
-	$(".d3d11").hide();
-	$(".d3d12").hide();
-	$(".opengl").show();
-	$(".opengles").hide();
-	$(".vulkan").hide();
-	}
-	if (graphicsApi == "opengles") {
-	$(".d3d11").hide();
-	$(".d3d12").hide();
-	$(".opengl").hide();
-	$(".opengles").show();
-	$(".vulkan").hide();
-	}
-	if (graphicsApi == "vulkan") {
-	$(".d3d11").hide();
-	$(".d3d12").hide();
-	$(".opengl").hide();
-	$(".opengles").hide();
-	$(".vulkan").show();
-	}
-	var oldelements = document.getElementsByClassName('selected-graphics-api');
-	for (i = 0; i < oldelements.length; ++i)
-	{
-	oldelements[i].classList.remove('selected-graphics-api');
-	}
-	var element = document.getElementById('select' + graphicsApi);
-	if(element)
-	{
-	element.classList.add('selected-graphics-api');
-	}
-	var element2 = document.getElementById('select' + graphicsApi +"-inline");
-	if (element2)
-	{
-		element2.classList.add('selected-graphics-api');
-	}
-	window.updateGraphicsAPI=updateGraphicsAPI;
+		var graphicsApi = Cookies.get("graphicsapi")
+		console.log("graphicsapi = " + graphicsApi);
+		if (typeof graphicsApi == 'undefined')
+			platform="vulkan";
+		if (graphicsApi == "d3d11") {
+			$(".d3d11").show();
+			$(".d3d12").hide();
+			$(".opengl").hide();
+			$(".opengles").hide();
+			$(".vulkan").hide();
+		}
+		if (graphicsApi == "d3d12") {
+			$(".d3d11").hide();
+			$(".d3d12").show();
+			$(".opengl").hide();
+			$(".opengles").hide();
+			$(".vulkan").hide();
+		}
+		if (graphicsApi == "opengl") {
+			$(".d3d11").hide();
+			$(".d3d12").hide();
+			$(".opengl").show();
+			$(".opengles").hide();
+			$(".vulkan").hide();
+		}
+		if (graphicsApi == "opengles") {
+			$(".d3d11").hide();
+			$(".d3d12").hide();
+			$(".opengl").hide();
+			$(".opengles").show();
+			$(".vulkan").hide();
+		}
+		if (graphicsApi == "vulkan") {
+			$(".d3d11").hide();
+			$(".d3d12").hide();
+			$(".opengl").hide();
+			$(".opengles").hide();
+			$(".vulkan").show();
+		}
+		var oldelements = document.getElementsByClassName('selected-graphics-api');
+		for (i = 0; i < oldelements.length; ++i)
+		{
+			oldelements[i].classList.remove('selected-graphics-api');
+		}
+		var element = document.getElementById('select' + graphicsApi);
+		if(element)
+		{
+			element.classList.add('selected-graphics-api');
+		}
+		var element2 = document.getElementById('select' + graphicsApi +"-inline");
+		if (element2)
+		{
+			element2.classList.add('selected-graphics-api');
+		}
+		window.updateGraphicsAPI=updateGraphicsAPI;
 	}</script>
 	<script >
-	var graphicsApi = Cookies.get("graphicsApi")
+	var graphicsApi = Cookies.get("graphicsapi")
 	if (graphicsApi==undefined) {
-	Cookies.set('graphicsApi', 'vulkan',{ expires: 365})
+	Cookies.set('graphicsapi', 'vulkan',{ expires: 365})
 	platform='vulkan';
 	}
 	</script>
