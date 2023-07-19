@@ -109,8 +109,7 @@ Select your platform, as the instructions are different depending on your select
 	We now need to modify our ``AndroidManifest.xml`` file to tell Android to run a Native Activity. We set ``android:name`` to "android.app.NativeActivity" and update ``android:configChanges`` to "orientation|keyboardHidden" to not close the activity on those changes. Next under the meta-data section, we set these values: ``android:name`` to "android.app.lib_name" and ``android:value`` to "openxrtutorialch2", where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
 
 	We need to tell the app that it should take over rendering when active, rather than appearing in a window. Set ``<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />``.
-	Note: not all devices yet support this category. For example, for Oculus Quest devices you will need 
-	 ``<category android:name="com.oculus.intent.category.VR" />`` for the same purpose.
+	Note: not all devices yet support this category. For example, for Oculus Quest devices you will need ``<category android:name="com.oculus.intent.category.VR" />`` for the same purpose.
 
 	.. rubric:: Gradle
 
