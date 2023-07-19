@@ -7,6 +7,10 @@
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_1
 
+#ifndef _MSC_VER
+#define strcpy_s(d, n, s) (strncpy(d,s,n));
+#endif
+
 class OpenXRTutorialChapter4 {
 public:
     OpenXRTutorialChapter4(GraphicsAPI_Type api)
@@ -25,51 +29,52 @@ public:
         GetInstanceProperties();
         GetSystemID();
 
-		#if XR_DOCS_CHAPTER_VERSION>= XR_DOCS_CHAPTER_4_1
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_4_1
 		CreateActionSet();
-		#endif
+#endif
 
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1) {
-            GetViewConfigurationViews();
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
-                GetEnvirmentBlendModes();
-            }
-        }
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
+		GetViewConfigurationViews();
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
+        GetEnvirmentBlendModes();
+#endif
+       
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
+		CreateSession();
+		
+#if XR_DOCS_CHAPTER_VERSION>= XR_DOCS_CHAPTER_4_1
+		CreateActionPoses();
+		AttachActionSet();
+#endif
+		
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
+		CreateReferenceSpace();
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
+		CreateSwapchain();
+#endif
+#endif
 
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2) {
-            CreateSession();
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
+		while (applicationRunning) {
+		    PollSystemEvents();
+		    PollEvents();
+		    if (sessionRunning) {
+		        RenderFrame();
+		    }
+		}
+#endif
 
-			#if XR_DOCS_CHAPTER_VERSION>= XR_DOCS_CHAPTER_4_1
-			AttachActionSet();
-			#endif
-
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
-                CreateReferenceSpace();
-            }
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1) {
-                CreateSwapchain();
-            }
-        }
-
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3) {
-            while (applicationRunning) {
-                PollSystemEvents();
-                PollEvents();
-                if (sessionRunning) {
-                    RenderFrame();
-                }
-            }
-        }
-
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2) {
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1) {
-                DestroySwapchain();
-            }
-            if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
-                DestroyReferenceSpace();
-            }
-            DestroySession();
-        }
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
+		DestroySwapchain();
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
+		DestroyReferenceSpace();
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
+		DestroySession();
+#endif
 
         DestroyDebugMessenger();
         DestroyInstance();
@@ -204,6 +209,9 @@ private:
 	XrAction xrActionClick;
 	XrAction xrActionLeftGripPose;
 	XrAction xrActionRightHaptic;
+	
+	XrSpace xrSpaceLeftGripPose;
+
 	void CreateActionSet() {
 		XrActionSetCreateInfo actionset_info = { XR_TYPE_ACTION_SET_CREATE_INFO };
 		strcpy_s(actionset_info.actionSetName, XR_MAX_ACTION_SET_NAME_SIZE, "openxr-tutorial-actionset");
@@ -216,7 +224,6 @@ private:
 			action_info.actionType = xrActionType;
 			strcpy_s(action_info.actionName, XR_MAX_ACTION_NAME_SIZE, name);
 			strcpy_s(action_info.localizedActionName, XR_MAX_LOCALIZED_ACTION_NAME_SIZE, name);
-		
 			OPENXR_CHECK(xrCreateAction(actionSet, &action_info, &xrAction),"Failed to create xrAction.");
 		};
 		CreateAction(xrActionSelect,"select",XR_ACTION_TYPE_BOOLEAN_INPUT);
@@ -240,9 +247,25 @@ private:
 		suggested_binds.countSuggestedBindings = (uint32_t)khrSimpleIP.xrActionSuggestedBindings.size();
 		OPENXR_CHECK(xrSuggestInteractionProfileBindings(xrInstance, &suggested_binds),"xrSuggestInteractionProfileBindings failed.");
 	}
-
+	void CreateActionPoses()
+	{
+		// Create an xrSpace for a pose action.
+		auto CreateActionPoseSpace = [this](XrSession session,XrAction xrAction) ->XrSpace {
+			// Create frame of reference for a pose action
+			XrActionSpaceCreateInfo action_space_info = { XR_TYPE_ACTION_SPACE_CREATE_INFO };
+			action_space_info.action			= xrAction;
+			
+			const XrPosef xr_pose_identity = { {0,0,0,1.0f}, {0,0,0} };
+			action_space_info.poseInActionSpace	= xr_pose_identity;
+			XrSpace xrSpace;
+			OPENXR_CHECK(xrCreateActionSpace(session, &action_space_info, &xrSpace),"Failed to create Action Space.");
+			return xrSpace;
+		};
+		xrSpaceLeftGripPose=CreateActionPoseSpace(session,xrActionLeftGripPose);
+	}
 	void AttachActionSet()
 	{
+
 		// Attach the action set we just made to the session. We could attach multiple action sets!
 		XrSessionActionSetsAttachInfo attach_info = { XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO };
 		attach_info.countActionSets = 1;
