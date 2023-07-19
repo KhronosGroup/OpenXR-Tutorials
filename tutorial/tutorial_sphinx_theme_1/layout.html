@@ -153,9 +153,15 @@
 	oldelements[i].classList.remove('selected-platform');
 	}
 	var element = document.getElementById('select' + platform);
+	if(element)
+	{
 	element.classList.add('selected-platform');
-	var element2 = document.getElementById('select' + platform +"-inline");
+	}
+	var element2 = document.getElementById('select' + platform + "-inline");
+	if(element2)
+	{
 	element2.classList.add('selected-platform');
+	}
 	window.updatePlatform=updatePlatform;
 	}</script>
 	<script >
@@ -214,9 +220,15 @@
 	oldelements[i].classList.remove('selected-selected-graphics-api');
 	}
 	var element = document.getElementById('select' + graphicsApi);
+	if(element)
+	{
 	element.classList.add('selected-selected-graphics-api');
+	}
 	var element2 = document.getElementById('select' + graphicsApi +"-inline");
-	element2.classList.add('selected-selected-graphics-api');
+	if (element2)
+	{
+		element2.classList.add('selected-selected-graphics-api');
+	}
 	window.updateGraphicsAPI=updateGraphicsAPI;
 	}</script>
 	<script >
