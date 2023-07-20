@@ -611,8 +611,10 @@ void main()
 
             graphicsAPI->BeginRendering();
 
-            graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
             graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
+            graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
+
+            graphicsAPI->SetRenderAttachments(&swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, swapchainAndDepthImages[i].depthImageView);
 
             graphicsAPI->SetPipeline(pipeline);
             graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});

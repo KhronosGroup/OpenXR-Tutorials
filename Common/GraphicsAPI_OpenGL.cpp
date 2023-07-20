@@ -492,12 +492,14 @@ void *GraphicsAPI_OpenGL::CreateImageView(const ImageViewCreateInfo &imageViewCI
         std::cout << "ERROR: OPENGL: Framebuffer is not complete." << std::endl;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    imageViews[framebuffer] = imageViewCI;
 
     return (void *)(uint64_t)framebuffer;
 }
 
 void GraphicsAPI_OpenGL::DestroyImageView(void *&imageView) {
     GLuint framebuffer = (GLuint)(uint64_t)imageView;
+    imageViews.erase(framebuffer);
     glDeleteFramebuffers(1, &framebuffer);
     imageView = nullptr;
 }
@@ -676,9 +678,16 @@ void GraphicsAPI_OpenGL::DestroyPipeline(void *&pipeline) {
 void GraphicsAPI_OpenGL::BeginRendering() {
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
+
+    glGenFramebuffers(1, &setFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, setFramebuffer);
 }
 
 void GraphicsAPI_OpenGL::EndRendering() {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDeleteFramebuffers(1, &setFramebuffer);
+    setFramebuffer = 0;
+
     glBindVertexArray(0);
     glDeleteVertexArrays(1, &vertexArray);
     vertexArray = 0;
@@ -688,14 +697,61 @@ void GraphicsAPI_OpenGL::ClearColor(void *imageView, float r, float g, float b, 
     glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)imageView);
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT);
-    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GraphicsAPI_OpenGL::ClearDepth(void *imageView, float d) {
     glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)imageView);
     glClearDepth(d);
     glClear(GL_DEPTH_BUFFER_BIT);
-    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GraphicsAPI_OpenGL::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView) {
+    // Reset Framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDeleteFramebuffers(1, &setFramebuffer);
+    setFramebuffer = 0;
+
+    glGenFramebuffers(1, &setFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, setFramebuffer);
+    
+    // Color
+    for (size_t i = 0; i < colorViewCount; i++) {
+        GLenum attachment = GL_COLOR_ATTACHMENT0;
+
+        GLuint glColorView = (GLuint)(uint64_t)colorViews[i];
+        const ImageViewCreateInfo &imageViewCI = imageViews[glColorView];
+
+        if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D_ARRAY) {
+            glFramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel, imageViewCI.baseArrayLayer, imageViewCI.layerCount);
+        } else if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D) {
+            glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel);
+        } else {
+            DEBUG_BREAK;
+            std::cout << "ERROR: OPENGL: Unknown ImageView View type." << std::endl;
+        }
+    }
+    // DepthStencil
+    if (depthStencilView) {
+        GLuint glDepthView = (GLuint)(uint64_t)depthStencilView;
+        const ImageViewCreateInfo &imageViewCI = imageViews[glDepthView];
+
+        if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D_ARRAY) {
+            glFramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel, imageViewCI.baseArrayLayer, imageViewCI.layerCount);
+        } else if (imageViewCI.view == ImageViewCreateInfo::View::TYPE_2D) {
+            glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, (GLuint)(uint64_t)imageViewCI.image, imageViewCI.baseMipLevel);
+        } else {
+            DEBUG_BREAK;
+            std::cout << "ERROR: OPENGL: Unknown ImageView View type." << std::endl;
+        }
+    }
+
+    GLenum result = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+    if (result != GL_FRAMEBUFFER_COMPLETE) {
+        DEBUG_BREAK;
+        std::cout << "ERROR: OPENGL: Framebuffer is not complete." << std::endl;
+    }
 }
 
 void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
