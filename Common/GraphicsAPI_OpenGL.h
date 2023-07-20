@@ -20,8 +20,30 @@ public:
     virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) override;
     virtual void DestroyImageView(void*& imageView) override;
 
+    virtual void* CreateSampler(const SamplerCreateInfo& samplerCI) override;
+    virtual void DestroySampler(void*& sampler) override;
+
+    virtual void* CreateBuffer(const BufferCreateInfo& bufferCI) override;
+    virtual void DeleteBuffer(void*& buffer) override;
+
+    virtual void* CreateShader(const ShaderCreateInfo& shaderCI) override;
+    virtual void DeleteShader(void*& shader) override;
+
+    virtual void* CreatePipeline(const PipelineCreateInfo& pipelineCI) { return nullptr; }
+    virtual void DeletePipeline(void*& pipeline) {}
+
+    virtual void BeginRendering();
+    virtual void EndRendering();
+
     virtual void ClearColor(void* image, float r, float g, float b, float a) override;
     virtual void ClearDepth(void* image, float d) override;
+
+    virtual void SetPipeline(void* pipeline) override;
+    virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) override;
+    virtual void SetVertexBuffers(void** vertexBuffers, size_t count) override;
+    virtual void SetIndexBuffer(void* indexBuffer) override;
+    virtual void DrawIndexed(uint32_t indexCount, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0) override;
+    virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) override;
 
 private:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
@@ -41,5 +63,13 @@ private:
 #endif
 
     std::vector<XrSwapchainImageOpenGLKHR> swapchainImages{};
+
+    std::unordered_map<GLuint, BufferCreateInfo> buffers{};
+    std::unordered_map<GLuint, ImageCreateInfo> images{};
+
+    GLuint vertexArray = 0;
+    std::unordered_map<GLuint, PipelineCreateInfo> pipelines{};
+    GLuint setIndexBuffer = 0;
+    GLuint setPipeline = 0;
 };
 #endif
