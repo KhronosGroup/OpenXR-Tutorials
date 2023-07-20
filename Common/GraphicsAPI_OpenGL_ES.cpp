@@ -158,15 +158,15 @@ void GraphicsAPI_OpenGL_ES::DestroyImageView(void *&imageView) {
     imageView = nullptr;
 }
 
-void GraphicsAPI_OpenGL_ES::ClearColor(void *image, float r, float g, float b, float a) {
-    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
+void GraphicsAPI_OpenGL_ES::ClearColor(void *imageView, float r, float g, float b, float a) {
+    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)imageView);
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GraphicsAPI_OpenGL_ES::ClearDepth(void *image, float d) {
-    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
+void GraphicsAPI_OpenGL_ES::ClearDepth(void *imageView, float d) {
+    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)imageView);
     glClearDepthf(d);
     glClear(GL_DEPTH_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

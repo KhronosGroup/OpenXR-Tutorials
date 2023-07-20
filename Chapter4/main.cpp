@@ -352,7 +352,7 @@ layout(std140, binding = 0) uniform Data
 
 void main()
 {
-	o_Color = vec4(1.0, 1.0, 1.0, 1.0);//d_Data.color;
+	o_Color = d_Data.color;
 }
 )";
         fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
@@ -615,7 +615,7 @@ void main()
             graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
 
             graphicsAPI->SetPipeline(pipeline);
-            //graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+            graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
             graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
             graphicsAPI->SetIndexBuffer(indexBuffer);
             graphicsAPI->DrawIndexed(6);
@@ -777,7 +777,7 @@ void android_main(struct android_app *app) {
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
-    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK1(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR),"Failed to get InstanceProcAddr.");
     if (!xrInitializeLoaderKHR) {
         return;
     }
@@ -785,7 +785,7 @@ void android_main(struct android_app *app) {
     XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid{XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
     loaderInitializeInfoAndroid.applicationVM = app->activity->vm;
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
-    OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
+    OPENXR_CHECK1(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
 
     app->userData = &OpenXRTutorialChapter4::androidAppState;
     app->onAppCmd = OpenXRTutorialChapter4::AndroidAppHandleCmd;

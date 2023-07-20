@@ -489,7 +489,7 @@ void *GraphicsAPI_OpenGL::CreateImageView(const ImageViewCreateInfo &imageViewCI
     GLenum result = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
     if (result != GL_FRAMEBUFFER_COMPLETE) {
         DEBUG_BREAK;
-        std::cout << "ERROR: OPENGL: Framebuffer is not complete" << std::endl;
+        std::cout << "ERROR: OPENGL: Framebuffer is not complete." << std::endl;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -684,15 +684,15 @@ void GraphicsAPI_OpenGL::EndRendering() {
     vertexArray = 0;
 }
 
-void GraphicsAPI_OpenGL::ClearColor(void *image, float r, float g, float b, float a) {
-    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
+void GraphicsAPI_OpenGL::ClearColor(void *imageView, float r, float g, float b, float a) {
+    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)imageView);
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT);
     //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GraphicsAPI_OpenGL::ClearDepth(void *image, float d) {
-    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
+void GraphicsAPI_OpenGL::ClearDepth(void *imageView, float d) {
+    glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)imageView);
     glClearDepth(d);
     glClear(GL_DEPTH_BUFFER_BIT);
     //glBindFramebuffer(GL_FRAMEBUFFER, 0);

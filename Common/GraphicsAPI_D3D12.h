@@ -23,8 +23,8 @@ public:
     virtual void BeginRendering() override;
     virtual void EndRendering() override;
 
-    virtual void ClearColor(void* image, float r, float g, float b, float a) override;
-    virtual void ClearDepth(void* image, float d) override;
+    virtual void ClearColor(void* imageView, float r, float g, float b, float a) override;
+    virtual void ClearDepth(void* imageView, float d) override;
 
 private:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;

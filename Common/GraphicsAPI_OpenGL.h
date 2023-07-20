@@ -35,8 +35,8 @@ public:
     virtual void BeginRendering();
     virtual void EndRendering();
 
-    virtual void ClearColor(void* image, float r, float g, float b, float a) override;
-    virtual void ClearDepth(void* image, float d) override;
+    virtual void ClearColor(void* imageView, float r, float g, float b, float a) override;
+    virtual void ClearDepth(void* imageView, float d) override;
 
     virtual void SetPipeline(void* pipeline) override;
     virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) override;
