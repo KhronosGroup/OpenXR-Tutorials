@@ -294,8 +294,8 @@ void GraphicsAPI_Vulkan::EndRendering() {
     vkDestroyFence(device, fence, nullptr);
 }
 
-void GraphicsAPI_Vulkan::ClearColor(void *image, float r, float g, float b, float a) {
-    const ImageViewCreateInfo &imageViewCI = imageViewResources[(VkImageView)image];
+void GraphicsAPI_Vulkan::ClearColor(void *imageView, float r, float g, float b, float a) {
+    const ImageViewCreateInfo &imageViewCI = imageViewResources[(VkImageView)imageView];
 
     VkClearColorValue clearColor;
     clearColor.float32[0] = r;
@@ -338,8 +338,8 @@ void GraphicsAPI_Vulkan::ClearColor(void *image, float r, float g, float b, floa
     vkCmdPipelineBarrier(cmdBuffer, VkPipelineStageFlagBits(0), VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
 }
 
-void GraphicsAPI_Vulkan::ClearDepth(void *image, float d) {
-    const ImageViewCreateInfo &imageViewCI = imageViewResources[(VkImageView)image];
+void GraphicsAPI_Vulkan::ClearDepth(void *imageView, float d) {
+    const ImageViewCreateInfo &imageViewCI = imageViewResources[(VkImageView)imageView];
 
     VkClearDepthStencilValue clearDepth;
     clearDepth.depth = d;

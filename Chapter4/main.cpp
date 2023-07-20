@@ -352,7 +352,7 @@ layout(std140, binding = 0) uniform Data
 
 void main()
 {
-	o_Color = vec4(1.0, 1.0, 1.0, 1.0);//d_Data.color;
+	o_Color = d_Data.color;
 }
 )";
         fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
@@ -615,7 +615,7 @@ void main()
             graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
 
             graphicsAPI->SetPipeline(pipeline);
-            //graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+            graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
             graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
             graphicsAPI->SetIndexBuffer(indexBuffer);
             graphicsAPI->DrawIndexed(6);
