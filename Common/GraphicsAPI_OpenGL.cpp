@@ -673,7 +673,7 @@ void GraphicsAPI_OpenGL::DestroyPipeline(void *&pipeline) {
 
 void GraphicsAPI_OpenGL::BeginRendering() {
     glGenVertexArrays(1, &vertexArray);
-    
+    glBindVertexArray(vertexArray);
 }
 
 void GraphicsAPI_OpenGL::EndRendering() {
@@ -686,14 +686,14 @@ void GraphicsAPI_OpenGL::ClearColor(void *image, float r, float g, float b, floa
     glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GraphicsAPI_OpenGL::ClearDepth(void *image, float d) {
     glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)(uint64_t)image);
     glClearDepth(d);
     glClear(GL_DEPTH_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
@@ -913,8 +913,6 @@ void GraphicsAPI_OpenGL::SetDescriptor(const DescriptorInfo &descriptorInfo) {
 }
 
 void GraphicsAPI_OpenGL::SetVertexBuffers(void **vertexBuffers, size_t count) {
-    glBindVertexArray(vertexArray);
-
     const VertexInputState &vertexInputState = pipelines[setPipeline].vertexInputState;
     for (size_t i = 0; i < count; i++) {
         GLuint glVertexBufferID = (GLuint)(uint64_t)vertexBuffers[i];

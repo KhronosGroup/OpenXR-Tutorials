@@ -611,11 +611,11 @@ void main()
 
             graphicsAPI->BeginRendering();
 
-            graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
             graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
+            graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
 
             graphicsAPI->SetPipeline(pipeline);
-            graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+            //graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
             graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
             graphicsAPI->SetIndexBuffer(indexBuffer);
             graphicsAPI->DrawIndexed(6);
