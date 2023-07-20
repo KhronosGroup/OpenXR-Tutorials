@@ -310,17 +310,17 @@ private:
                 +0.5f, -0.5f, 0.0f, 1.0f,
                 +0.5f, +0.5f, 0.0f, 1.0f,
                 -0.5f, +0.5f, 0.0f, 1.0f};
-        vertexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(vertices), vertices, false});
+        vertexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float)*4, sizeof(vertices), vertices, false});
 
         uint32_t indices[6] =
             {
                 0, 1, 2, 2, 3, 0};
-        indexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(indices), indices, false});
+        indexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t),sizeof(indices), indices, false});
 
         float colour[4] =
             {
                 1.0f, 0.0f, 0.0f, 1.0f};
-        uniformBuffer_Frag = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, sizeof(colour), colour, false});
+        uniformBuffer_Frag = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM,0, sizeof(colour), colour, false});
 
         std::string vertexSource =
 R"(

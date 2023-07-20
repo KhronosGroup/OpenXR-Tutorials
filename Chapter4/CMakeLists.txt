@@ -38,10 +38,15 @@ set(HEADERS
     "../Common/HelperFunctions.h"
     "../Common/OpenXRDebugUtils.h"
 )
+set(HLSL_SHADERS
+    "../Shaders/VertexShader.hlsl" 
+    "../Shaders/PixelShader.hlsl" 
+)
 
+set(SHADERS )
 if (ANDROID)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
-    add_library(OpenXRTutorialChapter4 SHARED ${SOURCES} ${HEADERS})
+    add_library(OpenXRTutorialChapter4 SHARED ${SOURCES} ${HEADERS} ${SHADERS})
     target_include_directories(OpenXRTutorialChapter4 PUBLIC "../Common/")
 
     # native_app_glue
@@ -72,7 +77,7 @@ if (ANDROID)
             openxr-gfxwrapper)
 
 else()
-    add_executable(OpenXRTutorialChapter4 ${SOURCES} ${HEADERS})
+    add_executable(OpenXRTutorialChapter4 ${SOURCES} ${HEADERS} ${SHADERS})
 
 	# our selected runtime
 	set(XR_RUNTIME_JSON "$ENV{XR_RUNTIME_JSON}" CACHE PATH "Optional location of a specific OpenXR runtime configuration file.")
@@ -97,4 +102,19 @@ else()
     target_include_directories(OpenXRTutorialChapter4 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
     target_link_libraries(OpenXRTutorialChapter4 openxr-gfxwrapper)
 
+	set_source_files_properties(../Shaders/VertexShader.hlsl PROPERTIES ShaderType "vs")
+	set_source_files_properties(../Shaders/PixelShader.hlsl PROPERTIES ShaderType "ps")
+	set_source_files_properties(${HLSL_SHADERS} PROPERTIES ShaderModel "4_0")
+
+	foreach(FILE ${HLSL_SHADERS})
+	  get_filename_component(FILE_WE ${FILE} NAME_WE)
+	  get_source_file_property(shadertype ${FILE} ShaderType)
+	  get_source_file_property(shadermodel ${FILE} ShaderModel)
+	  add_custom_command(TARGET OpenXRTutorialChapter4
+						 COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.cso /Fd ${CMAKE_BINARY_DIR}/${FILE_WE}.pdb ${FILE}
+						 MAIN_DEPENDENCY ${FILE}
+						 COMMENT "HLSL ${FILE}"
+						 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+						 VERBATIM)
+	endforeach(FILE)
 endif()

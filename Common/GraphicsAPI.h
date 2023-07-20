@@ -287,6 +287,7 @@ public:
             INDEX,
             UNIFORM,
         } type;
+		size_t stride;
         size_t size;
         void* data;
         bool indexBufferUint16; //Otherwise uint32

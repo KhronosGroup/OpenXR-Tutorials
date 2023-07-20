@@ -234,8 +234,8 @@
 	<script >
 	var graphicsApi = Cookies.get("graphicsapi")
 	if (graphicsApi==undefined) {
-	Cookies.set('graphicsapi', 'vulkan',{ expires: 365})
-	platform='vulkan';
+		Cookies.set('graphicsapi', 'vulkan',{ expires: 365})
+		platform='vulkan';
 	}
 	</script>
 	<script defer src="{{ pathto('_static/js/updateGraphicsAPI.js', 1) }}"></script>
