@@ -412,6 +412,9 @@ public:
     virtual void ClearDepth(void* imageView, float d) = 0;
 
     // TODO: Make pure virtual
+    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView) {}
+
+    // TODO: Make pure virtual
     virtual void SetPipeline(void* pipeline) {}
     virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) {}
     virtual void SetVertexBuffers(void** vertexBuffers, size_t count) {}

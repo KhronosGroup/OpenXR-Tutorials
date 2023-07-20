@@ -38,6 +38,8 @@ public:
     virtual void ClearColor(void* imageView, float r, float g, float b, float a) override;
     virtual void ClearDepth(void* imageView, float d) override;
 
+    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView) override;
+
     virtual void SetPipeline(void* pipeline) override;
     virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) override;
     virtual void SetVertexBuffers(void** vertexBuffers, size_t count) override;
@@ -66,10 +68,12 @@ private:
 
     std::unordered_map<GLuint, BufferCreateInfo> buffers{};
     std::unordered_map<GLuint, ImageCreateInfo> images{};
+    std::unordered_map<GLuint, ImageViewCreateInfo> imageViews{};
 
-    GLuint vertexArray = 0;
+    GLuint setFramebuffer = 0;
     std::unordered_map<GLuint, PipelineCreateInfo> pipelines{};
-    GLuint setIndexBuffer = 0;
     GLuint setPipeline = 0;
+    GLuint vertexArray = 0;
+    GLuint setIndexBuffer = 0;
 };
 #endif
