@@ -419,16 +419,13 @@ void GraphicsAPI_OpenGL::DestroyImageView(void *&imageView) {
 
 void *GraphicsAPI_OpenGL::CreateSampler(const SamplerCreateInfo &samplerCI) {
     GLuint sampler = 0;
-    PFNGLGENSAMPLERSPROC glGenSamplers = (PFNGLGENSAMPLERSPROC)GetExtension("glGenSamplers");
+    PFNGLGENSAMPLERSPROC glGenSamplers = (PFNGLGENSAMPLERSPROC)GetExtension("glGenSamplers"); // 3.2+
     glGenSamplers(1, &sampler);
 
 
-    PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri = (PFNGLSAMPLERPARAMETERIPROC)GetExtension("glSamplerParameteri");
-    PFNGLSAMPLERPARAMETERFPROC glSamplerParameterf = (PFNGLSAMPLERPARAMETERFPROC)GetExtension("glSamplerParameterf");
-    PFNGLSAMPLERPARAMETERFVPROC glSamplerParameterfv = (PFNGLSAMPLERPARAMETERFVPROC)GetExtension("glSamplerParameterfv");
-
-    
-    
+    PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri = (PFNGLSAMPLERPARAMETERIPROC)GetExtension("glSamplerParameteri"); // 3.2+
+    PFNGLSAMPLERPARAMETERFPROC glSamplerParameterf = (PFNGLSAMPLERPARAMETERFPROC)GetExtension("glSamplerParameterf"); // 3.2+
+    PFNGLSAMPLERPARAMETERFVPROC glSamplerParameterfv = (PFNGLSAMPLERPARAMETERFVPROC)GetExtension("glSamplerParameterfv"); // 3.2+
 
     // Filter
     glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, ToGLFilter(samplerCI.magFilter));
@@ -459,7 +456,7 @@ void *GraphicsAPI_OpenGL::CreateSampler(const SamplerCreateInfo &samplerCI) {
 
 void GraphicsAPI_OpenGL::DestroySampler(void *&sampler) {
     GLuint glsampler = (GLuint)(uint64_t)sampler;
-    PFNGLDELETESAMPLERSPROC glDeleteSamplers = (PFNGLDELETESAMPLERSPROC)GetExtension("glDeleteSamplers");
+    PFNGLDELETESAMPLERSPROC glDeleteSamplers = (PFNGLDELETESAMPLERSPROC)GetExtension("glDeleteSamplers"); // 3.2+
     glDeleteSamplers(1, &glsampler);
     sampler = nullptr;
 }
@@ -485,7 +482,7 @@ void *GraphicsAPI_OpenGL::CreateBuffer(const BufferCreateInfo &bufferCI) {
 
     return (void *)(uint64_t)buffer;
 }
-void GraphicsAPI_OpenGL::DeleteBuffer(void *&buffer) {
+void GraphicsAPI_OpenGL::DestroyBuffer(void *&buffer) {
     GLuint glBuffer = (GLuint)(uint64_t)buffer;
     buffers.erase(glBuffer);
     glDeleteBuffers(1, &glBuffer);
@@ -530,7 +527,7 @@ void *GraphicsAPI_OpenGL::CreateShader(const ShaderCreateInfo &shaderCI) {
     return (void *)(uint64_t)shader;
 }
 
-void GraphicsAPI_OpenGL::DeleteShader(void *&shader) {
+void GraphicsAPI_OpenGL::DestroyShader(void *&shader) {
     GLuint glShader = (GLuint)(uint64_t)shader;
     glDeleteShader(glShader);
     shader = nullptr;
@@ -568,7 +565,7 @@ void *GraphicsAPI_OpenGL::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     return (void *)(uint64_t)program;
 }
 
-void GraphicsAPI_OpenGL::DeletePipeline(void *&pipeline) {
+void GraphicsAPI_OpenGL::DestroyPipeline(void *&pipeline) {
     GLint program = (GLuint)(uint64_t)pipeline;
     pipelines.erase(program);
     glDeleteProgram(program);

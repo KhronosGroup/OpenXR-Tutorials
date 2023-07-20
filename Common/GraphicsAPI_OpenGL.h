@@ -24,13 +24,13 @@ public:
     virtual void DestroySampler(void*& sampler) override;
 
     virtual void* CreateBuffer(const BufferCreateInfo& bufferCI) override;
-    virtual void DeleteBuffer(void*& buffer) override;
+    virtual void DestroyBuffer(void*& buffer) override;
 
     virtual void* CreateShader(const ShaderCreateInfo& shaderCI) override;
-    virtual void DeleteShader(void*& shader) override;
+    virtual void DestroyShader(void*& shader) override;
 
     virtual void* CreatePipeline(const PipelineCreateInfo& pipelineCI) { return nullptr; }
-    virtual void DeletePipeline(void*& pipeline) {}
+    virtual void DestroyPipeline(void*& pipeline) {}
 
     virtual void BeginRendering();
     virtual void EndRendering();

@@ -393,15 +393,15 @@ public:
 
     // TODO: Make pure virtual
     virtual void* CreateBuffer(const BufferCreateInfo& bufferCI) { return nullptr; }
-    virtual void DeleteBuffer(void*& buffer) {}
+    virtual void DestroyBuffer(void*& buffer) {}
 
     // TODO: Make pure virtual
     virtual void* CreateShader(const ShaderCreateInfo& shaderCI) { return nullptr; }
-    virtual void DeleteShader(void*& shader) {}
+    virtual void DestroyShader(void*& shader) {}
 
     // TODO: Make pure virtual
     virtual void* CreatePipeline(const PipelineCreateInfo& pipelineCI) { return nullptr; }
-    virtual void DeletePipeline(void*& pipeline) {}
+    virtual void DestroyPipeline(void*& pipeline) {}
 
     virtual void BeginRendering(){};
     virtual void EndRendering(){};

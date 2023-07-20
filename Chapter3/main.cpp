@@ -566,7 +566,7 @@ private:
         void *depthImage = nullptr;
 
         std::vector<void *> colorImageViews;
-        void *depthImageView;
+        void *depthImageView = nullptr;
     };
     std::vector<SwapchainAndDepthImage> swapchainAndDepthImages;
 
