@@ -29,8 +29,8 @@ public:
     virtual void* CreateShader(const ShaderCreateInfo& shaderCI) override;
     virtual void DestroyShader(void*& shader) override;
 
-    virtual void* CreatePipeline(const PipelineCreateInfo& pipelineCI) { return nullptr; }
-    virtual void DestroyPipeline(void*& pipeline) {}
+    virtual void* CreatePipeline(const PipelineCreateInfo& pipelineCI) override;
+    virtual void DestroyPipeline(void*& pipeline) override;
 
     virtual void BeginRendering();
     virtual void EndRendering();

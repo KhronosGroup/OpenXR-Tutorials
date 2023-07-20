@@ -388,7 +388,7 @@ public:
     virtual void DestroyImageView(void*& imageView) = 0;
     
     // TODO: Make pure virtual
-    virtual void* CreateSampler(const SamplerCreateInfo& samplerCI){};
+    virtual void* CreateSampler(const SamplerCreateInfo& samplerCI) { return nullptr; };
     virtual void DestroySampler(void*& sampler){};
 
     // TODO: Make pure virtual
