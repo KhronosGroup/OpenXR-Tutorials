@@ -14,7 +14,7 @@ void (*GetExtension(const char *functionName))() { return eglGetProcAddress(func
 
 #pragma region PiplineHelpers
 
-GLenum GetGLTextureTarget(const GraphicsAPI::ImageCreateInfo& imageCI) {
+GLenum GetGLTextureTarget(const GraphicsAPI::ImageCreateInfo &imageCI) {
     GLenum target = 0;
     if (imageCI.dimension == 1) {
         if (imageCI.arrayLayers > 1) {
@@ -102,169 +102,169 @@ GLint ToGLAddressMode(GraphicsAPI::SamplerCreateInfo::AddressMode mode) {
     }
 };
 
-inline GLenum ToGLTopology(PrimitiveTopology topology) {
+inline GLenum ToGLTopology(GraphicsAPI::PrimitiveTopology topology) {
     switch (topology) {
-    case PrimitiveTopology::POINT_LIST:
+    case GraphicsAPI::PrimitiveTopology::POINT_LIST:
         return GL_POINTS;
-    case PrimitiveTopology::LINE_LIST:
+    case GraphicsAPI::PrimitiveTopology::LINE_LIST:
         return GL_LINES;
-    case PrimitiveTopology::LINE_STRIP:
+    case GraphicsAPI::PrimitiveTopology::LINE_STRIP:
         return GL_LINE_STRIP;
-    case PrimitiveTopology::TRIANGLE_LIST:
+    case GraphicsAPI::PrimitiveTopology::TRIANGLE_LIST:
         return GL_TRIANGLES;
-    case PrimitiveTopology::TRIANGLE_STRIP:
+    case GraphicsAPI::PrimitiveTopology::TRIANGLE_STRIP:
         return GL_TRIANGLE_STRIP;
-    case PrimitiveTopology::TRIANGLE_FAN:
+    case GraphicsAPI::PrimitiveTopology::TRIANGLE_FAN:
         return GL_TRIANGLE_FAN;
     default:
         return 0;
     }
 };
-inline GLenum ToGLPolygonMode(PolygonMode polygonMode) {
+inline GLenum ToGLPolygonMode(GraphicsAPI::PolygonMode polygonMode) {
     switch (polygonMode) {
-    case PolygonMode::FILL:
+    case GraphicsAPI::PolygonMode::FILL:
         return GL_BACK;
-    case PolygonMode::LINE:
+    case GraphicsAPI::PolygonMode::LINE:
         return GL_FRONT;
-    case PolygonMode::POINT:
+    case GraphicsAPI::PolygonMode::POINT:
         return GL_BACK;
     default:
         return 0;
     }
 };
-inline GLenum ToGLCullMode(CullMode cullMode) {
+inline GLenum ToGLCullMode(GraphicsAPI::CullMode cullMode) {
     switch (cullMode) {
-    case CullMode::NONE:
+    case GraphicsAPI::CullMode::NONE:
         return GL_BACK;
-    case CullMode::FRONT:
+    case GraphicsAPI::CullMode::FRONT:
         return GL_FRONT;
-    case CullMode::BACK:
+    case GraphicsAPI::CullMode::BACK:
         return GL_BACK;
-    case CullMode::FRONT_AND_BACK:
+    case GraphicsAPI::CullMode::FRONT_AND_BACK:
         return GL_FRONT_AND_BACK;
     default:
         return 0;
     }
 }
-inline GLenum ToGLCompareOp(CompareOp op) {
+inline GLenum ToGLCompareOp(GraphicsAPI::CompareOp op) {
     switch (op) {
-    case CompareOp::NEVER:
+    case GraphicsAPI::CompareOp::NEVER:
         return GL_NEVER;
-    case CompareOp::LESS:
+    case GraphicsAPI::CompareOp::LESS:
         return GL_LESS;
-    case CompareOp::EQUAL:
+    case GraphicsAPI::CompareOp::EQUAL:
         return GL_EQUAL;
-    case CompareOp::LESS_OR_EQUAL:
+    case GraphicsAPI::CompareOp::LESS_OR_EQUAL:
         return GL_LEQUAL;
-    case CompareOp::GREATER:
+    case GraphicsAPI::CompareOp::GREATER:
         return GL_GREATER;
-    case CompareOp::NOT_EQUAL:
+    case GraphicsAPI::CompareOp::NOT_EQUAL:
         return GL_NOTEQUAL;
-    case CompareOp::GREATER_OR_EQUAL:
+    case GraphicsAPI::CompareOp::GREATER_OR_EQUAL:
         return GL_GEQUAL;
-    case CompareOp::ALWAYS:
+    case GraphicsAPI::CompareOp::ALWAYS:
         return GL_ALWAYS;
     default:
         return 0;
     }
 };
-inline GLenum ToGLStencilCompareOp(StencilOp op) {
+inline GLenum ToGLStencilCompareOp(GraphicsAPI::StencilOp op) {
     switch (op) {
-    case StencilOp::KEEP:
+    case GraphicsAPI::StencilOp::KEEP:
         return GL_KEEP;
-    case StencilOp::ZERO:
+    case GraphicsAPI::StencilOp::ZERO:
         return GL_ZERO;
-    case StencilOp::REPLACE:
+    case GraphicsAPI::StencilOp::REPLACE:
         return GL_REPLACE;
-    case StencilOp::INCREMENT_AND_CLAMP:
+    case GraphicsAPI::StencilOp::INCREMENT_AND_CLAMP:
         return GL_INCR;
-    case StencilOp::DECREMENT_AND_CLAMP:
+    case GraphicsAPI::StencilOp::DECREMENT_AND_CLAMP:
         return GL_DECR;
-    case StencilOp::INVERT:
+    case GraphicsAPI::StencilOp::INVERT:
         return GL_INVERT;
-    case StencilOp::INCREMENT_AND_WRAP:
+    case GraphicsAPI::StencilOp::INCREMENT_AND_WRAP:
         return GL_INCR_WRAP;
-    case StencilOp::DECREMENT_AND_WRAP:
+    case GraphicsAPI::StencilOp::DECREMENT_AND_WRAP:
         return GL_DECR_WRAP;
     default:
         return 0;
     }
 };
-inline GLenum ToGLBlendFactor(BlendFactor factor) {
+inline GLenum ToGLBlendFactor(GraphicsAPI::BlendFactor factor) {
     switch (factor) {
-    case BlendFactor::ZERO:
+    case GraphicsAPI::BlendFactor::ZERO:
         return GL_ZERO;
-    case BlendFactor::ONE:
+    case GraphicsAPI::BlendFactor::ONE:
         return GL_ONE;
-    case BlendFactor::SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::SRC_COLOUR:
         return GL_SRC_COLOR;
-    case BlendFactor::ONE_MINUS_SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOUR:
         return GL_ONE_MINUS_SRC_COLOR;
-    case BlendFactor::DST_COLOUR:
+    case GraphicsAPI::BlendFactor::DST_COLOUR:
         return GL_DST_COLOR;
-    case BlendFactor::ONE_MINUS_DST_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOUR:
         return GL_ONE_MINUS_DST_COLOR;
-    case BlendFactor::SRC_ALPHA:
+    case GraphicsAPI::BlendFactor::SRC_ALPHA:
         return GL_SRC_ALPHA;
-    case BlendFactor::ONE_MINUS_SRC_ALPHA:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA:
         return GL_ONE_MINUS_SRC_ALPHA;
-    case BlendFactor::DST_ALPHA:
+    case GraphicsAPI::BlendFactor::DST_ALPHA:
         return GL_DST_ALPHA;
-    case BlendFactor::ONE_MINUS_DST_ALPHA:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_ALPHA:
         return GL_ONE_MINUS_DST_ALPHA;
     default:
         return 0;
     }
 };
-inline GLenum ToGLBlendOp(BlendOp op) {
+inline GLenum ToGLBlendOp(GraphicsAPI::BlendOp op) {
     switch (op) {
-    case BlendOp::ADD:
+    case GraphicsAPI::BlendOp::ADD:
         return GL_FUNC_ADD;
-    case BlendOp::SUBTRACT:
+    case GraphicsAPI::BlendOp::SUBTRACT:
         return GL_FUNC_SUBTRACT;
-    case BlendOp::REVERSE_SUBTRACT:
+    case GraphicsAPI::BlendOp::REVERSE_SUBTRACT:
         return GL_FUNC_REVERSE_SUBTRACT;
-    case BlendOp::MIN:
+    case GraphicsAPI::BlendOp::MIN:
         return GL_MIN;
-    case BlendOp::MAX:
+    case GraphicsAPI::BlendOp::MAX:
         return GL_MAX;
     default:
         return 0;
     }
 };
-inline GLenum ToGLLogicOp(LogicOp op) {
+inline GLenum ToGLLogicOp(GraphicsAPI::LogicOp op) {
     switch (op) {
-    case LogicOp::CLEAR:
+    case GraphicsAPI::LogicOp::CLEAR:
         return GL_CLEAR;
-    case LogicOp::AND:
+    case GraphicsAPI::LogicOp::AND:
         return GL_AND;
-    case LogicOp::AND_REVERSE:
+    case GraphicsAPI::LogicOp::AND_REVERSE:
         return GL_AND_REVERSE;
-    case LogicOp::COPY:
+    case GraphicsAPI::LogicOp::COPY:
         return GL_COPY;
-    case LogicOp::AND_INVERTED:
+    case GraphicsAPI::LogicOp::AND_INVERTED:
         return GL_AND_INVERTED;
-    case LogicOp::NO_OP:
+    case GraphicsAPI::LogicOp::NO_OP:
         return GL_NOOP;
-    case LogicOp::XOR:
+    case GraphicsAPI::LogicOp::XOR:
         return GL_XOR;
-    case LogicOp::OR:
+    case GraphicsAPI::LogicOp::OR:
         return GL_OR;
-    case LogicOp::NOR:
+    case GraphicsAPI::LogicOp::NOR:
         return GL_NOR;
-    case LogicOp::EQUIVALENT:
+    case GraphicsAPI::LogicOp::EQUIVALENT:
         return GL_EQUIV;
-    case LogicOp::INVERT:
+    case GraphicsAPI::LogicOp::INVERT:
         return GL_INVERT;
-    case LogicOp::OR_REVERSE:
+    case GraphicsAPI::LogicOp::OR_REVERSE:
         return GL_OR_REVERSE;
-    case LogicOp::COPY_INVERTED:
+    case GraphicsAPI::LogicOp::COPY_INVERTED:
         return GL_COPY_INVERTED;
-    case LogicOp::OR_INVERTED:
+    case GraphicsAPI::LogicOp::OR_INVERTED:
         return GL_OR_INVERTED;
-    case LogicOp::NAND:
+    case GraphicsAPI::LogicOp::NAND:
         return GL_NAND;
-    case LogicOp::SET:
+    case GraphicsAPI::LogicOp::SET:
         return GL_SET;
     default:
         return 0;
@@ -502,20 +502,19 @@ void GraphicsAPI_OpenGL::DestroyImageView(void *&imageView) {
 
 void *GraphicsAPI_OpenGL::CreateSampler(const SamplerCreateInfo &samplerCI) {
     GLuint sampler = 0;
-    PFNGLGENSAMPLERSPROC glGenSamplers = (PFNGLGENSAMPLERSPROC)GetExtension("glGenSamplers"); // 3.2+
+    PFNGLGENSAMPLERSPROC glGenSamplers = (PFNGLGENSAMPLERSPROC)GetExtension("glGenSamplers");  // 3.2+
     glGenSamplers(1, &sampler);
 
-
-    PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri = (PFNGLSAMPLERPARAMETERIPROC)GetExtension("glSamplerParameteri"); // 3.2+
-    PFNGLSAMPLERPARAMETERFPROC glSamplerParameterf = (PFNGLSAMPLERPARAMETERFPROC)GetExtension("glSamplerParameterf"); // 3.2+
-    PFNGLSAMPLERPARAMETERFVPROC glSamplerParameterfv = (PFNGLSAMPLERPARAMETERFVPROC)GetExtension("glSamplerParameterfv"); // 3.2+
+    PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri = (PFNGLSAMPLERPARAMETERIPROC)GetExtension("glSamplerParameteri");      // 3.2+
+    PFNGLSAMPLERPARAMETERFPROC glSamplerParameterf = (PFNGLSAMPLERPARAMETERFPROC)GetExtension("glSamplerParameterf");      // 3.2+
+    PFNGLSAMPLERPARAMETERFVPROC glSamplerParameterfv = (PFNGLSAMPLERPARAMETERFVPROC)GetExtension("glSamplerParameterfv");  // 3.2+
 
     // Filter
     glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, ToGLFilter(samplerCI.magFilter));
     glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, ToGLFilterMipmap(samplerCI.minFilter, samplerCI.mipmapMode));
 
     // AddressMode
-    
+
     glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, ToGLAddressMode(samplerCI.addressModeS));
     glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, ToGLAddressMode(samplerCI.addressModeT));
     glSamplerParameteri(sampler, GL_TEXTURE_WRAP_R, ToGLAddressMode(samplerCI.addressModeR));
@@ -533,13 +532,13 @@ void *GraphicsAPI_OpenGL::CreateSampler(const SamplerCreateInfo &samplerCI) {
 
     // BorderColour
     glSamplerParameterfv(sampler, GL_TEXTURE_BORDER_COLOR, samplerCI.borderColour);
-    
+
     return (void *)(uint64_t)sampler;
 }
 
 void GraphicsAPI_OpenGL::DestroySampler(void *&sampler) {
     GLuint glsampler = (GLuint)(uint64_t)sampler;
-    PFNGLDELETESAMPLERSPROC glDeleteSamplers = (PFNGLDELETESAMPLERSPROC)GetExtension("glDeleteSamplers"); // 3.2+
+    PFNGLDELETESAMPLERSPROC glDeleteSamplers = (PFNGLDELETESAMPLERSPROC)GetExtension("glDeleteSamplers");  // 3.2+
     glDeleteSamplers(1, &glsampler);
     sampler = nullptr;
 }
@@ -560,9 +559,11 @@ void *GraphicsAPI_OpenGL::CreateBuffer(const BufferCreateInfo &bufferCI) {
         std::cout << "ERROR: OPENGL: Unknown Buffer Type." << std::endl;
     }
 
+    glBindBuffer(target, buffer);
     glBufferData(target, (GLsizeiptr)bufferCI.size, bufferCI.data, GL_STATIC_DRAW);
-    buffers[buffer] = bufferCI;
+    glBindBuffer(target, 0);
 
+    buffers[buffer] = bufferCI;
     return (void *)(uint64_t)buffer;
 }
 void GraphicsAPI_OpenGL::DestroyBuffer(void *&buffer) {
@@ -575,25 +576,37 @@ void GraphicsAPI_OpenGL::DestroyBuffer(void *&buffer) {
 void *GraphicsAPI_OpenGL::CreateShader(const ShaderCreateInfo &shaderCI) {
     GLenum type = 0;
     switch (shaderCI.type) {
-    case ShaderCreateInfo::Type::VERTEX:
+    case ShaderCreateInfo::Type::VERTEX: {
         type = GL_VERTEX_SHADER;
-    case ShaderCreateInfo::Type::TESSELLATION_CONTROL:
+        break;
+    }
+    case ShaderCreateInfo::Type::TESSELLATION_CONTROL: {
         type = GL_TESS_CONTROL_SHADER;
-    case ShaderCreateInfo::Type::TESSELLATION_EVALUATION:
+        break;
+    }
+    case ShaderCreateInfo::Type::TESSELLATION_EVALUATION: {
         type = GL_TESS_EVALUATION_SHADER;
-    case ShaderCreateInfo::Type::GEOMETRY:
+        break;
+    }
+    case ShaderCreateInfo::Type::GEOMETRY: {
         type = GL_GEOMETRY_SHADER;
-    case ShaderCreateInfo::Type::FRAGMENT:
+        break;
+    }
+    case ShaderCreateInfo::Type::FRAGMENT: {
         type = GL_FRAGMENT_SHADER;
-    case ShaderCreateInfo::Type::COMPUTE:
+        break;
+    }
+    case ShaderCreateInfo::Type::COMPUTE: {
         type = GL_COMPUTE_SHADER;
+        break;
+    }
     default:
         std::cout << "ERROR: OPENGL: Unknown Shader Type." << std::endl;
     }
     GLuint shader = glCreateShader(type);
 
-    const char *shaderSource = shaderCI.source.data();
-    glShaderSource(shader, 1, &shaderSource, nullptr);
+    glShaderSource(shader, 1, &shaderCI.sourceData, nullptr);
+    glCompileShader(shader);
 
     GLint isCompiled = 0;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
@@ -603,8 +616,11 @@ void *GraphicsAPI_OpenGL::CreateShader(const ShaderCreateInfo &shaderCI) {
 
         std::vector<GLchar> infoLog(maxLength);
         glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+        std::cout << infoLog.data() << std::endl;
+        DEBUG_BREAK;
 
         glDeleteShader(shader);
+        shader = 0;
     }
 
     return (void *)(uint64_t)shader;
@@ -624,7 +640,7 @@ void *GraphicsAPI_OpenGL::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
 
     glLinkProgram(program);
 
-    PFNGLVALIDATEPROGRAMPROC glValidateProgram = (PFNGLVALIDATEPROGRAMPROC)GetExtension("glValidateProgram"); // 2.0+
+    PFNGLVALIDATEPROGRAMPROC glValidateProgram = (PFNGLVALIDATEPROGRAMPROC)GetExtension("glValidateProgram");  // 2.0+
     glValidateProgram(program);
 
     GLint isLinked = 0;
@@ -639,7 +655,7 @@ void *GraphicsAPI_OpenGL::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
         glDeleteProgram(program);
     }
 
-    PFNGLDETACHSHADERPROC glDetachShader = (PFNGLDETACHSHADERPROC)GetExtension("glDetachShader"); // 2.0+
+    PFNGLDETACHSHADERPROC glDetachShader = (PFNGLDETACHSHADERPROC)GetExtension("glDetachShader");  // 2.0+
     for (const void *const &shader : pipelineCI.shaders)
         glDetachShader(program, (GLuint)(uint64_t)shader);
 
@@ -657,12 +673,13 @@ void GraphicsAPI_OpenGL::DestroyPipeline(void *&pipeline) {
 
 void GraphicsAPI_OpenGL::BeginRendering() {
     glGenVertexArrays(1, &vertexArray);
-    glBindVertexArray(vertexArray);
+    
 }
 
 void GraphicsAPI_OpenGL::EndRendering() {
     glBindVertexArray(0);
     glDeleteVertexArrays(1, &vertexArray);
+    vertexArray = 0;
 }
 
 void GraphicsAPI_OpenGL::ClearColor(void *image, float r, float g, float b, float a) {
@@ -727,12 +744,15 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
     default:
     case PolygonMode::FILL: {
         polygonOffsetMode = GL_POLYGON_OFFSET_FILL;
+        break;
     }
     case PolygonMode::LINE: {
         polygonOffsetMode = GL_POLYGON_OFFSET_LINE;
+        break;
     }
     case PolygonMode::POINT: {
         polygonOffsetMode = GL_POLYGON_OFFSET_POINT;
+        break;
     }
     }
     if (RS.depthBiasEnable) {
@@ -756,7 +776,7 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
 
     if (MS.sampleShadingEnable) {
         glEnable(GL_SAMPLE_SHADING);
-        PFNGLMINSAMPLESHADINGPROC glMinSampleShading = (PFNGLMINSAMPLESHADINGPROC)GetExtension("glMinSampleShading"); // 4.0+
+        PFNGLMINSAMPLESHADINGPROC glMinSampleShading = (PFNGLMINSAMPLESHADINGPROC)GetExtension("glMinSampleShading");  // 4.0+
         glMinSampleShading(MS.minSampleShading);
     } else {
         glDisable(GL_SAMPLE_SHADING);
@@ -764,7 +784,7 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
 
     if (MS.sampleMask > 0) {
         glEnable(GL_SAMPLE_MASK);
-        PFNGLSAMPLEMASKIPROC glSampleMaski = (PFNGLSAMPLEMASKIPROC)GetExtension("glSampleMaski"); // 3.2+
+        PFNGLSAMPLEMASKIPROC glSampleMaski = (PFNGLSAMPLEMASKIPROC)GetExtension("glSampleMaski");  // 3.2+
         glSampleMaski(0, MS.sampleMask);
     } else {
         glDisable(GL_SAMPLE_MASK);
@@ -794,7 +814,7 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
 
     glDepthFunc(ToGLCompareOp(DSS.depthCompareOp));
 
-    PFNGLDEPTHBOUNDSEXTPROC glDepthBoundsEXT = (PFNGLDEPTHBOUNDSEXTPROC)GetExtension("glDepthBoundsEXT"); // EXT
+    PFNGLDEPTHBOUNDSEXTPROC glDepthBoundsEXT = (PFNGLDEPTHBOUNDSEXTPROC)GetExtension("glDepthBoundsEXT");  // EXT
     if (glDepthBoundsEXT) {
         if (DSS.depthBoundsTestEnable) {
             glEnable(GL_DEPTH_BOUNDS_TEST_EXT);
@@ -810,9 +830,9 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
         glDisable(GL_STENCIL_TEST);
     }
 
-    PFNGLSTENCILOPSEPARATEPROC glStencilOpSeparate = (PFNGLSTENCILOPSEPARATEPROC)GetExtension("glStencilOpSeparate"); // 2.0+
-    PFNGLSTENCILFUNCSEPARATEPROC glStencilFuncSeparate = (PFNGLSTENCILFUNCSEPARATEPROC)GetExtension("glStencilFuncSeparate"); // 2.0+
-    PFNGLSTENCILMASKSEPARATEPROC glStencilMaskSeparate = (PFNGLSTENCILMASKSEPARATEPROC)GetExtension("glStencilMaskSeparate"); // 2.0+
+    PFNGLSTENCILOPSEPARATEPROC glStencilOpSeparate = (PFNGLSTENCILOPSEPARATEPROC)GetExtension("glStencilOpSeparate");          // 2.0+
+    PFNGLSTENCILFUNCSEPARATEPROC glStencilFuncSeparate = (PFNGLSTENCILFUNCSEPARATEPROC)GetExtension("glStencilFuncSeparate");  // 2.0+
+    PFNGLSTENCILMASKSEPARATEPROC glStencilMaskSeparate = (PFNGLSTENCILMASKSEPARATEPROC)GetExtension("glStencilMaskSeparate");  // 2.0+
 
     glStencilOpSeparate(GL_FRONT,
                         ToGLStencilCompareOp(DSS.front.failOp),
@@ -847,11 +867,11 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
     for (int i = 0; i < (int)CBS.attachments.size(); i++) {
         const ColourBlendAttachmentState &CBA = CBS.attachments[i];
 
-        PFNGLENABLEIPROC glEnablei = (PFNGLENABLEIPROC)GetExtension("glEnablei"); // 3.0+
-        PFNGLDISABLEIPROC glDisablei = (PFNGLDISABLEIPROC)GetExtension("glDisablei"); // 3.0+
-        PFNGLBLENDEQUATIONSEPARATEIPROC glBlendEquationSeparatei = (PFNGLBLENDEQUATIONSEPARATEIPROC)GetExtension("glBlendEquationSeparatei"); // 4.0+
-        PFNGLBLENDFUNCSEPARATEIPROC glBlendFuncSeparatei = (PFNGLBLENDFUNCSEPARATEIPROC)GetExtension("glBlendFuncSeparatei"); // 4.0+
-        PFNGLCOLORMASKIPROC glColorMaski = (PFNGLCOLORMASKIPROC)GetExtension("glColorMaski"); // 3.0+
+        PFNGLENABLEIPROC glEnablei = (PFNGLENABLEIPROC)GetExtension("glEnablei");                                                              // 3.0+
+        PFNGLDISABLEIPROC glDisablei = (PFNGLDISABLEIPROC)GetExtension("glDisablei");                                                          // 3.0+
+        PFNGLBLENDEQUATIONSEPARATEIPROC glBlendEquationSeparatei = (PFNGLBLENDEQUATIONSEPARATEIPROC)GetExtension("glBlendEquationSeparatei");  // 4.0+
+        PFNGLBLENDFUNCSEPARATEIPROC glBlendFuncSeparatei = (PFNGLBLENDFUNCSEPARATEIPROC)GetExtension("glBlendFuncSeparatei");                  // 4.0+
+        PFNGLCOLORMASKIPROC glColorMaski = (PFNGLCOLORMASKIPROC)GetExtension("glColorMaski");                                                  // 3.0+
 
         if (CBA.blendEnable) {
             glEnablei(GL_BLEND, i);
@@ -878,14 +898,9 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
 
 void GraphicsAPI_OpenGL::SetDescriptor(const DescriptorInfo &descriptorInfo) {
     GLuint glResource = (GLuint)(uint64_t)descriptorInfo.resource;
-    GLuint bindingIndex = ~0;
-    GLint uniformLocation = glGetUniformLocation(setPipeline, descriptorInfo.name.c_str());
-    PFNGLGETUNIFORMUIVPROC glGetUniformuiv = (PFNGLGETUNIFORMUIVPROC)GetExtension("glGetUniformuiv"); // 3.0+
-    glGetUniformuiv(setPipeline, uniformLocation, &bindingIndex);
-
+    const GLuint &bindingIndex = descriptorInfo.bindingIndex;
     if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
         glBindBufferBase(GL_UNIFORM_BUFFER, bindingIndex, glResource);
-
     } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
         glActiveTexture(GL_TEXTURE0 + bindingIndex);
         glBindTexture(GetGLTextureTarget(images[glResource]), glResource);
@@ -898,12 +913,14 @@ void GraphicsAPI_OpenGL::SetDescriptor(const DescriptorInfo &descriptorInfo) {
 }
 
 void GraphicsAPI_OpenGL::SetVertexBuffers(void **vertexBuffers, size_t count) {
+    glBindVertexArray(vertexArray);
+
     const VertexInputState &vertexInputState = pipelines[setPipeline].vertexInputState;
     for (size_t i = 0; i < count; i++) {
         GLuint glVertexBufferID = (GLuint)(uint64_t)vertexBuffers[i];
         if (buffers[glVertexBufferID].type != BufferCreateInfo::Type::VERTEX) {
             std::cout << "ERROR: OpenGL: Provided buffer is not type: VERTEX." << std::endl;
-        }            
+        }
 
         glBindBuffer(GL_ARRAY_BUFFER, (GLuint)(uint64_t)vertexBuffers[i]);
 
@@ -936,13 +953,13 @@ void GraphicsAPI_OpenGL::SetIndexBuffer(void *indexBuffer) {
 }
 
 void GraphicsAPI_OpenGL::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) {
-    PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC glDrawElementsInstancedBaseVertexBaseInstance = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC)GetExtension("glDrawElementsInstancedBaseVertexBaseInstance"); // 4.2+
-    GLenum indexType = buffers[setIndexBuffer].indexBufferUint16 ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT;
+    PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC glDrawElementsInstancedBaseVertexBaseInstance = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC)GetExtension("glDrawElementsInstancedBaseVertexBaseInstance");  // 4.2+
+    GLenum indexType = buffers[setIndexBuffer].indexBufferUint16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
     glDrawElementsInstancedBaseVertexBaseInstance(ToGLTopology(pipelines[setPipeline].inputAssemblyState.topology), indexCount, indexType, nullptr, instanceCount, vertexOffset, firstInstance);
 }
 
 void GraphicsAPI_OpenGL::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {
-    PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC glDrawArraysInstancedBaseInstance = (PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC)GetExtension("glDrawArraysInstancedBaseInstance"); // 4.2+
+    PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC glDrawArraysInstancedBaseInstance = (PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC)GetExtension("glDrawArraysInstancedBaseInstance");  // 4.2+
     glDrawArraysInstancedBaseInstance(ToGLTopology(pipelines[setPipeline].inputAssemblyState.topology), firstVertex, vertexCount, instanceCount, firstInstance);
 }
 

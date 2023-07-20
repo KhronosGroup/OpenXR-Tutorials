@@ -1,14 +1,14 @@
 // Simul Software Ltd 2023
 // OpenXR Tutorial for Khronos Group
 
+#include "DebugOutput.h"
 #include "GraphicsAPIs.h"
 #include "OpenXRDebugUtils.h"
-#include "DebugOutput.h"
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_1
 
 #ifndef _MSC_VER
-#define strcpy_s(d, n, s) (strncpy(d,s,n));
+#define strcpy_s(d, n, s) (strncpy(d, s, n));
 #endif
 
 class OpenXRTutorialChapter4 {
@@ -30,50 +30,52 @@ public:
         GetSystemID();
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_4_1
-		CreateActionSet();
+        CreateActionSet();
 #endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
-		GetViewConfigurationViews();
+        GetViewConfigurationViews();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         GetEnvirmentBlendModes();
 #endif
-       
+
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
-		CreateSession();
-		
-#if XR_DOCS_CHAPTER_VERSION>= XR_DOCS_CHAPTER_4_1
-		CreateActionPoses();
-		AttachActionSet();
+        CreateSession();
+        CreateResources();
+
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_4_1
+        CreateActionPoses();
+        AttachActionSet();
 #endif
-		
+
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
-		CreateReferenceSpace();
+        CreateReferenceSpace();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
-		CreateSwapchain();
+        CreateSwapchain();
 #endif
 #endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
-		while (applicationRunning) {
-		    PollSystemEvents();
-		    PollEvents();
-		    if (sessionRunning) {
-		        RenderFrame();
-		    }
-		}
+        while (applicationRunning) {
+            PollSystemEvents();
+            PollEvents();
+            if (sessionRunning) {
+                RenderFrame();
+            }
+        }
 #endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
-		DestroySwapchain();
+        DestroySwapchain();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
-		DestroyReferenceSpace();
+        DestroyReferenceSpace();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
-		DestroySession();
+        DestroyResources();
+        DestroySession();
 #endif
 
         DestroyDebugMessenger();
@@ -82,24 +84,19 @@ public:
 
 private:
     void CreateInstance() {
-        // XR_DOCS_TAG_BEGIN_XrApplicationInfo
         XrApplicationInfo AI;
         strcpy(AI.applicationName, "OpenXR Tutorial Chapter 4");
         AI.applicationVersion = 1;
         strcpy(AI.engineName, "OpenXR Engine");
         AI.engineVersion = 1;
         AI.apiVersion = XR_CURRENT_API_VERSION;
-        // XR_DOCS_TAG_END_XrApplicationInfo
 
         // Add additional instance layers/extensions
         {
-            // XR_DOCS_TAG_BEGIN_instanceExtensions
             instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
             instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(apiType));
-            // XR_DOCS_TAG_END_instanceExtensions
         }
 
-        // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
         uint32_t apiLayerCount = 0;
         std::vector<XrApiLayerProperties> apiLayerProperties;
         OPENXR_CHECK(xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr), "Failed to enumerate ApiLayerProperties.");
@@ -133,9 +130,7 @@ private:
                 }
             }
         }
-        // XR_DOCS_TAG_END_find_apiLayer_extension
 
-        // XR_DOCS_TAG_BEGIN_XrInstanceCreateInfo
         XrInstanceCreateInfo instanceCI{XR_TYPE_INSTANCE_CREATE_INFO};
         instanceCI.createFlags = 0;
         instanceCI.applicationInfo = AI;
@@ -144,14 +139,12 @@ private:
         instanceCI.enabledExtensionCount = static_cast<uint32_t>(activeInstanceExtensions.size());
         instanceCI.enabledExtensionNames = activeInstanceExtensions.data();
         OPENXR_CHECK(xrCreateInstance(&instanceCI, &xrInstance), "Failed to create Instance.");
-        // XR_DOCS_TAG_END_XrInstanceCreateInfo
     }
 
     void DestroyInstance() {
         OPENXR_CHECK(xrDestroyInstance(xrInstance), "Failed to destroy Instance.");
     }
 
-    // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
         if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(xrInstance);
@@ -162,7 +155,6 @@ private:
             DestroyOpenXRDebugUtilsMessenger(xrInstance, debugUtilsMessenger);
         }
     }
-    // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
     void GetInstanceProperties() {
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
@@ -182,96 +174,83 @@ private:
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(xrInstance, systemID, &systemProperties), "Failed to get SystemProperties.");
     }
-	
-	struct InteractionProfileBinding
-	{
-		XrAction action;
-		const char *complete_path=nullptr;
-	};
 
-	struct InteractionProfile
-	{
-		XrPath profilePath;
-		std::vector<XrActionSuggestedBinding> xrActionSuggestedBindings;
-		void Init(XrInstance &xrInstance,const char *pr,std::initializer_list<InteractionProfileBinding> bindings)
-		{
-			OPENXR_CHECK(xrStringToPath(xrInstance, pr, &profilePath),"Failed to create path from string.");
-			xrActionSuggestedBindings.reserve(bindings.size());
-			for (auto elem : bindings)
-			{
-				XrPath actionPath;
-				OPENXR_CHECK(xrStringToPath(xrInstance, elem.complete_path, &actionPath),"Failed to create path from string.");
-				xrActionSuggestedBindings.push_back( {elem.action, actionPath});
-			}
-		}
-	};
-	XrAction xrActionSelect;
-	XrAction xrActionClick;
-	XrAction xrActionLeftGripPose;
-	XrAction xrActionRightHaptic;
-	
-	XrSpace xrSpaceLeftGripPose;
+    struct InteractionProfileBinding {
+        XrAction action;
+        const char *complete_path = nullptr;
+    };
 
-	void CreateActionSet() {
-		XrActionSetCreateInfo actionset_info = { XR_TYPE_ACTION_SET_CREATE_INFO };
-		strcpy_s(actionset_info.actionSetName, XR_MAX_ACTION_SET_NAME_SIZE, "openxr-tutorial-actionset");
-		strcpy_s(actionset_info.localizedActionSetName, XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE, "OpenXR Tutorial ActionSet");
-		OPENXR_CHECK(xrCreateActionSet(xrInstance, &actionset_info, &actionSet),"xrCreateActionSet");
-		// Now we create our actions:
-		
-		auto CreateAction = [this](XrAction &xrAction,const char *name,XrActionType xrActionType) {
-			XrActionCreateInfo action_info = { XR_TYPE_ACTION_CREATE_INFO };
-			action_info.actionType = xrActionType;
-			strcpy_s(action_info.actionName, XR_MAX_ACTION_NAME_SIZE, name);
-			strcpy_s(action_info.localizedActionName, XR_MAX_LOCALIZED_ACTION_NAME_SIZE, name);
-			OPENXR_CHECK(xrCreateAction(actionSet, &action_info, &xrAction),"Failed to create xrAction.");
-		};
-		CreateAction(xrActionSelect,"select",XR_ACTION_TYPE_BOOLEAN_INPUT);
-		CreateAction(xrActionClick,"click",XR_ACTION_TYPE_BOOLEAN_INPUT);
-		CreateAction(xrActionLeftGripPose,"left-grip",XR_ACTION_TYPE_POSE_INPUT);
-		CreateAction(xrActionRightHaptic,"right-haptic",XR_ACTION_TYPE_VIBRATION_OUTPUT);
-		InteractionProfile khrSimpleIP;
-		khrSimpleIP.Init(xrInstance
-				,"/interaction_profiles/khr/simple_controller"
-				,{
-					{xrActionSelect				,"/user/hand/left/input/select/click"}
-					,{xrActionClick				,"/user/hand/right/input/select/click"}
-					,{xrActionLeftGripPose		,"/user/hand/left/input/grip/pose"}
-					,{xrActionRightHaptic		,"/user/hand/right/output/haptic"}
-				
-				});
-			//The application can call xrSuggestInteractionProfileBindings once per interaction profile that it supports.
-		XrInteractionProfileSuggestedBinding suggested_binds = { XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING };
-		suggested_binds.interactionProfile = khrSimpleIP.profilePath;
-		suggested_binds.suggestedBindings = khrSimpleIP.xrActionSuggestedBindings.data();
-		suggested_binds.countSuggestedBindings = (uint32_t)khrSimpleIP.xrActionSuggestedBindings.size();
-		OPENXR_CHECK(xrSuggestInteractionProfileBindings(xrInstance, &suggested_binds),"xrSuggestInteractionProfileBindings failed.");
-	}
-	void CreateActionPoses()
-	{
-		// Create an xrSpace for a pose action.
-		auto CreateActionPoseSpace = [this](XrSession session,XrAction xrAction) ->XrSpace {
-			// Create frame of reference for a pose action
-			XrActionSpaceCreateInfo action_space_info = { XR_TYPE_ACTION_SPACE_CREATE_INFO };
-			action_space_info.action			= xrAction;
-			
-			const XrPosef xr_pose_identity = { {0,0,0,1.0f}, {0,0,0} };
-			action_space_info.poseInActionSpace	= xr_pose_identity;
-			XrSpace xrSpace;
-			OPENXR_CHECK(xrCreateActionSpace(session, &action_space_info, &xrSpace),"Failed to create Action Space.");
-			return xrSpace;
-		};
-		xrSpaceLeftGripPose=CreateActionPoseSpace(session,xrActionLeftGripPose);
-	}
-	void AttachActionSet()
-	{
+    struct InteractionProfile {
+        XrPath profilePath;
+        std::vector<XrActionSuggestedBinding> xrActionSuggestedBindings;
+        void Init(XrInstance &xrInstance, const char *pr, std::initializer_list<InteractionProfileBinding> bindings) {
+            OPENXR_CHECK(xrStringToPath(xrInstance, pr, &profilePath), "Failed to create path from string.");
+            xrActionSuggestedBindings.reserve(bindings.size());
+            for (auto elem : bindings) {
+                XrPath actionPath;
+                OPENXR_CHECK(xrStringToPath(xrInstance, elem.complete_path, &actionPath), "Failed to create path from string.");
+                xrActionSuggestedBindings.push_back({elem.action, actionPath});
+            }
+        }
+    };
+    XrAction xrActionSelect;
+    XrAction xrActionClick;
+    XrAction xrActionLeftGripPose;
+    XrAction xrActionRightHaptic;
 
-		// Attach the action set we just made to the session. We could attach multiple action sets!
-		XrSessionActionSetsAttachInfo attach_info = { XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO };
-		attach_info.countActionSets = 1;
-		attach_info.actionSets = &actionSet;
-		OPENXR_CHECK(xrAttachSessionActionSets( session, &attach_info),"Failed to attach ActionSet to Session.");
-	}
+    XrSpace xrSpaceLeftGripPose;
+
+    void CreateActionSet() {
+        XrActionSetCreateInfo actionset_info = {XR_TYPE_ACTION_SET_CREATE_INFO};
+        strcpy_s(actionset_info.actionSetName, XR_MAX_ACTION_SET_NAME_SIZE, "openxr-tutorial-actionset");
+        strcpy_s(actionset_info.localizedActionSetName, XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE, "OpenXR Tutorial ActionSet");
+        OPENXR_CHECK(xrCreateActionSet(xrInstance, &actionset_info, &actionSet), "xrCreateActionSet");
+        // Now we create our actions:
+
+        auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType) {
+            XrActionCreateInfo action_info = {XR_TYPE_ACTION_CREATE_INFO};
+            action_info.actionType = xrActionType;
+            strcpy_s(action_info.actionName, XR_MAX_ACTION_NAME_SIZE, name);
+            strcpy_s(action_info.localizedActionName, XR_MAX_LOCALIZED_ACTION_NAME_SIZE, name);
+            OPENXR_CHECK(xrCreateAction(actionSet, &action_info, &xrAction), "Failed to create xrAction.");
+        };
+        CreateAction(xrActionSelect, "select", XR_ACTION_TYPE_BOOLEAN_INPUT);
+        CreateAction(xrActionClick, "click", XR_ACTION_TYPE_BOOLEAN_INPUT);
+        CreateAction(xrActionLeftGripPose, "left-grip", XR_ACTION_TYPE_POSE_INPUT);
+        CreateAction(xrActionRightHaptic, "right-haptic", XR_ACTION_TYPE_VIBRATION_OUTPUT);
+        InteractionProfile khrSimpleIP;
+        khrSimpleIP.Init(xrInstance, "/interaction_profiles/khr/simple_controller", {{xrActionSelect, "/user/hand/left/input/select/click"}, {xrActionClick, "/user/hand/right/input/select/click"}, {xrActionLeftGripPose, "/user/hand/left/input/grip/pose"}, {xrActionRightHaptic, "/user/hand/right/output/haptic"}
+
+                                                                                    });
+        // The application can call xrSuggestInteractionProfileBindings once per interaction profile that it supports.
+        XrInteractionProfileSuggestedBinding suggested_binds = {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+        suggested_binds.interactionProfile = khrSimpleIP.profilePath;
+        suggested_binds.suggestedBindings = khrSimpleIP.xrActionSuggestedBindings.data();
+        suggested_binds.countSuggestedBindings = (uint32_t)khrSimpleIP.xrActionSuggestedBindings.size();
+        OPENXR_CHECK(xrSuggestInteractionProfileBindings(xrInstance, &suggested_binds), "xrSuggestInteractionProfileBindings failed.");
+    }
+    void CreateActionPoses() {
+        // Create an xrSpace for a pose action.
+        auto CreateActionPoseSpace = [this](XrSession session, XrAction xrAction) -> XrSpace {
+            // Create frame of reference for a pose action
+            XrActionSpaceCreateInfo action_space_info = {XR_TYPE_ACTION_SPACE_CREATE_INFO};
+            action_space_info.action = xrAction;
+
+            const XrPosef xr_pose_identity = {{0, 0, 0, 1.0f}, {0, 0, 0}};
+            action_space_info.poseInActionSpace = xr_pose_identity;
+            XrSpace xrSpace;
+            OPENXR_CHECK(xrCreateActionSpace(session, &action_space_info, &xrSpace), "Failed to create Action Space.");
+            return xrSpace;
+        };
+        xrSpaceLeftGripPose = CreateActionPoseSpace(session, xrActionLeftGripPose);
+    }
+    void AttachActionSet() {
+        // Attach the action set we just made to the session. We could attach multiple action sets!
+        XrSessionActionSetsAttachInfo attach_info = {XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
+        attach_info.countActionSets = 1;
+        attach_info.actionSets = &actionSet;
+        OPENXR_CHECK(xrAttachSessionActionSets(session, &attach_info), "Failed to attach ActionSet to Session.");
+    }
     void GetEnvirmentBlendModes() {
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate ViewConfigurationViews.");
@@ -322,6 +301,80 @@ private:
 
     void DestroySession() {
         OPENXR_CHECK(xrDestroySession(session), "Failed to destroy Session.");
+    }
+
+    void CreateResources() {
+        float vertices[24] =
+            {
+                -0.5f, -0.5f, 0.0f, 1.0f,
+                +0.5f, -0.5f, 0.0f, 1.0f,
+                +0.5f, +0.5f, 0.0f, 1.0f,
+                -0.5f, +0.5f, 0.0f, 1.0f};
+        vertexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(vertices), vertices, false});
+
+        uint32_t indices[6] =
+            {
+                0, 1, 2, 2, 3, 0};
+        indexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(indices), indices, false});
+
+        float colour[4] =
+            {
+                1.0f, 0.0f, 0.0f, 1.0f};
+        uniformBuffer_Frag = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, sizeof(colour), colour, false});
+
+        std::string vertexSource =
+R"(
+#version 450
+
+//Color Vertex Shader
+
+layout(location = 0) in vec4 a_Positions;
+
+void main()
+{
+	gl_Position = a_Positions;
+}
+)";
+        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+        std::string fragmentSource = 
+R"(
+#version 450
+
+//Texture Fragment Shader
+
+layout(location = 0) out vec4 o_Color;
+
+layout(std140, binding = 0) uniform Data
+{
+	vec4 color;
+} d_Data;
+
+void main()
+{
+	o_Color = vec4(1.0, 1.0, 1.0, 1.0);//d_Data.color;
+}
+)";
+        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+
+        GraphicsAPI::PipelineCreateInfo pipelineCI;
+        pipelineCI.shaders = {vertexShader, fragmentShader};
+        pipelineCI.vertexInputState.attributes = {{0, 0, GraphicsAPI::VertexType::VEC4, 0, ""}};
+        pipelineCI.vertexInputState.bindings = {{0, 0, 4 * sizeof(float)}};
+        pipelineCI.inputAssemblyState = {GraphicsAPI::PrimitiveTopology::TRIANGLE_LIST, false};
+        pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
+        pipelineCI.multisampleState = {1, false, 1.0f, 0, false, false};
+        pipelineCI.depthStencilState = {false, false, GraphicsAPI::CompareOp::GREATER, false, false, {}, {}, 0.0f, 1.0f};
+        pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
+        pipeline = graphicsAPI->CreatePipeline(pipelineCI);
+    }
+    void DestroyResources() {
+        graphicsAPI->DestroyPipeline(pipeline);
+        graphicsAPI->DestroyShader(fragmentShader);
+        graphicsAPI->DestroyShader(vertexShader);
+        graphicsAPI->DestroyBuffer(uniformBuffer_Frag);
+        graphicsAPI->DestroyBuffer(indexBuffer);
+        graphicsAPI->DestroyBuffer(vertexBuffer);
     }
 
     void PollEvents() {
@@ -385,11 +438,11 @@ private:
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
-        OPENXR_CHECK(xrCreateReferenceSpace(session, &referenceSpaceCI, &local_or_stage_space), "Failed to create ReferenceSpace.");
+        OPENXR_CHECK(xrCreateReferenceSpace(session, &referenceSpaceCI, &localOrStageSpace), "Failed to create ReferenceSpace.");
     }
 
     void DestroyReferenceSpace() {
-        OPENXR_CHECK(xrDestroySpace(local_or_stage_space), "Failed to destroy Space.")
+        OPENXR_CHECK(xrDestroySpace(localOrStageSpace), "Failed to destroy Space.")
     }
 
     void CreateSwapchain() {
@@ -528,7 +581,7 @@ private:
         XrViewLocateInfo viewLocateInfo = {XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = viewConfiguration;
         viewLocateInfo.displayTime = predictedDisplayTime;
-        viewLocateInfo.space = local_or_stage_space;
+        viewLocateInfo.space = localOrStageSpace;
         uint32_t viewCount = 0;
         XrResult result = xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint32_t>(views.size()), &viewCount, views.data());
         if (result != XR_SUCCESS) {
@@ -561,13 +614,19 @@ private:
             graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
             graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
 
+            graphicsAPI->SetPipeline(pipeline);
+            graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+            graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
+            graphicsAPI->SetIndexBuffer(indexBuffer);
+            graphicsAPI->DrawIndexed(6);
+
             graphicsAPI->EndRendering();
 
             XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
             OPENXR_CHECK(xrReleaseSwapchainImage(swapchainAndDepthImages[i].swapchain, &releaseInfo), "Failed to release Image back to the Swapchian");
         };
         layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
-        layerProjection.space = local_or_stage_space;
+        layerProjection.space = localOrStageSpace;
         layerProjection.viewCount = static_cast<uint32_t>(layerProjectionViews.size());
         layerProjection.views = layerProjectionViews.data();
 
@@ -675,22 +734,28 @@ private:
         void *depthImage = nullptr;
 
         std::vector<void *> colorImageViews;
-        void *depthImageView;
+        void *depthImageView = nullptr;
     };
     std::vector<SwapchainAndDepthImage> swapchainAndDepthImages;
 
     std::vector<XrEnvironmentBlendMode> environmentBlendModes{};
 
-    XrSpace local_or_stage_space{};
+    XrSpace localOrStageSpace{};
 
-	
-	XrActionSet	actionSet;
+    XrActionSet actionSet;
+
+    void *vertexBuffer;
+    void *indexBuffer;
+    void *uniformBuffer_Frag;
+
+    void *vertexShader, *fragmentShader;
+    void *pipeline;
 };
 
 void OpenXRTutorial_Main() {
-	DebugOutput debugOutput;
+    DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 3." << std::endl;
-    OpenXRTutorialChapter4 app(VULKAN);
+    OpenXRTutorialChapter4 app(OPENGL);
     app.Run();
 }
 
