@@ -372,6 +372,27 @@ public:
         } type;
     };
 
+    struct Viewport {
+        float x;
+        float y;
+        float width;
+        float height;
+        float minDepth;
+        float maxDepth;
+    };
+    struct Offset2D {
+        int32_t x;
+        int32_t y;
+    };
+    struct Extent2D {
+        uint32_t width;
+        uint32_t height;
+    };
+    struct Rect2D {
+        Offset2D offset;
+        Extent2D extent;
+    };
+
 public:
     virtual ~GraphicsAPI() = default;
 
@@ -414,6 +435,8 @@ public:
 
     // TODO: Make pure virtual
     virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView) {}
+    virtual void SetViewports(Viewport* viewports, size_t count) {}
+    virtual void SetScissors(Rect2D* scissors, size_t count) {}
 
     // TODO: Make pure virtual
     virtual void SetPipeline(void* pipeline) {}

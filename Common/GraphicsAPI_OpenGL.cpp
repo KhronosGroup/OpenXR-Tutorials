@@ -755,6 +755,28 @@ void GraphicsAPI_OpenGL::SetRenderAttachments(void **colorViews, size_t colorVie
     }
 }
 
+void GraphicsAPI_OpenGL::SetViewports(Viewport *viewports, size_t count) {
+
+    PFNGLVIEWPORTINDEXEDFPROC glViewportIndexedf = (PFNGLVIEWPORTINDEXEDFPROC)GetExtension("glViewportIndexedf"); // 4.1+
+    PFNGLDEPTHRANGEINDEXEDPROC glDepthRangeIndexed = (PFNGLDEPTHRANGEINDEXEDPROC)GetExtension("glDepthRangeIndexed");  // 4.1+
+
+    for (size_t i = 0; i < count; i++) {
+        Viewport viewport = viewports[i];
+        glViewportIndexedf((GLuint)i, viewport.x, viewport.y, viewport.width, viewport.height);
+        glDepthRangeIndexed((GLuint)i, (GLdouble)viewport.minDepth, (GLdouble)viewport.maxDepth);
+    }
+}
+
+void GraphicsAPI_OpenGL::SetScissors(Rect2D *scissors, size_t count) {
+
+    PFNGLSCISSORINDEXEDPROC glScissorIndexed = (PFNGLSCISSORINDEXEDPROC)GetExtension("glScissorIndexed"); // 4.1+
+
+    for (size_t i = 0; i < count; i++) {
+        Rect2D scissor = scissors[i];
+        glScissorIndexed((GLuint)i, (GLint)scissor.offset.x, (GLint)scissor.offset.y, (GLsizei)scissor.extent.width, (GLsizei)scissor.extent.height);
+    }
+}
+
 void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
     GLuint program = (GLuint)(uint64_t)pipeline;
     glUseProgram(program);

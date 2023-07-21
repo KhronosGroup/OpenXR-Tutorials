@@ -722,6 +722,17 @@ void GraphicsAPI_OpenGL_ES::SetRenderAttachments(void **colorViews, size_t color
     }
 }
 
+void GraphicsAPI_OpenGL_ES::SetViewports(Viewport *viewports, size_t count) {
+    Viewport viewport = viewports[0];
+    glViewport((GLint)viewport.x, (GLint)viewport.y, (GLsizei)viewport.width, (GLsizei)viewport.height);
+    glDepthRangef(viewport.minDepth, viewport.maxDepth);
+}
+
+void GraphicsAPI_OpenGL_ES::SetScissors(Rect2D *scissors, size_t count) {
+    Rect2D scissor = scissors[0];
+    glScissor((GLint)scissor.offset.x, (GLint)scissor.offset.y, (GLsizei)scissor.extent.width, (GLsizei)scissor.extent.height);
+}
+
 void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
     GLuint program = (GLuint)(uint64_t)pipeline;
     glUseProgram(program);

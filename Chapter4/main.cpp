@@ -310,52 +310,86 @@ private:
                 +0.5f, -0.5f, 0.0f, 1.0f,
                 +0.5f, +0.5f, 0.0f, 1.0f,
                 -0.5f, +0.5f, 0.0f, 1.0f};
-        vertexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float)*4, sizeof(vertices), vertices, false});
+        vertexBuffer = graphicsAPI->CreateBuffer(
+            {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(vertices),
+             vertices, false});
 
         uint32_t indices[6] =
             {
                 0, 1, 2, 2, 3, 0};
-        indexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t),sizeof(indices), indices, false});
+        indexBuffer = graphicsAPI->CreateBuffer(
+            {GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(indices),
+             indices, false});
 
         float colour[4] =
             {
                 1.0f, 0.0f, 0.0f, 1.0f};
-        uniformBuffer_Frag = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM,0, sizeof(colour), colour, false});
+        uniformBuffer_Frag = graphicsAPI->CreateBuffer(
+            {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colour), colour, false});
 
-        std::string vertexSource =
-R"(
-#version 450
+        if (apiType == OPENGL) {
+            std::string vertexSource = R"(
+                #version 450
+                
+                //Color Vertex Shader
+                
+                layout(location = 0) in vec4 a_Positions;
+                
+                void main()
+                {
+                	gl_Position = a_Positions;
+                })";
+            vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-//Color Vertex Shader
+            std::string fragmentSource = R"(
+                #version 450
+                
+                //Texture Fragment Shader
+                
+                layout(location = 0) out vec4 o_Color;
+                
+                layout(std140, binding = 0) uniform Data
+                {
+                	vec4 color;
+                } d_Data;
+                
+                void main()
+                {
+                	o_Color = d_Data.color;
+                })";
+            fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        } else if (apiType == OPENGL_ES) {
+            std::string vertexSource = R"(
+                #version 310 es
+                
+                //Color Vertex Shader
+                
+                layout(location = 0) in highp vec4 a_Positions;
+                
+                void main()
+                {
+                	gl_Position = a_Positions;
+                })";
+            vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-layout(location = 0) in vec4 a_Positions;
-
-void main()
-{
-	gl_Position = a_Positions;
-}
-)";
-        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
-
-        std::string fragmentSource = 
-R"(
-#version 450
-
-//Texture Fragment Shader
-
-layout(location = 0) out vec4 o_Color;
-
-layout(std140, binding = 0) uniform Data
-{
-	vec4 color;
-} d_Data;
-
-void main()
-{
-	o_Color = d_Data.color;
-}
-)";
-        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+            std::string fragmentSource = R"(
+                #version 310 es
+                
+                //Color Fragment Shader
+                
+                layout(location = 0) out highp vec4 o_Color;
+                
+                layout(std140, binding = 0) uniform Data
+                {
+                	highp vec4 color;
+                } d_Data;
+                
+                void main()
+                {
+                	o_Color = d_Data.color;
+                })";
+            fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        }
 
         GraphicsAPI::PipelineCreateInfo pipelineCI;
         pipelineCI.shaders = {vertexShader, fragmentShader};
@@ -599,14 +633,19 @@ void main()
             waitInfo.timeout = XR_INFINITE_DURATION;
             OPENXR_CHECK(xrWaitSwapchainImage(swapchainAndDepthImages[i].swapchain, &waitInfo), "Failed to wait for Image from the Swapchian");
 
+            const uint32_t &width = viewConfigurationViews[i].recommendedImageRectWidth;
+            const uint32_t &height = viewConfigurationViews[i].recommendedImageRectHeight;
+            GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
+            GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
+
             layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
             layerProjectionViews[i].pose = views[i].pose;
             layerProjectionViews[i].fov = views[i].fov;
             layerProjectionViews[i].subImage.swapchain = swapchainAndDepthImages[i].swapchain;
             layerProjectionViews[i].subImage.imageRect.offset.x = 0;
             layerProjectionViews[i].subImage.imageRect.offset.y = 0;
-            layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(viewConfigurationViews[i].recommendedImageRectWidth);
-            layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(viewConfigurationViews[i].recommendedImageRectHeight);
+            layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
+            layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
             layerProjectionViews[i].subImage.imageArrayIndex = 0;
 
             graphicsAPI->BeginRendering();
@@ -615,6 +654,8 @@ void main()
             graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
 
             graphicsAPI->SetRenderAttachments(&swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, swapchainAndDepthImages[i].depthImageView);
+            graphicsAPI->SetViewports(&viewport, 1);
+            graphicsAPI->SetScissors(&scissor, 1);
 
             graphicsAPI->SetPipeline(pipeline);
             graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
@@ -778,9 +819,9 @@ void android_main(struct android_app *app) {
     JNIEnv *env;
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
-    XrInstance xrInstance = {}; // Dummy XrInstance variable for OPENXR_CHECK macro.
+    XrInstance xrInstance = {};  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
-    OPENXR_CHECK1(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR),"Failed to get InstanceProcAddr.");
+    OPENXR_CHECK1(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
     if (!xrInitializeLoaderKHR) {
         return;
     }

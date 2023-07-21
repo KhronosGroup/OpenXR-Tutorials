@@ -39,6 +39,8 @@ public:
     virtual void ClearDepth(void* imageView, float d) override;
 
     virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView) override;
+    virtual void SetViewports(Viewport* viewports, size_t count) override;
+    virtual void SetScissors(Rect2D* scissors, size_t count) override;
 
     virtual void SetPipeline(void* pipeline) override;
     virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) override;
