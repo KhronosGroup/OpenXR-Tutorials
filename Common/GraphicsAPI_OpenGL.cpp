@@ -363,7 +363,7 @@ GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance xrInstance, XrSystemId systemI
     ksGpuSurfaceDepthFormat depthFormat{KS_GPU_SURFACE_DEPTH_FORMAT_D24};
     ksGpuSampleCount sampleCount{KS_GPU_SAMPLE_COUNT_1};
     if (!ksGpuWindow_Create(&window, &driverInstance, &queueInfo, 0, colorFormat, depthFormat, sampleCount, 640, 480, false)) {
-        std::cout << "ERROR: OPENGL: Failed to create Context." << std::endl;
+        std::cerr << "ERROR: OPENGL: Failed to create Context." << std::endl;
     }
 
     GLint glMajorVersion = 0;
@@ -372,8 +372,10 @@ GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance xrInstance, XrSystemId systemI
     glGetIntegerv(GL_MINOR_VERSION, &glMinorVersion);
 
     const XrVersion glApiVersion = XR_MAKE_VERSION(glMajorVersion, glMinorVersion, 0);
-    if (graphicsRequirements.minApiVersionSupported >= glApiVersion) {
-        std::cout << "ERROR: OPENGL: The created OpenGL version doesn't meet the minimum requried API version for OpenXR." << std::endl;
+    if (graphicsRequirements.minApiVersionSupported > glApiVersion) {
+		int requiredMajorVersion=XR_VERSION_MAJOR(graphicsRequirements.minApiVersionSupported);
+		int requiredMinorVersion=XR_VERSION_MINOR(graphicsRequirements.minApiVersionSupported);
+        std::cerr << "ERROR: OPENGL: The created OpenGL version "<<glMajorVersion<<"."<<glMinorVersion<<" doesn't meet the minimum requried API version "<<requiredMajorVersion<<"."<<requiredMinorVersion<<" for OpenXR." << std::endl;
     }
 
     glEnable(GL_DEBUG_OUTPUT);

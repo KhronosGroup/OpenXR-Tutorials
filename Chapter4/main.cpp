@@ -310,17 +310,17 @@ private:
                 +0.5f, -0.5f, 0.0f, 1.0f,
                 +0.5f, +0.5f, 0.0f, 1.0f,
                 -0.5f, +0.5f, 0.0f, 1.0f};
-        vertexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(vertices), vertices, false});
+        vertexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float)*4, sizeof(vertices), vertices, false});
 
         uint32_t indices[6] =
             {
                 0, 1, 2, 2, 3, 0};
-        indexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(indices), indices, false});
+        indexBuffer = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t),sizeof(indices), indices, false});
 
         float colour[4] =
             {
                 1.0f, 0.0f, 0.0f, 1.0f};
-        uniformBuffer_Frag = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, sizeof(colour), colour, false});
+        uniformBuffer_Frag = graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM,0, sizeof(colour), colour, false});
 
         std::string vertexSource =
 R"(
@@ -780,7 +780,7 @@ void android_main(struct android_app *app) {
 
     XrInstance xrInstance = {}; // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
-    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK1(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR),"Failed to get InstanceProcAddr.");
     if (!xrInitializeLoaderKHR) {
         return;
     }
@@ -788,7 +788,7 @@ void android_main(struct android_app *app) {
     XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid{XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
     loaderInitializeInfoAndroid.applicationVM = app->activity->vm;
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
-    OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
+    OPENXR_CHECK1(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
 
     app->userData = &OpenXRTutorialChapter4::androidAppState;
     app->onAppCmd = OpenXRTutorialChapter4::AndroidAppHandleCmd;

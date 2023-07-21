@@ -302,6 +302,170 @@ void GraphicsAPI_D3D11::DestroyImageView(void *&imageView) {
     imageView = nullptr;
 }
 
+static D3D11_TEXTURE_ADDRESS_MODE toD3d11TextureAddressMode(GraphicsAPI::SamplerCreateInfo::AddressMode f)
+{
+	if(f==GraphicsAPI::SamplerCreateInfo::AddressMode::CLAMP_TO_BORDER)
+	if(f==GraphicsAPI::SamplerCreateInfo::AddressMode::CLAMP_TO_EDGE)
+		return D3D11_TEXTURE_ADDRESS_CLAMP;
+	if(f==GraphicsAPI::SamplerCreateInfo::AddressMode::REPEAT)
+		return D3D11_TEXTURE_ADDRESS_WRAP;
+	if(f==GraphicsAPI::SamplerCreateInfo::AddressMode::MIRROR_CLAMP_TO_EDGE)
+	if(f==GraphicsAPI::SamplerCreateInfo::AddressMode::MIRRORED_REPEAT)
+		return D3D11_TEXTURE_ADDRESS_MIRROR;
+	return D3D11_TEXTURE_ADDRESS_WRAP;
+}
+
+static D3D11_FILTER toD3d11Filter(GraphicsAPI::SamplerCreateInfo::Filter f)
+{
+	if(f==GraphicsAPI::SamplerCreateInfo::Filter::LINEAR)
+		return D3D11_FILTER_ANISOTROPIC;
+	return D3D11_FILTER_MIN_MAG_MIP_POINT;
+}
+
+D3D11_COMPARISON_FUNC toD3dComparison(GraphicsAPI::CompareOp d)
+{
+	switch(d)
+	{
+	case GraphicsAPI::CompareOp::ALWAYS:
+		return D3D11_COMPARISON_ALWAYS;
+	case GraphicsAPI::CompareOp::LESS:
+		return D3D11_COMPARISON_LESS;
+	case GraphicsAPI::CompareOp::EQUAL:
+		return D3D11_COMPARISON_EQUAL;
+	case GraphicsAPI::CompareOp::LESS_OR_EQUAL:
+		return D3D11_COMPARISON_LESS_EQUAL;
+	case GraphicsAPI::CompareOp::GREATER:
+		return D3D11_COMPARISON_GREATER;
+	case GraphicsAPI::CompareOp::NOT_EQUAL:
+		return D3D11_COMPARISON_NOT_EQUAL;
+	case GraphicsAPI::CompareOp::GREATER_OR_EQUAL:
+		return D3D11_COMPARISON_GREATER_EQUAL;
+	default:
+		break;
+	};
+	return D3D11_COMPARISON_LESS;
+}
+
+void* GraphicsAPI_D3D11::CreateSampler(const SamplerCreateInfo& samplerCI)
+{	
+	D3D11_SAMPLER_DESC samplerDesc;
+	
+    ZeroMemory( &samplerDesc, sizeof( D3D11_SAMPLER_DESC ) );
+    samplerDesc.Filter = toD3d11Filter (samplerCI.minFilter) ;
+    samplerDesc.AddressU = toD3d11TextureAddressMode(samplerCI.addressModeR);
+    samplerDesc.AddressV = toD3d11TextureAddressMode(samplerCI.addressModeS);
+    samplerDesc.AddressW = toD3d11TextureAddressMode(samplerCI.addressModeT);
+    samplerDesc.ComparisonFunc = toD3dComparison(samplerCI.compareOp);
+    samplerDesc.MaxAnisotropy = 16;
+    samplerDesc.MinLOD = 0;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	
+	ID3D11SamplerState *d3D11SamplerState=nullptr;
+	device->CreateSamplerState(&samplerDesc,&d3D11SamplerState);
+	return d3D11SamplerState;
+	
+}
+
+void GraphicsAPI_D3D11::DestroySampler(void*& sampler) 
+{
+	ID3D11SamplerState *d3D11SamplerState=reinterpret_cast<ID3D11SamplerState *>(sampler);
+	D3D11_SAFE_RELEASE(d3D11SamplerState);
+	sampler=nullptr;
+}
+D3D11_BIND_FLAG ToD3D11BindFlag(GraphicsAPI::BufferCreateInfo::Type t)
+{
+	switch(t)
+	{
+	case GraphicsAPI::BufferCreateInfo::Type::VERTEX:
+	return D3D11_BIND_VERTEX_BUFFER;
+	case GraphicsAPI::BufferCreateInfo::Type::INDEX:
+	return D3D11_BIND_INDEX_BUFFER;
+	case GraphicsAPI::BufferCreateInfo::Type::UNIFORM:
+	default:
+	return D3D11_BIND_CONSTANT_BUFFER;
+	};
+}
+
+void* GraphicsAPI_D3D11::CreateBuffer(const BufferCreateInfo& bufferCI) 
+{
+    D3D11_SUBRESOURCE_DATA InitData;
+    memset( &InitData,0,sizeof(D3D11_SUBRESOURCE_DATA) );
+    InitData.pSysMem		=bufferCI.data;
+	InitData.SysMemPitch	=bufferCI.stride;
+	InitData.SysMemSlicePitch	= 0;
+	bool cpu_access=(bufferCI.type==GraphicsAPI::BufferCreateInfo::Type::UNIFORM);
+	D3D11_BUFFER_DESC desc=
+	{
+		(unsigned)(bufferCI.size)
+		,cpu_access?D3D11_USAGE_DYNAMIC:D3D11_USAGE_DEFAULT
+		,ToD3D11BindFlag(bufferCI.type)
+		,(cpu_access?D3D11_CPU_ACCESS_WRITE: (unsigned)0),(unsigned)0
+	};
+	ID3D11Buffer *d3D11Buffer=nullptr;
+	device->CreateBuffer(&desc,bufferCI.data?&InitData:NULL,&d3D11Buffer);
+	return d3D11Buffer;
+}
+
+void GraphicsAPI_D3D11::DestroyBuffer(void*& buffer) 
+{
+	ID3D11SamplerState *d3D11Buffer=reinterpret_cast<ID3D11SamplerState *>(buffer);
+	D3D11_SAFE_RELEASE(d3D11Buffer);
+}
+
+void* GraphicsAPI_D3D11::CreateShader(const ShaderCreateInfo& shaderCI) 
+{
+    switch (shaderCI.type) {
+    case ShaderCreateInfo::Type::VERTEX: {
+		ID3D11VertexShader* vertexShader = nullptr;
+		device->CreateVertexShader(shaderCI.sourceData, shaderCI.sourceSize, NULL, &vertexShader);
+		return vertexShader;
+        break;
+    }
+    case ShaderCreateInfo::Type::FRAGMENT: {
+		ID3D11PixelShader* pixelShader=nullptr;
+		device->CreatePixelShader(shaderCI.sourceData, shaderCI.sourceSize, NULL, &pixelShader);
+		return pixelShader;
+        break;
+    }
+    case ShaderCreateInfo::Type::COMPUTE: {
+		ID3D11ComputeShader* computeShader= nullptr;
+		device->CreateComputeShader(shaderCI.sourceData, shaderCI.sourceSize, NULL, &computeShader);
+		return computeShader;
+        break;
+    }
+    default:
+        std::cout << "ERROR:  Unknown Shader Type." << std::endl;
+		return nullptr;
+    }
+}
+
+void GraphicsAPI_D3D11::DestroyShader(void*& shader) 
+{
+	ID3D11DeviceChild *d3d11DeviceChild=reinterpret_cast<ID3D11DeviceChild*>(shader);
+	D3D11_SAFE_RELEASE(d3d11DeviceChild);
+	shader=nullptr;
+}
+
+void* GraphicsAPI_D3D11::CreatePipeline(const PipelineCreateInfo& pipelineCI) 
+{
+	return nullptr;
+}
+
+void GraphicsAPI_D3D11::DestroyPipeline(void*& pipeline) 
+{
+
+}
+
+
+void GraphicsAPI_D3D11::BeginRendering()
+{
+}
+
+void GraphicsAPI_D3D11::EndRendering()
+{
+}
+
+
 void GraphicsAPI_D3D11::ClearColor(void *imageView, float r, float g, float b, float a) {
     const FLOAT clearColor[4] = {r, g, b, a};
     immediateContext->ClearRenderTargetView((ID3D11RenderTargetView *)imageView, clearColor);
@@ -310,6 +474,37 @@ void GraphicsAPI_D3D11::ClearColor(void *imageView, float r, float g, float b, f
 void GraphicsAPI_D3D11::ClearDepth(void *imageView, float d) {
     immediateContext->ClearDepthStencilView((ID3D11DepthStencilView *)imageView, D3D11_CLEAR_DEPTH, d, 0);
 }
+
+void GraphicsAPI_D3D11::SetPipeline(void* pipeline) 
+{
+
+}
+
+void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo& descriptorInfo) 
+{
+
+}
+
+void GraphicsAPI_D3D11::SetVertexBuffers(void** vertexBuffers, size_t count) 
+{
+
+}
+
+void GraphicsAPI_D3D11::SetIndexBuffer(void* indexBuffer) 
+{
+
+}
+
+void GraphicsAPI_D3D11::DrawIndexed(uint32_t indexCount, uint32_t instanceCount , uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) 
+{
+
+}
+
+void GraphicsAPI_D3D11::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) 
+{
+
+}
+
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedSwapchainFormats() {
