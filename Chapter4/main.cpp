@@ -336,7 +336,7 @@ private:
         uniformBuffer_Vert = graphicsAPI->CreateBuffer(
             {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants, false});
 
-        if (apiType == OPENGL) {
+        if (apiType == OPENGL || apiType == VULKAN) {
             std::string vertexSource = R"(
                 #version 450
                 //Color Vertex Shader
@@ -348,7 +348,7 @@ private:
                 layout(location = 0) in vec4 a_Positions;
                 void main()
                 {
-                	gl_Position = a_Positions;
+                    gl_Position = a_Positions;
                 })";
             vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
@@ -362,7 +362,7 @@ private:
                 } d_Data;
                 void main()
                 {
-                	o_Color = d_Data.color;
+                    o_Color = d_Data.color;
                 })";
             fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         } else if (apiType == OPENGL_ES) {
@@ -395,7 +395,50 @@ private:
                 	o_Color = d_Data.color;
                 })";
             fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        } else if (apiType == D3D11  || apiType == D3D12) {
+            std::string vertexSource = R"(
+                //Color Vertex Shader
+                
+                struct VS_IN
+                {
+                    float4 a_Positions : TEXCOORD0;
+                };
+                
+                struct VS_OUT
+                {
+                    float4 o_Position : SV_Position;
+                };
+                
+                VS_OUT main(VS_IN IN)
+                {
+                    VS_OUT OUT;
+                    OUT.o_Position = IN.a_Positions;
+                    return OUT;
+                })";
+            vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+            std::string fragmentSource = R"(
+                //Color Fragment Shader
+                
+                struct PS_OUT
+                {
+                    float4 o_Color : SV_Target0;
+                };
+                
+                cbuffer Data : register(b0, space0)
+                {
+                    float4 d_Data_color;
+                };
+                
+                PS_OUT main()
+                {
+                    PS_OUT OUT;
+                    OUT.o_Color = d_Data_color;
+                    return OUT;
+                })";
+            fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         }
+
 
         GraphicsAPI::PipelineCreateInfo pipelineCI;
         pipelineCI.shaders = {vertexShader, fragmentShader};
@@ -700,6 +743,12 @@ private:
             layerProjectionViews[i].subImage.imageArrayIndex = 0;
 
             graphicsAPI->BeginRendering();
+
+            static float colour[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+            colour[1] += 0.005f;
+            if (colour[1] > 1.0f)
+                colour[1] = 0.0f;
+            graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colour), colour);
 
             graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
             graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);

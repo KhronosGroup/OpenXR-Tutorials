@@ -34,11 +34,13 @@
 // Graphic APIs headers
 #if defined(XR_USE_GRAPHICS_API_D3D11)
 #include <d3d11.h>
+#include <d3dcompiler.h>
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_D3D12)
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#include <d3dcompiler.h>
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
@@ -429,6 +431,9 @@ public:
 
     virtual void BeginRendering(){};
     virtual void EndRendering(){};
+
+    // TODO: Make pure virtual
+    virtual void SetBufferData(void* buffer, size_t offset, size_t size, void* data) {}
 
     virtual void ClearColor(void* imageView, float r, float g, float b, float a) = 0;
     virtual void ClearDepth(void* imageView, float d) = 0;

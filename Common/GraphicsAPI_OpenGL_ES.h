@@ -35,6 +35,8 @@ public:
     virtual void BeginRendering() override;
     virtual void EndRendering() override;
 
+    virtual void SetBufferData(void* buffer, size_t offset, size_t size, void* data) override;
+
     virtual void ClearColor(void* imageView, float r, float g, float b, float a) override;
     virtual void ClearDepth(void* imageView, float d) override;
 
