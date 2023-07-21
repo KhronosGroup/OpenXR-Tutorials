@@ -372,6 +372,14 @@ public:
             IMAGE,
             SAMPLER
         } type;
+        enum class Stage : uint8_t {
+            VERTEX,
+            TESSELLATION_CONTROL,
+            TESSELLATION_EVALUATION,
+            GEOMETRY,
+            FRAGMENT,
+            COMPUTE
+        } stage;
     };
 
     struct Viewport {

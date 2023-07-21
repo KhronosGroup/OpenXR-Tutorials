@@ -419,7 +419,7 @@ private:
                     float4 o_Color : SV_Target0;
                 };
                 
-                cbuffer Data : register(b0, space0)
+                cbuffer Data : register(b0)
                 {
                     float4 d_Data_color;
                 };
@@ -436,7 +436,7 @@ private:
 
         GraphicsAPI::PipelineCreateInfo pipelineCI;
         pipelineCI.shaders = {vertexShader, fragmentShader};
-        pipelineCI.vertexInputState.attributes = {{0, 0, GraphicsAPI::VertexType::VEC4, 0, ""}};
+        pipelineCI.vertexInputState.attributes = {{0, 0, GraphicsAPI::VertexType::VEC4, 0, "TEXCOORD"}};
         pipelineCI.vertexInputState.bindings = {{0, 0, 4 * sizeof(float)}};
         pipelineCI.inputAssemblyState = {GraphicsAPI::PrimitiveTopology::TRIANGLE_LIST, false};
         pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
@@ -707,7 +707,7 @@ private:
             graphicsAPI->SetScissors(&scissor, 1);
 
             graphicsAPI->SetPipeline(pipeline);
-            graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+            graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
             graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
             graphicsAPI->SetIndexBuffer(indexBuffer);
             graphicsAPI->DrawIndexed(6);

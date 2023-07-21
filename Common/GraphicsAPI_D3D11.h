@@ -35,8 +35,14 @@ public:
     virtual void BeginRendering();
     virtual void EndRendering();
 
+    virtual void SetBufferData(void* buffer, size_t offset, size_t size, void* data) override;
+
     virtual void ClearColor(void* image, float r, float g, float b, float a) override;
     virtual void ClearDepth(void* image, float d) override;
+
+    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView) override;
+    virtual void SetViewports(Viewport* viewports, size_t count) override;
+    virtual void SetScissors(Rect2D* scissors, size_t count) override;
 
     virtual void SetPipeline(void* pipeline) override;
     virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) override;
@@ -57,5 +63,11 @@ private:
     XrGraphicsBindingD3D11KHR graphicsBinding{};
 
     std::vector<XrSwapchainImageD3D11KHR> swapchainImages{};
+
+    std::unordered_map<ID3D11Buffer*, BufferCreateInfo> buffers;
+
+    std::unordered_map<ID3D11DeviceChild*, ID3DBlob*> shaderCompiledBinaries;
+    std::unordered_map<UINT64, PipelineCreateInfo> pipelines;
+    UINT64 setPipeline = 0;
 };
 #endif
