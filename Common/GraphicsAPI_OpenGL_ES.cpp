@@ -675,6 +675,27 @@ void GraphicsAPI_OpenGL_ES::ClearDepth(void *imageView, float d) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void GraphicsAPI_OpenGL_ES::SetBufferData(void *buffer, size_t offset, size_t size, void *data) {
+    GLuint glBuffer = (GLuint)(uint64_t)buffer;
+    const BufferCreateInfo &bufferCI = buffers[glBuffer];
+
+    GLenum target = 0;
+    if (bufferCI.type == BufferCreateInfo::Type::VERTEX) {
+        target = GL_ARRAY_BUFFER;
+    } else if (bufferCI.type == BufferCreateInfo::Type::INDEX) {
+        target = GL_ELEMENT_ARRAY_BUFFER;
+    } else if (bufferCI.type == BufferCreateInfo::Type::UNIFORM) {
+        target = GL_UNIFORM_BUFFER;
+    } else {
+        DEBUG_BREAK;
+        std::cout << "ERROR: OPENGL: Unknown Buffer Type." << std::endl;
+    }
+
+    glBindBuffer(target, glBuffer);
+    glBufferSubData(target, (GLintptr)offset, (GLsizeiptr)size, data);
+    glBindBuffer(target, 0);
+}
+
 void GraphicsAPI_OpenGL_ES::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView) {
     // Reset Framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
