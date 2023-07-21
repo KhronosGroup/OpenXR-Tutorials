@@ -195,10 +195,14 @@ private:
     };
     XrAction xrActionSelect;
     XrAction xrActionClick;
-    XrAction xrActionLeftGripPose;
     XrAction xrActionRightHaptic;
-
+	
+	// The action for getting the left grip pose.
+    XrAction xrActionLeftGripPose;
+	// The space that represents the left grip pose.
     XrSpace xrSpaceLeftGripPose;
+	// The current left grip pose obtained from the XrSpace.
+	XrPosef xrPosefLeftGripPose;
 
     void CreateActionSet() {
         XrActionSetCreateInfo actionset_info = {XR_TYPE_ACTION_SET_CREATE_INFO};
@@ -235,7 +239,6 @@ private:
             // Create frame of reference for a pose action
             XrActionSpaceCreateInfo action_space_info = {XR_TYPE_ACTION_SPACE_CREATE_INFO};
             action_space_info.action = xrAction;
-
             const XrPosef xr_pose_identity = {{0, 0, 0, 1.0f}, {0, 0, 0}};
             action_space_info.poseInActionSpace = xr_pose_identity;
             XrSpace xrSpace;
@@ -302,7 +305,13 @@ private:
     void DestroySession() {
         OPENXR_CHECK(xrDestroySession(session), "Failed to destroy Session.");
     }
-
+	
+	struct CameraConstants
+	{
+		float worldViewProj[16];
+		float world[16];
+	};
+	CameraConstants cameraConstants;
     void CreateResources() {
         float vertices[24] =
             {
@@ -314,27 +323,29 @@ private:
             {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(vertices),
              vertices, false});
 
-        uint32_t indices[6] =
-            {
-                0, 1, 2, 2, 3, 0};
+        uint32_t indices[6] ={ 0, 1, 2, 2, 3, 0};
         indexBuffer = graphicsAPI->CreateBuffer(
             {GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(indices),
              indices, false});
 
-        float colour[4] =
-            {
-                1.0f, 0.0f, 0.0f, 1.0f};
+        float colour[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+
         uniformBuffer_Frag = graphicsAPI->CreateBuffer(
             {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colour), colour, false});
+			
+        uniformBuffer_Vert = graphicsAPI->CreateBuffer(
+            {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants, false});
 
         if (apiType == OPENGL) {
             std::string vertexSource = R"(
                 #version 450
-                
                 //Color Vertex Shader
-                
+				layout(std140, binding = 1) uniform CameraConstants
+				{
+					mat4 worldViewProj;
+					mat4 world;
+				};
                 layout(location = 0) in vec4 a_Positions;
-                
                 void main()
                 {
                 	gl_Position = a_Positions;
@@ -343,16 +354,12 @@ private:
 
             std::string fragmentSource = R"(
                 #version 450
-                
                 //Texture Fragment Shader
-                
                 layout(location = 0) out vec4 o_Color;
-                
                 layout(std140, binding = 0) uniform Data
                 {
                 	vec4 color;
                 } d_Data;
-                
                 void main()
                 {
                 	o_Color = d_Data.color;
@@ -361,11 +368,13 @@ private:
         } else if (apiType == OPENGL_ES) {
             std::string vertexSource = R"(
                 #version 310 es
-                
                 //Color Vertex Shader
-                
+				layout(std140, binding = 1) uniform CameraConstants
+				{
+					mat4 worldViewProj;
+					mat4 world;
+				};
                 layout(location = 0) in highp vec4 a_Positions;
-                
                 void main()
                 {
                 	gl_Position = a_Positions;
@@ -374,11 +383,8 @@ private:
 
             std::string fragmentSource = R"(
                 #version 310 es
-                
                 //Color Fragment Shader
-                
                 layout(location = 0) out highp vec4 o_Color;
-                
                 layout(std140, binding = 0) uniform Data
                 {
                 	highp vec4 color;
@@ -406,6 +412,7 @@ private:
         graphicsAPI->DestroyPipeline(pipeline);
         graphicsAPI->DestroyShader(fragmentShader);
         graphicsAPI->DestroyShader(vertexShader);
+        graphicsAPI->DestroyBuffer(uniformBuffer_Vert);
         graphicsAPI->DestroyBuffer(uniformBuffer_Frag);
         graphicsAPI->DestroyBuffer(indexBuffer);
         graphicsAPI->DestroyBuffer(vertexBuffer);
@@ -467,6 +474,50 @@ private:
 
         } while (result == XR_SUCCESS);
     }
+	
+	void pollActions(XrTime predictedTime)
+	{
+		// Update our action set with up-to-date input data!
+		XrActiveActionSet action_set = { };
+		action_set.actionSet = actionSet;
+		action_set.subactionPath = XR_NULL_PATH;
+
+		XrActionsSyncInfo sync_info = { XR_TYPE_ACTIONS_SYNC_INFO };
+		sync_info.countActiveActionSets = 1;
+		sync_info.activeActionSets = &action_set;
+		xrSyncActions(session, &sync_info);
+
+		//xrAction xrActionSelect;
+		//xrAction xrActionClick;
+		//xrAction xrActionLeftGripPose;
+		//xrAction xrActionRightHaptic;
+		//xrSpace xrSpaceLeftGripPose;
+		XrActionStateGetInfo get_info = { XR_TYPE_ACTION_STATE_GET_INFO };
+		
+		XrActionStatePose pose_state	= { XR_TYPE_ACTION_STATE_POSE };
+		get_info.action					= xrActionLeftGripPose;
+		xrGetActionStatePose(session, &get_info, &pose_state);
+		if(pose_state.isActive)
+		{
+			XrSpaceLocation space_location = { XR_TYPE_SPACE_LOCATION };
+			XrResult		res = xrLocateSpace(xrSpaceLeftGripPose, localOrStageSpace, predictedTime, &space_location);
+			if (XR_UNQUALIFIED_SUCCESS(res) &&
+				(space_location.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
+				(space_location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0)
+			{
+				xrPosefLeftGripPose=space_location.pose;
+			}
+		}
+		XrActionStateBoolean bool_state	= { XR_TYPE_ACTION_STATE_BOOLEAN };
+		get_info.action					= xrActionSelect;
+		xrGetActionStateBoolean(session, &get_info, &bool_state);
+		bool_state.currentState;
+		
+		get_info.action					= xrActionClick;
+		xrGetActionStateBoolean(session, &get_info, &bool_state);
+		bool_state.currentState;
+	}
+
 
     void CreateReferenceSpace() {
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
@@ -659,8 +710,10 @@ private:
 
             graphicsAPI->SetPipeline(pipeline);
             graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+            graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER});
             graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
             graphicsAPI->SetIndexBuffer(indexBuffer);
+
             graphicsAPI->DrawIndexed(6);
 
             graphicsAPI->EndRendering();
@@ -787,12 +840,13 @@ private:
 
     XrActionSet actionSet;
 
-    void *vertexBuffer;
-    void *indexBuffer;
-    void *uniformBuffer_Frag;
+    void *vertexBuffer=nullptr;
+    void *indexBuffer=nullptr;
+    void *uniformBuffer_Vert=nullptr;
+    void *uniformBuffer_Frag=nullptr;
 
-    void *vertexShader, *fragmentShader;
-    void *pipeline;
+    void *vertexShader=nullptr, *fragmentShader=nullptr;
+    void *pipeline=nullptr;
 };
 
 void OpenXRTutorial_Main() {
