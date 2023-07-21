@@ -756,8 +756,8 @@ private:
 
 void OpenXRTutorial_Main() {
     DebugOutput debugOutput;
-    std::cout << "OpenXR Tutorial Chapter 3." << std::endl;
-    OpenXRTutorialChapter4 app(OPENGL);
+    std::cout << "OpenXR Tutorial Chapter 4." << std::endl;
+    OpenXRTutorialChapter4 app(OPENGL_ES);
     app.Run();
 }
 
@@ -778,6 +778,7 @@ void android_main(struct android_app *app) {
     JNIEnv *env;
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
+    XrInstance xrInstance = {}; // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
     OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
     if (!xrInitializeLoaderKHR) {

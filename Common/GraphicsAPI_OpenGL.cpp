@@ -123,11 +123,11 @@ inline GLenum ToGLTopology(GraphicsAPI::PrimitiveTopology topology) {
 inline GLenum ToGLPolygonMode(GraphicsAPI::PolygonMode polygonMode) {
     switch (polygonMode) {
     case GraphicsAPI::PolygonMode::FILL:
-        return GL_BACK;
+        return GL_FILL;
     case GraphicsAPI::PolygonMode::LINE:
-        return GL_FRONT;
+        return GL_LINE;
     case GraphicsAPI::PolygonMode::POINT:
-        return GL_BACK;
+        return GL_POINT;
     default:
         return 0;
     }
@@ -490,8 +490,8 @@ void *GraphicsAPI_OpenGL::CreateImageView(const ImageViewCreateInfo &imageViewCI
         std::cout << "ERROR: OPENGL: Framebuffer is not complete." << std::endl;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    imageViews[framebuffer] = imageViewCI;
 
+    imageViews[framebuffer] = imageViewCI;
     return (void *)(uint64_t)framebuffer;
 }
 
@@ -568,6 +568,7 @@ void *GraphicsAPI_OpenGL::CreateBuffer(const BufferCreateInfo &bufferCI) {
     buffers[buffer] = bufferCI;
     return (void *)(uint64_t)buffer;
 }
+
 void GraphicsAPI_OpenGL::DestroyBuffer(void *&buffer) {
     GLuint glBuffer = (GLuint)(uint64_t)buffer;
     buffers.erase(glBuffer);
@@ -852,10 +853,11 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
         glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
     }
 
-    if (MS.alphaToOneEnable)
+    if (MS.alphaToOneEnable) {
         glEnable(GL_SAMPLE_ALPHA_TO_ONE);
-    else
+    } else {
         glDisable(GL_SAMPLE_ALPHA_TO_ONE);
+    }
 
     // DepthStencilState
     const DepthStencilState &DSS = pipelineCI.depthStencilState;
@@ -997,6 +999,7 @@ void GraphicsAPI_OpenGL::SetVertexBuffers(void **vertexBuffers, size_t count) {
         }
     }
 }
+
 void GraphicsAPI_OpenGL::SetIndexBuffer(void *indexBuffer) {
     GLuint glIndexBufferID = (GLuint)(uint64_t)indexBuffer;
     if (buffers[glIndexBufferID].type != BufferCreateInfo::Type::INDEX) {
