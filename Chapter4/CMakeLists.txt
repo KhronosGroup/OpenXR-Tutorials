@@ -67,6 +67,7 @@ if (ANDROID)
 
     target_include_directories(OpenXRTutorialChapter4 PUBLIC ${openxr_SOURCE_DIR}/src/common)
     target_include_directories(OpenXRTutorialChapter4 PUBLIC ${openxr_SOURCE_DIR}/external/include)
+    target_include_directories(OpenXRTutorialChapter4 PUBLIC ../third_party)
 
     # Final link
     target_link_libraries(OpenXRTutorialChapter4

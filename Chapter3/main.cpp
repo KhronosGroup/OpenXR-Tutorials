@@ -263,26 +263,30 @@ private:
 
         } while (result == XR_SUCCESS);
     }
-
+	
+// XR_DOCS_TAG_BEGIN_CreateReferenceSpace
     void CreateReferenceSpace() {
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
         OPENXR_CHECK(xrCreateReferenceSpace(session, &referenceSpaceCI, &localOrStageSpace), "Failed to create ReferenceSpace.");
     }
+// XR_DOCS_TAG_END_CreateReferenceSpace
 
+// XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
     void DestroyReferenceSpace() {
         OPENXR_CHECK(xrDestroySpace(localOrStageSpace), "Failed to destroy Space.")
     }
+// XR_DOCS_TAG_END_DestroyReferenceSpace
 
-    // XR_DOCS_TAG_BEGIN_CreateDestroySwapchain
+// XR_DOCS_TAG_BEGIN_CreateDestroySwapchain
     void CreateSwapchain() {
-        // XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
+// XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
         uint32_t formatSize = 0;
         OPENXR_CHECK(xrEnumerateSwapchainFormats(session, 0, &formatSize, nullptr), "Failed to enumerate Swapchain Formats");
         std::vector<int64_t> formats(formatSize);
         OPENXR_CHECK(xrEnumerateSwapchainFormats(session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
-        // XR_DOCS_TAG_END_EnumerateSwapchainFormats
+// XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
         // Check the two views for stereo are the same
         if (viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO && viewConfigurationViews.size() == 2) {

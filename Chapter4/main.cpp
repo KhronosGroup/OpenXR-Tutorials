@@ -4,6 +4,9 @@
 #include "DebugOutput.h"
 #include "GraphicsAPIs.h"
 #include "OpenXRDebugUtils.h"
+// XR_DOCS_TAG_BEGIN_include_linear_algebra
+#include "xr_linear_algebra.h"
+// XR_DOCS_TAG_END_include_linear_algebra
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_1
 
@@ -175,35 +178,7 @@ private:
         OPENXR_CHECK(xrGetSystemProperties(xrInstance, systemID, &systemProperties), "Failed to get SystemProperties.");
     }
 
-    struct InteractionProfileBinding {
-        XrAction action;
-        const char *complete_path = nullptr;
-    };
-
-    struct InteractionProfile {
-        XrPath profilePath;
-        std::vector<XrActionSuggestedBinding> xrActionSuggestedBindings;
-        void Init(XrInstance &xrInstance, const char *pr, std::initializer_list<InteractionProfileBinding> bindings) {
-            OPENXR_CHECK(xrStringToPath(xrInstance, pr, &profilePath), "Failed to create path from string.");
-            xrActionSuggestedBindings.reserve(bindings.size());
-            for (auto elem : bindings) {
-                XrPath actionPath;
-                OPENXR_CHECK(xrStringToPath(xrInstance, elem.complete_path, &actionPath), "Failed to create path from string.");
-                xrActionSuggestedBindings.push_back({elem.action, actionPath});
-            }
-        }
-    };
-    XrAction xrActionSelect;
-    XrAction xrActionClick;
-    XrAction xrActionRightHaptic;
-	
-	// The action for getting the left grip pose.
-    XrAction xrActionLeftGripPose;
-	// The space that represents the left grip pose.
-    XrSpace xrSpaceLeftGripPose;
-	// The current left grip pose obtained from the XrSpace.
-	XrPosef xrPosefLeftGripPose;
-
+// XR_DOCS_TAG_BEGIN_CreateActionSet
     void CreateActionSet() {
         XrActionSetCreateInfo actionset_info = {XR_TYPE_ACTION_SET_CREATE_INFO};
         strcpy_s(actionset_info.actionSetName, XR_MAX_ACTION_SET_NAME_SIZE, "openxr-tutorial-actionset");
@@ -219,13 +194,21 @@ private:
             OPENXR_CHECK(xrCreateAction(actionSet, &action_info, &xrAction), "Failed to create xrAction.");
         };
         CreateAction(xrActionSelect, "select", XR_ACTION_TYPE_BOOLEAN_INPUT);
-        CreateAction(xrActionClick, "click", XR_ACTION_TYPE_BOOLEAN_INPUT);
+        CreateAction(xrActionTrigger, "trigger", XR_ACTION_TYPE_FLOAT_INPUT);
         CreateAction(xrActionLeftGripPose, "left-grip", XR_ACTION_TYPE_POSE_INPUT);
         CreateAction(xrActionRightHaptic, "right-haptic", XR_ACTION_TYPE_VIBRATION_OUTPUT);
+	}
+// XR_DOCS_TAG_END_CreateActionSet
+// XR_DOCS_TAG_BEGIN_SuggestBindings
+    void SuggestBindings() {
         InteractionProfile khrSimpleIP;
-        khrSimpleIP.Init(xrInstance, "/interaction_profiles/khr/simple_controller", {{xrActionSelect, "/user/hand/left/input/select/click"}, {xrActionClick, "/user/hand/right/input/select/click"}, {xrActionLeftGripPose, "/user/hand/left/input/grip/pose"}, {xrActionRightHaptic, "/user/hand/right/output/haptic"}
-
-                                                                                    });
+        khrSimpleIP.Init(xrInstance, "/interaction_profiles/khr/simple_controller"
+							,{
+										 {xrActionSelect, "/user/hand/left/input/select/click"}
+										,{xrActionTrigger, "/user/hand/right/input/trigger/value"}
+										,{xrActionLeftGripPose, "/user/hand/left/input/grip/pose"}
+										,{xrActionRightHaptic, "/user/hand/right/output/haptic"}
+								   });
         // The application can call xrSuggestInteractionProfileBindings once per interaction profile that it supports.
         XrInteractionProfileSuggestedBinding suggested_binds = {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
         suggested_binds.interactionProfile = khrSimpleIP.profilePath;
@@ -233,6 +216,8 @@ private:
         suggested_binds.countSuggestedBindings = (uint32_t)khrSimpleIP.xrActionSuggestedBindings.size();
         OPENXR_CHECK(xrSuggestInteractionProfileBindings(xrInstance, &suggested_binds), "xrSuggestInteractionProfileBindings failed.");
     }
+// XR_DOCS_TAG_END_SuggestBindings
+// XR_DOCS_TAG_BEGIN_CreateActionPoses
     void CreateActionPoses() {
         // Create an xrSpace for a pose action.
         auto CreateActionPoseSpace = [this](XrSession session, XrAction xrAction) -> XrSpace {
@@ -247,6 +232,8 @@ private:
         };
         xrSpaceLeftGripPose = CreateActionPoseSpace(session, xrActionLeftGripPose);
     }
+// XR_DOCS_TAG_END_CreateActionPoses
+// XR_DOCS_TAG_BEGIN_AttachActionSet
     void AttachActionSet() {
         // Attach the action set we just made to the session. We could attach multiple action sets!
         XrSessionActionSetsAttachInfo attach_info = {XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
@@ -254,6 +241,7 @@ private:
         attach_info.actionSets = &actionSet;
         OPENXR_CHECK(xrAttachSessionActionSets(session, &attach_info), "Failed to attach ActionSet to Session.");
     }
+// XR_DOCS_TAG_END_AttachActionSet
     void GetEnvirmentBlendModes() {
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate ViewConfigurationViews.");
@@ -308,25 +296,48 @@ private:
 	
 	struct CameraConstants
 	{
-		float worldViewProj[16];
-		float world[16];
+		XrMatrix4x4f worldViewProj;
+		XrMatrix4x4f world;
 	};
 	CameraConstants cameraConstants;
     void CreateResources() {
-        float vertices[24] =
-            {
-                -0.5f, -0.5f, 0.0f, 1.0f,
-                +0.5f, -0.5f, 0.0f, 1.0f,
-                +0.5f, +0.5f, 0.0f, 1.0f,
-                -0.5f, +0.5f, 0.0f, 1.0f};
-        vertexBuffer = graphicsAPI->CreateBuffer(
-            {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(vertices),
-             vertices, false});
+		// Vertices for a 1x1x1 meter cube. (Left/Right, Top/Bottom, Front/Back)
+		constexpr XrVector4f vertexPositions[]={ {-0.5f, -0.5f, -0.5f, 1.f}
+											,{-0.5f, -0.5f,  0.5f, 1.f}
+											,{-0.5f,  0.5f, -0.5f, 1.f}
+											,{-0.5f,  0.5f,  0.5f, 1.f}
+											,{ 0.5f, -0.5f, -0.5f, 1.f}
+											,{ 0.5f, -0.5f,  0.5f, 1.f}
+											,{ 0.5f,  0.5f, -0.5f, 1.f}
+											,{ 0.5f,  0.5f,  0.5f, 1.f}};
 
-        uint32_t indices[6] ={ 0, 1, 2, 2, 3, 0};
+		#define CUBE_SIDE(V1, V2, V3, V4, V5, V6) vertexPositions[V6], vertexPositions[V5], vertexPositions[V4], vertexPositions[V3], vertexPositions[V2], vertexPositions[V1],
+
+		XrVector4f cubeVertices[] = {
+			CUBE_SIDE(2, 1, 0, 2, 3, 1)		// -X
+			CUBE_SIDE(6, 4, 5, 6, 5, 7)     // +X
+			CUBE_SIDE(0, 1, 5, 0, 5, 4)	// -Y
+			CUBE_SIDE(2, 6, 7, 2, 7, 3)    // +Y
+			CUBE_SIDE(0, 4, 6, 0, 6, 2)	// -Z
+			CUBE_SIDE(1, 3, 7, 1, 7, 5)    // +Z
+		};
+
+		// Winding order is clockwise. Each side uses a different color.
+		uint32_t cubeIndices[36] = {
+			0,  1,  2,  3,  4,  5,   // -X
+			6,  7,  8,  9,  10, 11,  // +X
+			12, 13, 14, 15, 16, 17,  // -Y
+			18, 19, 20, 21, 22, 23,  // +Y
+			24, 25, 26, 27, 28, 29,  // -Z
+			30, 31, 32, 33, 34, 35,  // +Z
+		};
+        vertexBuffer = graphicsAPI->CreateBuffer(
+            {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices),
+             &cubeVertices, false});
+
         indexBuffer = graphicsAPI->CreateBuffer(
-            {GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(indices),
-             indices, false});
+            {GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices),
+             &cubeIndices, false});
 
         float colour[4] = {1.0f, 0.0f, 0.0f, 1.0f};
 
@@ -348,7 +359,7 @@ private:
                 layout(location = 0) in vec4 a_Positions;
                 void main()
                 {
-                    gl_Position = a_Positions;
+                    gl_Position = worldViewProj*a_Positions;
                 })";
             vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
@@ -375,15 +386,19 @@ private:
 					mat4 world;
 				};
                 layout(location = 0) in highp vec4 a_Positions;
+                layout(location = 0) out highp vec2 o_TexCoord;
                 void main()
                 {
-                	gl_Position = a_Positions;
+                    gl_Position = worldViewProj*a_Positions;
+                    int face=gl_VertexID/6;
+                    o_TexCoord=vec2(float(face),0);
                 })";
             vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
             std::string fragmentSource = R"(
                 #version 310 es
                 //Color Fragment Shader
+                layout(location = 0) in highp vec2 i_TexCoord;
                 layout(location = 0) out highp vec4 o_Color;
                 layout(std140, binding = 0) uniform Data
                 {
@@ -392,7 +407,16 @@ private:
                 
                 void main()
                 {
+                    highp vec3 colours[6];
+                    colours[0]=vec3(1.0,0,0);
+                    colours[1]=vec3(0.1,0,0);
+                    colours[2]=vec3(0,1.0,0);
+                    colours[3]=vec3(0,0.1,0);
+                    colours[4]=vec3(0,0,1.0);
+                    colours[5]=vec3(0,0,0.1);
+                    int i=int(i_TexCoord.x);
                 	o_Color = d_Data.color;
+                	o_Color.rgb = colours[i];
                 })";
             fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         } else if (apiType == D3D11  || apiType == D3D12) {
@@ -531,7 +555,7 @@ private:
 		xrSyncActions(session, &sync_info);
 
 		//xrAction xrActionSelect;
-		//xrAction xrActionClick;
+		//xrAction xrActionTrigger;
 		//xrAction xrActionLeftGripPose;
 		//xrAction xrActionRightHaptic;
 		//xrSpace xrSpaceLeftGripPose;
@@ -554,24 +578,28 @@ private:
 		XrActionStateBoolean bool_state	= { XR_TYPE_ACTION_STATE_BOOLEAN };
 		get_info.action					= xrActionSelect;
 		xrGetActionStateBoolean(session, &get_info, &bool_state);
-		bool_state.currentState;
+		//bool_state.currentState;
 		
-		get_info.action					= xrActionClick;
-		xrGetActionStateBoolean(session, &get_info, &bool_state);
-		bool_state.currentState;
+		XrActionStateFloat float_state	= { XR_TYPE_ACTION_STATE_FLOAT };
+		get_info.action					= xrActionTrigger;
+		xrGetActionStateFloat(session, &get_info, &float_state);
+		//bool_state.currentState;
 	}
-
-
+	
+// XR_DOCS_TAG_BEGIN_CreateReferenceSpace
     void CreateReferenceSpace() {
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
         OPENXR_CHECK(xrCreateReferenceSpace(session, &referenceSpaceCI, &localOrStageSpace), "Failed to create ReferenceSpace.");
     }
+// XR_DOCS_TAG_END_CreateReferenceSpace
 
+// XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
     void DestroyReferenceSpace() {
         OPENXR_CHECK(xrDestroySpace(localOrStageSpace), "Failed to destroy Space.")
     }
+// XR_DOCS_TAG_END_DestroyReferenceSpace
 
     void CreateSwapchain() {
         uint32_t formatSize = 0;
@@ -682,6 +710,8 @@ private:
 
             bool sessionActive = (sessionState == XR_SESSION_STATE_SYNCHRONIZED || sessionState == XR_SESSION_STATE_VISIBLE || sessionState == XR_SESSION_STATE_FOCUSED);
             if (sessionActive && frameState.shouldRender) {
+                // poll actions here because they require a predicted display time
+                pollActions(frameState.predictedDisplayTime);
                 rendered = RenderLayer(frameState.predictedDisplayTime, layerProjection, layerProjectionViews);
                 if (rendered) {
                     layers[0] = reinterpret_cast<XrCompositionLayerBaseHeader *>(&layerProjection);
@@ -742,6 +772,24 @@ private:
             layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
             layerProjectionViews[i].subImage.imageArrayIndex = 0;
 
+			
+			// Compute the view-projection transform.
+			// Note all matrixes (including OpenXR's) are column-major, right-handed.
+			const auto& pose = views[i].pose;
+			XrMatrix4x4f proj;
+			XrMatrix4x4f_CreateProjectionFov(&proj,OPENGL_ES, views[i].fov, 0.05f, 100.0f);
+			XrMatrix4x4f toView;
+			XrVector3f scale{1.f, 1.f, 1.f};
+			XrMatrix4x4f_CreateTranslationRotationScale(&toView, &pose.position, &pose.orientation, &scale);
+			XrMatrix4x4f view;
+			XrMatrix4x4f_InvertRigidBody(&view, &toView);
+			XrMatrix4x4f vp;
+			XrMatrix4x4f_Multiply(&vp, &proj, &view);
+			XrMatrix4x4f handModelMatrix;
+            XrVector3f scale10cm{0.1f, 0.1f, 0.1f};
+			XrMatrix4x4f_CreateTranslationRotationScale(&handModelMatrix, &xrPosefLeftGripPose.position, &xrPosefLeftGripPose.orientation, &scale10cm);
+
+			XrMatrix4x4f_Multiply(&cameraConstants.worldViewProj, &vp, &handModelMatrix);
             graphicsAPI->BeginRendering();
 
             static float colour[4] = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -759,11 +807,12 @@ private:
 
             graphicsAPI->SetPipeline(pipeline);
             graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+			graphicsAPI->SetBufferData(uniformBuffer_Vert,0,sizeof(CameraConstants),&cameraConstants);
             graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER});
             graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
             graphicsAPI->SetIndexBuffer(indexBuffer);
 
-            graphicsAPI->DrawIndexed(6);
+            graphicsAPI->DrawIndexed(36);
 
             graphicsAPI->EndRendering();
 
@@ -887,8 +936,6 @@ private:
 
     XrSpace localOrStageSpace{};
 
-    XrActionSet actionSet;
-
     void *vertexBuffer=nullptr;
     void *indexBuffer=nullptr;
     void *uniformBuffer_Vert=nullptr;
@@ -896,6 +943,42 @@ private:
 
     void *vertexShader=nullptr, *fragmentShader=nullptr;
     void *pipeline=nullptr;
+
+// XR_DOCS_TAG_BEGIN_Actions
+    XrActionSet actionSet;
+	// The action for clicking the "select" button.
+    XrAction xrActionSelect;
+	// The action for squeezing the trigger control.
+    XrAction xrActionTrigger;
+	// The action haptic vibration of the right controller.
+    XrAction xrActionRightHaptic;
+	// The action for getting the left grip pose.
+    XrAction xrActionLeftGripPose;
+	// The space that represents the left grip pose.
+    XrSpace xrSpaceLeftGripPose;
+	// The current left grip pose obtained from the XrSpace.
+	XrPosef xrPosefLeftGripPose;
+// XR_DOCS_TAG_END_Actions	
+// XR_DOCS_TAG_BEGIN_InteractionDefinitions
+    struct InteractionProfileBinding {
+        XrAction action;
+        const char *complete_path = nullptr;
+    };
+
+    struct InteractionProfile {
+        XrPath profilePath;
+        std::vector<XrActionSuggestedBinding> xrActionSuggestedBindings;
+        void Init(XrInstance &xrInstance, const char *pr, std::initializer_list<InteractionProfileBinding> bindings) {
+            OPENXR_CHECK(xrStringToPath(xrInstance, pr, &profilePath), "Failed to create path from string.");
+            xrActionSuggestedBindings.reserve(bindings.size());
+            for (auto elem : bindings) {
+                XrPath actionPath;
+                OPENXR_CHECK(xrStringToPath(xrInstance, elem.complete_path, &actionPath), "Failed to create path from string.");
+                xrActionSuggestedBindings.push_back({elem.action, actionPath});
+            }
+        }
+    };
+// XR_DOCS_TAG_END_InteractionDefinitions
 };
 
 void OpenXRTutorial_Main() {
