@@ -137,14 +137,29 @@
 	if (platform == "windows")
 	{
 	$(".windows").show();
+	document.getElementById("selectopengles").disabled = true;
+	document.getElementById("selectd3d11").disabled = false;
+	document.getElementById("selectd3d12").disabled = false;
+	document.getElementById("selectvulkan").disabled = false;
+	document.getElementById("selectopengl").disabled = true;
 	}
 	if (platform == "linux")
 	{
 	$(".linux").show();
+	document.getElementById("selectd3d11").disabled = true;
+	document.getElementById("selectd3d12").disabled = true;
+	document.getElementById("selectopengles").disabled = true;
+	document.getElementById("selectvulkan").disabled = false;
+	document.getElementById("selectopengl").disabled = false;
 	}
 	if (platform == "android")
 	{
 	$(".android").show();
+	document.getElementById("selectd3d11").disabled = true;
+	document.getElementById("selectd3d12").disabled = true;
+	document.getElementById("selectopengles").disabled = false;
+	document.getElementById("selectvulkan").disabled = false;
+	document.getElementById("selectopengl").disabled = true;
 	}
 	var oldelements = document.getElementsByClassName('selected-platform');
 	for (i = 0; i < oldelements.length; ++i)
