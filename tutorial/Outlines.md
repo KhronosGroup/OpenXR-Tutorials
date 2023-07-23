@@ -72,6 +72,10 @@ Explain and show code examples for Multiview/ViewInstancing rendering in all API
 Show calling the Graphics APIs's 'Clear Image/ImageView' function and providing the image back to the swapchain, ending the OpenXR frame for the compositor and runtime to display the image to the screen(s).
 
 # Chapter 4: ACTIONS
+
+NOTE: we've swapped part 4.2 and 4.3, as it makes sense to introduce actions
+before we can speak of binding them.
+
 General description of Actions as a concept in OpenXR.
 
 ## Chapter 4.1 Spaces

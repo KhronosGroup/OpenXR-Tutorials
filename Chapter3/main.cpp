@@ -7,16 +7,20 @@
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_3_2
 
-class OpenXRTutorialChapter3 {
+#ifdef _MSC_VER
+#define strncpy(d, s, n) strcpy_s(d, n, s);
+#endif
+
+class OpenXRTutorial {
 public:
-    OpenXRTutorialChapter3(GraphicsAPI_Type api)
+    OpenXRTutorial(GraphicsAPI_Type api)
         : apiType(api) {
         if (!CheckGraphicsAPI_TypeIsValidForPlatform(apiType)) {
             std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
             DEBUG_BREAK;
         }
     }
-    ~OpenXRTutorialChapter3() = default;
+    ~OpenXRTutorial() = default;
 
     void Run() {
         CreateInstance();
@@ -29,7 +33,7 @@ public:
         GetViewConfigurationViews();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
-        GetEnvirmentBlendModes();
+		GetEnvironmentBlendModes();
 #endif
 
         CreateSession();
@@ -40,6 +44,7 @@ public:
         CreateSwapchain();
 #endif
 
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
         while (applicationRunning) {
             PollSystemEvents();
             PollEvents();
@@ -47,6 +52,7 @@ public:
                 RenderFrame();
             }
         }
+#endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
         DestroySwapchain();
@@ -63,13 +69,13 @@ public:
 private:
     void CreateInstance() {
         XrApplicationInfo AI;
-        strcpy(AI.applicationName, "OpenXR Tutorial Chapter 3");
+		strncpy(AI.applicationName,XR_MAX_APPLICATION_NAME_SIZE, "OpenXR Tutorial Chapter 3");
         AI.applicationVersion = 1;
-        strcpy(AI.engineName, "OpenXR Engine");
+		strncpy(AI.engineName,XR_MAX_ENGINE_NAME_SIZE, "OpenXR Engine");
         AI.engineVersion = 1;
         AI.apiVersion = XR_CURRENT_API_VERSION;
 
-        // Add additional xrInstance layers/extensions
+		// Add additional instance layers/extensions
         {
             instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
             instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(apiType));
@@ -153,7 +159,7 @@ private:
         OPENXR_CHECK(xrGetSystemProperties(xrInstance, systemID, &systemProperties), "Failed to get SystemProperties.");
     }
 
-    void GetEnvirmentBlendModes() {
+    void GetEnvironmentBlendModes() {
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate ViewConfigurationViews.");
         environmentBlendModes.resize(environmentBlendModeSize);
@@ -582,7 +588,7 @@ private:
 void OpenXRTutorial_Main() {
     DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 3." << std::endl;
-    OpenXRTutorialChapter3 app(VULKAN);
+    OpenXRTutorial app(VULKAN);
     app.Run();
 }
 
@@ -593,8 +599,8 @@ int main(int argc, char **argv) {
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
-android_app *OpenXRTutorialChapter3::androidApp = nullptr;
-OpenXRTutorialChapter3::AndroidAppState OpenXRTutorialChapter3::androidAppState = {};
+android_app *OpenXRTutorial::androidApp = nullptr;
+OpenXRTutorial::AndroidAppState OpenXRTutorial::androidAppState = {};
 
 // XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 void android_main(struct android_app *app) {
@@ -603,6 +609,7 @@ void android_main(struct android_app *app) {
     JNIEnv *env;
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
+	XrInstance xrInstance = {};  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
     OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
     if (!xrInitializeLoaderKHR) {
@@ -614,10 +621,10 @@ void android_main(struct android_app *app) {
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
     OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
 
-    app->userData = &OpenXRTutorialChapter3::androidAppState;
-    app->onAppCmd = OpenXRTutorialChapter3::AndroidAppHandleCmd;
+    app->userData = &OpenXRTutorial::androidAppState;
+    app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
-    OpenXRTutorialChapter3::androidApp = app;
+    OpenXRTutorial::androidApp = app;
     OpenXRTutorial_Main();
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__
