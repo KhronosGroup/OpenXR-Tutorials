@@ -1,6 +1,6 @@
 Language: Cpp
 BasedOnStyle:  Google
-UseTab: Never
+UseTab: Always
 IndentWidth: 4
 TabWidth: 4
 AllowShortIfStatementsOnASingleLine: false

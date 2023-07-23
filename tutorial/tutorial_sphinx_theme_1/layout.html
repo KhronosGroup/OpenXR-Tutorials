@@ -126,7 +126,7 @@
 	function updatePlatform()
 	{
 	var platform = Cookies.get("platform");
-	console.log("platform = " + platform);
+	console.log("updatePlatform(), platform = " + platform);
 	if (typeof platform == 'undefined')
 	{
 	platform = "linux";
@@ -169,25 +169,28 @@
 	{
 		var platform = Cookies.get("platform");
 		var graphicsApi = Cookies.get("graphicsapi")
+		console.log("limitAPIChoice(), platform = " + platform+", graphicsApi = "+graphicsApi);
 		window.limitAPIChoice=limitAPIChoice;
 		var newApi=graphicsApi;
 		if (platform == "windows")
 		{
-			if (graphicsApi == "opengles")
+			if (graphicsApi == "opengles"||graphicsApi==undefined)
 				newApi="vulkan";
 		}
 		if (platform == "linux")
 		{
-			if (graphicsApi == "opengles"||graphicsApi=="d3d11"||graphicsApi=="d3d12")
+			if (graphicsApi == "opengles"||graphicsApi=="d3d11"||graphicsApi=="d3d12"||graphicsApi==undefined)
 				newApi="vulkan";
 		}
-		if (platform == "android")
+		if (platform == "android"||graphicsApi==undefined)
 		{
 			if (graphicsApi != "opengles"&&graphicsApi!="vulkan")
 				newApi="vulkan";
 		}
+		console.log("newApi = "+newApi);
 		if (newApi != graphicsApi)
 		{
+			console.log("setting graphicsapi = "+newApi);
 			Cookies.set('graphicsapi', newApi,{ expires: 365})
 			graphicsApi=newApi;
 			updateGraphicsAPI();
