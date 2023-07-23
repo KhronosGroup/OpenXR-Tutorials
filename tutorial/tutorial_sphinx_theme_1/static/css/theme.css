@@ -7613,3 +7613,8 @@ span[id*=MathJax-Span]
 {
 	tab-size: 4;
 }
+
+button:disabled > img
+{
+filter: grayscale(100%);
+}
