@@ -125,7 +125,7 @@
 	<script >
 	function updatePlatform()
 	{
-	var platform = Cookies.get("platform")
+	var platform = Cookies.get("platform");
 	console.log("platform = " + platform);
 	if (typeof platform == 'undefined')
 	{
@@ -161,8 +161,39 @@
 	{
 	element2.classList.add('selected-platform');
 	}
+	limitAPIChoice();
 	window.updatePlatform=updatePlatform;
-	}</script>
+	}
+	
+	function limitAPIChoice()
+	{
+		var platform = Cookies.get("platform");
+		var graphicsApi = Cookies.get("graphicsapi")
+		window.limitAPIChoice=limitAPIChoice;
+		var newApi=graphicsApi;
+		if (platform == "windows")
+		{
+			if (graphicsApi == "opengles")
+				newApi="vulkan";
+		}
+		if (platform == "linux")
+		{
+			if (graphicsApi == "opengles"||graphicsApi=="d3d11"||graphicsApi=="d3d12")
+				newApi="vulkan";
+		}
+		if (platform == "android")
+		{
+			if (graphicsApi != "opengles"&&graphicsApi!="vulkan")
+				newApi="vulkan";
+		}
+		if (newApi != graphicsApi)
+		{
+			Cookies.set('graphicsapi', newApi,{ expires: 365})
+			graphicsApi=newApi;
+			updateGraphicsAPI();
+		}
+	}
+	</script>
 	<script >
 	var platform = Cookies.get("platform")
 	if (platform==undefined) {
