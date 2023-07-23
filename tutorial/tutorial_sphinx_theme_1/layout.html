@@ -125,44 +125,43 @@
 	<script >
 	function updatePlatform()
 	{
-		var platform = Cookies.get("platform")
-		console.log("platform = " + platform);
-		if (typeof platform == 'undefined')
-		platform="linux";
-		if (platform == "windows") {
-			$(".linux").hide();
-			$(".android").hide();
-			$(".windows").show();
-			$(".windows-linux").show();
-		}
-		if (platform == "linux") {
-			$(".linux").show();
-			$(".android").hide();
-			$(".windows").hide();
-			$(".windows-linux").show();
-		}
-		if (platform == "android") {
-			$(".linux").hide();
-			$(".android").show();
-			$(".windows").hide();
-			$(".windows-linux").hide();
-		}
-		var oldelements = document.getElementsByClassName('selected-platform');
-		for (i = 0; i < oldelements.length; ++i)
-		{
-			oldelements[i].classList.remove('selected-platform');
-		}
-		var element = document.getElementById('select' + platform);
-		if(element)
-		{
-			element.classList.add('selected-platform');
-		}
-		var element2 = document.getElementById('select' + platform + "-inline");
-		if(element2)
-		{
-			element2.classList.add('selected-platform');
-		}
-		window.updatePlatform=updatePlatform;
+	var platform = Cookies.get("platform")
+	console.log("platform = " + platform);
+	if (typeof platform == 'undefined')
+	{
+	platform = "linux";
+	}
+	$(".linux").hide();
+	$(".android").hide();
+	$(".windows").hide();
+	if (platform == "windows")
+	{
+	$(".windows").show();
+	}
+	if (platform == "linux")
+	{
+	$(".linux").show();
+	}
+	if (platform == "android")
+	{
+	$(".android").show();
+	}
+	var oldelements = document.getElementsByClassName('selected-platform');
+	for (i = 0; i < oldelements.length; ++i)
+	{
+	oldelements[i].classList.remove('selected-platform');
+	}
+	var element = document.getElementById('select' + platform);
+	if(element)
+	{
+	element.classList.add('selected-platform');
+	}
+	var element2 = document.getElementById('select' + platform + "-inline");
+	if(element2)
+	{
+	element2.classList.add('selected-platform');
+	}
+	window.updatePlatform=updatePlatform;
 	}</script>
 	<script >
 	var platform = Cookies.get("platform")
@@ -178,40 +177,27 @@
 		var graphicsApi = Cookies.get("graphicsapi")
 		console.log("graphicsapi = " + graphicsApi);
 		if (typeof graphicsApi == 'undefined')
-			platform="vulkan";
+			graphicsApi = "vulkan";
+		// first, hide all the api's
+		$(".d3d11").hide();
+		$(".d3d12").hide();
+		$(".opengl").hide();
+		$(".opengles").hide();
+		$(".vulkan").hide();
+		// Now, show the wanted api's. In this way, divs with more than one will be shown, even if they have one that is hidden.
 		if (graphicsApi == "d3d11") {
 			$(".d3d11").show();
-			$(".d3d12").hide();
-			$(".opengl").hide();
-			$(".opengles").hide();
-			$(".vulkan").hide();
 		}
 		if (graphicsApi == "d3d12") {
-			$(".d3d11").hide();
 			$(".d3d12").show();
-			$(".opengl").hide();
-			$(".opengles").hide();
-			$(".vulkan").hide();
 		}
 		if (graphicsApi == "opengl") {
-			$(".d3d11").hide();
-			$(".d3d12").hide();
 			$(".opengl").show();
-			$(".opengles").hide();
-			$(".vulkan").hide();
 		}
 		if (graphicsApi == "opengles") {
-			$(".d3d11").hide();
-			$(".d3d12").hide();
-			$(".opengl").hide();
 			$(".opengles").show();
-			$(".vulkan").hide();
 		}
 		if (graphicsApi == "vulkan") {
-			$(".d3d11").hide();
-			$(".d3d12").hide();
-			$(".opengl").hide();
-			$(".opengles").hide();
 			$(".vulkan").show();
 		}
 		var oldelements = document.getElementsByClassName('selected-graphics-api');
@@ -235,7 +221,7 @@
 	var graphicsApi = Cookies.get("graphicsapi")
 	if (graphicsApi==undefined) {
 		Cookies.set('graphicsapi', 'vulkan',{ expires: 365})
-		platform='vulkan';
+		graphicsApi='vulkan';
 	}
 	</script>
 	<script defer src="{{ pathto('_static/js/updateGraphicsAPI.js', 1) }}"></script>
@@ -245,7 +231,7 @@
 	</style>
 </head>
 
-<body class="wy-body-for-nav" onload="updatePlatform();">
+<body class="wy-body-for-nav" onload="updatePlatform(); updateGraphicsAPI();">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">

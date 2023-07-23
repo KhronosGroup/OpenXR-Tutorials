@@ -1,6 +1,6 @@
-﻿#######
+﻿##########
 ⚙️ 2 Setup
-#######
+##########
 
 Select your platform, as the instructions are different depending on your selection.
 
@@ -33,7 +33,7 @@ Select your platform, as the instructions are different depending on your select
 	Select your *workspace* folder, which is now empty.
 	If you haven't previously done so, install the CMake extension for Visual Studio Code.
 	
-.. container:: windows-linux
+.. container:: windows linux
 	:name: windows-linux-id-1
 
 	.. rubric:: Windows and Linux
@@ -209,7 +209,7 @@ chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutoria
 
 Then, we create the actual platform specific main function (our entry point to the application), which will call ``OpenXRTutorial_Main()``:
 
-.. container:: windows-linux
+.. container:: windows linux
 	:name: windows-linux-id-1
 
 	.. rubric:: Windows and Linux

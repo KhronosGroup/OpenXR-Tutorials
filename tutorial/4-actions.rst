@@ -211,13 +211,25 @@ We will now draw some geometry to represent the controller pose we've obtained a
 	:end-before: XR_DOCS_TAG_END_include_linear_algebra
 	:dedent: 0
 
-This provides a simple matrix and vector library for our render code.
+This provides a simple matrix and vector library for our render code. Now, after the code for DestroySession(), add the following:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateResources1
 	:end-before: XR_DOCS_TAG_END_CreateResources1
-	:dedent: 0
+	:dedent: 1
+
+We've created a struct to represent a small uniform buffer (constant buffer), CameraConstants, and defined an instance to store its values globally. We've defined the start of the function CreateResources(), with the vertices and indices for a cube, and we've created the corresponding buffers with our choice of graphics API.
+
+We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
+	
+.. container:: opengl
+
+	For OpenGL, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders, and to create a shader program:
+	
+.. container:: vulkan 
+
+	For Vulkan, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders, and to create a shader program:
 	
 .. container:: opengl vulkan
 
@@ -225,30 +237,34 @@ This provides a simple matrix and vector library for our render code.
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
 		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL_Vulkan
-		:dedent: 0
+		:dedent: 1
 		
 .. container:: opengles
+
+	For OpenGL ES, we will use GLSL version 3.1: add this code to define our vertex and pixel shaders, and to create a shader program:
 
 	.. literalinclude:: ../Chapter4/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
 		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGLES
-		:dedent: 0
+		:dedent: 1
 		
 .. container:: d3d11 d3d12
+
+	For Direct 3D, add this code to define our vertex and pixel shaders:
 
 	.. literalinclude:: ../Chapter4/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_D3D
 		:end-before: XR_DOCS_TAG_END_CreateResources2_D3D
-		:dedent: 0
+		:dedent: 1
 		
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateResources3
 	:end-before: XR_DOCS_TAG_END_CreateResources3
-	:dedent: 0
+	:dedent: 1
 
 4.6 Checking for Connected Controllers
 --------------------------------------
