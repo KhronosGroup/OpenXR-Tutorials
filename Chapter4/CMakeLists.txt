@@ -27,6 +27,7 @@ set(SOURCES
     "../Common/GraphicsAPI_Vulkan.cpp"
     "../Common/OpenXRDebugUtils.cpp")
 set(HEADERS 
+    "../Common/DebugOutput.h"
     "../Common/OpenXRHelper.h" 
     "../Common/GraphicsAPIs.h"
     "../Common/GraphicsAPI.h"

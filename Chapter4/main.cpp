@@ -94,6 +94,10 @@ public:
 
 private:
 	void CreateInstance() {
+
+		const char* json_file =R"(D:\Code\Teleport\monado\build\RelWithDebInfo\openxr_monado-dev.json)";
+		errno_t err = _putenv_s("XR_RUNTIME_JSON",json_file);
+
 		XrApplicationInfo AI;
 		strncpy(AI.applicationName, "OpenXR Tutorial Chapter 4",XR_MAX_APPLICATION_NAME_SIZE);
 		AI.applicationVersion = 1;
@@ -219,7 +223,7 @@ private:
 	void SuggestBindings() {
 		std::vector<XrActionSuggestedBinding> suggestedBindings=
 										{{selectAction		,CreateXrPath("/user/hand/left/input/select/click")}
-										,{triggerAction		,CreateXrPath("/user/hand/right/input/trigger/value")}
+										,{triggerAction		,CreateXrPath("/user/hand/right/input/menu/click")}
 										,{leftGripPoseAction,CreateXrPath("/user/hand/left/input/grip/pose")}
 										,{rightHapticAction	,CreateXrPath("/user/hand/right/output/haptic")}
 								   };
@@ -317,26 +321,36 @@ private:
 		XrMatrix4x4f model;
 	};
 	CameraConstants cameraConstants;
+	// six colours for the six faces of a cube. Bright for +, Dark is -
+	// Red for X faces, green for Y, blue for Z.
+    XrVector4f colours[6]={	 {1.0f	,0		,0		,1.f}
+							,{0.1f	,0		,0		,1.f}
+							,{0		,0.6f	,0		,1.f}
+							,{0		,0.1f	,0		,1.f}
+							,{0		,0.2f	,1.0f	,1.f}
+							,{0		,0.02f	,0.1f	,1.f}};
 	void CreateResources() {
 		// Vertices for a 1x1x1 meter cube. (Left/Right, Top/Bottom, Front/Back)
-		constexpr XrVector4f vertexPositions[]={ {-0.5f, -0.5f, -0.5f, 1.f}
-												,{-0.5f, -0.5f,  0.5f, 1.f}
-												,{-0.5f,  0.5f, -0.5f, 1.f}
-												,{-0.5f,  0.5f,  0.5f, 1.f}
-												,{ 0.5f, -0.5f, -0.5f, 1.f}
-												,{ 0.5f, -0.5f,  0.5f, 1.f}
-												,{ 0.5f,  0.5f, -0.5f, 1.f}
-												,{ 0.5f,  0.5f,  0.5f, 1.f}};
+		constexpr XrVector4f vertexPositions[]={
+                                                 { 0.5f,  0.5f,  0.5f, 1.f}
+                                                   ,{ 0.5f,  0.5f, -0.5f, 1.f}
+                                                  ,{ 0.5f, -0.5f,  0.5f, 1.f}
+                                                    ,{ 0.5f, -0.5f, -0.5f, 1.f}
+                                                   ,{-0.5f,  0.5f,  0.5f, 1.f}
+                                                    ,{-0.5f,  0.5f, -0.5f, 1.f}
+                                                     ,{-0.5f, -0.5f,  0.5f, 1.f}
+                                                    ,{-0.5f, -0.5f, -0.5f, 1.f}
+        };
 
-		#define CUBE_FACE(v1, v2, v3, v4, v5, v6) vertexPositions[v6], vertexPositions[v5], vertexPositions[v4], vertexPositions[v3], vertexPositions[v2], vertexPositions[v1],
+		#define CUBE_FACE(V1, V2, V3, V4, V5, V6) vertexPositions[V1], vertexPositions[V2], vertexPositions[V3], vertexPositions[V4], vertexPositions[V5], vertexPositions[V6],
 
 		XrVector4f cubeVertices[] = {
-			CUBE_FACE(6, 4, 5, 6, 5, 7)	
-			CUBE_FACE(2, 1, 0, 2, 3, 1)	
-			CUBE_FACE(2, 6, 7, 2, 7, 3)	
-			CUBE_FACE(0, 1, 5, 0, 5, 4)	
-			CUBE_FACE(1, 3, 7, 1, 7, 5)	
-			CUBE_FACE(0, 4, 6, 0, 6, 2)	
+			CUBE_FACE(2, 1, 0, 2, 3, 1)		// -X
+			CUBE_FACE(6, 4, 5, 6, 5, 7)	    // +X
+			CUBE_FACE(0, 1, 5, 0, 5, 4)	// -Y
+			CUBE_FACE(2, 6, 7, 2, 7, 3)	// +Y
+			CUBE_FACE(0, 4, 6, 0, 6, 2)	// -Z
+			CUBE_FACE(1, 3, 7, 1, 7, 5)	// +Z
 		};
 
 		uint32_t cubeIndices[36] = {
@@ -355,10 +369,8 @@ private:
 			{GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices),
 			 &cubeIndices, false});
 
-		float colour[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-
 		uniformBuffer_Frag = graphicsAPI->CreateBuffer(
-			{GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colour), colour, false});
+			{GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colours), colours, false});
 			
 		uniformBuffer_Vert = graphicsAPI->CreateBuffer(
 			{GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants, false});
@@ -371,8 +383,9 @@ private:
 				//Color Vertex Shader
 				layout(std140, binding = 1) uniform CameraConstants
 				{
-					mat4 modelViewProj;
-					mat4 model;
+                    mat4 viewProj;
+                    mat4 modelViewProj;
+                    mat4 model;
 				};
 				layout(location = 0) in vec4 a_Positions;
 				void main()
@@ -403,8 +416,9 @@ private:
 				//Color Vertex Shader
 				layout(std140, binding = 1) uniform CameraConstants
 				{
-					mat4 modelViewProj;
-					mat4 model;
+                    mat4 viewProj;
+                    mat4 modelViewProj;
+                    mat4 model;
 				};
 				layout(location = 0) in highp vec4 a_Positions;
 				layout(location = 0) out highp vec2 o_TexCoord;
@@ -423,21 +437,13 @@ private:
 				layout(location = 0) out highp vec4 o_Color;
 				layout(std140, binding = 0) uniform Data
 				{
-					highp vec4 color;
+					highp vec4 colours[6];
 				} d_Data;
 				
 				void main()
 				{
-					highp vec3 colours[6];
-					colours[0]=vec3(1.0,0,0);
-					colours[1]=vec3(0.1,0,0);
-					colours[2]=vec3(0,1.0,0);
-					colours[3]=vec3(0,0.1,0);
-					colours[4]=vec3(0,0,1.0);
-					colours[5]=vec3(0,0,0.1);
 					int i=int(i_TexCoord.x);
-					o_Color = d_Data.color;
-					o_Color.rgb = colours[i];
+					o_Color = d_Data.colours[i];
 				})";
 			fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
 		}
@@ -446,7 +452,13 @@ private:
 		if (apiType == D3D11  || apiType == D3D12) {
 			std::string vertexSource = R"(
 				//Color Vertex Shader
-				
+
+				cbuffer CameraConstants
+				{
+                    mat4 viewProj;
+                    mat4 modelViewProj;
+                    mat4 model;
+				};
 				struct VS_IN
 				{
 					float4 a_Positions : TEXCOORD0;
@@ -579,24 +591,20 @@ private:
 		XrActionsSyncInfo sync_info = { XR_TYPE_ACTIONS_SYNC_INFO };
 		sync_info.countActiveActionSets = 1;
 		sync_info.activeActionSets = &active_action_set;
-		xrSyncActions(session, &sync_info);
+		OPENXR_CHECK(xrSyncActions(session, &sync_info),"Failed to sync actions.");
 // XR_DOCS_TAG_END_PollActions
 // XR_DOCS_TAG_BEGIN_PollActions2
 		XrActionStateGetInfo get_info = { XR_TYPE_ACTION_STATE_GET_INFO };
-		
-		XrActionStateBoolean bool_state	= { XR_TYPE_ACTION_STATE_BOOLEAN };
+
 		get_info.action					= selectAction;
-		xrGetActionStateBoolean(session, &get_info, &bool_state);
-		
-		XrActionStateFloat float_state	= { XR_TYPE_ACTION_STATE_FLOAT };
+		xrGetActionStateBoolean(session, &get_info, &selectState);
 		get_info.action					= triggerAction;
-		xrGetActionStateFloat(session, &get_info, &float_state);
+		xrGetActionStateFloat(session, &get_info, &triggerState);
 // XR_DOCS_TAG_END_PollActions2
 // XR_DOCS_TAG_BEGIN_PollActions3
-		XrActionStatePose pose_state	= { XR_TYPE_ACTION_STATE_POSE };
 		get_info.action					= leftGripPoseAction;
-        OPENXR_CHECK(xrGetActionStatePose(session, &get_info, &pose_state),"Failed to get pose.");
-		if(pose_state.isActive)
+        OPENXR_CHECK(xrGetActionStatePose(session, &get_info, &leftGripPoseState),"Failed to get pose.");
+		if(leftGripPoseState.isActive)
 		{
 			XrSpaceLocation space_location = { XR_TYPE_SPACE_LOCATION };
 			XrResult		res = xrLocateSpace(leftGripPoseSpace, localOrStageSpace, predictedTime, &space_location);
@@ -626,10 +634,12 @@ private:
 // XR_DOCS_TAG_END_DestroyReferenceSpace
 
 	void CreateSwapchain() {
+// XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
 		uint32_t formatSize = 0;
 		OPENXR_CHECK(xrEnumerateSwapchainFormats(session, 0, &formatSize, nullptr), "Failed to enumerate Swapchain Formats");
 		std::vector<int64_t> formats(formatSize);
 		OPENXR_CHECK(xrEnumerateSwapchainFormats(session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
+// XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
 		// Check the two views for stereo are the same
 		if (viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO && viewConfigurationViews.size() == 2) {
@@ -644,6 +654,7 @@ private:
 
 		swapchainAndDepthImages.resize(viewConfigurationViews.size());
 		for (SwapchainAndDepthImage &swapchainAndDepthImage : swapchainAndDepthImages) {
+            // XR_DOCS_TAG_BEGIN_CreateSwapchain
 			XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
 			swapchainCI.createFlags = 0;
 			swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
@@ -656,11 +667,14 @@ private:
 			swapchainCI.mipCount = 1;
 			OPENXR_CHECK(xrCreateSwapchain(session, &swapchainCI, &swapchainAndDepthImage.swapchain), "Failed to create Swapchain");
 			swapchainAndDepthImage.swapchainFormat = swapchainCI.format;
+            // XR_DOCS_TAG_END_CreateSwapchain
 
+            // XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
 			uint32_t swapchainImageCount = 0;
 			OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, 0, &swapchainImageCount, nullptr), "Failed to enumerate Swapchain Images.");
 			XrSwapchainImageBaseHeader *swapchainImages = graphicsAPI->AllocateSwapchainImageData(swapchainImageCount);
 			OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, swapchainImageCount, &swapchainImageCount, swapchainImages), "Failed to enumerate Swapchain Images.");
+            // XR_DOCS_TAG_END_EnumerateSwapchainImages
 
 			GraphicsAPI::ImageCreateInfo depthImageCI;
 			depthImageCI.dimension = 2;
@@ -717,29 +731,27 @@ private:
 			OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");
 		}
 	}
-	
-	void RenderCube( XrPosef pose,XrVector3f scale) 	{
 
-		XrMatrix4x4f handModelMatrix;
-		XrMatrix4x4f_CreateTranslationRotationScale(&handModelMatrix, &leftGripPose.position, &leftGripPose.orientation, &scale);
+// XR_DOCS_TAG_BEGIN_RenderCuboid	
+	void RenderCuboid( XrPosef pose,XrVector3f scale) {
+		XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
-		XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &handModelMatrix);
-
-		static float colour[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-		colour[1] += 0.005f;
-		if (colour[1] > 1.0f)
-			colour[1] = 0.0f;
-		graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colour), colour);
+		XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
 
 		graphicsAPI->SetPipeline(pipeline);
-		graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+
 		graphicsAPI->SetBufferData(uniformBuffer_Vert,0,sizeof(CameraConstants),&cameraConstants);
 		graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+
+		graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colours), (void*)colours);
+		graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+
 		graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
 		graphicsAPI->SetIndexBuffer(indexBuffer);
 
 		graphicsAPI->DrawIndexed(36);
 	}
+// XR_DOCS_TAG_END_RenderCuboid	
 	void RenderFrame() {
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
 		XrFrameState frameState{XR_TYPE_FRAME_STATE};
@@ -824,9 +836,10 @@ private:
 
 			graphicsAPI->BeginRendering();
 
-			graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
+			graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.22f, 0.17f, 0.35f, 1.0f);
 			graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
 			
+// XR_DOCS_TAG_BEGIN_SetupFrameRendering
 			graphicsAPI->SetRenderAttachments(&swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, swapchainAndDepthImages[i].depthImageView);
 			graphicsAPI->SetViewports(&viewport, 1);
 			graphicsAPI->SetScissors(&scissor, 1);
@@ -842,9 +855,17 @@ private:
 			XrMatrix4x4f_InvertRigidBody(&view, &toView);
 			XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
 
-			XrVector3f scale10cm{0.1f, 0.1f, 0.1f};
-			RenderCube(leftGripPose,scale10cm);
+// XR_DOCS_TAG_END_SetupFrameRendering
+// XR_DOCS_TAG_BEGIN_CallRenderCuboid
+			// let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
+			RenderCuboid({{0,0,0,1.f},{0,-viewHeightM,0}}, {2.f,0.1f,2.0f});
 
+			if(leftGripPoseState.isActive)
+			{
+				XrVector3f grip_scale{0.02f, 0.04f, 0.1f};
+				RenderCuboid(leftGripPose, grip_scale);
+			}
+// XR_DOCS_TAG_END_CallRenderCuboid
 			graphicsAPI->EndRendering();
 
 			XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
@@ -966,6 +987,8 @@ private:
 	std::vector<XrEnvironmentBlendMode> environmentBlendModes{};
 
 	XrSpace localOrStageSpace{};
+    // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offet downwards, below the viewer's initial position.
+    float viewHeightM=1.5f;
 
 	void *vertexBuffer=nullptr;
 	void *indexBuffer=nullptr;
@@ -979,14 +1002,17 @@ private:
 	XrActionSet actionSet;
 	// The action for clicking the "select" button.
 	XrAction selectAction;
+	XrActionStateBoolean selectState= { XR_TYPE_ACTION_STATE_BOOLEAN };
 	// The action for squeezing the trigger control.
 	XrAction triggerAction;
+	XrActionStateFloat triggerState	= { XR_TYPE_ACTION_STATE_FLOAT };
 	// The action haptic vibration of the right controller.
 	XrAction rightHapticAction;
 	// The action for getting the left grip pose.
 	XrAction leftGripPoseAction;
 	// The space that represents the left grip pose.
 	XrSpace leftGripPoseSpace;
+	XrActionStatePose leftGripPoseState	= { XR_TYPE_ACTION_STATE_POSE };
 	// The current left grip pose obtained from the XrSpace.
 	XrPosef leftGripPose;
 // XR_DOCS_TAG_END_Actions
@@ -995,7 +1021,7 @@ private:
 void OpenXRTutorial_Main() {
 	DebugOutput debugOutput;
 	std::cout << "OpenXR Tutorial Chapter 4." << std::endl;
-	OpenXRTutorial app(OPENGL_ES);
+	OpenXRTutorial app(OPENGL);
 	app.Run();
 }
 

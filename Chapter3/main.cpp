@@ -445,7 +445,12 @@ private:
 
             XrSwapchainImageWaitInfo waitInfo = {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
             waitInfo.timeout = XR_INFINITE_DURATION;
-            OPENXR_CHECK(xrWaitSwapchainImage(swapchainAndDepthImages[i].swapchain, &waitInfo), "Failed to wait for Image from the Swapchian");
+            OPENXR_CHECK(xrWaitSwapchainImage(swapchainAndDepthImages[i].swapchain, &waitInfo), "Failed to wait for Image from the Swapchain");
+
+			const uint32_t &width = viewConfigurationViews[i].recommendedImageRectWidth;
+			const uint32_t &height = viewConfigurationViews[i].recommendedImageRectHeight;
+			GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
+			GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
 
             layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
             layerProjectionViews[i].pose = views[i].pose;
@@ -453,13 +458,13 @@ private:
             layerProjectionViews[i].subImage.swapchain = swapchainAndDepthImages[i].swapchain;
             layerProjectionViews[i].subImage.imageRect.offset.x = 0;
             layerProjectionViews[i].subImage.imageRect.offset.y = 0;
-            layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(viewConfigurationViews[i].recommendedImageRectWidth);
-            layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(viewConfigurationViews[i].recommendedImageRectHeight);
+			layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
+			layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
             layerProjectionViews[i].subImage.imageArrayIndex = 0;
 
             graphicsAPI->BeginRendering();
 
-            graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
+			graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.17f, 0.17f, 0.17f, 1.0f);
             graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
 
             graphicsAPI->EndRendering();

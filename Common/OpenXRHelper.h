@@ -6,21 +6,17 @@
 #include "openxr/openxr.h"
 #include "openxr/openxr_platform.h"
 
+inline void OpenXRDebugBreak() {
+    std::cerr<<"Breakpoint here to debug.\n";
+}
+
 // XR_DOCS_TAG_BEGIN_Helper_Functions0
-
-#define OPENXR_CHECK1(x, y)                                                                                                                           \
-    {                                                                                                                                                   \
-        XrResult result = (x);                                                                                                                          \
-        if (!XR_SUCCEEDED(result)) {                                                                                                                    \
-            std::cout << "ERROR: OPENXR: " << int(result) << "(" << result << ") " << y << std::endl; \
-        }                                                                                                                                               \
-    }
-
 #define OPENXR_CHECK(x, y)                                                                                                                              \
     {                                                                                                                                                   \
         XrResult result = (x);                                                                                                                          \
         if (!XR_SUCCEEDED(result)) {                                                                                                                    \
-            std::cout << "ERROR: OPENXR: " << int(result) << "(" << (xrInstance ? GetXRErrorString(xrInstance, result) : "") << ") " << y << std::endl; \
+            std::cerr << "ERROR: OPENXR: " << int(result) << "(" << (xrInstance ? GetXRErrorString(xrInstance, result) : "") << ") " << y << std::endl; \
+            OpenXRDebugBreak();                                                                                                                               \
         }                                                                                                                                               \
     }
 

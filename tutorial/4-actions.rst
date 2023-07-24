@@ -1,8 +1,7 @@
 ﻿🕹 4 Interactions
 ==================
 
-An OpenXR application has interactions with the user. These interactions can be user input to the application, or haptic output back to the user. In this chapter, we will create some
-interactions and show how this system works.
+An OpenXR application has interactions with the user which can be user input to the application, or haptic output back to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: spaces, actions, and bindings.
 
 4.1. Using Spaces
 -----------------
@@ -24,17 +23,13 @@ When we created the reference space, we specified a pose (```poseInReferenceSpac
 
 i.e. an identity quaternion for the orientation, a position at the origin.
 
-We had no reason to want a different origin for our space than the runtime's default. Had we specified a different pose, the origin of the reference space would have been offset from that default.
+Had we specified a different pose, the origin of the reference space would have been offset from the runtime's default.
 
 Another kind of reference space is view space (```XR_REFERENCE_SPACE_TYPE_VIEW```).
 View space is oriented with the user's head, and is useful for user-interface and many
 other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
 
-OpenXR uses a couple of different types of reference frames for positioning content.
-STAGE would be relative to the center of your guardian system's bounds, and LOCAL
-would be relative to your device's starting location. HoloLens doesn't have a STAGE, so we'll use LOCAL.
-
-https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
+See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
 
 
 4.2 Interaction Profiles and Bindings
@@ -181,14 +176,6 @@ Here we enable the Action Set we're interested in (in our case we have only one)
 	:end-before: XR_DOCS_TAG_END_PollActions2
 	:dedent: 1
 
-This is the polling code. We specify which action to look at with the XrActionStateGetInfo struct. Then we use a type-specific call. For our boolean `selectAction`, we call `xrGetActionStateBoolean()` to retrieve an XrActionStateBoolean struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the select button on the controller. But there's more to it than that. The struct `XrActionStateBoolean` has a boolean `isActive`, which is true if the state of the action is actually being read. If `isActive` is false, the value of `currentState` is irrelevant - the polling failed. The struct has `changedSinceLastSync`, which is true if the value changed between the previous and current calls to xrSync(). And it has `lastChangeTime`, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
-
-Similarly, `XrActionStateFloat` has a floating-point `currentState` value, which is valid if `isActive` is true, it has `lastChangeTime` and `changedSinceLastSync`, and it has `isActive` and `lastChangeTime` and `changedSinceLastSync`.
-
-Careful use of this polling metadata will help you to create apps that are responsive and intuitive to use. Bear in mind as well that multiple physical controls could be bound to the same action, and the user could be using more than one controller at once. See the OpenXR spec for more details:
-
-https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#multiple_inputs
-
 Finally in this function, we'll poll the left Grip Pose:
 
 .. literalinclude:: ../Chapter4/main.cpp
@@ -229,7 +216,7 @@ We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
 	
 .. container:: vulkan 
 
-	For Vulkan, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders, and to create a shader program:
+	For Vulkan, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders:
 	
 .. container:: opengl vulkan
 
@@ -241,7 +228,7 @@ We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
 		
 .. container:: opengles
 
-	For OpenGL ES, we will use GLSL version 3.1: add this code to define our vertex and pixel shaders, and to create a shader program:
+	For OpenGL ES, we will use GLSL version 3.1: add this code to define our vertex and pixel shaders:
 
 	.. literalinclude:: ../Chapter4/main.cpp
 		:language: cpp
@@ -258,7 +245,8 @@ We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
 		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_D3D
 		:end-before: XR_DOCS_TAG_END_CreateResources2_D3D
 		:dedent: 1
-		
+
+Now we'll combine the shaders, the vertex input layout, and the rendering state for drawing a solid cube, into a pipeline object. Add:		
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -266,7 +254,62 @@ We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
 	:end-before: XR_DOCS_TAG_END_CreateResources3
 	:dedent: 1
 
+To destroy the resources when a session is ended, add:
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_DestroyResources
+	:end-before: XR_DOCS_TAG_END_DestroyResources
+	:dedent: 1
+
+We'll call this before the call to DestroySession() in the function Run(). So after this, add:
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CallDestroyResources
+	:end-before: XR_DOCS_TAG_END_CallDestroyResources
+	:dedent: 1
+
+Recall that we've already inserted a call to PollActions() in the function RenderFrame(), so we're ready to render the controller position and input values. In RenderLayer, after the call to ClearDepth(), let's set up the rendering state:
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_SetupFrameRendering
+	:end-before: XR_DOCS_TAG_END_SetupFrameRendering
+	:dedent: 3
+
+We've attached the target colour and depth images, and set the viewport and scissors to be the whole renderable area. We've created a projection matrix and a view matrix. And we've combined these as the matrix viewProj within cameraConstants.
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CallRenderCuboid
+	:end-before: XR_DOCS_TAG_END_CallRenderCuboid
+	:dedent: 3
+
+We draw two cuboids. The first is offset by our (arbitrary) view height, so as to represent a "floor". We scale it by 2 metres in the horizontal directions and 0.1m in the vertical, so it's flat. Then, if the left grip pose has been obtained, we draw a cuboid at this pose.
+
+Let's implement RenderCuboid(). After the definition of DestroySwapchain(), add:
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderCuboid
+	:end-before: XR_DOCS_TAG_END_RenderCuboid
+	:dedent: 1
+
+From the passed-in pose and scale, we create the _model_ matrix, and multiply that with cameraConstants.viewProj to obtain cameraConstants.modelViewProj, the matrix that transforms from vertices in our unit cube into positions in projection-space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing our six face colours for the cuboid pixel shader. We assign our vertex and index buffers and draw 36 indices.
+
 4.6 Checking for Connected Controllers
 --------------------------------------
 
-How to check if a controller is connected.
+Look again now at the function PollActions().
+
+We specify which action to look at with the XrActionStateGetInfo struct. Then we use a type-specific call. For our boolean `selectAction`, we call `xrGetActionStateBoolean()` to retrieve an XrActionStateBoolean struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the select button on the controller.
+However, the struct `XrActionStateBoolean` also has a member called `isActive`, which is true if the state of the action is actually being read. If it's false, the value of `currentState` is irrelevant - the polling failed. 
+
+Similarly, `XrActionStateFloat` has a floating-point `currentState` value, which is valid if `isActive` is true, it has `lastChangeTime` and `changedSinceLastSync`, and it has `isActive` and `lastChangeTime` and `changedSinceLastSync`.
+
+The struct has `changedSinceLastSync`, which is true if the value changed between the previous and current calls to xrSync(). And it has `lastChangeTime`, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
+
+Careful use of this polling metadata will help you to create apps that are responsive and intuitive to use. Bear in mind as well that multiple physical controls could be bound to the same action, and the user could be using more than one controller at once. See the OpenXR spec for more details:
+
+https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#multiple_inputs

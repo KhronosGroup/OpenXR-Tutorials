@@ -159,7 +159,7 @@ public:
 	AndroidStreambuf androidCout;
 
 	AndroidStreambuf androidCerr;
-	DebugOutput():androidCout(),androidCerr(ANDROID_LOG_WARN)
+	DebugOutput():androidCout(),androidCerr(ANDROID_LOG_ERROR)
 	{
 		auto *oldout = std::cout.rdbuf(&androidCout);
 		auto *olderr = std::cerr.rdbuf(&androidCerr);
@@ -170,7 +170,7 @@ public:
 		std::cout<<"Testing cout redirect."<<std::endl;
 		if (olderr != &androidCerr)
 		{
-			__android_log_write(ANDROID_LOG_DEBUG, "openxr_tutorial", "redirected cerr");
+			__android_log_write(ANDROID_LOG_WARN, "openxr_tutorial", "redirected cerr");
 		}
 		std::cerr<<"Testing cerr redirect."<<std::endl;
 	}
