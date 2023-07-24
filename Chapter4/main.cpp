@@ -82,7 +82,9 @@ public:
 		DestroyReferenceSpace();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
+//XR_DOCS_TAG_BEGIN_CallDestroyResources
 		DestroyResources();
+//XR_DOCS_TAG_END_CallDestroyResources
 		DestroySession();
 #endif
 
@@ -93,9 +95,9 @@ public:
 private:
 	void CreateInstance() {
 		XrApplicationInfo AI;
-		strncpy(AI.applicationName,XR_MAX_APPLICATION_NAME_SIZE, "OpenXR Tutorial Chapter 4");
+		strncpy(AI.applicationName, "OpenXR Tutorial Chapter 4",XR_MAX_APPLICATION_NAME_SIZE);
 		AI.applicationVersion = 1;
-		strncpy(AI.engineName,XR_MAX_ENGINE_NAME_SIZE, "OpenXR Engine");
+		strncpy(AI.engineName, "OpenXR Engine",XR_MAX_ENGINE_NAME_SIZE);
 		AI.engineVersion = 1;
 		AI.apiVersion = XR_CURRENT_API_VERSION;
 
@@ -186,8 +188,8 @@ private:
 // XR_DOCS_TAG_BEGIN_CreateActionSet
 	void CreateActionSet() {
 		XrActionSetCreateInfo actionset_info = {XR_TYPE_ACTION_SET_CREATE_INFO};
-		strncpy(actionset_info.actionSetName, XR_MAX_ACTION_SET_NAME_SIZE, "openxr-tutorial-actionset");
-		strncpy(actionset_info.localizedActionSetName, XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE, "OpenXR Tutorial ActionSet");
+		strncpy(actionset_info.actionSetName, "openxr-tutorial-actionset", XR_MAX_ACTION_SET_NAME_SIZE);
+		strncpy(actionset_info.localizedActionSetName, "OpenXR Tutorial ActionSet", XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE);
 		OPENXR_CHECK(xrCreateActionSet(xrInstance, &actionset_info, &actionSet), "xrCreateActionSet");
 // XR_DOCS_TAG_END_CreateActionSet
 
@@ -195,8 +197,8 @@ private:
 		auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType) {
 			XrActionCreateInfo action_info = {XR_TYPE_ACTION_CREATE_INFO};
 			action_info.actionType = xrActionType;
-			strncpy(action_info.actionName, XR_MAX_ACTION_NAME_SIZE, name);
-			strncpy(action_info.localizedActionName, XR_MAX_LOCALIZED_ACTION_NAME_SIZE, name);
+			strncpy(action_info.actionName, name, XR_MAX_ACTION_NAME_SIZE);
+			strncpy(action_info.localizedActionName, name, XR_MAX_LOCALIZED_ACTION_NAME_SIZE);
 			OPENXR_CHECK(xrCreateAction(actionSet, &action_info, &xrAction), "Failed to create xrAction.");
 		};
 		CreateAction(selectAction		, "select"		, XR_ACTION_TYPE_BOOLEAN_INPUT);
@@ -310,33 +312,33 @@ private:
 // XR_DOCS_TAG_BEGIN_CreateResources1
 	struct CameraConstants
 	{
-		XrMatrix4x4f worldViewProj;
-		XrMatrix4x4f world;
+		XrMatrix4x4f viewProj;
+		XrMatrix4x4f modelViewProj;
+		XrMatrix4x4f model;
 	};
 	CameraConstants cameraConstants;
 	void CreateResources() {
 		// Vertices for a 1x1x1 meter cube. (Left/Right, Top/Bottom, Front/Back)
 		constexpr XrVector4f vertexPositions[]={ {-0.5f, -0.5f, -0.5f, 1.f}
-											,{-0.5f, -0.5f,  0.5f, 1.f}
-											,{-0.5f,  0.5f, -0.5f, 1.f}
-											,{-0.5f,  0.5f,  0.5f, 1.f}
-											,{ 0.5f, -0.5f, -0.5f, 1.f}
-											,{ 0.5f, -0.5f,  0.5f, 1.f}
-											,{ 0.5f,  0.5f, -0.5f, 1.f}
-											,{ 0.5f,  0.5f,  0.5f, 1.f}};
+												,{-0.5f, -0.5f,  0.5f, 1.f}
+												,{-0.5f,  0.5f, -0.5f, 1.f}
+												,{-0.5f,  0.5f,  0.5f, 1.f}
+												,{ 0.5f, -0.5f, -0.5f, 1.f}
+												,{ 0.5f, -0.5f,  0.5f, 1.f}
+												,{ 0.5f,  0.5f, -0.5f, 1.f}
+												,{ 0.5f,  0.5f,  0.5f, 1.f}};
 
-		#define CUBE_SIDE(V1, V2, V3, V4, V5, V6) vertexPositions[V6], vertexPositions[V5], vertexPositions[V4], vertexPositions[V3], vertexPositions[V2], vertexPositions[V1],
+		#define CUBE_FACE(v1, v2, v3, v4, v5, v6) vertexPositions[v6], vertexPositions[v5], vertexPositions[v4], vertexPositions[v3], vertexPositions[v2], vertexPositions[v1],
 
 		XrVector4f cubeVertices[] = {
-			CUBE_SIDE(2, 1, 0, 2, 3, 1)		// -X
-			CUBE_SIDE(6, 4, 5, 6, 5, 7)	 // +X
-			CUBE_SIDE(0, 1, 5, 0, 5, 4)	// -Y
-			CUBE_SIDE(2, 6, 7, 2, 7, 3)	// +Y
-			CUBE_SIDE(0, 4, 6, 0, 6, 2)	// -Z
-			CUBE_SIDE(1, 3, 7, 1, 7, 5)	// +Z
+			CUBE_FACE(6, 4, 5, 6, 5, 7)	
+			CUBE_FACE(2, 1, 0, 2, 3, 1)	
+			CUBE_FACE(2, 6, 7, 2, 7, 3)	
+			CUBE_FACE(0, 1, 5, 0, 5, 4)	
+			CUBE_FACE(1, 3, 7, 1, 7, 5)	
+			CUBE_FACE(0, 4, 6, 0, 6, 2)	
 		};
 
-		// Winding order is clockwise. Each side uses a different color.
 		uint32_t cubeIndices[36] = {
 			0,  1,  2,  3,  4,  5,   // -X
 			6,  7,  8,  9,  10, 11,  // +X
@@ -369,13 +371,13 @@ private:
 				//Color Vertex Shader
 				layout(std140, binding = 1) uniform CameraConstants
 				{
-					mat4 worldViewProj;
-					mat4 world;
+					mat4 modelViewProj;
+					mat4 model;
 				};
 				layout(location = 0) in vec4 a_Positions;
 				void main()
 				{
-					gl_Position = worldViewProj*a_Positions;
+					gl_Position = modelViewProj*a_Positions;
 				})";
 			vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
@@ -401,14 +403,14 @@ private:
 				//Color Vertex Shader
 				layout(std140, binding = 1) uniform CameraConstants
 				{
-					mat4 worldViewProj;
-					mat4 world;
+					mat4 modelViewProj;
+					mat4 model;
 				};
 				layout(location = 0) in highp vec4 a_Positions;
 				layout(location = 0) out highp vec2 o_TexCoord;
 				void main()
 				{
-					gl_Position = worldViewProj*a_Positions;
+					gl_Position = modelViewProj*a_Positions;
 					int face=gl_VertexID/6;
 					o_TexCoord=vec2(float(face),0);
 				})";
@@ -496,8 +498,9 @@ private:
 		pipelineCI.depthStencilState = {false, false, GraphicsAPI::CompareOp::GREATER, false, false, {}, {}, 0.0f, 1.0f};
 		pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
 		pipeline = graphicsAPI->CreatePipeline(pipelineCI);
-// XR_DOCS_TAG_END_CreateResources3
 	}
+// XR_DOCS_TAG_END_CreateResources3
+// XR_DOCS_TAG_BEGIN_DestroyResources
 	void DestroyResources() {
 		graphicsAPI->DestroyPipeline(pipeline);
 		graphicsAPI->DestroyShader(fragmentShader);
@@ -507,6 +510,7 @@ private:
 		graphicsAPI->DestroyBuffer(indexBuffer);
 		graphicsAPI->DestroyBuffer(vertexBuffer);
 	}
+// XR_DOCS_TAG_END_DestroyResources
 
 	void PollEvents() {
 		XrResult result = XR_SUCCESS;
@@ -591,7 +595,7 @@ private:
 // XR_DOCS_TAG_BEGIN_PollActions3
 		XrActionStatePose pose_state	= { XR_TYPE_ACTION_STATE_POSE };
 		get_info.action					= leftGripPoseAction;
-		xrGetActionStatePose(session, &get_info, &pose_state);
+        OPENXR_CHECK(xrGetActionStatePose(session, &get_info, &pose_state),"Failed to get pose.");
 		if(pose_state.isActive)
 		{
 			XrSpaceLocation space_location = { XR_TYPE_SPACE_LOCATION };
@@ -713,7 +717,29 @@ private:
 			OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");
 		}
 	}
+	
+	void RenderCube( XrPosef pose,XrVector3f scale) 	{
 
+		XrMatrix4x4f handModelMatrix;
+		XrMatrix4x4f_CreateTranslationRotationScale(&handModelMatrix, &leftGripPose.position, &leftGripPose.orientation, &scale);
+
+		XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &handModelMatrix);
+
+		static float colour[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+		colour[1] += 0.005f;
+		if (colour[1] > 1.0f)
+			colour[1] = 0.0f;
+		graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colour), colour);
+
+		graphicsAPI->SetPipeline(pipeline);
+		graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+		graphicsAPI->SetBufferData(uniformBuffer_Vert,0,sizeof(CameraConstants),&cameraConstants);
+		graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+		graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
+		graphicsAPI->SetIndexBuffer(indexBuffer);
+
+		graphicsAPI->DrawIndexed(36);
+	}
 	void RenderFrame() {
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
 		XrFrameState frameState{XR_TYPE_FRAME_STATE};
@@ -796,47 +822,28 @@ private:
 			layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
 			layerProjectionViews[i].subImage.imageArrayIndex = 0;
 
-			
-			// Compute the view-projection transform.
-			// Note all matrixes (including OpenXR's) are column-major, right-handed.
-			const auto& pose = views[i].pose;
-			XrMatrix4x4f proj;
-			XrMatrix4x4f_CreateProjectionFov(&proj,OPENGL_ES, views[i].fov, 0.05f, 100.0f);
-			XrMatrix4x4f toView;
-			XrVector3f scale{1.f, 1.f, 1.f};
-			XrMatrix4x4f_CreateTranslationRotationScale(&toView, &pose.position, &pose.orientation, &scale);
-			XrMatrix4x4f view;
-			XrMatrix4x4f_InvertRigidBody(&view, &toView);
-			XrMatrix4x4f vp;
-			XrMatrix4x4f_Multiply(&vp, &proj, &view);
-			XrMatrix4x4f handModelMatrix;
-			XrVector3f scale10cm{0.1f, 0.1f, 0.1f};
-			XrMatrix4x4f_CreateTranslationRotationScale(&handModelMatrix, &leftGripPose.position, &leftGripPose.orientation, &scale10cm);
-
-			XrMatrix4x4f_Multiply(&cameraConstants.worldViewProj, &vp, &handModelMatrix);
 			graphicsAPI->BeginRendering();
-
-			static float colour[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-			colour[1] += 0.005f;
-			if (colour[1] > 1.0f)
-				colour[1] = 0.0f;
-			graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colour), colour);
 
 			graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.47f, 0.17f, 0.56f, 1.0f);
 			graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
-
+			
 			graphicsAPI->SetRenderAttachments(&swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, swapchainAndDepthImages[i].depthImageView);
 			graphicsAPI->SetViewports(&viewport, 1);
 			graphicsAPI->SetScissors(&scissor, 1);
 
-			graphicsAPI->SetPipeline(pipeline);
-			graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
-			graphicsAPI->SetBufferData(uniformBuffer_Vert,0,sizeof(CameraConstants),&cameraConstants);
-			graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER});
-			graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
-			graphicsAPI->SetIndexBuffer(indexBuffer);
+			// Compute the view-projection transform.
+			// All matrices (including OpenXR's) are column-major, right-handed.
+			XrMatrix4x4f proj;
+			XrMatrix4x4f_CreateProjectionFov(&proj,OPENGL_ES, views[i].fov, 0.05f, 100.0f);
+			XrMatrix4x4f toView;
+			XrVector3f scale1m{1.f, 1.f, 1.f};
+			XrMatrix4x4f_CreateTranslationRotationScale(&toView, &views[i].pose.position, &views[i].pose.orientation, &scale1m);
+			XrMatrix4x4f view;
+			XrMatrix4x4f_InvertRigidBody(&view, &toView);
+			XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
 
-			graphicsAPI->DrawIndexed(36);
+			XrVector3f scale10cm{0.1f, 0.1f, 0.1f};
+			RenderCube(leftGripPose,scale10cm);
 
 			graphicsAPI->EndRendering();
 
