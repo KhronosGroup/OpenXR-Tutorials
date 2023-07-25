@@ -126,6 +126,9 @@ Select your platform, as the instructions are different depending on your select
 Now, that we have set up the project and source file. We will create two header files in a ``/Common`` directory called ``HelperFunctions.h`` and ``OpenXRHelper.h``
 Open the header files and add the following code to ``Helperfunctions.h``:
 
+:download:`HelperFunctions.h <../Common/HelperFunctions.h>`
+
+
 .. literalinclude:: ../Common/HelperFunctions.h
 	:language: cpp
 	:start-at: // C Headers

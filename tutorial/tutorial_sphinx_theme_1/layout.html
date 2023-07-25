@@ -239,13 +239,15 @@
 			return true;
 		}
 		return false;
-	}
-	</script>
-	<script >
-	var platform = Cookies.get("platform")
-	if (platform==undefined) {
-	Cookies.set('platform', 'windows',{ expires: 365})
-	platform='windows';
+		}
+	function makeLinksOpenInNewWindow()
+	{ 
+		var download_hrefs = document.getElementsByClassName('reference download internal');
+		[].forEach.call(download_hrefs, function(el) {
+			el.setAttribute('target', "_blank");
+			console.log("Adding target blank to "+el.id);
+		});
+		window.makeLinksOpenInNewWindow=makeLinksOpenInNewWindow;
 	}
 	function updateGraphicsAPI()
 	{
@@ -304,7 +306,7 @@
 	</style>
 </head>
 
-<body class="wy-body-for-nav" onload="updatePlatform(); updateGraphicsAPI();">
+<body class="wy-body-for-nav" onload="updatePlatform(); updateGraphicsAPI(); makeLinksOpenInNewWindow();">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
