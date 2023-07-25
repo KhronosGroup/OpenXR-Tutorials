@@ -7616,5 +7616,29 @@ span[id*=MathJax-Span]
 
 button:disabled > img
 {
+filter: opacity(30%);
+}
+
+button.select-platform > img
+{
+filter: grayscale(100%) brightness(10%)
+}
+
+button.selected-platform > img
+{
+filter: grayscale(0%);
+}
+
+button.select-graphics-api > img
+{
 filter: grayscale(100%);
+}
+button.select-graphics-api:disabled > img
+{
+filter: opacity(30%) grayscale(100%);
+}
+
+button.selected-graphics-api > img
+{
+filter: grayscale(0%);
 }
