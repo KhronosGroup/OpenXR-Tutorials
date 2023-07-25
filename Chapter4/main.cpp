@@ -266,11 +266,11 @@ private:
         // Pick the first application supported blend mode supported by the hardware.
         for (auto mode : applicationEnvironmentBlendModes) {
 
-          if (std::find(environmentBlendModes.begin(), environmentBlendModes.end(), mode)
-              != environmentBlendModes.end()) {
-            environmentBlendMode = mode;
-            break;
-          }
+          	if (std::find(environmentBlendModes.begin(), environmentBlendModes.end(), mode)
+					!= environmentBlendModes.end()) {
+            	environmentBlendMode = mode;
+            	break;
+          	}
         }
 
 	}
@@ -848,15 +848,15 @@ private:
 
 			graphicsAPI->BeginRendering();
             if ( environmentBlendModes[0] == XR_ENVIRONMENT_BLEND_MODE_OPAQUE ) {
-              // VR mode use a background color.
-              graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex],
+              	// VR mode use a background color.
+              	graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex],
                                       0.22f,
                                       0.17f,
                                       0.35f,
                                       1.0f);
             } else {
-              // In AR mode make the background color black.
-              graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex],
+              	// In AR mode make the background color black.
+              	graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex],
                                       0.0f,
                                       0.0f,
                                       0.0f,
