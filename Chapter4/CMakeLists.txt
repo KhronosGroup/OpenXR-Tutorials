@@ -83,8 +83,10 @@ else()
 
 	# our selected runtime
 	set(XR_RUNTIME_JSON "$ENV{XR_RUNTIME_JSON}" CACHE PATH "Optional location of a specific OpenXR runtime configuration file.")
-	set_target_properties( OpenXRTutorialChapter4 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
 	
+	if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
+		set_target_properties( OpenXRTutorialChapter4 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
+	endif()
     target_include_directories(OpenXRTutorialChapter4 PUBLIC "../Common/")
     target_link_libraries(OpenXRTutorialChapter4 openxr_loader)
 

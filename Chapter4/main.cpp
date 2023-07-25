@@ -94,10 +94,6 @@ public:
 
 private:
 	void CreateInstance() {
-
-		const char* json_file =R"(D:\Code\Teleport\monado\build\RelWithDebInfo\openxr_monado-dev.json)";
-		errno_t err = _putenv_s("XR_RUNTIME_JSON",json_file);
-
 		XrApplicationInfo AI;
 		strncpy(AI.applicationName, "OpenXR Tutorial Chapter 4",XR_MAX_APPLICATION_NAME_SIZE);
 		AI.applicationVersion = 1;
@@ -387,24 +383,29 @@ private:
                     mat4 modelViewProj;
                     mat4 model;
 				};
-				layout(location = 0) in vec4 a_Positions;
+				layout(location = 0) in highp vec4 a_Positions;
+				layout(location = 0) out highp vec2 o_TexCoord;
 				void main()
 				{
 					gl_Position = modelViewProj*a_Positions;
+					int face=gl_VertexID/6;
+					o_TexCoord=vec2(float(face),0);
 				})";
 			vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
 			std::string fragmentSource = R"(
 				#version 450
 				//Texture Fragment Shader
-				layout(location = 0) out vec4 o_Color;
+				layout(location = 0) in highp vec2 i_TexCoord;
+				layout(location = 0) out highp vec4 o_Color;
 				layout(std140, binding = 0) uniform Data
 				{
-					vec4 color;
+					highp vec4 colours[6];
 				} d_Data;
 				void main()
 				{
-					o_Color = d_Data.color;
+					int i=int(i_TexCoord.x);
+					o_Color = d_Data.colours[i];
 				})";
 			fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
 		}
@@ -1028,6 +1029,7 @@ void OpenXRTutorial_Main() {
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
+
 	OpenXRTutorial_Main();
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
