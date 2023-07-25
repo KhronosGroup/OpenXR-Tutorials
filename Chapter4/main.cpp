@@ -262,9 +262,9 @@ private:
 // XR_DOCS_TAG_END_AttachActionSet
 	void GetEnvironmentBlendModes() {
 		uint32_t environmentBlendModeSize = 0;
-		OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate ViewConfigurationViews.");
+		OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
 		environmentBlendModes.resize(environmentBlendModeSize);
-		OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, environmentBlendModes.data()), "Failed to enumerate ViewConfigurationViews.");
+		OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
 	}
 
     // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
