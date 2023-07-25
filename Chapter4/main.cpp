@@ -95,8 +95,9 @@ public:
 private:
 	void CreateInstance() {
 
-		const char* json_file =R"(D:\Code\Teleport\monado\build\RelWithDebInfo\openxr_monado-dev.json)";
-		errno_t err = _putenv_s("XR_RUNTIME_JSON",json_file);
+		// This should be done as part of user setup, not part of the code.
+		// const char* json_file =R"(D:\Code\Teleport\monado\build\RelWithDebInfo\openxr_monado-dev.json)";
+		// errno_t err = _putenv_s("XR_RUNTIME_JSON",json_file);
 
 		XrApplicationInfo AI;
 		strncpy(AI.applicationName, "OpenXR Tutorial Chapter 4",XR_MAX_APPLICATION_NAME_SIZE);
@@ -265,6 +266,16 @@ private:
 		OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate ViewConfigurationViews.");
 		environmentBlendModes.resize(environmentBlendModeSize);
 		OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, environmentBlendModes.data()), "Failed to enumerate ViewConfigurationViews.");
+
+        // Pick the first application supported blend mode supported by the hardware.
+        for (auto mode : applicationEnvironmentBlendModes) {
+
+          if (std::find(environmentBlendModes.begin(), environmentBlendModes.end(), mode)
+              != environmentBlendModes.end()) {
+            environmentBlendMode = mode;
+            break;
+          }
+        }
 	}
 
     // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
@@ -782,9 +793,9 @@ private:
 
 		XrFrameEndInfo frameEndInfo{XR_TYPE_FRAME_END_INFO};
 		frameEndInfo.displayTime = frameState.predictedDisplayTime;
-		frameEndInfo.environmentBlendMode = environmentBlendModes[0];
+		frameEndInfo.environmentBlendMode = environmentBlendMode;
 		if (rendered) {
-			frameEndInfo.layerCount = 1;
+			frameEndInfo.layerCount = 1; 
 			frameEndInfo.layers = reinterpret_cast<XrCompositionLayerBaseHeader **>(&layers);
 		} else {
 			frameEndInfo.layerCount = 0;
@@ -835,8 +846,21 @@ private:
 			layerProjectionViews[i].subImage.imageArrayIndex = 0;
 
 			graphicsAPI->BeginRendering();
-
-			graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.22f, 0.17f, 0.35f, 1.0f);
+            if ( environmentBlendModes[0] == XR_ENVIRONMENT_BLEND_MODE_OPAQUE ) {
+              // VR mode use a background color.
+              graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex],
+                                      0.22f,
+                                      0.17f,
+                                      0.35f,
+                                      1.0f);
+            } else {
+              // In AR mode make the background color black.
+              graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex],
+                                      0.0f,
+                                      0.0f,
+                                      0.0f,
+                                      1.0f);
+            }
 			graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
 			
 // XR_DOCS_TAG_BEGIN_SetupFrameRendering
@@ -984,7 +1008,9 @@ private:
 	};
 	std::vector<SwapchainAndDepthImage> swapchainAndDepthImages;
 
+    std::vector<XrEnvironmentBlendMode> applicationEnvironmentBlendModes{XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE};
 	std::vector<XrEnvironmentBlendMode> environmentBlendModes{};
+    XrEnvironmentBlendMode environmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE};
 
 	XrSpace localOrStageSpace{};
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offet downwards, below the viewer's initial position.
@@ -1021,7 +1047,12 @@ private:
 void OpenXRTutorial_Main() {
 	DebugOutput debugOutput;
 	std::cout << "OpenXR Tutorial Chapter 4." << std::endl;
-	OpenXRTutorial app(OPENGL);
+
+#if defined(__ANDROID__)
+  OpenXRTutorial app(OPENGL_ES);
+#else
+  OpenXRTutorial app(OPENGL);
+#endif
 	app.Run();
 }
 
