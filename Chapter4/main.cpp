@@ -262,7 +262,7 @@ private:
 		OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
 		environmentBlendModes.resize(environmentBlendModeSize);
 		OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, environmentBlendModes.data()), "Failed to enumerate ViewConfigurationViews.");
-
+        environmentBlendMode = environmentBlendModes[0];
         // Pick the first application supported blend mode supported by the hardware.
         for (auto mode : applicationEnvironmentBlendModes) {
 
@@ -1011,10 +1011,10 @@ private:
 
     std::vector<XrEnvironmentBlendMode> applicationEnvironmentBlendModes{XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE};
 	std::vector<XrEnvironmentBlendMode> environmentBlendModes{};
-    XrEnvironmentBlendMode environmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE};
+    XrEnvironmentBlendMode environmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM};
 
 	XrSpace localOrStageSpace{};
-    // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offet downwards, below the viewer's initial position.
+    // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float viewHeightM=1.5f;
 
 	void *vertexBuffer=nullptr;

@@ -165,6 +165,8 @@ private:
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
         environmentBlendModes.resize(environmentBlendModeSize);
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
+
+        environmentBlendMode = environmentBlendModes[0];
         // Pick the first application supported blend mode supported by the hardware.
         for (auto mode : applicationEnvironmentBlendModes) {
 
@@ -621,7 +623,7 @@ private:
 
     std::vector<XrEnvironmentBlendMode> applicationEnvironmentBlendModes{XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE};
     std::vector<XrEnvironmentBlendMode> environmentBlendModes{};
-    XrEnvironmentBlendMode environmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE};
+    XrEnvironmentBlendMode environmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM};
 
     XrSpace localOrStageSpace{};
 };
