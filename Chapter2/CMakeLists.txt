@@ -80,6 +80,7 @@ else()
         target_link_libraries(OpenXRTutorialChapter2 "d3d11.lib") 
         target_link_libraries(OpenXRTutorialChapter2 "d3d12.lib") 
         target_link_libraries(OpenXRTutorialChapter2 "dxgi.lib") 
+        target_link_libraries(OpenXRTutorialChapter2 "d3dcompiler.lib") 
     endif()
 
     find_package(Vulkan)

@@ -399,10 +399,12 @@ void *GraphicsAPI_OpenGL_ES::GetGraphicsBinding() {
 }
 // XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_AllocateSwapchainImageData
 XrSwapchainImageBaseHeader *GraphicsAPI_OpenGL_ES::AllocateSwapchainImageData(uint32_t count) {
     swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR});
     return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImages.data());
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_AllocateSwapchainImageData
 
 void *GraphicsAPI_OpenGL_ES::CreateImage(const ImageCreateInfo &imageCI) {
     GLuint texture = 0;

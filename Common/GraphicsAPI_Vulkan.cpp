@@ -154,10 +154,12 @@ void *GraphicsAPI_Vulkan::GetGraphicsBinding() {
 }
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetGraphicsBinding
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_AllocateSwapchainImageData
 XrSwapchainImageBaseHeader *GraphicsAPI_Vulkan::AllocateSwapchainImageData(uint32_t count) {
     swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR});
     return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImages.data());
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_AllocateSwapchainImageData
 
 void *GraphicsAPI_Vulkan::CreateImage(const ImageCreateInfo &imageCI) {
     VkImage image{};

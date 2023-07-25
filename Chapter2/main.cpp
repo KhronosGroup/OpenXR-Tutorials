@@ -7,6 +7,10 @@
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
 
+#ifdef _MSC_VER
+#define strncpy(dst, src, count) strcpy_s(dst, count, src);
+#endif
+
 class OpenXRTutorialChapter2 {
 public:
     OpenXRTutorialChapter2(GraphicsAPI_Type api)
@@ -47,9 +51,9 @@ private:
     void CreateInstance() {
         // XR_DOCS_TAG_BEGIN_XrApplicationInfo
         XrApplicationInfo AI;
-        strcpy(AI.applicationName, "OpenXR Tutorial Chapter 2");
+        strncpy(AI.applicationName, "OpenXR Tutorial Chapter 2", XR_MAX_APPLICATION_NAME_SIZE);
         AI.applicationVersion = 1;
-        strcpy(AI.engineName, "OpenXR Engine");
+        strncpy(AI.engineName, "OpenXR Engine", XR_MAX_ENGINE_NAME_SIZE);
         AI.engineVersion = 1;
         AI.apiVersion = XR_CURRENT_API_VERSION;
         // XR_DOCS_TAG_END_XrApplicationInfo

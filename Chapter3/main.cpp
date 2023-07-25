@@ -8,7 +8,7 @@
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_3_2
 
 #ifdef _MSC_VER
-#define strncpy(d, s, n) strcpy_s(d, n, s);
+#define strncpy(dst, src, count) strcpy_s(dst, count, src);
 #endif
 
 class OpenXRTutorial {
@@ -33,7 +33,7 @@ public:
         GetViewConfigurationViews();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
-		GetEnvironmentBlendModes();
+        GetEnvironmentBlendModes();
 #endif
 
         CreateSession();
@@ -69,13 +69,13 @@ public:
 private:
     void CreateInstance() {
         XrApplicationInfo AI;
-		strncpy(AI.applicationName,XR_MAX_APPLICATION_NAME_SIZE, "OpenXR Tutorial Chapter 3");
+        strncpy(AI.applicationName, "OpenXR Tutorial Chapter 3", XR_MAX_APPLICATION_NAME_SIZE);
         AI.applicationVersion = 1;
-		strncpy(AI.engineName,XR_MAX_ENGINE_NAME_SIZE, "OpenXR Engine");
+        strncpy(AI.engineName, "OpenXR Engine", XR_MAX_ENGINE_NAME_SIZE);
         AI.engineVersion = 1;
         AI.apiVersion = XR_CURRENT_API_VERSION;
 
-		// Add additional instance layers/extensions
+        // Add additional instance layers/extensions
         {
             instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
             instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(apiType));
@@ -269,7 +269,7 @@ private:
 
         } while (result == XR_SUCCESS);
     }
-	
+    
 // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
     void CreateReferenceSpace() {
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
@@ -285,7 +285,6 @@ private:
     }
 // XR_DOCS_TAG_END_DestroyReferenceSpace
 
-// XR_DOCS_TAG_BEGIN_CreateDestroySwapchain
     void CreateSwapchain() {
 // XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
         uint32_t formatSize = 0;
@@ -329,6 +328,7 @@ private:
             OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, swapchainImageCount, &swapchainImageCount, swapchainImages), "Failed to enumerate Swapchain Images.");
             // XR_DOCS_TAG_END_EnumerateSwapchainImages
 
+            // XR_DOCS_TAG_BEGIN_CreateDepthImage
             GraphicsAPI::ImageCreateInfo depthImageCI;
             depthImageCI.dimension = 2;
             depthImageCI.width = viewConfigurationView.recommendedImageRectWidth;
@@ -343,7 +343,9 @@ private:
             depthImageCI.depthAttachment = true;
             depthImageCI.sampled = false;
             swapchainAndDepthImage.depthImage = graphicsAPI->CreateImage(depthImageCI);
+            // XR_DOCS_TAG_END_CreateDepthImage
 
+            // XR_DOCS_TAG_BEGIN_CreateImageViews
             for (uint32_t i = 0; i < swapchainImageCount; i++) {
                 GraphicsAPI::ImageViewCreateInfo imageViewCI;
                 imageViewCI.image = graphicsAPI->GetSwapchainImage(i);
@@ -369,9 +371,11 @@ private:
             imageViewCI.baseArrayLayer = 0;
             imageViewCI.layerCount = 1;
             swapchainAndDepthImage.depthImageView = graphicsAPI->CreateImageView(imageViewCI);
+            // XR_DOCS_TAG_END_CreateImageViews
         }
     }
 
+    // XR_DOCS_TAG_BEGIN_DestroySwapchain
     void DestroySwapchain() {
         for (SwapchainAndDepthImage &swapchainAndDepthImage : swapchainAndDepthImages) {
             graphicsAPI->DestroyImageView(swapchainAndDepthImage.depthImageView);
@@ -384,7 +388,7 @@ private:
             OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");
         }
     }
-    // XR_DOCS_TAG_END_CreateDestroySwapchain
+    // XR_DOCS_TAG_END_DestroySwapchain
 
     void RenderFrame() {
         if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
@@ -447,10 +451,10 @@ private:
             waitInfo.timeout = XR_INFINITE_DURATION;
             OPENXR_CHECK(xrWaitSwapchainImage(swapchainAndDepthImages[i].swapchain, &waitInfo), "Failed to wait for Image from the Swapchain");
 
-			const uint32_t &width = viewConfigurationViews[i].recommendedImageRectWidth;
-			const uint32_t &height = viewConfigurationViews[i].recommendedImageRectHeight;
-			GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
-			GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
+            const uint32_t &width = viewConfigurationViews[i].recommendedImageRectWidth;
+            const uint32_t &height = viewConfigurationViews[i].recommendedImageRectHeight;
+            GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
+            GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
 
             layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
             layerProjectionViews[i].pose = views[i].pose;
@@ -458,13 +462,13 @@ private:
             layerProjectionViews[i].subImage.swapchain = swapchainAndDepthImages[i].swapchain;
             layerProjectionViews[i].subImage.imageRect.offset.x = 0;
             layerProjectionViews[i].subImage.imageRect.offset.y = 0;
-			layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
-			layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
+            layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
+            layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
             layerProjectionViews[i].subImage.imageArrayIndex = 0;
 
             graphicsAPI->BeginRendering();
 
-			graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.17f, 0.17f, 0.17f, 1.0f);
+            graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.17f, 0.17f, 0.17f, 1.0f);
             graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
 
             graphicsAPI->EndRendering();
@@ -614,7 +618,7 @@ void android_main(struct android_app *app) {
     JNIEnv *env;
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
-	XrInstance xrInstance = {};  // Dummy XrInstance variable for OPENXR_CHECK macro.
+    XrInstance xrInstance = {};  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
     OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
     if (!xrInitializeLoaderKHR) {

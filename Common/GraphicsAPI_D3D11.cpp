@@ -211,10 +211,12 @@ void *GraphicsAPI_D3D11::GetGraphicsBinding() {
 }
 // XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetGraphicsBinding
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_AllocateSwapchainImageData
 XrSwapchainImageBaseHeader *GraphicsAPI_D3D11::AllocateSwapchainImageData(uint32_t count) {
     swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
     return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImages.data());
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D11_AllocateSwapchainImageData
 
 void *GraphicsAPI_D3D11::CreateImage(const ImageCreateInfo &imageCI) {
     if (imageCI.dimension == 1) {

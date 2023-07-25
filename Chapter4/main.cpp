@@ -11,7 +11,7 @@
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_5
 
 #ifdef _MSC_VER
-#define strncpy(d, s, n) strcpy_s(d, n, s);
+#define strncpy(dst, src, count) strcpy_s(dst, count, src);
 #endif
 
 class OpenXRTutorial {
