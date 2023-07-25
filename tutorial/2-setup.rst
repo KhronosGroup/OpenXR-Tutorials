@@ -10,15 +10,11 @@ Select your platform, as the instructions are different depending on your select
 .. container:: windows
 	:name: windows-id-1
 
-	.. rubric:: Windows
-
 	For the Windows OpenXR project, we'll use CMake to create some project files for Visual Studio.
 	First, create a directory where the code will go, we'll call this the *workspace* directory.
 
 .. container:: linux
 	:name: linux-id-1
-
-	.. rubric:: Linux
 
 	You are free to use any code editor and/or compiler; this tutorial will use Visual Studio Code.
 	For the Linux OpenXR project, we'll use CMake alongside Visual Studio Code to build the project.
@@ -35,8 +31,6 @@ Select your platform, as the instructions are different depending on your select
 	
 .. container:: windows linux
 	:name: windows-linux-id-1
-
-	.. rubric:: Windows and Linux
 
 	Now, create a text file in the *workspace* folder called ``CMakeLists.txt`` and in it, put the following code:
 
