@@ -159,12 +159,14 @@ private:
         OPENXR_CHECK(xrGetSystemProperties(xrInstance, systemID, &systemProperties), "Failed to get SystemProperties.");
     }
 
+    // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
     void GetEnvironmentBlendModes() {
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate ViewConfigurationViews.");
         environmentBlendModes.resize(environmentBlendModeSize);
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, environmentBlendModes.data()), "Failed to enumerate ViewConfigurationViews.");
     }
+    // XR_DOCS_TAG_END_GetEnvironmentBlendModes
 
     // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
     void GetViewConfigurationViews() {
@@ -270,28 +272,28 @@ private:
         } while (result == XR_SUCCESS);
     }
     
-// XR_DOCS_TAG_BEGIN_CreateReferenceSpace
+    // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
     void CreateReferenceSpace() {
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
         OPENXR_CHECK(xrCreateReferenceSpace(session, &referenceSpaceCI, &localOrStageSpace), "Failed to create ReferenceSpace.");
     }
-// XR_DOCS_TAG_END_CreateReferenceSpace
+    // XR_DOCS_TAG_END_CreateReferenceSpace
 
-// XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
+    // XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
     void DestroyReferenceSpace() {
         OPENXR_CHECK(xrDestroySpace(localOrStageSpace), "Failed to destroy Space.")
     }
-// XR_DOCS_TAG_END_DestroyReferenceSpace
+    // XR_DOCS_TAG_END_DestroyReferenceSpace
 
     void CreateSwapchain() {
-// XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
+        // XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
         uint32_t formatSize = 0;
         OPENXR_CHECK(xrEnumerateSwapchainFormats(session, 0, &formatSize, nullptr), "Failed to enumerate Swapchain Formats");
         std::vector<int64_t> formats(formatSize);
         OPENXR_CHECK(xrEnumerateSwapchainFormats(session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
-// XR_DOCS_TAG_END_EnumerateSwapchainFormats
+        // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
         // Check the two views for stereo are the same
         if (viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO && viewConfigurationViews.size() == 2) {
@@ -390,6 +392,7 @@ private:
     }
     // XR_DOCS_TAG_END_DestroySwapchain
 
+    // XR_DOCS_TAG_BEGIN_RenderFrame
     void RenderFrame() {
         if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
             XrFrameState frameState{XR_TYPE_FRAME_STATE};
@@ -425,7 +428,9 @@ private:
             OPENXR_CHECK(xrEndFrame(session, &frameEndInfo), "Failed to end the XR Frame.");
         }
     }
+    // XR_DOCS_TAG_END_RenderFrame
 
+    // XR_DOCS_TAG_BEGIN_RenderLayer
     bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews) {
         std::vector<XrView> views(viewConfigurationViews.size(), {XR_TYPE_VIEW});
 
@@ -483,6 +488,7 @@ private:
 
         return true;
     }
+    // XR_DOCS_TAG_END_RenderLayer
 
 #if defined(__ANDROID__)
 public:
