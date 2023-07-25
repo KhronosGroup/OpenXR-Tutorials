@@ -513,8 +513,7 @@ We store our newly created color image views for the swapchain in ``SwapchainAnd
 xrDestroySwapchain
 ^^^^^^^^^^^^^^^^^^
 
-When the main render loop has finished and the application is shutting down, we need to destroy our created ``XrSwapchain``. This is done by calling ``xrDestroySwapchain()`` with the ``XrSwapchain`` and it will return ``XR_SUCCESS`` if successful. At the same time we destroy the associated depth image and all the views that the graphics API created. In this tutorial, we use ``GraphicsAPI::DestroyImage()`` and ``GraphicsAPI::DestroyImageView()`` to destroy those objects.
-Destroy the swapchain, depth image and their views!
+When the main render loop has finished and the application is shutting down, we need to destroy our created ``XrSwapchain``. This is done by calling ``xrDestroySwapchain()`` with the ``XrSwapchain`` and it will return ``XR_SUCCESS`` if successful. At the same time, we destroy the associated depth image and all of the views that the graphics API created. In this tutorial, we use ``GraphicsAPI::DestroyImage()`` and ``GraphicsAPI::DestroyImageView()`` to destroy those objects.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -527,3 +526,34 @@ We now have ``XrSwapchain`` s and a depth images, ready for rendering. Next, we 
 Building a RenderLoop
 ---------------------
 
+xrEnumerateEnvironmentBlendModes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
+	:end-before: XR_DOCS_TAG_END_GetEnvironmentBlendModes
+	:dedent: 4
+
+xrCreateReferenceSpace
+^^^^^^^^^^^^^^^^^^^^^^
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateReferenceSpace
+	:end-before: XR_DOCS_TAG_END_CreateReferenceSpace
+	:dedent: 4
+
+RenderFrame
+^^^^^^^^^^^
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderFrame
+	:end-before: XR_DOCS_TAG_END_RenderFrame
+	:dedent: 4
+
+RenderLayer
+^^^^^^^^^^^
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer
+	:end-before: XR_DOCS_TAG_END_RenderLayer
+	:dedent: 4
