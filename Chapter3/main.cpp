@@ -285,7 +285,6 @@ private:
     }
 // XR_DOCS_TAG_END_DestroyReferenceSpace
 
-// XR_DOCS_TAG_BEGIN_CreateDestroySwapchain
     void CreateSwapchain() {
 // XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
         uint32_t formatSize = 0;
@@ -329,6 +328,7 @@ private:
             OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, swapchainImageCount, &swapchainImageCount, swapchainImages), "Failed to enumerate Swapchain Images.");
             // XR_DOCS_TAG_END_EnumerateSwapchainImages
 
+            // XR_DOCS_TAG_BEGIN_CreateDepthImage
             GraphicsAPI::ImageCreateInfo depthImageCI;
             depthImageCI.dimension = 2;
             depthImageCI.width = viewConfigurationView.recommendedImageRectWidth;
@@ -343,7 +343,9 @@ private:
             depthImageCI.depthAttachment = true;
             depthImageCI.sampled = false;
             swapchainAndDepthImage.depthImage = graphicsAPI->CreateImage(depthImageCI);
+            // XR_DOCS_TAG_END_CreateDepthImage
 
+            // XR_DOCS_TAG_BEGIN_CreateImageViews
             for (uint32_t i = 0; i < swapchainImageCount; i++) {
                 GraphicsAPI::ImageViewCreateInfo imageViewCI;
                 imageViewCI.image = graphicsAPI->GetSwapchainImage(i);
@@ -369,9 +371,11 @@ private:
             imageViewCI.baseArrayLayer = 0;
             imageViewCI.layerCount = 1;
             swapchainAndDepthImage.depthImageView = graphicsAPI->CreateImageView(imageViewCI);
+            // XR_DOCS_TAG_END_CreateImageViews
         }
     }
 
+    // XR_DOCS_TAG_BEGIN_DestroySwapchain
     void DestroySwapchain() {
         for (SwapchainAndDepthImage &swapchainAndDepthImage : swapchainAndDepthImages) {
             graphicsAPI->DestroyImageView(swapchainAndDepthImage.depthImageView);
@@ -384,7 +388,7 @@ private:
             OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");
         }
     }
-    // XR_DOCS_TAG_END_CreateDestroySwapchain
+    // XR_DOCS_TAG_END_DestroySwapchain
 
     void RenderFrame() {
         if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
