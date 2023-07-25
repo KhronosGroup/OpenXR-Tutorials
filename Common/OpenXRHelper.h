@@ -1,23 +1,28 @@
-#pragma once
-
-// Define any XR_USE_PLATFORM_... / XR_USE_GRAPHICS_API_...before this header file.
+// OpenXRHelper.h
 
 // OpenXR Headers
 #include "openxr/openxr.h"
 #include "openxr/openxr_platform.h"
 
-inline void OpenXRDebugBreak() {
-    std::cerr<<"Breakpoint here to debug.\n";
-}
+#if defined(__ANDROID__)
+#include "android_native_app_glue.h"
+#define XR_USE_PLATFORM_ANDROID
+#endif
 
-// XR_DOCS_TAG_BEGIN_Helper_Functions0
-#define OPENXR_CHECK(x, y)                                                                                                                              \
-    {                                                                                                                                                   \
-        XrResult result = (x);                                                                                                                          \
-        if (!XR_SUCCEEDED(result)) {                                                                                                                    \
-            std::cerr << "ERROR: OPENXR: " << int(result) << "(" << (xrInstance ? GetXRErrorString(xrInstance, result) : "") << ") " << y << std::endl; \
-            OpenXRDebugBreak();                                                                                                                               \
-        }                                                                                                                                               \
+#define OPENXR_CHECK1(x, y)          \
+    {                                \
+        XrResult result = (x);       \
+        if (!XR_SUCCEEDED(result)) { \
+            std::cout << "ERROR: OPENXR: " << int(result) << "(" << result << ") " << y << std::endl; \
+        }                            \
+    }
+
+#define OPENXR_CHECK(x, y)           \
+    {                                \
+        XrResult result = (x);       \
+        if (!XR_SUCCEEDED(result)) { \
+            std::cout << "ERROR: OPENXR: " << int(result) << "(" << (/*WRS:xrInstance*/instance ? GetXRErrorString(/*WRS:xrInstance*/instance, result) : "") << ") " << y << std::endl; \
+        }                            \
     }
 
 inline const char* GetXRErrorString(XrInstance xr_instance, XrResult res) {
@@ -25,4 +30,4 @@ inline const char* GetXRErrorString(XrInstance xr_instance, XrResult res) {
     xrResultToString(xr_instance, res, str);
     return str;
 }
-// XR_DOCS_TAG_END_Helper_Functions0
+
