@@ -165,6 +165,15 @@ private:
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
         environmentBlendModes.resize(environmentBlendModeSize);
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(xrInstance, systemID, viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
+        // Pick the first application supported blend mode supported by the hardware.
+        for (auto mode : applicationEnvironmentBlendModes) {
+
+            if (std::find(environmentBlendModes.begin(), environmentBlendModes.end(), mode)
+                  != environmentBlendModes.end()) {
+                environmentBlendMode = mode;
+                break;
+            }
+        }
     }
     // XR_DOCS_TAG_END_GetEnvironmentBlendModes
 
@@ -417,7 +426,7 @@ private:
 
             XrFrameEndInfo frameEndInfo{XR_TYPE_FRAME_END_INFO};
             frameEndInfo.displayTime = frameState.predictedDisplayTime;
-            frameEndInfo.environmentBlendMode = environmentBlendModes[0];
+            frameEndInfo.environmentBlendMode = environmentBlendMode;
             if (rendered) {
                 frameEndInfo.layerCount = 1;
                 frameEndInfo.layers = reinterpret_cast<XrCompositionLayerBaseHeader **>(&layers);
@@ -473,7 +482,22 @@ private:
 
             graphicsAPI->BeginRendering();
 
-            graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.17f, 0.17f, 0.17f, 1.0f);
+            if ( environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE ) {
+                  // VR mode background
+                  graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex],
+                                          0.17f,
+                                          0.17f,
+                                          0.17f,
+                                          1.0f);
+            } else {
+                  // AR mode background
+                  graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex],
+                                          0.17f,
+                                          0.17f,
+                                          0.17f,
+                                          1.0f);
+            }
+
             graphicsAPI->ClearDepth(swapchainAndDepthImages[i].depthImageView, 1.0f);
 
             graphicsAPI->EndRendering();
@@ -595,7 +619,9 @@ private:
     };
     std::vector<SwapchainAndDepthImage> swapchainAndDepthImages;
 
+    std::vector<XrEnvironmentBlendMode> applicationEnvironmentBlendModes{XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE};
     std::vector<XrEnvironmentBlendMode> environmentBlendModes{};
+    XrEnvironmentBlendMode environmentBlendMode {XR_ENVIRONMENT_BLEND_MODE_OPAQUE};
 
     XrSpace localOrStageSpace{};
 };

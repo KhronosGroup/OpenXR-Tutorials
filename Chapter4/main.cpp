@@ -266,7 +266,7 @@ private:
         // Pick the first application supported blend mode supported by the hardware.
         for (auto mode : applicationEnvironmentBlendModes) {
 
-          	if (std::find(environmentBlendModes.begin(), environmentBlendModes.end(), mode)
+			if (std::find(environmentBlendModes.begin(), environmentBlendModes.end(), mode)
 					!= environmentBlendModes.end()) {
             	environmentBlendMode = mode;
             	break;
@@ -847,7 +847,7 @@ private:
 			layerProjectionViews[i].subImage.imageArrayIndex = 0;
 
 			graphicsAPI->BeginRendering();
-            if ( environmentBlendModes[0] == XR_ENVIRONMENT_BLEND_MODE_OPAQUE ) {
+            if ( environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE ) {
               	// VR mode use a background color.
               	graphicsAPI->ClearColor(swapchainAndDepthImages[i].colorImageViews[imageIndex],
                                       0.22f,
