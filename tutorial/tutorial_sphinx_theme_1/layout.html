@@ -181,7 +181,7 @@
 	if(selectopengl)
 		selectopengl.disabled = true;
 	}
-	var oldelements = document.getElementsByClassName('selected-platform');
+	var oldelements = document.querySelectorAll(".selected-platform");
 	console.log("selected-platform on "+oldelements.length+" elements.");
 		[].forEach.call(oldelements, function(el) {
 			el.classList.remove('selected-platform');
@@ -277,10 +277,12 @@
 		if (graphicsApi == "vulkan") {
 			$(".vulkan").show();
 		}
-		var oldelements = document.getElementsByClassName('selected-graphics-api');
-		[].forEach.call(oldelements, function(el) {
-			el.classList.remove('selected-graphics-api');
-		});
+		var oldelements = document.querySelectorAll(".selected-graphics-api");
+		console.log("selected-platform on "+oldelements.length+" elements.");
+			[].forEach.call(oldelements, function(el) {
+				el.classList.remove('selected-graphics-api');
+				console.log("Removing selected-graphics-api from "+el.id);
+			});
 		var element = document.getElementById('select' + graphicsApi);
 		if(element)
 		{
