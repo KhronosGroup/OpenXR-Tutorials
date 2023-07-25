@@ -202,6 +202,10 @@
 		element2.classList.add('selected-platform');
 		console.log("Adding selected-platform to "+element2.id);
 	}
+	else
+	{
+		console.log('select' + platform + "-inline not found");
+	}
 	if(limitAPIChoice())
 		updateGraphicsAPI();
 	window.updatePlatform=updatePlatform;
