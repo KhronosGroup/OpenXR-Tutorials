@@ -183,10 +183,13 @@
 	}
 	var oldelements = document.querySelectorAll(".selected-platform");
 	console.log("selected-platform on "+oldelements.length+" elements.");
-		[].forEach.call(oldelements, function(el) {
-			el.classList.remove('selected-platform');
-			console.log("Removing selected-platform from "+el.id);
-		});
+	while (oldelements.length > 0)
+	{
+		var el=oldelements.item(0);
+		el.classList.remove('selected-platform');
+		console.log("Removing selected-platform from "+el.id);
+		oldelements = document.querySelectorAll(".selected-platform");
+	}
 	var element = document.getElementById('select' + platform);
 	if(element)
 	{
@@ -279,10 +282,13 @@
 		}
 		var oldelements = document.querySelectorAll(".selected-graphics-api");
 		console.log("selected-platform on "+oldelements.length+" elements.");
-			[].forEach.call(oldelements, function(el) {
-				el.classList.remove('selected-graphics-api');
-				console.log("Removing selected-graphics-api from "+el.id);
-			});
+		while (oldelements.length > 0)
+		{
+			var el=oldelements.item(0);
+			el.classList.remove('selected-graphics-api');
+			console.log("Removing selected-graphics-api from "+el.id);
+			oldelements = document.querySelectorAll(".selected-graphics-api");
+		}
 		var element = document.getElementById('select' + graphicsApi);
 		if(element)
 		{
