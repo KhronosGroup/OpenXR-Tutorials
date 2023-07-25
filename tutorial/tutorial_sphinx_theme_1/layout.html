@@ -136,11 +136,6 @@
 	var selectopengles=document.getElementById("selectopengles");
 	var selectvulkan=document.getElementById("selectvulkan");
 	var selectopengl=document.getElementById("selectopengl");
-	console.log("selectd3d11 = " + selectd3d11);
-	console.log("selectd3d12 = " + selectd3d12);
-	console.log("selectopengles = " + selectopengles);
-	console.log("selectvulkan = " + selectvulkan);
-	console.log("selectopengl = " + selectopengl);
 	$(".linux").hide();
 	$(".android").hide();
 	$(".windows").hide();
@@ -187,14 +182,16 @@
 		selectopengl.disabled = true;
 	}
 	var oldelements = document.getElementsByClassName('selected-platform');
-	for (i = 0; i < oldelements.length; ++i)
-	{
-		oldelements[i].classList.remove('selected-platform');
-	}
+	console.log("selected-platform on "+oldelements.length+" elements.");
+		[].forEach.call(oldelements, function(el) {
+			el.classList.remove('selected-graphics-api');
+			console.log("Removing selected-platform from "+el.id);
+		});
 	var element = document.getElementById('select' + platform);
 	if(element)
 	{
 		element.classList.add('selected-platform');
+		console.log("Adding selected-platform to "+element.id);
 	}
 	var element2 = document.getElementById('select' + platform + "-inline");
 	if(element2)
@@ -279,10 +276,9 @@
 			$(".vulkan").show();
 		}
 		var oldelements = document.getElementsByClassName('selected-graphics-api');
-		for (i = 0; i < oldelements.length; ++i)
-		{
-			oldelements[i].classList.remove('selected-graphics-api');
-		}
+		[].forEach.call(oldelements, function(el) {
+			el.classList.remove('selected-graphics-api');
+		});
 		var element = document.getElementById('select' + graphicsApi);
 		if(element)
 		{
