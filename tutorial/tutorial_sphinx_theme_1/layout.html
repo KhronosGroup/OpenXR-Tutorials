@@ -189,17 +189,17 @@
 	var oldelements = document.getElementsByClassName('selected-platform');
 	for (i = 0; i < oldelements.length; ++i)
 	{
-	oldelements[i].classList.remove('selected-platform');
+		oldelements[i].classList.remove('selected-platform');
 	}
 	var element = document.getElementById('select' + platform);
 	if(element)
 	{
-	element.classList.add('selected-platform');
+		element.classList.add('selected-platform');
 	}
 	var element2 = document.getElementById('select' + platform + "-inline");
 	if(element2)
 	{
-	element2.classList.add('selected-platform');
+		//element2.classList.add('selected-platform');
 	}
 	if(limitAPIChoice())
 		updateGraphicsAPI();
