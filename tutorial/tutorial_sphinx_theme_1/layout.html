@@ -184,7 +184,7 @@
 	var oldelements = document.getElementsByClassName('selected-platform');
 	console.log("selected-platform on "+oldelements.length+" elements.");
 		[].forEach.call(oldelements, function(el) {
-			el.classList.remove('selected-graphics-api');
+			el.classList.remove('selected-platform');
 			console.log("Removing selected-platform from "+el.id);
 		});
 	var element = document.getElementById('select' + platform);
