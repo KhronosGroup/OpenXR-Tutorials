@@ -392,7 +392,7 @@ The ``XrInstance`` is the foundational object that we need to create first. The 
 	:end-before: XR_DOCS_TAG_END_XrApplicationInfo
 	:dedent: 8
 
-This structure allows you specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the ``XrApplicationInfo::apiVersion``. Here we use the ``XR_CURRENT_API_VERSION`` macro to specific the OpenXR version that we want to run. Also note here the use of ``strcpy()`` to set the applicationName and engineName. If you look at ``XrApplicationInfo::applicationName`` and ``XrApplicationInfo::engineName`` members, they are of type ``char[]``, hence you must copy your string into that ``char[]`` and you must also by aware of the allowable length.
+This structure allows you specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the ``XrApplicationInfo::apiVersion``. Here we use the ``XR_CURRENT_API_VERSION`` macro to specific the OpenXR version that we want to run. Also note here the use of ``strncpy()`` to set the applicationName and engineName. If you look at ``XrApplicationInfo::applicationName`` and ``XrApplicationInfo::engineName`` members, they are of type ``char[]``, hence you must copy your string into that ``char[]`` and you must also by aware of the allowable length.
 
 Similar to Vulkan, OpenXR allows applications to extend functionality past what is provided by the core specification. The functionality could be hardware/vendor specific. Most vital of course is which Graphics API to use with OpenXR. OpenXR supports D3D11, D3D12, Vulkan, OpenGL and OpenGL ES. Due the extensible nature of specification, it allows newer Graphics APIs and hardware functionality to be added with ease.
 
@@ -759,6 +759,7 @@ Next, we will define the ``PollEvents()`` method. Here, we use a do-while loop t
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_PollEvents
 	:end-before: XR_DOCS_TAG_END_PollEvents
+	:dedent: 4
 
 The description of the events come from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_xrpollevent>`_.
 
@@ -821,12 +822,13 @@ The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will foc
 =====================================
 
 If the ``XrSessionState`` is ``XR_SESSION_STATE_READY``, the application can call ``xrBeginSession()``.
-In the ``XrSessionBeginInfo`` structure, we assign to ``XrSessionBeginInfo::primaryViewConfigurationType`` the ``viewConfiguration`` from the class, which in our case is ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye).
+In the ``XrSessionBeginInfo`` structure, we assign to ``XrSessionBeginInfo::primaryViewConfigurationType`` the ``m_viewConfiguration`` from the class, which in our case is ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye).
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-at: if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
 	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
+	:dedent: 16
 
 If the ``XrSessionState`` is ``XR_SESSION_STATE_STOPPING``, the application should call ``xrEndSession()``.
 
@@ -834,3 +836,4 @@ If the ``XrSessionState`` is ``XR_SESSION_STATE_STOPPING``, the application shou
 	:language: cpp
 	:start-at: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
 	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_EXITING) {
+	:dedent: 16
