@@ -2,7 +2,9 @@
 // OpenXR Tutorial for Khronos Group
 
 #include "DebugOutput.h"
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
 #include "GraphicsAPIs.h"
+// XR_DOCS_TAG_END_include_GraphicsAPIs
 #include "OpenXRDebugUtils.h"
 // XR_DOCS_TAG_BEGIN_include_linear_algebra
 #include "xr_linear_algebra.h"

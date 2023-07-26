@@ -136,11 +136,6 @@
 	var selectopengles=document.getElementById("selectopengles");
 	var selectvulkan=document.getElementById("selectvulkan");
 	var selectopengl=document.getElementById("selectopengl");
-	console.log("selectd3d11 = " + selectd3d11);
-	console.log("selectd3d12 = " + selectd3d12);
-	console.log("selectopengles = " + selectopengles);
-	console.log("selectvulkan = " + selectvulkan);
-	console.log("selectopengl = " + selectopengl);
 	$(".linux").hide();
 	$(".android").hide();
 	$(".windows").hide();
@@ -186,20 +181,30 @@
 	if(selectopengl)
 		selectopengl.disabled = true;
 	}
-	var oldelements = document.getElementsByClassName('selected-platform');
-	for (i = 0; i < oldelements.length; ++i)
+	var oldelements = document.querySelectorAll(".selected-platform");
+	console.log("selected-platform on "+oldelements.length+" elements.");
+	while (oldelements.length > 0)
 	{
-	oldelements[i].classList.remove('selected-platform');
+		var el=oldelements.item(0);
+		el.classList.remove('selected-platform');
+		console.log("Removing selected-platform from "+el.id);
+		oldelements = document.querySelectorAll(".selected-platform");
 	}
 	var element = document.getElementById('select' + platform);
 	if(element)
 	{
-	element.classList.add('selected-platform');
+		element.classList.add('selected-platform');
+		console.log("Adding selected-platform to "+element.id);
 	}
 	var element2 = document.getElementById('select' + platform + "-inline");
 	if(element2)
 	{
-	element2.classList.add('selected-platform');
+		element2.classList.add('selected-platform');
+		console.log("Adding selected-platform to "+element2.id);
+	}
+	else
+	{
+		console.log('select' + platform + "-inline not found");
 	}
 	if(limitAPIChoice())
 		updateGraphicsAPI();
@@ -237,17 +242,16 @@
 			return true;
 		}
 		return false;
+		}
+	function makeLinksOpenInNewWindow()
+	{ 
+		var download_hrefs = document.getElementsByClassName('reference download internal');
+		[].forEach.call(download_hrefs, function(el) {
+			el.setAttribute('target', "_blank");
+			console.log("Adding target blank to "+el.id);
+		});
+		window.makeLinksOpenInNewWindow=makeLinksOpenInNewWindow;
 	}
-	</script>
-	<script >
-	var platform = Cookies.get("platform")
-	if (platform==undefined) {
-	Cookies.set('platform', 'windows',{ expires: 365})
-	platform='windows';
-	}
-	</script>
-	<script defer src="{{ pathto('_static/js/updatePlatform.js', 1) }}"></script>
-	<script>
 	function updateGraphicsAPI()
 	{
 		var graphicsApi = Cookies.get("graphicsapi")
@@ -276,10 +280,14 @@
 		if (graphicsApi == "vulkan") {
 			$(".vulkan").show();
 		}
-		var oldelements = document.getElementsByClassName('selected-graphics-api');
-		for (i = 0; i < oldelements.length; ++i)
+		var oldelements = document.querySelectorAll(".selected-graphics-api");
+		console.log("selected-platform on "+oldelements.length+" elements.");
+		while (oldelements.length > 0)
 		{
-			oldelements[i].classList.remove('selected-graphics-api');
+			var el=oldelements.item(0);
+			el.classList.remove('selected-graphics-api');
+			console.log("Removing selected-graphics-api from "+el.id);
+			oldelements = document.querySelectorAll(".selected-graphics-api");
 		}
 		var element = document.getElementById('select' + graphicsApi);
 		if(element)
@@ -300,14 +308,13 @@
 		graphicsApi='vulkan';
 	}
 	</script>
-	<script defer src="{{ pathto('_static/js/updateGraphicsAPI.js', 1) }}"></script>
 	<style>
 	@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 	@import url('https://fonts.cdnfonts.com/css/menlo');
 	</style>
 </head>
 
-<body class="wy-body-for-nav" onload="updatePlatform(); updateGraphicsAPI();">
+<body class="wy-body-for-nav" onload="updatePlatform(); updateGraphicsAPI(); makeLinksOpenInNewWindow();">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
@@ -408,26 +415,14 @@
 	</div>
   {% include "versions.html" -%}
 
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable({{ 'true' if theme_sticky_navigation|tobool else 'false' }});
-      });
-  </script>
+  <script></script>
 
   {#- Do not conflict with RTD insertion of analytics script #}
   {%- if not READTHEDOCS %}
     {%- if theme_analytics_id %}
     <!-- Theme Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ theme_analytics_id }}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', '{{ theme_analytics_id }}', {
-          'anonymize_ip': {{ 'true' if theme_analytics_anonymize_ip|tobool else 'false' }},
-      });
-    </script>
+    <script></script>
 
     {%- endif %}
   {%- endif %}
