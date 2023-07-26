@@ -4,7 +4,7 @@
 #if defined(XR_USE_GRAPHICS_API_D3D12)
 class GraphicsAPI_D3D12 : public GraphicsAPI {
 public:
-    GraphicsAPI_D3D12(XrInstance xrInstance, XrSystemId systemId);
+    GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemId);
     ~GraphicsAPI_D3D12();
 
     virtual int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }

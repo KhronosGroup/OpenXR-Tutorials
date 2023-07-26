@@ -7,22 +7,22 @@
 #include "openxr/openxr_platform.h"
 
 inline void OpenXRDebugBreak() {
-    std::cerr<<"Breakpoint here to debug.\n";
+    std::cerr << "Breakpoint here to debug.\n";
 }
 
 // XR_DOCS_TAG_BEGIN_Helper_Functions0
-#define OPENXR_CHECK(x, y)                                                                                                                              \
-    {                                                                                                                                                   \
-        XrResult result = (x);                                                                                                                          \
-        if (!XR_SUCCEEDED(result)) {                                                                                                                    \
-            std::cerr << "ERROR: OPENXR: " << int(result) << "(" << (xrInstance ? GetXRErrorString(xrInstance, result) : "") << ") " << y << std::endl; \
-            OpenXRDebugBreak();                                                                                                                               \
-        }                                                                                                                                               \
+#define OPENXR_CHECK(x, y)                                                                                                                                  \
+    {                                                                                                                                                       \
+        XrResult result = (x);                                                                                                                              \
+        if (!XR_SUCCEEDED(result)) {                                                                                                                        \
+            std::cerr << "ERROR: OPENXR: " << int(result) << "(" << (m_xrInstance ? GetXRErrorString(m_xrInstance, result) : "") << ") " << y << std::endl; \
+            OpenXRDebugBreak();                                                                                                                             \
+        }                                                                                                                                                   \
     }
 
-inline const char* GetXRErrorString(XrInstance xr_instance, XrResult res) {
-    static char str[XR_MAX_RESULT_STRING_SIZE];
-    xrResultToString(xr_instance, res, str);
-    return str;
+inline const char* GetXRErrorString(XrInstance xrInstance, XrResult result) {
+    static char string[XR_MAX_RESULT_STRING_SIZE];
+    xrResultToString(xrInstance, result, string);
+    return string;
 }
 // XR_DOCS_TAG_END_Helper_Functions0

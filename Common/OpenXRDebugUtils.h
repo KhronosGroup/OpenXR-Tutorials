@@ -4,5 +4,5 @@
 
 XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData);
 
-XrDebugUtilsMessengerEXT CreateOpenXRDebugUtilsMessenger(XrInstance instance);
-void DestroyOpenXRDebugUtilsMessenger(XrInstance instance, XrDebugUtilsMessengerEXT debugUtilsMessenger);
+XrDebugUtilsMessengerEXT CreateOpenXRDebugUtilsMessenger(XrInstance m_xrInstance);
+void DestroyOpenXRDebugUtilsMessenger(XrInstance m_xrInstance, XrDebugUtilsMessengerEXT debugUtilsMessenger);

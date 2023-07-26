@@ -20,10 +20,10 @@
     }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
-GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance xrInstance, XrSystemId systemId) {
-    OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetD3D12GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D12GraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
+GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemId) {
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetD3D12GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D12GraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
     XrGraphicsRequirementsD3D12KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR};
-    OPENXR_CHECK(xrGetD3D12GraphicsRequirementsKHR(xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for D3D12.");
+    OPENXR_CHECK(xrGetD3D12GraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for D3D12.");
 
     D3D12_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
 

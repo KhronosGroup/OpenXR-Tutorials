@@ -12,12 +12,12 @@
     }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan
-GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemId) {
+GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance m_xrInstance, XrSystemId systemId) {
     // Instance
-    LoadPFN_XrFunctions(xrInstance);
+    LoadPFN_XrFunctions(m_xrInstance);
 
     XrGraphicsRequirementsVulkanKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR};
-    OPENXR_CHECK(xrGetVulkanGraphicsRequirementsKHR(xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for Vulkan.");
+    OPENXR_CHECK(xrGetVulkanGraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for Vulkan.");
 
     VkApplicationInfo ai;
     ai.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -34,7 +34,7 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemI
     std::vector<VkExtensionProperties> instanceExtensionProperties;
     instanceExtensionProperties.resize(instanceExtensionCount);
     VULKAN_CHECK(vkEnumerateInstanceExtensionProperties(nullptr, &instanceExtensionCount, instanceExtensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
-    const std::vector<std::string> &openXrInstanceExtensionNames = GetInstanceExtensionsForOpenXR(xrInstance, systemId);
+    const std::vector<std::string> &openXrInstanceExtensionNames = GetInstanceExtensionsForOpenXR(m_xrInstance, systemId);
     for (const std::string &requestExtension : openXrInstanceExtensionNames) {
         for (const VkExtensionProperties &extensionProperty : instanceExtensionProperties) {
             if (strcmp(requestExtension.c_str(), extensionProperty.extensionName))
@@ -64,7 +64,7 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemI
     VULKAN_CHECK(vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, physicalDevices.data()), "Failed to enumerate PhysicalDevices.");
 
     VkPhysicalDevice physicalDeviceFromXR;
-    OPENXR_CHECK(xrGetVulkanGraphicsDeviceKHR(xrInstance, systemId, instance, &physicalDeviceFromXR), "Failed to get Graphics Device for Vulkan.");
+    OPENXR_CHECK(xrGetVulkanGraphicsDeviceKHR(m_xrInstance, systemId, instance, &physicalDeviceFromXR), "Failed to get Graphics Device for Vulkan.");
     auto physicalDeviceFromXR_it = std::find(physicalDevices.begin(), physicalDevices.end(), physicalDeviceFromXR);
     if (physicalDeviceFromXR_it != physicalDevices.end()) {
         physicalDevice = *physicalDeviceFromXR_it;
@@ -108,7 +108,7 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemI
     deviceExtensionProperties.resize(deviceExtensionCount);
 
     VULKAN_CHECK(vkEnumerateDeviceExtensionProperties(physicalDevice, 0, &deviceExtensionCount, deviceExtensionProperties.data()), "Failed to enumerate DeviceExtensionProperties.");
-    const std::vector<std::string> &openXrDeviceExtensionNames = GetDeviceExtensionsForOpenXR(xrInstance, systemId);
+    const std::vector<std::string> &openXrDeviceExtensionNames = GetDeviceExtensionsForOpenXR(m_xrInstance, systemId);
     for (const std::string &requestExtension : openXrDeviceExtensionNames) {
         for (const VkExtensionProperties &extensionProperty : deviceExtensionProperties) {
             if (strcmp(requestExtension.c_str(), extensionProperty.extensionName))
@@ -373,21 +373,21 @@ void GraphicsAPI_Vulkan::ClearDepth(void *imageView, float d) {
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
-void GraphicsAPI_Vulkan::LoadPFN_XrFunctions(XrInstance xrInstance) {
-    OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetVulkanGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
-    OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetVulkanInstanceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanInstanceExtensionsKHR), "Failed to get InstanceProcAddr.");
-    OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetVulkanDeviceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanDeviceExtensionsKHR), "Failed to get InstanceProcAddr.");
-    OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetVulkanGraphicsDeviceKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsDeviceKHR), "Failed to get InstanceProcAddr.");
+void GraphicsAPI_Vulkan::LoadPFN_XrFunctions(XrInstance m_xrInstance) {
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanInstanceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanInstanceExtensionsKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanDeviceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanDeviceExtensionsKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanGraphicsDeviceKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsDeviceKHR), "Failed to get InstanceProcAddr.");
 }
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
-std::vector<std::string> GraphicsAPI_Vulkan::GetInstanceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId) {
+std::vector<std::string> GraphicsAPI_Vulkan::GetInstanceExtensionsForOpenXR(XrInstance m_xrInstance, XrSystemId systemId) {
     uint32_t extensionNamesSize = 0;
-    OPENXR_CHECK(xrGetVulkanInstanceExtensionsKHR(xrInstance, systemId, 0, &extensionNamesSize, nullptr), "Failed to get Vulkan Instance Extensions.");
+    OPENXR_CHECK(xrGetVulkanInstanceExtensionsKHR(m_xrInstance, systemId, 0, &extensionNamesSize, nullptr), "Failed to get Vulkan Instance Extensions.");
 
     std::vector<char> extensionNames(extensionNamesSize);
-    OPENXR_CHECK(xrGetVulkanInstanceExtensionsKHR(xrInstance, systemId, extensionNamesSize, &extensionNamesSize, extensionNames.data()), "Failed to get Vulkan Instance Extensions.");
+    OPENXR_CHECK(xrGetVulkanInstanceExtensionsKHR(m_xrInstance, systemId, extensionNamesSize, &extensionNamesSize, extensionNames.data()), "Failed to get Vulkan Instance Extensions.");
 
     std::stringstream streamData(extensionNames.data());
     std::vector<std::string> extensions;
@@ -400,12 +400,12 @@ std::vector<std::string> GraphicsAPI_Vulkan::GetInstanceExtensionsForOpenXR(XrIn
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
-std::vector<std::string> GraphicsAPI_Vulkan::GetDeviceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId) {
+std::vector<std::string> GraphicsAPI_Vulkan::GetDeviceExtensionsForOpenXR(XrInstance m_xrInstance, XrSystemId systemId) {
     uint32_t extensionNamesSize = 0;
-    OPENXR_CHECK(xrGetVulkanDeviceExtensionsKHR(xrInstance, systemId, 0, &extensionNamesSize, nullptr), "Failed to get Vulkan Device Extensions.");
+    OPENXR_CHECK(xrGetVulkanDeviceExtensionsKHR(m_xrInstance, systemId, 0, &extensionNamesSize, nullptr), "Failed to get Vulkan Device Extensions.");
 
     std::vector<char> extensionNames(extensionNamesSize);
-    OPENXR_CHECK(xrGetVulkanDeviceExtensionsKHR(xrInstance, systemId, extensionNamesSize, &extensionNamesSize, extensionNames.data()), "Failed to get Vulkan Device Extensions.");
+    OPENXR_CHECK(xrGetVulkanDeviceExtensionsKHR(m_xrInstance, systemId, extensionNamesSize, &extensionNamesSize, extensionNames.data()), "Failed to get Vulkan Device Extensions.");
 
     std::stringstream streamData(extensionNames.data());
     std::vector<std::string> extensions;

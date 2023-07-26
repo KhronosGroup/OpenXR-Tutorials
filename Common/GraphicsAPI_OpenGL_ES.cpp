@@ -351,10 +351,10 @@ void GLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
 
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES
-GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES(XrInstance xrInstance, XrSystemId systemId) {
-    OPENXR_CHECK(xrGetInstanceProcAddr(xrInstance, "xrGetOpenGLESGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetOpenGLESGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
+GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES(XrInstance m_xrInstance, XrSystemId systemId) {
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetOpenGLESGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetOpenGLESGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
     XrGraphicsRequirementsOpenGLESKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
-    OPENXR_CHECK(xrGetOpenGLESGraphicsRequirementsKHR(xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for OpenGLES.");
+    OPENXR_CHECK(xrGetOpenGLESGraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for OpenGLES.");
 
     // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengles.cpp#L101-L119
     // Initialize the gl extensions. Note we have to open a window.

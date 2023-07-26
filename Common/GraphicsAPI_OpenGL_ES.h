@@ -4,7 +4,7 @@
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
 class GraphicsAPI_OpenGL_ES : public GraphicsAPI {
 public:
-    GraphicsAPI_OpenGL_ES(XrInstance xrInstance, XrSystemId systemId);
+    GraphicsAPI_OpenGL_ES(XrInstance m_xrInstance, XrSystemId systemId);
     ~GraphicsAPI_OpenGL_ES();
 
     virtual int64_t GetDepthFormat() override { return (int64_t)GL_DEPTH_COMPONENT32F; }

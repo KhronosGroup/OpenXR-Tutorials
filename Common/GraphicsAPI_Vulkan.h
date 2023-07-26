@@ -4,7 +4,7 @@
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
 class GraphicsAPI_Vulkan : public GraphicsAPI {
 public:
-    GraphicsAPI_Vulkan(XrInstance xrInstance, XrSystemId systemId);
+    GraphicsAPI_Vulkan(XrInstance m_xrInstance, XrSystemId systemId);
     ~GraphicsAPI_Vulkan();
 
     virtual int64_t GetDepthFormat() override { return (int64_t)VK_FORMAT_D32_SFLOAT; }
@@ -27,9 +27,9 @@ public:
     virtual void ClearDepth(void* imageView, float d) override;
 
 private:
-    void LoadPFN_XrFunctions(XrInstance xrInstance);
-    std::vector<std::string> GetInstanceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId);
-    std::vector<std::string> GetDeviceExtensionsForOpenXR(XrInstance xrInstance, XrSystemId systemId);
+    void LoadPFN_XrFunctions(XrInstance m_xrInstance);
+    std::vector<std::string> GetInstanceExtensionsForOpenXR(XrInstance m_xrInstance, XrSystemId systemId);
+    std::vector<std::string> GetDeviceExtensionsForOpenXR(XrInstance m_xrInstance, XrSystemId systemId);
 
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
 
