@@ -11,16 +11,16 @@
 #define strncpy(dst, src, count) strcpy_s(dst, count, src);
 #endif
 
-class OpenXRTutorialChapter2 {
+class OpenXRTutorial {
 public:
-    OpenXRTutorialChapter2(GraphicsAPI_Type api)
+    OpenXRTutorial(GraphicsAPI_Type api)
         : apiType(api) {
         if (!CheckGraphicsAPI_TypeIsValidForPlatform(apiType)) {
             std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
             DEBUG_BREAK;
         }
     }
-    ~OpenXRTutorialChapter2() = default;
+    ~OpenXRTutorial() = default;
 
     void Run() {
         CreateInstance();
@@ -353,7 +353,7 @@ private:
 void OpenXRTutorial_Main() {
     DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 2." << std::endl;
-    OpenXRTutorialChapter2 app(VULKAN);
+    OpenXRTutorial app(OPENGL);
     app.Run();
 }
 
@@ -365,8 +365,8 @@ int main(int argc, char **argv) {
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
 // XR_DOCS_TAG_BEGIN_android_main___ANDROID__
-android_app *OpenXRTutorialChapter2::androidApp = nullptr;
-OpenXRTutorialChapter2::AndroidAppState OpenXRTutorialChapter2::androidAppState = {};
+android_app *OpenXRTutorial::androidApp = nullptr;
+OpenXRTutorial::AndroidAppState OpenXRTutorial::androidAppState = {};
 
 void android_main(struct android_app *app) {
     // Allow interaction with JNI and the JVM on this thread.
@@ -374,8 +374,7 @@ void android_main(struct android_app *app) {
     JNIEnv *env;
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
-    XrInstance xrInstance = XR_NULL_HANDLE; // here to keep the OPENXR_CHECK macro happy.
-
+	  XrInstance xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
     OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
     if (!xrInitializeLoaderKHR) {
@@ -387,10 +386,10 @@ void android_main(struct android_app *app) {
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
     OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
 
-    app->userData = &OpenXRTutorialChapter2::androidAppState;
-    app->onAppCmd = OpenXRTutorialChapter2::AndroidAppHandleCmd;
+    app->userData = &OpenXRTutorial::androidAppState;
+    app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
-    OpenXRTutorialChapter2::androidApp = app;
+    OpenXRTutorial::androidApp = app;
     OpenXRTutorial_Main();
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__

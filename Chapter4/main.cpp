@@ -94,20 +94,24 @@ public:
 
 private:
 	void CreateInstance() {
-
+        // XR_DOCS_TAG_BEGIN_XrApplicationInfo
 		XrApplicationInfo AI;
 		strncpy(AI.applicationName, "OpenXR Tutorial Chapter 4",XR_MAX_APPLICATION_NAME_SIZE);
 		AI.applicationVersion = 1;
 		strncpy(AI.engineName, "OpenXR Engine",XR_MAX_ENGINE_NAME_SIZE);
 		AI.engineVersion = 1;
 		AI.apiVersion = XR_CURRENT_API_VERSION;
+        // XR_DOCS_TAG_END_XrApplicationInfo
 
 		// Add additional instance layers/extensions
 		{
+            // XR_DOCS_TAG_BEGIN_instanceExtensions
 			instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
 			instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(apiType));
+            // XR_DOCS_TAG_END_instanceExtensions
 		}
 
+        // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
 		uint32_t apiLayerCount = 0;
 		std::vector<XrApiLayerProperties> apiLayerProperties;
 		OPENXR_CHECK(xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr), "Failed to enumerate ApiLayerProperties.");
@@ -141,7 +145,9 @@ private:
 				}
 			}
 		}
+        // XR_DOCS_TAG_END_find_apiLayer_extension
 
+        // XR_DOCS_TAG_BEGIN_XrInstanceCreateInfo
 		XrInstanceCreateInfo instanceCI{XR_TYPE_INSTANCE_CREATE_INFO};
 		instanceCI.createFlags = 0;
 		instanceCI.applicationInfo = AI;
@@ -150,12 +156,14 @@ private:
 		instanceCI.enabledExtensionCount = static_cast<uint32_t>(activeInstanceExtensions.size());
 		instanceCI.enabledExtensionNames = activeInstanceExtensions.data();
 		OPENXR_CHECK(xrCreateInstance(&instanceCI, &xrInstance), "Failed to create Instance.");
+        // XR_DOCS_TAG_END_XrInstanceCreateInfo
 	}
 
 	void DestroyInstance() {
 		OPENXR_CHECK(xrDestroyInstance(xrInstance), "Failed to destroy Instance.");
 	}
 
+    // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
 	void CreateDebugMessenger() {
 		if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
 			debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(xrInstance);
@@ -166,7 +174,9 @@ private:
 			DestroyOpenXRDebugUtilsMessenger(xrInstance, debugUtilsMessenger);
 		}
 	}
+    // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
+    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
 	void GetInstanceProperties() {
 		XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
 		OPENXR_CHECK(xrGetInstanceProperties(xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
@@ -176,7 +186,9 @@ private:
 		std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
 		std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
 	}
+    // XR_DOCS_TAG_END_GetInstanceProperties
 
+    // XR_DOCS_TAG_BEGIN_GetSystemID
 	void GetSystemID() {
 		XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
 		systemGI.formFactor = formFactor;
@@ -185,6 +197,7 @@ private:
 		XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
 		OPENXR_CHECK(xrGetSystemProperties(xrInstance, systemID, &systemProperties), "Failed to get SystemProperties.");
 	}
+    // XR_DOCS_TAG_END_GetSystemID
 
 // XR_DOCS_TAG_BEGIN_CreateActionSet
 	void CreateActionSet() {
@@ -283,6 +296,7 @@ private:
 	}
     // XR_DOCS_TAG_END_GetViewConfigurationViews
 
+    // XR_DOCS_TAG_BEGIN_CreateDestroySession
 	void CreateSession() {
 		XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
 
@@ -320,6 +334,7 @@ private:
 	void DestroySession() {
 		OPENXR_CHECK(xrDestroySession(session), "Failed to destroy Session.");
 	}
+    // XR_DOCS_TAG_END_CreateDestroySession
 // XR_DOCS_TAG_BEGIN_CreateResources1
 	struct CameraConstants
 	{
@@ -536,6 +551,7 @@ private:
 	}
 // XR_DOCS_TAG_END_DestroyResources
 
+    // XR_DOCS_TAG_BEGIN_PollEvents
 	void PollEvents() {
 		XrResult result = XR_SUCCESS;
 		do {
@@ -592,6 +608,7 @@ private:
 
 		} while (result == XR_SUCCESS);
 	}
+    // XR_DOCS_TAG_END_PollEvents
 // XR_DOCS_TAG_BEGIN_PollActions
 	void PollActions(XrTime predictedTime)
 	{
@@ -905,6 +922,7 @@ private:
 	}
 
 #if defined(__ANDROID__)
+    // XR_DOCS_TAG_BEGIN_Android_System_Functionality
 public:
 	static android_app *androidApp;
 
@@ -970,6 +988,7 @@ private:
 			}
 		}
 	}
+    // XR_DOCS_TAG_END_Android_System_Functionality
 #else
 	void PollSystemEvents() {
 		return;
@@ -1065,10 +1084,10 @@ int main(int argc, char **argv) {
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
+// XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 android_app *OpenXRTutorial::androidApp = nullptr;
 OpenXRTutorial::AndroidAppState OpenXRTutorial::androidAppState = {};
 
-// XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 void android_main(struct android_app *app) {
 	// Allow interaction with JNI and the JVM on this thread.
 	// https://developer.android.com/training/articles/perf-jni#threads

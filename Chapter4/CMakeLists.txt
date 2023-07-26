@@ -81,9 +81,6 @@ if (ANDROID)
 else()
     add_executable(OpenXRTutorialChapter4 ${SOURCES} ${HEADERS} ${SHADERS})
 
-	# our selected runtime
-	set(XR_RUNTIME_JSON "$ENV{XR_RUNTIME_JSON}" CACHE PATH "Optional location of a specific OpenXR runtime configuration file.")
-	
 	if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
 		set_target_properties( OpenXRTutorialChapter4 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
 	endif()
