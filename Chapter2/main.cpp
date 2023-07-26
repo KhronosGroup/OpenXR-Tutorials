@@ -15,9 +15,9 @@
 
 class OpenXRTutorial {
 public:
-    OpenXRTutorial(GraphicsAPI_Type api)
-        : apiType(api) {
-        if (!CheckGraphicsAPI_TypeIsValidForPlatform(apiType)) {
+    OpenXRTutorial(GraphicsAPI_Type apiType)
+        : m_apiType(apiType) {
+        if (!CheckGraphicsAPI_TypeIsValidForPlatform(m_apiType)) {
             std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
             DEBUG_BREAK;
         }
@@ -35,10 +35,10 @@ public:
         CreateSession();
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
-        while (applicationRunning) {
+        while (m_applicationRunning) {
             PollSystemEvents();
             PollEvents();
-            if (sessionRunning) {
+            if (m_sessionRunning) {
                 // Draw Frame.
             }
         }
@@ -63,8 +63,8 @@ private:
         // Add additional instance layers/extensions
         {
             // XR_DOCS_TAG_BEGIN_instanceExtensions
-            instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
-            instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(apiType));
+            m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
+            m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
             // XR_DOCS_TAG_END_instanceExtensions
         }
 
@@ -75,12 +75,12 @@ private:
         apiLayerProperties.resize(apiLayerCount, {XR_TYPE_API_LAYER_PROPERTIES});
 
         OPENXR_CHECK(xrEnumerateApiLayerProperties(apiLayerCount, &apiLayerCount, apiLayerProperties.data()), "Failed to enumerate ApiLayerProperties.");
-        for (auto &requestLayer : apiLayers) {
+        for (auto &requestLayer : m_apiLayers) {
             for (auto &layerProperty : apiLayerProperties) {
                 if (strcmp(requestLayer.c_str(), layerProperty.layerName)) {
                     continue;
                 } else {
-                    activeAPILayers.push_back(requestLayer.c_str());
+                    m_activeAPILayers.push_back(requestLayer.c_str());
                     break;
                 }
             }
@@ -92,12 +92,12 @@ private:
         extensionProperties.resize(extensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
 
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
-        for (auto &requestExtension : instanceExtensions) {
+        for (auto &requestExtension : m_instanceExtensions) {
             for (auto &extensionProperty : extensionProperties) {
                 if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
                     continue;
                 } else {
-                    activeInstanceExtensions.push_back(requestExtension.c_str());
+                    m_activeInstanceExtensions.push_back(requestExtension.c_str());
                     break;
                 }
             }
@@ -108,27 +108,27 @@ private:
         XrInstanceCreateInfo instanceCI{XR_TYPE_INSTANCE_CREATE_INFO};
         instanceCI.createFlags = 0;
         instanceCI.applicationInfo = AI;
-        instanceCI.enabledApiLayerCount = static_cast<uint32_t>(activeAPILayers.size());
-        instanceCI.enabledApiLayerNames = activeAPILayers.data();
-        instanceCI.enabledExtensionCount = static_cast<uint32_t>(activeInstanceExtensions.size());
-        instanceCI.enabledExtensionNames = activeInstanceExtensions.data();
-        OPENXR_CHECK(xrCreateInstance(&instanceCI, &xrInstance), "Failed to create Instance.");
+        instanceCI.enabledApiLayerCount = static_cast<uint32_t>(m_activeAPILayers.size());
+        instanceCI.enabledApiLayerNames = m_activeAPILayers.data();
+        instanceCI.enabledExtensionCount = static_cast<uint32_t>(m_activeInstanceExtensions.size());
+        instanceCI.enabledExtensionNames = m_activeInstanceExtensions.data();
+        OPENXR_CHECK(xrCreateInstance(&instanceCI, &m_xrInstance), "Failed to create Instance.");
         // XR_DOCS_TAG_END_XrInstanceCreateInfo
     }
 
     void DestroyInstance() {
-        OPENXR_CHECK(xrDestroyInstance(xrInstance), "Failed to destroy Instance.");
+        OPENXR_CHECK(xrDestroyInstance(m_xrInstance), "Failed to destroy Instance.");
     }
 
     // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
-        if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
-            debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(xrInstance);
+        if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+            m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
     }
     void DestroyDebugMessenger() {
-        if (IsStringInVector(activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
-            DestroyOpenXRDebugUtilsMessenger(xrInstance, debugUtilsMessenger);
+        if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+            DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);
         }
     }
     // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
@@ -136,7 +136,7 @@ private:
     // XR_DOCS_TAG_BEGIN_GetInstanceProperties
     void GetInstanceProperties() {
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
-        OPENXR_CHECK(xrGetInstanceProperties(xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
+        OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
         std::cout << "OpenXR Runtime: " << instanceProperties.runtimeName << " - ";
         std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
@@ -148,11 +148,11 @@ private:
     // XR_DOCS_TAG_BEGIN_GetSystemID
     void GetSystemID() {
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
-        systemGI.formFactor = formFactor;
-        OPENXR_CHECK(xrGetSystem(xrInstance, &systemGI, &systemID), "Failed to get SystemID.");
+        systemGI.formFactor = m_formFactor;
+        OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
-        OPENXR_CHECK(xrGetSystemProperties(xrInstance, systemID, &systemProperties), "Failed to get SystemProperties.");
+        OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
     }
     // XR_DOCS_TAG_END_GetSystemID
 
@@ -160,39 +160,39 @@ private:
     void CreateSession() {
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
 
-        if (apiType == D3D11) {
+        if (m_apiType == D3D11) {
 #if defined(XR_USE_GRAPHICS_API_D3D11)
-            graphicsAPI = std::make_unique<GraphicsAPI_D3D11>(xrInstance, systemID);
+            m_graphicsAPI = std::make_unique<GraphicsAPI_D3D11>(m_xrInstance, m_systemID);
 #endif
-        } else if (apiType == D3D12) {
+        } else if (m_apiType == D3D12) {
 #if defined(XR_USE_GRAPHICS_API_D3D12)
-            graphicsAPI = std::make_unique<GraphicsAPI_D3D12>(xrInstance, systemID);
+            m_graphicsAPI = std::make_unique<GraphicsAPI_D3D12>(m_xrInstance, m_systemID);
 #endif
-        } else if (apiType == OPENGL) {
+        } else if (m_apiType == OPENGL) {
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
-            graphicsAPI = std::make_unique<GraphicsAPI_OpenGL>(xrInstance, systemID);
+            m_graphicsAPI = std::make_unique<GraphicsAPI_OpenGL>(m_xrInstance, m_systemID);
 #endif
-        } else if (apiType == OPENGL_ES) {
+        } else if (m_apiType == OPENGL_ES) {
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-            graphicsAPI = std::make_unique<GraphicsAPI_OpenGL_ES>(xrInstance, systemID);
+            m_graphicsAPI = std::make_unique<GraphicsAPI_OpenGL_ES>(m_xrInstance, m_systemID);
 #endif
-        } else if (apiType == VULKAN) {
+        } else if (m_apiType == VULKAN) {
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
-            graphicsAPI = std::make_unique<GraphicsAPI_Vulkan>(xrInstance, systemID);
+            m_graphicsAPI = std::make_unique<GraphicsAPI_Vulkan>(m_xrInstance, m_systemID);
 #endif
         } else {
             std::cout << "ERROR: Unknown Graphics API." << std::endl;
             DEBUG_BREAK;
         }
-        sessionCI.next = graphicsAPI->GetGraphicsBinding();
+        sessionCI.next = m_graphicsAPI->GetGraphicsBinding();
         sessionCI.createFlags = 0;
-        sessionCI.systemId = systemID;
+        sessionCI.systemId = m_systemID;
 
-        OPENXR_CHECK(xrCreateSession(xrInstance, &sessionCI, &session), "Failed to create Session.");
+        OPENXR_CHECK(xrCreateSession(m_xrInstance, &sessionCI, &m_session), "Failed to create Session.");
     }
 
     void DestroySession() {
-        OPENXR_CHECK(xrDestroySession(session), "Failed to destroy Session.");
+        OPENXR_CHECK(xrDestroySession(m_session), "Failed to destroy Session.");
     }
     // XR_DOCS_TAG_END_CreateDestroySession
 
@@ -201,7 +201,7 @@ private:
         XrResult result = XR_SUCCESS;
         do {
             XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
-            result = xrPollEvent(xrInstance, &eventData);
+            result = xrPollEvent(m_xrInstance, &eventData);
 
             switch (eventData.type) {
             case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
@@ -212,8 +212,8 @@ private:
             case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING: {
                 XrEventDataInstanceLossPending *instanceLossPending = reinterpret_cast<XrEventDataInstanceLossPending *>(&eventData);
                 std::cout << "WARN: OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime << std::endl;
-                sessionRunning = false;
-                applicationRunning = false;
+                m_sessionRunning = false;
+                m_applicationRunning = false;
                 break;
             }
             case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
@@ -231,19 +231,19 @@ private:
 
                 if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
                     XrSessionBeginInfo sessionBeginInfo{XR_TYPE_SESSION_BEGIN_INFO};
-                    sessionBeginInfo.primaryViewConfigurationType = viewConfiguration;
-                    OPENXR_CHECK(xrBeginSession(session, &sessionBeginInfo), "Failed to begin Session.");
-                    sessionRunning = true;
+                    sessionBeginInfo.primaryViewConfigurationType = m_viewConfiguration;
+                    OPENXR_CHECK(xrBeginSession(m_session, &sessionBeginInfo), "Failed to begin Session.");
+                    m_sessionRunning = true;
                 }
                 if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
-                    OPENXR_CHECK(xrEndSession(session), "Failed to end Session.");
-                    sessionRunning = false;
+                    OPENXR_CHECK(xrEndSession(m_session), "Failed to end Session.");
+                    m_sessionRunning = false;
                 }
                 if (sessionStateChanged->state == XR_SESSION_STATE_EXITING) {
-                    sessionRunning = false;
-                    applicationRunning = false;
+                    m_sessionRunning = false;
+                    m_applicationRunning = false;
                 }
-                sessionState = sessionStateChanged->state;
+                m_sessionState = sessionStateChanged->state;
                 break;
             }
             default: {
@@ -306,13 +306,13 @@ public:
 private:
     void PollSystemEvents() {
         if (androidApp->destroyRequested != 0) {
-            applicationRunning = false;
+            m_applicationRunning = false;
             return;
         }
         while (true) {
             struct android_poll_source *source = nullptr;
             int events = 0;
-            const int timeoutMilliseconds = (!androidAppState.resumed && !sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
+            const int timeoutMilliseconds = (!androidAppState.resumed && !m_sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
             if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
                 if (source != nullptr) {
                     source->process(androidApp, source);
@@ -330,32 +330,37 @@ private:
 #endif
 
 private:
-    XrInstance xrInstance = {};
-    std::vector<const char *> activeAPILayers = {};
-    std::vector<const char *> activeInstanceExtensions = {};
-    std::vector<std::string> apiLayers = {};
-    std::vector<std::string> instanceExtensions = {};
+    XrInstance m_xrInstance = {};
+    std::vector<const char *> m_activeAPILayers = {};
+    std::vector<const char *> m_activeInstanceExtensions = {};
+    std::vector<std::string> m_apiLayers = {};
+    std::vector<std::string> m_instanceExtensions = {};
 
-    XrDebugUtilsMessengerEXT debugUtilsMessenger = {};
+    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
 
-    XrFormFactor formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
-    XrSystemId systemID = {};
+    XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
+    XrSystemId m_systemID = {};
 
-    GraphicsAPI_Type apiType = UNKNOWN;
-    std::unique_ptr<GraphicsAPI> graphicsAPI = nullptr;
+    GraphicsAPI_Type m_apiType = UNKNOWN;
+    std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
 
-    XrViewConfigurationType viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
-    XrSession session = {};
-    XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
-    bool applicationRunning = true;
-    bool sessionRunning = false;
+    XrSession m_session = {};
+    XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
+    bool m_applicationRunning = true;
+    bool m_sessionRunning = false;
 };
 
 void OpenXRTutorial_Main() {
     DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 2." << std::endl;
+
+   #if defined(__ANDROID__)
+    OpenXRTutorial app(OPENGL_ES);
+#else
     OpenXRTutorial app(OPENGL);
+#endif
     app.Run();
 }
 
@@ -376,7 +381,7 @@ void android_main(struct android_app *app) {
     JNIEnv *env;
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
-	  XrInstance xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.
+    XrInstance m_xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
     OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
     if (!xrInitializeLoaderKHR) {
