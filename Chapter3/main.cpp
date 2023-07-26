@@ -620,7 +620,12 @@ private:
 void OpenXRTutorial_Main() {
     DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 3." << std::endl;
-    OpenXRTutorial app(VULKAN);
+
+#if defined(__ANDROID__)
+    OpenXRTutorial app(OPENGL_ES);
+#else
+    OpenXRTutorial app(OPENGL);
+#endif
     app.Run();
 }
 
