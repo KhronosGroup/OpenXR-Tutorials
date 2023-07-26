@@ -1,16 +1,16 @@
-5 Extensions
-==========
+﻿###############
+✨ 5 Extensions
+###############
 
-5. EXTENSIONS (extensions debug and hand tracking)
+*************************************************
+5 EXTENSIONS (extensions debug and hand tracking)
+*************************************************
 
-Using Extensions and Layers
----------------------------
+5.1 Using Extensions and Layers xrEnumerateInstanceExtensionProperties, xrEnumerateApiLayerProperties
+=====================================================================================================
 
-5.1. Using Extensions and Layers xrEnumerateInstanceExtensionProperties,
-xrEnumerateApiLayerProperties,
-
-Using xrCreateDebugUtilsMessengerEXT
-------------------------------------
+5.2 Using xrCreateDebugUtilsMessengerEXT
+========================================
 
 XR_EXT_debug_utils is an instance extension for OpenXR, which allows the application to get more information on any errors or warnings etc. You can specify which message severities and types will checked. If a debug message raised, it is passed to the callback function, which can optionally use the user data pointer provided in the ``XrDebugUtilsMessengerCreateInfoEXT`` structure.
 
@@ -59,9 +59,7 @@ Below is an example of a OpenXR DebugUtilsMessenger Callback function. This func
 	:start-after: XR_DOCS_TAG_BEGIN_OpenXRMessageCallbackFunction
 	:end-before: XR_DOCS_TAG_END_OpenXRMessageCallbackFunction
 
+5.3 Extension examples including XR_EXT_HAND_TRACKING cubes at joints
+=====================================================================
 
-Extension Examples
-------------------
-
-5.3. Extension examples including XR_EXT_HAND_TRACKING cubes at joints.
 OpenXR Specification 12.31 XR_EXT_hand_tracking <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking>`_. 

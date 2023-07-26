@@ -1,10 +1,12 @@
-﻿🕹 4 Interactions
-==================
+﻿#################
+🕹 4 Interactions
+#################
 
 An OpenXR application has interactions with the user which can be user input to the application, or haptic output back to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: spaces, actions, and bindings.
 
+*****************
 4.1. Using Spaces
------------------
+*****************
 
 Key to the interaction system is the concept of a *space*. A space is a frame of reference
 defined not by its instantaneous values, but semantically, by its purpose and relationship to other spaces. For the actual, instantaneous position and orientation of a space, we call this a "pose".
@@ -32,8 +34,9 @@ other purposes. We don't use it to generate view matrices for rendering, because
 See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
 
 
+*************************************
 4.2 Interaction Profiles and Bindings
--------------------------------------
+*************************************
 
 As OpenXR is an API for many different devices, it needs to provide a way for you as a developer to refer to the various buttons, joysticks, inputs and outputs that a device may have, without needing to know in advance which device or devices the user will have.
 
@@ -50,8 +53,9 @@ See also https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic
 
 We will see in Section 4.4 how  to suggest a binding between interaction profile paths and application inputs and outputs. Firt, we will learn how to define these inputs and outputs, which in OpenXR, we call *actions*.
 
+************************************
 4.3 Creating Actions and Action Sets
-------------------------------------
+************************************
 
 At the end of your application class, add this code:
 
@@ -90,8 +94,9 @@ You can create multiple ActionSets, but we only need one for this example. The A
 
 Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is.
 
+************************
 4.4 Binding Interactions
-------------------------
+************************
 
 We will set up bindings for the actions. A binding is a *suggested* correspondence between an action (which is app-defined), and the input/output on the
 user's devices. After the definition of CreateActionSet(), we'll add this helper function that converts a string into an XrPath. Add:
@@ -187,8 +192,9 @@ Finally in this function, we'll poll the left Grip Pose:
 If, and only if the action is active, we use `xrLocateSpace` to obtain the current pose of the controller. We specify that we want this relative to our reference space `localOrStageSpace`, because this is the global space we're using for rendering. We'll use `leftGripPose` in the next section to render the
 controller's position.
 
+*************************************
 4.5 Rendering the Controller position
--------------------------------------
+*************************************
 
 We will now draw some geometry to represent the controller pose we've obtained as `leftGripPose`. Add this function after the definition of RenderLayer():
 
@@ -298,8 +304,9 @@ Let's implement RenderCuboid(). After the definition of DestroySwapchain(), add:
 
 From the passed-in pose and scale, we create the _model_ matrix, and multiply that with cameraConstants.viewProj to obtain cameraConstants.modelViewProj, the matrix that transforms from vertices in our unit cube into positions in projection-space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing our six face colours for the cuboid pixel shader. We assign our vertex and index buffers and draw 36 indices.
 
+**************************************
 4.6 Checking for Connected Controllers
---------------------------------------
+**************************************
 
 Look again now at the function PollActions().
 

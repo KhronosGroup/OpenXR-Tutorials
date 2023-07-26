@@ -330,8 +330,9 @@ Then, we create the actual platform specific main function (our entry point to t
 
 Now that we have a basic application up and running with the OpenXR header files and libraries, we can start to set up the core aspects of OpenXR. As a modern Khronos API, the OpenXR is heavily influcencd by the Vulkan API. So those who are familiar with the style of the Vulkan API will find OpenXR easy to follow.
 
-Creating an XrInstance / xrGetSystem
-------------------------------------
+****************************************
+2.1 Creating an XrInstance / xrGetSystem
+****************************************
 
 Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()`` and ``DestroyInstance()``. Update ``OpenXRTutorial::Run()`` to call those methods in that order and add to the class in a private section the following members.
 
@@ -380,9 +381,8 @@ Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, 
 		XrSystemId systemID = {};
 	}
 
-	
-XrInstance
-^^^^^^^^^^
+2.1.1 XrInstance
+================
 
 The ``XrInstance`` is the foundational object that we need to create first. The ``XrInstance`` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the ``CreateInstance()`` method, we will first look at the ``XrApplicationInfo``.
 
@@ -438,8 +438,8 @@ Whilst we have an ``XrInstance``, let's check its properties. We fill out the ty
 	:end-before: XR_DOCS_TAG_END_GetInstanceProperties
 	:dedent: 4
 
-XrSystemId
-^^^^^^^^^^
+2.1.2 XrSystemId
+================
 
 The next object that we want to get is the ``XrSystemId``. OpenXR 'separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences'. 
 `OpenXR Specification 5. System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_. 
@@ -466,8 +466,9 @@ We can now also get the system's properties. We partially fill out a ``XrSystemP
 	:start-at: typedef struct XrSystemGraphicsProperties {
 	:end-at: } XrSystemProperties;
 
-Creating an XrSession
----------------------
+*************************
+2.2 Creating an XrSession
+*************************
 
 The next major component of OpenXR that needs to be created in an ``XrSession``. An ``XrSession`` encapulates the state of application from the perspective of OpenXR. When an ``XrSession`` is created, it starts in the ``XR_SESSION_STATE_IDLE``. It is upto the runtime to provide any updates to the ``XrSessionState`` and for the appliaction to query them and react to them. We will explore this in :doc:`Chapter 2.3. <2-Polling the Event Loop>`
 
@@ -515,8 +516,8 @@ Update the Constructor and ``Run()`` method as shown and add the following membe
 		XrSession session = {};
 	}
 
-XrSession
-^^^^^^^^^
+2.2.1 XrSession
+===============
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -525,8 +526,8 @@ XrSession
 
 Above is the code for creating and destroying an ``XrSession``. ``xrDestroySession()`` will destroy the ``XrSession`` when we have finished and shutting down the application. ``xrCreateSession()`` takes the ``XrInstance``, ``XrSessionCreateInfo`` and ``XrSession`` return object. If the function call was successful, ``xrCreateSession()`` will return ``XR_SUCCESS`` and ``XrSession`` will be non-null. The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateInfo::createFlags`` and ``XrSessionCreateInfo::systemId`` are easily filled in, but we need to specify which Graphics APIs we wish to use. This is achieved via the use of the ``XrSessionCreateInfo::next`` void pointer. Following the Vulkan API's style of extensibility, structures for creating objects can be extended to enable extra functionality. In our case, the extension is required and thus ``XrSessionCreateInfo::next`` can not be a nullptr. That pointer must point to 'exactly one graphics API binding structure (a structure whose name begins with "XrGraphicsBinding")' (`XrSessionCreateInfo(3) Manual Page <https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSessionCreateInfo.html>`_).
 
-GraphicsAPI
-^^^^^^^^^^^
+2.2.2 GraphicsAPI
+=================
 
 .. container:: d3d11
 	:name: d3d11-id-1
@@ -702,8 +703,9 @@ GraphicsAPI
 
 	Here, we simply fill out the ``XrGraphicsBindingVulkanKHR`` structure and return a pointer to the class member, which will be assigned to ``XrSessionCreateInfo::next``.
 
-Polling the Event Loop
-----------------------
+**************************
+2.3 Polling the Event Loop
+**************************
 
 OpenXR uses an event based system to describes changes with the XR system. It's the application's responsibility to poll these events and react to them. The polling of events is done by the function ``xrPollEvent()``. The application should continually call this function throughout its lifetime. Within a single XR frame, the application should continuously call ``xrPollEvent()`` until the internal event queue is 'drained'; multiple events can occurs across the XR frame and the application needs to handle and respond to each accordingly.
 
@@ -748,8 +750,8 @@ Firstly, we will update the class to add the new methods and members.
 		bool sessionRunning = false;
 	}
 
-xrPollEvent()
-^^^^^^^^^^^^^
+2.3.1 xrPollEvent
+=================
 
 Next, we will define the ``PollEvents()`` method. Here, we use a do-while loop to the check the result of ``xrPollEvent()`` - whilst that function returns ``XR_SUCCESS``, there are events for us to process. ``xrPollEvent()`` will fill in the ``XrEventDataBuffer`` structure that we pass to the function call. ``xrPollEvent()`` will update the member variable ``type`` and from this we can use a switch statement to select the appropriate code path. Depending on the updated type, we can use a ``reinterpret_cast<>()`` to get the actual data that ``xrPollEvent()`` returned.
 
@@ -776,8 +778,8 @@ The description of the events come from `2.22.1. Event Polling of the OpenXR spe
 
 As described in the table above, most event are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, after the specified ``lossTime``, until it can create a new instance successfully. ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
 
-XrSessionState
-^^^^^^^^^^^^^^
+2.3.2 XrSessionState
+====================
 
 The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will focus on for the rest of this chapter. There are currently nine valid ``XrSessionState`` s described:
 
@@ -815,8 +817,8 @@ The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will foc
 	:align: center
 	:width: 99%
 
-xrBeginSession() and xrEndSession()
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2.3.3 xrBeginSession and xrEndSession
+=====================================
 
 If the ``XrSessionState`` is ``XR_SESSION_STATE_READY``, the application can call ``xrBeginSession()``.
 In the ``XrSessionBeginInfo`` structure, we assign to ``XrSessionBeginInfo::primaryViewConfigurationType`` the ``viewConfiguration`` from the class, which in our case is ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye).

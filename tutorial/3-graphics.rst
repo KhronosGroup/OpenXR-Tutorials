@@ -1,5 +1,6 @@
-﻿👾 3 Graphics
-==========
+﻿#############
+👾 3 Graphics
+#############
 
 Select your platform, as the instructions are different depending on your selection.
 
@@ -8,8 +9,9 @@ Select your platform, as the instructions are different depending on your select
 
 The goal of this chapter is to build an application that creates and clears color and depth buffers within the scope of OpenXR render loop and to demostrate its interaction with all the Graphics APIs.
 
-Creating Swapchains
--------------------
+***********************
+3.1 Creating Swapchains
+***********************
 
 As with rendering graphics to a 2D display, OpenXR has the concept of swapchains. It's series of images that are used to present the rendered graphics to display/window/view. There are usually 2 or 3 images in the swapchain to allow the platform to present them smoothly to the user in order to create illusion of motion within the image.
 
@@ -73,8 +75,8 @@ Firstly, we will update the class to add the new methods and members.
 		std::vector<SwapchainAndDepthImage> swapchainAndDepthImages;
 	}
 
-XrViewConfigurationView
-^^^^^^^^^^^^^^^^^^^^^^^
+3.1.1 XrViewConfigurationView
+=============================
 
 The first thing we need to do is get all of the views available to our view configuration. It is worth just parsing the name of this type: ``XrViewConfigurationView``. I break the typename up as follow "XrViewConfiguration" - "View", where it relates to one view in the view configuration, which may contain multiple views. We call ``xrEnumerateViewConfigurationViews()`` twice, first to get the count of the views in the view configuration, and second to fill in the data to the ``std::vector<XrViewConfigurationView>``.
 
@@ -84,8 +86,8 @@ The first thing we need to do is get all of the views available to our view conf
 	:end-before: XR_DOCS_TAG_END_GetViewConfigurationViews
 	:dedent: 4
 
-xrEnumerateSwapchainFormats
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.1.2 xrEnumerateSwapchainFormats
+=================================
 
 Due to way that OpenXR and its composite operate, there are certain preferred image formats that should be used by the swapchain. When calling ``xrEnumerateSwapchainFormats()``, the ``XrSession`` and alongwith the Graphics API will return an array of API-specific formats ordered in preference. ``xrEnumerateSwapchainFormats()`` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
 
@@ -105,8 +107,8 @@ If you'd like more information on color spaces and gamma in computer graphics, G
 
 Next, we do some checks to confirm that the views in the view configuration are the same size and thus suitable for stereo rendering. With this check done, we can alias to views together when create our ``XrSwapchain``. We resize our ``SwapchainAndDepthImage`` structure and enter a for each loop to create all required resources.
 
-xrCreateSwapchain
-^^^^^^^^^^^^^^^^^
+3.1.3 xrCreateSwapchain
+=======================
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -273,8 +275,8 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 
 We call ``xrCreateSwapchain()`` to create our ``XrSwapchain``, which, if successful, will return ``XR_SUCCESS`` and the ``XrSwapchain`` will be non-null. We copy our swapchain format to our ``SwapchainAndDepthImage::swapchainFormat`` for later usage.
 
-xrEnumerateSwapchainImages
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.1.4 xrEnumerateSwapchainImages
+================================
 
 Now that we have created the ``XrSwapchain``, we need to get access to the all images in the swapchain. We first call ``xrEnumerateSwapchainImages()`` to get the count of the images in the ``XrSwapchain``. Next, we set up an array of structures to store the images from the ``XrSwapchain``. In this tutorial, this array of structures, which stores the swapchains images, are stored in the ``GraphicsAPI_...`` class. We do this, because OpenXR will return to the application an array of structures that contain the API-specific handles to the swapchain images. ``GraphicsAPI::AllocateSwapchainImageData()`` is a virtual method implemented by each graphics API, which resizes an API-specific ``std::vector<XrSwapchainImage...KHR>`` and returns a pointer to the first element in that array casting it to a ``XrSwapchainImageBaseHeader *``.
 
@@ -380,8 +382,8 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 
 	The structure contains a ``VkImage`` member that is the handle to one of the images in the swapchain.
 
-Create Depth Image And Image Views
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.1.5 Create Depth Image And Image Views
+========================================
 
 Next, we create a depth image so that we can correctly render 3D prespective graphics to the view. In this tutorial, we have a ``GraphicsAPI::ImageCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImage()`` that creates the API-specific objects. 
 
@@ -510,8 +512,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 For the color image views, we use the previously stored color image format, that we used when creating the swapchain, and for the depth image view, we use the previously created depth image and the same depth format from the graphics API.
 We store our newly created color image views for the swapchain in ``SwapchainAndDepthImage::colorImageViews`` and the depth image view in ``SwapchainAndDepthImage::depthImageView`` for later usage when rendering. 
 
-xrDestroySwapchain
-^^^^^^^^^^^^^^^^^^
+3.1.6 xrDestroySwapchain
+========================
 
 When the main render loop has finished and the application is shutting down, we need to destroy our created ``XrSwapchain``. This is done by calling ``xrDestroySwapchain()`` with the ``XrSwapchain`` and it will return ``XR_SUCCESS`` if successful. At the same time, we destroy the associated depth image and all of the views that the graphics API created. In this tutorial, we use ``GraphicsAPI::DestroyImage()`` and ``GraphicsAPI::DestroyImageView()`` to destroy those objects.
 
@@ -523,35 +525,79 @@ When the main render loop has finished and the application is shutting down, we 
 
 We now have ``XrSwapchain`` s and a depth images, ready for rendering. Next, we setup the render loop for OpenXR!
 
-Building a RenderLoop
----------------------
+*************************
+3.2 Building a RenderLoop
+*************************
 
-xrEnumerateEnvironmentBlendModes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+With the most of the OpenXR objects now set up, we can now turn our attention to rendering graphics. You will likely have your own rendering solution in place with things hooked up to OpenXR and ready to get going. There are two further OpenXR object that need to render; pertaining to where the user is and what the user sees of the external environment around them. Namely, these are the 'environment blend mode' and the 'reference space'.
+
+Then, with those final pieces in place, we can look to the ``RenderFrame()`` and ``RenderLoop()`` code to invoke graphics work on the GPU and present it back to OpenXR and its compositor through the use of composition layers and within the scope of an XR Frame.
+
+3.2.1 xrEnumerateEnvironmentBlendModes
+======================================
+
+Environment blend is done at the final stage after the compositor has flatten and blended all the compositing layer passed to OpenXR at the ``xrEndFrame()``. The enum describes how OpenXR should blend the rendering view with the external environment behind the screen(s). The most common usages are as follows:
+
+	* VR: ``XR_ENVIRONMENT_BLEND_MODE_OPAQUE`` is the most common as not all VR HMD have pass through functional either through cameras or optics. VR HMD that do have pass through can suppt other blend modes.
+	* AR: ``XR_ENVIRONMENT_BLEND_MODE_ADDITIVE`` or ``XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND`` are most common to composite rendering rendered image with external environment.
+
++---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+| XrEnvironmentBlendMode                | Description                                                                                                                   |
++---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+| XR_ENVIRONMENT_BLEND_MODE_OPAQUE      | The composition layers will be displayed with no view of the physical world behind them.                                      |
+|                                       | The composited image will be interpreted as an RGB image, ignoring the composited alpha channel.                              |
++---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+| XR_ENVIRONMENT_BLEND_MODE_ADDITIVE    | The composition layers will be additively blended with the real world behind the display.                                     |
+|                                       | The composited image will be interpreted as an RGB image, ignoring the composited alpha channel during the additive blending. |
+|                                       | This will cause black composited pixels to appear transparent.                                                                |
++---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+| XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND | The composition layers will be alpha-blended with the real world behind the display.                                          |
+|                                       | The composited image will be interpreted as an RGBA image, with the composited alpha channel determining each pixel’s         |
+|                                       | level of blending with the real world behind the display.                                                                     |
++---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+`XrEnvironmentBlendMode - Enumerant Descriptions <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#compositing>`_.
+
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+	:language: cpp
+	:start-at: typedef enum XrEnvironmentBlendMode {
+	:end-at: } XrEnvironmentBlendMode;
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
 	:end-before: XR_DOCS_TAG_END_GetEnvironmentBlendModes
 	:dedent: 4
 
-xrCreateReferenceSpace
-^^^^^^^^^^^^^^^^^^^^^^
+We enumerate the environment blend modes as shown above. This function take a pointer to the first element in an array of ``XrEnvironmentBlendMode`` s as multiple environment blend modes could be available to the system. The runtime will return the array ordered by its preference for the system.
+
+3.2.2 xrCreateReferenceSpace
+============================
+
+Now that OpenXR know what the user should see, we need to tell OpenXR from where should the user by seeing. This is where the referene space comes in.
+
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+	:language: cpp
+	:start-at: typedef enum XrReferenceSpaceType {
+	:end-at: } XrReferenceSpaceType;
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateReferenceSpace
 	:end-before: XR_DOCS_TAG_END_CreateReferenceSpace
 	:dedent: 4
 
-RenderFrame
-^^^^^^^^^^^
+3.2.3 RenderFrame
+=================
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_RenderFrame
 	:end-before: XR_DOCS_TAG_END_RenderFrame
 	:dedent: 4
 
-RenderLayer
-^^^^^^^^^^^
+3.2.4 RenderLayer
+=================
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer
