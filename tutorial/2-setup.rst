@@ -99,12 +99,14 @@ CMake and Project Files
 	.. rubric:: CMake
 
 	With the Android Studio project now set up, we need to modify some of the files and folders so as to set up the project to support the C++ Native Activity.
-	Under the ``app`` folder, you can delete the ``libs`` folder, and under the ``app/src`` you can also delete the ``androidTest`` and ``test`` folders. Finally under ``app/src/main``, delete the ``java`` folder and add a ``cpp`` folder. Under the ``app/src/main/res``, delete the ``values-night`` and ``xml`` folders. Under the ``values`` modify ``colors.xml`` and ``styles.xml`` as shown.
+	Under the ``app`` folder, you can delete the ``libs`` folder, and under the ``app/src`` you can also delete the ``androidTest`` and ``test`` folders. Finally under ``app/src/main``, delete the ``java`` folder and add a ``cpp`` folder. Under the ``app/src/main/res``, delete the ``values-night`` and ``xml`` folders. Under the ``values`` modify ``colors.xml``.
 
 	.. rubric:: colors.xml
 
 	.. literalinclude:: ../Chapter2/app/src/main/res/values/colors.xml
 		:language: xml
+
+	Delete ``themes.xml`` and add ``styles.xml`` as shown.
 
 	.. rubric:: styles.xml
 
@@ -151,25 +153,39 @@ CMake and Project Files
 	.. literalinclude:: ../Chapter2/app/src/main/AndroidManifest.xml
 		:language: xml
 
-	We now need to modify our ``AndroidManifest.xml`` file to tell Android to run a Native Activity. We set ``android:name`` to ``"android.app.NativeActivity"`` and update ``android:configChanges`` to ``"orientation|keyboardHidden"`` to not close the activity on those changes. Next under the meta-data section, we set these values: ``android:name`` to ``"android.app.lib_name"`` and ``android:value`` to ``"OpenXRTutorialChapter2"``, where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
-	Just above that add this ``<uses-feature android:name="android.hardware.vr.headtracking" android:required="true" />``; specifying that the application is using VR headtracking.
+	We need to modify our ``AndroidManifest.xml`` file to allow our application to use the XR hardware:
 
-	We need to tell the app that it should take over rendering when active, rather than appearing in a window. Set ``<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />``.
-	Note: not all devices yet support this category. For example, for Oculus Quest devices you will need ``<category android:name="com.oculus.intent.category.VR" />`` for the same purpose.
-	Also set this in the intent-filer section: ``<category android:name="android.intent.category.DEFAULT" />``.
+	* First, we remove ``xmlns:tools="http://schemas.android.com/tools"`` and replace it  with ``package="com.simul.OpenXRTutorialChapter2" android:versionCode="1" android:versionName="1.0"``.
+	* Next, we add ``<uses-feature android:name="android.hardware.vr.headtracking" android:required="true" />`` to specify that the application is using VR headtracking. 
+	* In the ``android`` section, update ``android:allowBackup`` to ``"false"``, remove ``android:dataExtractionRules`` and update ``android:fullBackupContent`` to ``"false"``. Remove ``android:supportsRtl``, ``android:theme`` and ``tools:targetApi``, and replace them with ``android:hasCode="false"``. This one state that there is no Java or Kotlin code in the application.
+	* We also need to modify this file to tell Android to run this application as a Native Activity. We set ``android:name`` to ``"android.app.NativeActivity"`` and update ``android:configChanges`` to ``"orientation|keyboardHidden"`` so as to not close the activity on those changes. Remove ``android:exported="true"`` and add ``android:debuggable="true"`` to allow debugging. 
+	* Next under the ``meta-data`` section, we add these values: ``android:name="android.app.lib_name"`` and ``android:value="OpenXRTutorialChapter2"``, where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
+	* Also, set this in the ``intent-filer`` section: ``<category android:name="android.intent.category.DEFAULT" />``.
+	* Finally, We need to tell the app that it should take over rendering when active, rather than appearing in a window. Set ``<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />``. Note: not all devices yet support this ``category``. For example, for Oculus Quest devices you will need ``<category android:name="com.oculus.intent.category.VR" />`` for the same purpose.
 
 	.. rubric:: Gradle
 
 	.. literalinclude:: ../Chapter2/app/build.gradle
 		:language: groovy
 	
-	Now, we can config our ``build.gradle`` file in the ``app`` folder. First remove any references to Java, Kotlin and to testing. Next add in the ``externalNativeBuild`` section specifying CMake, its version and the location of the CMakeLists.txt that we created earlier. We will just be using arm64-v8a in this tutorial. ``ndkVersion`` should also be specified.
+	Now, we can config our ``build.gradle`` file in the``app`` folder to remove any references to Java, Kotlin and to testing. We also want to specify the the we are doing a ``externalNativeBuild``  with CMake, the CMake version and the location of the ``CMakeLists.txt`` that we created earlier. We also specify the ``ndkVersion``.
+
+	* First replace ``plugins {...}`` with ``apply plugin: 'com.android.application'``.
+	* In the ``android`` section, remove the ``namespace`` and ``compileSdk`` members and add ``compileSdkVersion 29`` and ``ndkVersion '23.1.7779620'``
+	* Replace ``minSdk`` with ``minSdkVersion`` and ``targetSdk`` with ``targetSdkVersion``. We specify ``29`` for the version, but any value great than or equal to ``24`` will work.
+	* Remove ``testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"``.
+	* Under ``android``, add ``buildFeatures { prefab true }``. This allow any prefabs to be used in build.
+	* Under ``buildTypes``, add ``debug { jniDebuggable true debuggable true renderscriptDebuggable true minifyEnabled false }``. This allow us to debugging the code, and to debug the ``JNI``.
+	* Under ``android`` again, add ``externalNativeBuild { cmake { version '3.22.1' path '../CMakeLists.txt' } }``. This specifies that we want to do an external native build with CMake and further specifying the version and the path to our ``CMakeLists.txt``.
+	* Under ``dependencies``, remove all ``testImplementation`` and ``androidTestImplementation`` entries, also remove ``implementation 'androidx.core:core-ktx:...'`` and ``implementation 'com.google.android.material:material:...'`` as we don't need the Kotlin or Android materials. Add ``implementation fileTree(dir: 'libs', include: ['*.jar'])`` for any ``*.jar`` libraries. 
+	* Add ``implementation 'org.khronos.openxr:openxr_loader_for_android:1.0.27'`` to access specifically the ``AndroidManifest.xml`` file that includes the required uses-permissions, authorising the OpenXR runtime broker and states the intent to use the ``OpenXRRuntimeService`` and the ``OpenXRApiLayerService``.
 
 	.. literalinclude:: ../Chapter2/build.gradle
 		:language: groovy
 
-	Now, we can config our ``build.gradle`` file in the root folder of the project. This is a complete replacement the default one provided by Android Studio. This file stipulates the repositories and gradle version to be used.
-	The settings.gradle can be reduce to just: ``include ':app'``, and in the ``gradle.properties`` we need to remove ``kotlin.code.style=official`` and ``android.nonTransitiveRClass=true``.
+	Now, we can config our ``build.gradle`` file in the ``/Chapter2`` folder. This is a complete replacement the default one provided by Android Studio. This file stipulates the repositories and gradle version to be used.
+	
+	The ``settings.gradle`` can be reduce to just: ``include ':app'``, and in the ``gradle.properties`` we need to remove ``kotlin.code.style=official`` and ``android.nonTransitiveRClass=true`` and their comments. Update ``org.gradle.jvmargs`` to ``-Xmx1536m`` and add ``android.enableJetifier=false`` to speed up builds.
 
 	With that completed, we should now be able to sync the Gradle file and build the project.
 

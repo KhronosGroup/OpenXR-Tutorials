@@ -149,7 +149,7 @@ by clicking a tab, or one of the buttons below.
 	
 	.. rubric::  OpenXR SDK
 	
-	In conjunction with the later ``CMakeLists.txt``, we add this to our dependencies in the ``app/build.gradle`` file. This ``openxr_loader_for_android`` also contains an ``AndroidManifest.xml`` files that includes the required uses-permissions, authorising the OpenXR runtime broker and states the intent to use the ``OpenXRRuntimeService`` and the ``OpenXRApiLayerService``.
+	In conjunction with the later ``CMakeLists.txt``, we add this to our dependencies in the ``app/build.gradle`` file. This ``openxr_loader_for_android`` also contains an ``AndroidManifest.xml`` file that includes the required uses-permissions, authorising the OpenXR runtime broker and states the intent to use the ``OpenXRRuntimeService`` and the ``OpenXRApiLayerService``.
 
 	.. literalinclude:: ../Chapter2/app/build.gradle
 		:language: groovy
