@@ -11,8 +11,8 @@ Select your platform, as the instructions are different depending on your select
 Project Setup
 *************
 
-CMake
-=====
+CMake and Project Files
+=======================
 
 .. container:: windows
 	:name: windows-id-1
@@ -68,7 +68,7 @@ CMake
 		:start-at: # Files
 		:end-before: if (ANDROID) # Android
 
-	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the Chapter2 directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR.
+	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR.
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake
@@ -89,7 +89,8 @@ CMake
 	:name: android-id-1
 
 	Here, We'll show how to hand build an Android Studio project that runs a C++ Native Activity.
-	Open Android Studio, select New Project and choose an Empty Activity. Set the names and save location. The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0(Nougat). Complete set up.
+	Fisrt, we will create a *workspace* folder and in that folder create that ``/Chapter2`` folder,
+	Open Android Studio, select New Project and choose an Empty Activity. Set the Name to 'OpenXR Tutorial Chapter 2', the Package name to 'com.simul.OpenXRTutorialChapter2' and save location to that ``/Chapter2`` folder. The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0(Nougat). Complete the set up.
 
 	.. figure:: android-studio-newproject.png
 		:alt: Android Studio - New Project - Empty Activity.
@@ -110,33 +111,59 @@ CMake
 	.. literalinclude:: ../Chapter2/app/src/main/res/values/styles.xml
 		:language: xml
 
-	Create a ``CMakeLists.txt`` in the directory above for compatiblity with other platforms. We will use this file to specific how our Native C++ code will be built. This ``CMakeLists.txt`` file will be invoked by Android Studio's Gradle build system and we will point Gradle to this CMake file. 
+	Create a ``CMakeLists.txt`` in the ``/Chapter2`` directory for compatiblity with other platforms. We will use this file to specific how our Native C++ code will be built. This ``CMakeLists.txt`` file will be invoked by Android Studio's Gradle build system and we will point Gradle to this CMake file. 
 
 	.. rubric:: CMakeLists.txt
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
-		:language: cmake 
-		
-	First, we set the minimum required cmake version, here we are using 3.22.1 and the project's name. Next, we need to add a static library called native_app_glue. The native_app_glue library is compiled from a single source file ``android_native_app_glue.c``. This interfaces between the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``void android_main(struct android_app*)`` entry point. We also include that directory as we need access to the android_native_app_glue.h header file. Next, we need to set the ``CMAKE_SHARED_LINKER_FLAGS`` so that ``ANativeActivity_onCreate()`` is exported for the Java Virtual Machine to call. Next, we add our shared library openxrtutorialch2 that houses our code. Here, I have a relative path to our single C++ file.
+		:language: cmake
+		:start-at: cmake_minimum_required
+		:end-at: # Needed for Android
 
-	Now, we import the openxr_loader library. We need to do this, because it's external to the NDK library, and won't be automatically picked up. We call ``set_target_properties()`` to specific the location of ``libopenxr_loader.so``. We also include the directory to the OpenXR headers. Next, we find the Vulkan library in the NDK and include the directory to the Android Vulkan headers. At this time, we also find the log library. Finally we link the android, native_app_glue, openxr_loader, vulkan and log libraries to our openxrtutorialch2 library. Our ``libopenxrtutorialch2.so`` will packageed inside our .apk along with any shared libraries that we have linked.
+	.. literalinclude:: ../Chapter2/CMakeLists.txt
+		:language: cmake
+		:start-at: # For FetchContent_Declare() and FetchContent_MakeAvailable()
+		:end-before: # Files
+
+	After setting our CMake version to 3.22.1 and the project's name, we include ``FetchContent`` and use it to get the OpenXR-SDK from Khronos's GitHub page.
+
+	.. literalinclude:: ../Chapter2/CMakeLists.txt
+		:language: cmake
+		:start-at: # Files
+		:end-before: if (ANDROID) # Android
+
+	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR.
+
+	.. literalinclude:: ../Chapter2/CMakeLists.txt
+		:language: cmake
+		:start-after: if (ANDROID) # Android
+		:end-before: else() # Windows / Linux
+		:dedent: 4
+	
+	Now, we can set things up by adding a shared library with the ``${SOURCES}`` and ``${HEADERS}``. We add the ``../Common`` folder as an include directory too. Just above that we need to set the ``CMAKE_SHARED_LINKER_FLAGS`` so that ``ANativeActivity_onCreate()`` is exported for the Java Virtual Machine to call. This is used by a static library called ``native_app_glue``, which allows us to interface between the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``void android_main(struct android_app*)`` entry point.  We add ``native_app_glue`` to our project by including ``AndroidNdkModules`` and calling ``android_ndk_import_module_native_app_glue()``. 
+
+	Next, we find the Vulkan library in the NDK and include the directory to the Android Vulkan headers. We also add a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL ES. We compile the library the C and header file in ``${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.*`` and add this ``${openxr_SOURCE_DIR}/external/include`` as an include directory. Next, we find the ``GLESv3`` and ``EGL`` libraries and link them to ``openxr-gfxwrapper``. We add the ``${openxr_SOURCE_DIR}/src/common`` and ``${openxr_SOURCE_DIR}/external/include`` folder as include directories to ``OpenXRTutorialChapter2`` as well.
+	
+	Finally we link the ``android``, ``native_app_glue``, ``openxr_loader``, ``vulkan`` and ``openxr-gfxwrapper`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will packaged inside our .apk along with any shared libraries that we have linked.
 
 	.. rubric:: AndroidManifest.xml
 
 	.. literalinclude:: ../Chapter2/app/src/main/AndroidManifest.xml
 		:language: xml
 
-	We now need to modify our ``AndroidManifest.xml`` file to tell Android to run a Native Activity. We set ``android:name`` to "android.app.NativeActivity" and update ``android:configChanges`` to "orientation|keyboardHidden" to not close the activity on those changes. Next under the meta-data section, we set these values: ``android:name`` to "android.app.lib_name" and ``android:value`` to "openxrtutorialch2", where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
+	We now need to modify our ``AndroidManifest.xml`` file to tell Android to run a Native Activity. We set ``android:name`` to ``"android.app.NativeActivity"`` and update ``android:configChanges`` to ``"orientation|keyboardHidden"`` to not close the activity on those changes. Next under the meta-data section, we set these values: ``android:name`` to ``"android.app.lib_name"`` and ``android:value`` to ``"OpenXRTutorialChapter2"``, where ``android:value`` is name of the library we created in the CMakeLists, thus pointing our NativeActivity to the correct library.
+	Just above that add this ``<uses-feature android:name="android.hardware.vr.headtracking" android:required="true" />``; specifying that the application is using VR headtracking.
 
 	We need to tell the app that it should take over rendering when active, rather than appearing in a window. Set ``<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />``.
 	Note: not all devices yet support this category. For example, for Oculus Quest devices you will need ``<category android:name="com.oculus.intent.category.VR" />`` for the same purpose.
+	Also set this in the intent-filer section: ``<category android:name="android.intent.category.DEFAULT" />``.
 
 	.. rubric:: Gradle
 
 	.. literalinclude:: ../Chapter2/app/build.gradle
 		:language: groovy
 	
-	Now, we can config our ``build.gradle`` file in the ``app`` folder. First remove any references to Java, Kotlin and to testing. Next add in the ``externalNativeBuild`` section specifying CMake, its version and the location of the CMakeLists.txt that we created earlier. Also specify under the ``ndk`` section the ``abiFilters``. We will just be using arm64-v8a in this tutorial. ``ndkVersion`` should also be specified.
+	Now, we can config our ``build.gradle`` file in the ``app`` folder. First remove any references to Java, Kotlin and to testing. Next add in the ``externalNativeBuild`` section specifying CMake, its version and the location of the CMakeLists.txt that we created earlier. We will just be using arm64-v8a in this tutorial. ``ndkVersion`` should also be specified.
 
 	.. literalinclude:: ../Chapter2/build.gradle
 		:language: groovy
@@ -145,9 +172,6 @@ CMake
 	The settings.gradle can be reduce to just: ``include ':app'``, and in the ``gradle.properties`` we need to remove ``kotlin.code.style=official`` and ``android.nonTransitiveRClass=true``.
 
 	With that completed, we should now be able to sync the Gradle file and build the project.
-
-	Now, we'll create our source file. Create a new text file called ``main.cpp`` in the Chapter2 directory.
-	This file will be referenced in the CMakeLists file we created, so ensure the path is correct.
 
 Common Files
 ============
@@ -367,6 +391,10 @@ Now we will define the main class ``OpenXRTutorial`` of the application. It's ju
 		void Run()
 		{
 		}
+
+	private:
+		 bool m_applicationRunning = true;
+		 bool m_sessionRunning = false;
 	};
 
 Finally, let's add the main function for the application. It will look slightly different, depending on your
@@ -394,6 +422,8 @@ Then, we create the actual platform specific main function (our entry point to t
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 		:end-before: XR_DOCS_TAG_END_android_main___ANDROID__
+
+	Android requires a few extra additions to the class. Namely, ``android_app *``, ``AndroidAppState`` and ``AndroidAppHandleCmd``, which are used in getting updates from the Android Operating System and keep our application functioning.
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -450,6 +480,7 @@ Build and Run
 	:name: android-id-1
 
 	With all the source and build systems set up, we can now build the Android project. In upper right of Android Studio, you should find the toolbar below. Click the green hammer icon to build the project, if all is successful you should see "BUILD SUCCESSFUL in [...]s" in the Build Output window.
+	It is also recommended to sync the gradle files too.
 
 	Next to the green hammer icon is the Run/Debug configuration dropdown menu. If that isn't populated, create a configuration called app.
 
