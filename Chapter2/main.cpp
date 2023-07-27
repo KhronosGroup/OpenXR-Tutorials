@@ -352,22 +352,18 @@ private:
     bool m_sessionRunning = false;
 };
 
-void OpenXRTutorial_Main() {
+void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
     DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 2." << std::endl;
 
-   #if defined(__ANDROID__)
-    OpenXRTutorial app(OPENGL_ES);
-#else
-    OpenXRTutorial app(OPENGL);
-#endif
+    OpenXRTutorial app(apiType);
     app.Run();
 }
 
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
-    OpenXRTutorial_Main();
+    OpenXRTutorial_Main(OPENGL);
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
@@ -397,7 +393,7 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
-    OpenXRTutorial_Main();
+    OpenXRTutorial_Main(OPENGL_ES);
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__
 #endif
