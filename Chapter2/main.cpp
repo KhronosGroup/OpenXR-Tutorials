@@ -13,10 +13,6 @@
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
 
-#ifdef _MSC_VER
-#define strncpy(dst, src, count) strcpy_s(dst, count, src);
-#endif
-
 class OpenXRTutorial {
 public:
     OpenXRTutorial(GraphicsAPI_Type apiType)

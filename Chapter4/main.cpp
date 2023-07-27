@@ -10,15 +10,12 @@
 #include "GraphicsAPI_Vulkan.h"
 // XR_DOCS_TAG_END_include_GraphicsAPIs
 #include "OpenXRDebugUtils.h"
+
 // XR_DOCS_TAG_BEGIN_include_linear_algebra
 #include "xr_linear_algebra.h"
 // XR_DOCS_TAG_END_include_linear_algebra
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_5
-
-#ifdef _MSC_VER
-#define strncpy(dst, src, count) strcpy_s(dst, count, src);
-#endif
 
 class OpenXRTutorial {
 public:

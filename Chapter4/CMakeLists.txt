@@ -28,7 +28,6 @@ set(SOURCES
     "../Common/OpenXRDebugUtils.cpp")
 set(HEADERS 
     "../Common/DebugOutput.h"
-    "../Common/OpenXRHelper.h" 
     "../Common/GraphicsAPI.h"
     "../Common/GraphicsAPI_D3D11.h"
     "../Common/GraphicsAPI_D3D12.h"
@@ -37,6 +36,7 @@ set(HEADERS
     "../Common/GraphicsAPI_Vulkan.h"
     "../Common/HelperFunctions.h"
     "../Common/OpenXRDebugUtils.h"
+    "../Common/OpenXRHelper.h" 
 )
 set(HLSL_SHADERS
     "../Shaders/VertexShader.hlsl" 

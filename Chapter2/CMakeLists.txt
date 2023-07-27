@@ -28,7 +28,6 @@ set(SOURCES
     "../Common/OpenXRDebugUtils.cpp")
 set(HEADERS 
     "../Common/DebugOutput.h"
-    "../Common/OpenXRHelper.h" 
     "../Common/GraphicsAPI.h"
     "../Common/GraphicsAPI_D3D11.h"
     "../Common/GraphicsAPI_D3D12.h"
@@ -37,9 +36,10 @@ set(HEADERS
     "../Common/GraphicsAPI_Vulkan.h"
     "../Common/HelperFunctions.h"
     "../Common/OpenXRDebugUtils.h"
+    "../Common/OpenXRHelper.h" 
 )
 
-if (ANDROID)
+if (ANDROID) # Android
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
     add_library(OpenXRTutorialChapter2 SHARED ${SOURCES} ${HEADERS})
     target_include_directories(OpenXRTutorialChapter2 PUBLIC "../Common/")
@@ -71,7 +71,7 @@ if (ANDROID)
             ${vulkan-lib}
             openxr-gfxwrapper)
 
-else()
+else() # Windows / Linux
     add_executable(OpenXRTutorialChapter2 ${SOURCES} ${HEADERS})
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
@@ -96,5 +96,4 @@ else()
     # Fix redirection to a different project's build folder
     target_include_directories(OpenXRTutorialChapter2 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
     target_link_libraries(OpenXRTutorialChapter2 openxr-gfxwrapper)
-
-endif()
+endif() # EOF

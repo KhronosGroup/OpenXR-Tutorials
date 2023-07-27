@@ -1,6 +1,6 @@
 #pragma once
 
-// C Headers
+// C/C++ Headers
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -31,6 +31,11 @@ template <typename T>
 inline bool BitwiseCheck(const T &value, const T &checkValue) {
     return ((value & checkValue) == checkValue);
 }
+
+#ifdef _MSC_VER
+#define strncpy(dst, src, count) strcpy_s(dst, count, src);
+#endif
+
 // XR_DOCS_TAG_END_Helper_Functions1
 
 #define XR_DOCS_CHAPTER_2_1 0x21

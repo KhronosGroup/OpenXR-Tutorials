@@ -27,7 +27,7 @@ set(SOURCES
     "../Common/GraphicsAPI_Vulkan.cpp"
     "../Common/OpenXRDebugUtils.cpp")
 set(HEADERS 
-    "../Common/OpenXRHelper.h" 
+    "../Common/DebugOutput.h"
     "../Common/GraphicsAPI.h"
     "../Common/GraphicsAPI_D3D11.h"
     "../Common/GraphicsAPI_D3D12.h"
@@ -36,6 +36,7 @@ set(HEADERS
     "../Common/GraphicsAPI_Vulkan.h"
     "../Common/HelperFunctions.h"
     "../Common/OpenXRDebugUtils.h"
+    "../Common/OpenXRHelper.h" 
 )
 
 if (ANDROID)
