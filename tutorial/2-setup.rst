@@ -371,7 +371,7 @@ Now we will define the main class ``OpenXRTutorial`` of the application. It's ju
 	};
 
 Finally, let's add the main function for the application. It will look slightly different, depending on your
-chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial`` class, taking the ``GraphicsAPI_Type`` parameter, and call the ``Run()``method. ``GraphicsAPI_Type`` can be changed to suit the graphics API that you have chosen.
+chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial`` class, taking a ``GraphicsAPI_Type`` parameter, and call the ``Run()``method. ``GraphicsAPI_Type`` can be changed to suit the graphics API that you have chosen.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -412,15 +412,6 @@ Build and Run
 	Now launch CMake GUI, and point the "Where is the source code" box to the root of your solution *workspace* directory,
 	where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``,
 	click Configure, "Yes" to create the build folder, and "OK" to accept the default Generator.
-
-	.. figure:: cmake-tutorial2-1.png
-		:alt: Select 
-		:align: left
-
-	Now, we must tell the tutorial project where to find the OpenXR-SDK, which we built in Section 1.
-	Click on the variable ``OPENXR_DIR`` and type in or browse to the location of the OpenXR-SDK repository you downloaded
-	previously, the click "Generate". When the projects have been generated, open your new project, by clicking
-	"Open Project", or by finding the file Tutorial.sln in your build folder and open it.
 
 .. container:: linux
 	:name: linux-id-1
