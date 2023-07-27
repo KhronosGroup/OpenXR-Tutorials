@@ -26,7 +26,7 @@ Firstly, we will update the class to add the new methods and members.
 
 .. code-block:: cpp
 
-	class OpenXRTutorialChapter3 {
+	class OpenXRTutorial {
 	public:
 		// [...]
 	

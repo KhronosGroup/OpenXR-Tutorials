@@ -236,7 +236,12 @@ This defines the macro ``OPENXR_CHECK``. Many OpenXR functions return a ``XrResu
 
 GraphicsAPI
 -----------
-This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The drived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``.
+This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The drived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and grapchis API.
+
+.. literalinclude:: ../Common/GraphicsAPI.h
+	:language: cpp
+	:start-at: #include "HelperFunctions.h"
+	:end-before: #include "OpenXRHelper.h"
 
 :download:`GraphicsAPI.h <../Common/GraphicsAPI.h>`
 
@@ -290,16 +295,75 @@ This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the bas
 OpenXRTutorial and Main
 =======================
 
-We can add the ``GraphicsAPIs.h`` header to include in turn all the Graphics API code along with the ``OpenXRHelper.h`` and ``HelperFunctions.h`` files. You can also include ``OpenXRDebugUtils.h`` to help with set up of ``XrDebugUtilsMessengerEXT``.
+We can now start adding code to our ``main.cpp`` file. First, we add ``DebugOutput.h``
 
-Now we will define the main class of the application. It's just a stub for now, with an empty ``Run()`` method:
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-at: #include "DebugOutput
+	:end-at: .h"
+
+Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code of your chosen graphics API. This will in turn include ``GraphicsAPI.h``, ``HelperFunctions.h``  and ``OpenXRHelper.h``. In this tutorial, we include all of them, though you would only be picking one.
+
+.. container:: d3d11
+	:name: d3d11-id-1
+
+	.. literalinclude:: ../Chapter2/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
+		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
+		:emphasize-lines: 1
+
+.. container:: d3d12
+	:name: d3d12-id-1
+	
+	.. literalinclude:: ../Chapter2/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
+		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
+		:emphasize-lines: 2
+
+.. container:: opengl
+	:name: opengl-id-1
+
+	.. literalinclude:: ../Chapter2/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
+		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
+		:emphasize-lines: 3
+
+.. container:: opengles
+	:name: opengles-id-1
+	
+	.. literalinclude:: ../Chapter2/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
+		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
+		:emphasize-lines: 4
+
+.. container:: vulkan
+	:name: vulkan-id-1
+	
+	.. literalinclude:: ../Chapter2/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
+		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
+		:emphasize-lines: 5
+
+You can also include ``OpenXRDebugUtils.h`` to help with set up of ``XrDebugUtilsMessengerEXT``.
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-at: #include "OpenXRDebugUtils
+	:end-at: .h"
+
+Now we will define the main class ``OpenXRTutorial`` of the application. It's just a stub for now, with an empty ``Run()`` method:
 
 .. code-block:: cpp
 
-	class OpenXRTutorialChapter2 {
+	class OpenXRTutorial {
 	public:
-		OpenXRTutorialChapter2() = default;
-		~OpenXRTutorialChapter2() = default;
+		OpenXRTutorial(GraphicsAPI_Type apiType) = default;
+		~OpenXRTutorial() = default;
 
 		void Run()
 		{
@@ -307,14 +371,14 @@ Now we will define the main class of the application. It's just a stub for now, 
 	};
 
 Finally, let's add the main function for the application. It will look slightly different, depending on your
-chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial_Ch2_1`` class, and call the ``Run()``method.
+chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial`` class, taking the ``GraphicsAPI_Type`` parameter, and call the ``Run()``method. ``GraphicsAPI_Type`` can be changed to suit the graphics API that you have chosen.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
-	:start-at: void OpenXRTutorial_Main()
+	:start-at: void OpenXRTutorial_Main(GraphicsAPI_Type apiType)
 	:end-at: }
 
-Then, we create the actual platform specific main function (our entry point to the application), which will call ``OpenXRTutorial_Main()``:
+Then, we create the actual platform specific main function (our entry point to the application), which will call ``OpenXRTutorial_Main()`` with our ``GraphicsAPI_Type`` parameter:
 
 .. container:: windows linux
 	:name: windows-linux-id-1
@@ -439,10 +503,9 @@ Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, 
 
 .. code-block:: cpp
 	
-	class OpenXRTutorialChapter2 {
+	class OpenXRTutorial{
 	public:
-		OpenXRTutorialChapter2() = default;
-		~OpenXRTutorialChapter2() = default;
+		// [...]
 	
 		void Run()
 		{
@@ -580,9 +643,9 @@ Update the Constructor and ``Run()`` method as shown and add the following membe
 
 .. code-block:: cpp
 
-	class OpenXRTutorialChapter2 {
+	class OpenXRTutorial {
 	public:
-		OpenXRTutorialChapter2(GraphicsAPI_Type api)
+		OpenXRTutorial(GraphicsAPI_Type api)
 			: apiType(api) {
 			if(!CheckGraphicsAPI_TypeIsValidForPlatform(apiType)) {
 				std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
@@ -814,7 +877,7 @@ Firstly, we will update the class to add the new methods and members.
 
 .. code-block:: cpp
 
-	class OpenXRTutorialChapter2 {
+	class OpenXRTutorial {
 	public:
 		// [...]
 
