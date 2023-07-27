@@ -29,7 +29,6 @@ set(SOURCES
 set(HEADERS 
     "../Common/DebugOutput.h"
     "../Common/OpenXRHelper.h" 
-    "../Common/GraphicsAPIs.h"
     "../Common/GraphicsAPI.h"
     "../Common/GraphicsAPI_D3D11.h"
     "../Common/GraphicsAPI_D3D12.h"

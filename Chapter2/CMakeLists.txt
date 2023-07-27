@@ -29,7 +29,6 @@ set(SOURCES
 set(HEADERS 
     "../Common/DebugOutput.h"
     "../Common/OpenXRHelper.h" 
-    "../Common/GraphicsAPIs.h"
     "../Common/GraphicsAPI.h"
     "../Common/GraphicsAPI_D3D11.h"
     "../Common/GraphicsAPI_D3D12.h"
@@ -75,9 +74,9 @@ if (ANDROID)
 else()
     add_executable(OpenXRTutorialChapter2 ${SOURCES} ${HEADERS})
 
-	if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
-		set_target_properties( OpenXRTutorialChapter2 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
-	endif()
+    if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
+      set_target_properties( OpenXRTutorialChapter2 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
+    endif()
     target_include_directories(OpenXRTutorialChapter2 PUBLIC "../Common/")
     target_link_libraries(OpenXRTutorialChapter2 openxr_loader)
 
