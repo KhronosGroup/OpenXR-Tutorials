@@ -25,15 +25,14 @@ CMake
 
 	You are free to use any code editor and/or compiler; this tutorial will use Visual Studio Code.
 	For the Linux OpenXR project, we'll use CMake alongside Visual Studio Code to build the project.
-	First, Create a directory where the code will go, we'll call this the *workspace* directory. Open Visual Studio Code and from the File menu, select "Open Folder..."
+	First, create a directory where the code will go, we'll call this the *workspace* directory. Open Visual Studio Code and from the File menu, select "Open Folder..."
 
 	.. figure:: linux-vscode-open-folder.png
 		:alt: The File menu of Visual Studio Code is shown, with the command "Open Folder..." selected.
 		:scale: 55%
 
-	The File menu of Visual Studio Code, with the command "Open Folder..." selected
-
-	Select your *workspace* folder, which is now empty.
+	Select your *workspace* folder, which is currently empty.
+	
 	If you haven't previously done so, install the CMake extension for Visual Studio Code.
 	
 .. container:: windows linux
@@ -241,7 +240,7 @@ This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the bas
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp
 	:start-at: #include "HelperFunctions.h"
-	:end-before: #include "OpenXRHelper.h"
+	:end-at: #include "OpenXRHelper.h"
 
 :download:`GraphicsAPI.h <../Common/GraphicsAPI.h>`
 
@@ -413,43 +412,20 @@ Build and Run
 	where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``,
 	click Configure, "Yes" to create the build folder, and "OK" to accept the default Generator.
 
-.. container:: linux
-	:name: linux-id-1
-
-	You now have three files, laid out as follows:
-
-	.. figure:: linux-vscode-initial-files.png
-		:alt: Initial files in VS Code 
-
-	Having installed the CMake extension for Visual Studio Code, you can now right-click on the main ``CMakeLists.txt`` file (the one in the root *workspace* folder) and select "Configure All Projects":
-
-	.. figure:: linux-vscode-cmake-configure.png
-		:alt: Select
-
-	Now the CMake panel will be available by clicking its icon on the leftmost panel. Hover your mouse over the "Project Outline"
-	and click the three dots at the right. An option to "Edit CMake Cache" will appear, click this and you'll see the Cache Editor
-	page.
-
-	.. figure:: linux-vscode-cmake-more-actions.png
-		:alt: Select
-	
-
-	.. figure:: linux-vscode-cmake-cache.png
-		:alt: Select 
-		
-
-	NOTE: It's possible to use CMake GUI in Linux, but using Visual Studio Code's integrated tools works better with Visual Studio Code.
-
-	In the CMake Cache editor, find ``OPENXR_DIR`` and enter the directory where you downloaded OpenXR-SDK in Chapter 1.
-	We can now select "Configure and Build All" from the right-click menu of the main ``CMakeLists.txt`` file.
-
-.. container:: windows
-	:name: windows-id-1
-
 	You can now build and run your program. It should compile and link with no errors or warnings.
 
 .. container:: linux
 	:name: linux-id-1
+
+	You now have the files and folders, laid out as follows:
+
+	.. figure:: linux-vscode-initial-files.png
+		:alt: Initial files in VS Code 
+
+	Having installed the CMake extension for Visual Studio Code, you can now right-click on the main ``CMakeLists.txt`` file (the one in the root *workspace* folder). We can select “Configure and Build All” from the right-click menu of the main ``CMakeLists.txt`` file.
+
+	.. figure:: linux-vscode-cmake-configure.png
+		:alt: Select
 
 	To enable debugging, select the Run/Debug panel in Visual Studio Code. You will now need to create a debugging configuration.
 	Click the "Gear" icon to edit the file launch.json, and enter the following:
