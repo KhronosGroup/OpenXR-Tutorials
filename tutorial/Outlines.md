@@ -34,7 +34,7 @@ Possibly separate Ch2 into two chapters, one for setting up the project, one for
 ## Chapter 2.1 Creating an XRInstance
 Boilerplate code around including openxr headers, creating an example app class object "OpenXRTutorial". We will describe at the top the outline of what will be done in this section.
 We will briefly introduce XrInstance, its purpose and scope/lifetime. Discuss XrApplicationInfo and API versioning. Some mention of extensions, and description of what instance extensions we will be using (some platform/API-specific extensions here).
-Desribe extension enumeration, and show code to do this.
+Describe extension enumeration, and show code to do this.
 Ensure safe shutdown/fallout when necessary extensions are not present.
 Describe XrInstanceCreateInfo and its members. Show code to set this struct up and call xrCreateInstance.
 (Briefly describe instance destruction and show code for this.)
@@ -66,7 +66,7 @@ Describe the XrSwapchainCreateInfo struct and the usage flags. Use xrCreateSwapc
 
 ## Chapter 3.2 Building a RenderLoop
 Describe the idea of an OpenXR frame and show the usage of xrWaitFrame(), xrBeginFrame() and xrEndFrame().
-Discuss the use of multiple layer and XR compositor and the compositing modes, which can be quired throught xrEnumerateEnvironmentBlendModes().
+Discuss the use of multiple layer and XR compositor and the compositing modes, which can be quired through xrEnumerateEnvironmentBlendModes().
 Describe the usage of xrAcquireSwapchainImage(), xrWaitSwapchainImage() and xrReleaseSwapchainImage() in rendering to one of the images in swapchain.
 Explain and show code examples for Multiview/ViewInstancing rendering in all APIs (except D3D11), otherwise use normal instanced rendering (This might be in Chapter 4).
 Show calling the Graphics APIs's 'Clear Image/ImageView' function and providing the image back to the swapchain, ending the OpenXR frame for the compositor and runtime to display the image to the screen(s).
@@ -96,7 +96,7 @@ Example code of controller detection and fallback behaviour.
 
 ## Chapter 5.1 Using Extensions and Layers
 Discuss the reasoning of having an extensible and layered API, i.e. more portability/platform options, future extensibilities, vendor hardware/software support, API debugging and captures files etc. 
-Show the usage of xrEnumerateApiLayerProperties() and xrEnumerateInstanceExtensionProperties(). Show loading in funtion pointers with xrGetInstanceProcAddr() for functions that are not automatically loaded by the Loader - some function don't require an XrInstance.
+Show the usage of xrEnumerateApiLayerProperties() and xrEnumerateInstanceExtensionProperties(). Show loading in function pointers with xrGetInstanceProcAddr() for functions that are not automatically loaded by the Loader - some function don't require an XrInstance.
 Link to OpenXR specification extension section for research and reference documentation on extension and layers.
 
 ## Chapter 5.2 Using xrCreateDebugUtilsMessengerEXT

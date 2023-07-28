@@ -7,7 +7,7 @@ Select your platform, as the instructions are different depending on your select
 .. raw:: html
 	:file: platforms.html
 
-The goal of this chapter is to build an application that creates and clears color and depth buffers within the scope of OpenXR render loop and to demostrate its interaction with all the Graphics APIs.
+The goal of this chapter is to build an application that creates and clears color and depth buffers within the scope of OpenXR render loop and to demonstrate its interaction with all the Graphics APIs.
 
 ***********************
 3.1 Creating Swapchains
@@ -20,7 +20,7 @@ All graphics APIs have this concept of a swapchain with differing levels of tran
 	* 1 view  - AR viewer on a mobile device.
 	* 2 views - VR head mounted display.
 
-Orthogonal to multiple views is the layering of multiple rendered images or camera feeds. You could, for a example, have a background that is a video pass-through of your enviroment, a stereo view of rendering graphics and quad overlay of a HUD or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
+Orthogonal to multiple views is the layering of multiple rendered images or camera feeds. You could, for a example, have a background that is a video pass-through of your environment, a stereo view of rendering graphics and quad overlay of a HUD or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
 
 Firstly, we will update the class to add the new methods and members.
 
@@ -115,7 +115,7 @@ Next, we do some checks to confirm that the views in the view configuration are 
 	:end-before: XR_DOCS_TAG_END_CreateSwapchain
 	:dedent: 12
 
-Here, we fill out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members can be assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to 0 as we require no contraints or functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the image are suitable to be read in a shader and to be used as a render output.
+Here, we fill out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members can be assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to 0 as we require no constraints or functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the image are suitable to be read in a shader and to be used as a render output.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
@@ -384,7 +384,7 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 3.1.5 Create Depth Image And Image Views
 ========================================
 
-Next, we create a depth image so that we can correctly render 3D prespective graphics to the view. In this tutorial, we have a ``GraphicsAPI::ImageCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImage()`` that creates the API-specific objects. 
+Next, we create a depth image so that we can correctly render 3D perspective graphics to the view. In this tutorial, we have a ``GraphicsAPI::ImageCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImage()`` that creates the API-specific objects. 
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -572,7 +572,7 @@ We enumerate the environment blend modes as shown above. This function take a po
 3.2.2 xrCreateReferenceSpace
 ============================
 
-Now that OpenXR know what the user should see, we need to tell OpenXR from where should the user by seeing. This is where the referene space comes in.
+Now that OpenXR know what the user should see, we need to tell OpenXR from where should the user by seeing. This is where the reference space comes in.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
