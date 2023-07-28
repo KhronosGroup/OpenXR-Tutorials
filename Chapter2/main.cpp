@@ -20,6 +20,7 @@
 // XR_DOCS_TAG_BEGIN_include_OpenXRDebugUtils
 #include <OpenXRDebugUtils.h>
 // XR_DOCS_TAG_END_include_OpenXRDebugUtils
+#include <memory>
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
 
