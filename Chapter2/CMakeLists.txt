@@ -11,8 +11,10 @@ set(BUILD_CONFORMANCE_TESTS OFF CACHE INTERNAL "Build conformance tests")
 set(BUILD_API_LAYERS ON CACHE INTERNAL "Use OpenXR layers")
 FetchContent_Declare(
         OpenXR
-        URL_HASH MD5=390455e9395a92d6b730afb8f23fac8e
-        URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.27.zip
+        # URL_HASH MD5=390455e9395a92d6b730afb8f23fac8e
+        # URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.27.zip
+        URL_HASH MD5=81930f0ccecdca852906e1a22aee4a45
+        URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.28.zip
         SOURCE_DIR openxr)
 FetchContent_MakeAvailable(OpenXR)
 
@@ -75,7 +77,7 @@ else() # Windows / Linux
     add_executable(OpenXRTutorialChapter2 ${SOURCES} ${HEADERS})
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
-      set_target_properties( OpenXRTutorialChapter2 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
+        set_target_properties( OpenXRTutorialChapter2 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
     endif()
     target_include_directories(OpenXRTutorialChapter2 PUBLIC "../Common/")
     target_link_libraries(OpenXRTutorialChapter2 openxr_loader)
