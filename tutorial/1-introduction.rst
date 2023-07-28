@@ -149,7 +149,7 @@ by clicking a tab, or one of the buttons below.
 	
 	.. rubric::  OpenXR SDK
 	
-	In conjunction with the later ``CMakeLists.txt``, we add this to our dependencies in the ``app/build.gradle`` file. This ``openxr_loader_for_android`` also contains an ``AndroidManifest.xml`` file that includes the required uses-permissions, authorising the OpenXR runtime broker and states the intent to use the ``OpenXRRuntimeService`` and the ``OpenXRApiLayerService``.
+	In conjunction with the later ``CMakeLists.txt``, we add this to our dependencies in the ``app/build.gradle`` file. The ``openxr_loader_for_android`` provides an ``AndroidManifest.xml``that will be merged into our own, setting some required properties for the package and application. With this though, we are still required to add to our own ``AndroidManifest.xml``file the relevant intent filters, such as ``<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />``. It also provides the OpenXR headers and library binaries in a format that the Android Gradle Plugin will expose to CMake.``OpenXRApiLayerService``.
 
 	.. literalinclude:: ../Chapter2/app/build.gradle
 		:language: groovy
