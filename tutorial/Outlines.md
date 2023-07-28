@@ -66,7 +66,7 @@ Describe the XrSwapchainCreateInfo struct and the usage flags. Use xrCreateSwapc
 
 ## Chapter 3.2 Building a RenderLoop
 Describe the idea of an OpenXR frame and show the usage of xrWaitFrame(), xrBeginFrame() and xrEndFrame().
-Discuss the use of multiple layer and XR compositor and the compositing modes, which can be quired through xrEnumerateEnvironmentBlendModes().
+Discuss the use of multiple layer and XR compositor and the compositing modes, which can be queried through xrEnumerateEnvironmentBlendModes().
 Describe the usage of xrAcquireSwapchainImage(), xrWaitSwapchainImage() and xrReleaseSwapchainImage() in rendering to one of the images in swapchain.
 Explain and show code examples for Multiview/ViewInstancing rendering in all APIs (except D3D11), otherwise use normal instanced rendering (This might be in Chapter 4).
 Show calling the Graphics APIs's 'Clear Image/ImageView' function and providing the image back to the swapchain, ending the OpenXR frame for the compositor and runtime to display the image to the screen(s).
