@@ -11,6 +11,10 @@
         }                                                                                          \
     }
 
+#if defined(__ANDROID__) && !defined(VK_API_MAKE_VERSION)
+#define VK_MAKE_API_VERSION(variant, major, minor, patch) VK_MAKE_VERSION(major, minor, patch)
+#endif
+
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan
 GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance m_xrInstance, XrSystemId systemId) {
     // Instance
@@ -26,7 +30,7 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance m_xrInstance, XrSystemId syste
     ai.applicationVersion = 1;
     ai.pEngineName = "OpenXR Tutorial - Vulkan Engine";
     ai.engineVersion = 1;
-    ai.apiVersion = graphicsRequirements.minApiVersionSupported;
+    ai.apiVersion = VK_MAKE_API_VERSION(0, XR_VERSION_MAJOR(graphicsRequirements.minApiVersionSupported), XR_VERSION_MINOR(graphicsRequirements.minApiVersionSupported), 0);
 
     uint32_t instanceExtensionCount = 0;
     VULKAN_CHECK(vkEnumerateInstanceExtensionProperties(nullptr, &instanceExtensionCount, nullptr), "Failed to enumerate InstanceExtensionProperties.");

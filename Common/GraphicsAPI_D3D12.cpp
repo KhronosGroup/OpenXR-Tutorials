@@ -32,7 +32,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
     DXGI_ADAPTER_DESC adapterDesc = {};
     while (factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND) {
         adapter->GetDesc(&adapterDesc);
-        if (adapterDesc.AdapterLuid.LowPart == graphicsRequirements.adapterLuid.LowPart && adapterDesc.AdapterLuid.HighPart == graphicsRequirements.adapterLuid.HighPart) {
+        if (memcmp(&graphicsRequirements.adapterLuid, &adapterDesc.AdapterLuid, sizeof(LUID)) == 0) {
             break;  // We have the matching adapter that OpenXR wants.
         }
     }

@@ -372,10 +372,10 @@ GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance m_xrInstance, XrSystemId syste
     glGetIntegerv(GL_MINOR_VERSION, &glMinorVersion);
 
     const XrVersion glApiVersion = XR_MAKE_VERSION(glMajorVersion, glMinorVersion, 0);
-    if (graphicsRequirements.minApiVersionSupported > glApiVersion) {
-		int requiredMajorVersion=XR_VERSION_MAJOR(graphicsRequirements.minApiVersionSupported);
-		int requiredMinorVersion=XR_VERSION_MINOR(graphicsRequirements.minApiVersionSupported);
-        std::cerr << "ERROR: OPENGL: The created OpenGL version "<<glMajorVersion<<"."<<glMinorVersion<<" doesn't meet the minimum required API version "<<requiredMajorVersion<<"."<<requiredMinorVersion<<" for OpenXR." << std::endl;
+    if (graphicsRequirements.minApiVersionSupported >= glApiVersion) {
+        int requiredMajorVersion = XR_VERSION_MAJOR(graphicsRequirements.minApiVersionSupported);
+        int requiredMinorVersion = XR_VERSION_MINOR(graphicsRequirements.minApiVersionSupported);
+        std::cerr << "ERROR: OPENGL: The created OpenGL version " << glMajorVersion << "." << glMinorVersion << " doesn't meet the minimum required API version " << requiredMajorVersion << "." << requiredMinorVersion << " for OpenXR." << std::endl;
     }
 
     glEnable(GL_DEBUG_OUTPUT);
@@ -698,7 +698,7 @@ void GraphicsAPI_OpenGL::EndRendering() {
 
 void GraphicsAPI_OpenGL::SetBufferData(void *buffer, size_t offset, size_t size, void *data) {
     GLuint glBuffer = (GLuint)(uint64_t)buffer;
-    const BufferCreateInfo& bufferCI = buffers[glBuffer];
+    const BufferCreateInfo &bufferCI = buffers[glBuffer];
 
     GLenum target = 0;
     if (bufferCI.type == BufferCreateInfo::Type::VERTEX) {
@@ -739,7 +739,7 @@ void GraphicsAPI_OpenGL::SetRenderAttachments(void **colorViews, size_t colorVie
 
     glGenFramebuffers(1, &setFramebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, setFramebuffer);
-    
+
     // Color
     for (size_t i = 0; i < colorViewCount; i++) {
         GLenum attachment = GL_COLOR_ATTACHMENT0;
@@ -779,8 +779,7 @@ void GraphicsAPI_OpenGL::SetRenderAttachments(void **colorViews, size_t colorVie
 }
 
 void GraphicsAPI_OpenGL::SetViewports(Viewport *viewports, size_t count) {
-
-    PFNGLVIEWPORTINDEXEDFPROC glViewportIndexedf = (PFNGLVIEWPORTINDEXEDFPROC)GetExtension("glViewportIndexedf"); // 4.1+
+    PFNGLVIEWPORTINDEXEDFPROC glViewportIndexedf = (PFNGLVIEWPORTINDEXEDFPROC)GetExtension("glViewportIndexedf");      // 4.1+
     PFNGLDEPTHRANGEINDEXEDPROC glDepthRangeIndexed = (PFNGLDEPTHRANGEINDEXEDPROC)GetExtension("glDepthRangeIndexed");  // 4.1+
 
     for (size_t i = 0; i < count; i++) {
@@ -791,8 +790,7 @@ void GraphicsAPI_OpenGL::SetViewports(Viewport *viewports, size_t count) {
 }
 
 void GraphicsAPI_OpenGL::SetScissors(Rect2D *scissors, size_t count) {
-
-    PFNGLSCISSORINDEXEDPROC glScissorIndexed = (PFNGLSCISSORINDEXEDPROC)GetExtension("glScissorIndexed"); // 4.1+
+    PFNGLSCISSORINDEXEDPROC glScissorIndexed = (PFNGLSCISSORINDEXEDPROC)GetExtension("glScissorIndexed");  // 4.1+
 
     for (size_t i = 0; i < count; i++) {
         Rect2D scissor = scissors[i];
