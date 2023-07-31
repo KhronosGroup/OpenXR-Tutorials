@@ -200,7 +200,7 @@ CMake and Project Files
 			:end-before: if (ANDROID) # Android
 			:emphasize-lines: 4, 9, 13, 18
 
-	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your grapchis API choice.
+	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
 
 	.. container:: opengles
 		:name: opengles-id-1
@@ -257,7 +257,7 @@ CMake and Project Files
 
 	* We remove any references to Java, Kotlin and to testing in the ``plugins {}``, ``android { defaultConfig {} }`` sections and remove ``compileOptions {}`` and ``kotlinOptions {}`` sections entirely.
 	* Update ``compileSdk``, ``minSdk`` and ``targetSdk`` as shown. We specify ``29`` for the version, but any value great than or equal to ``24`` will work.
-	* We specify the ``ndkVersion`` and add in an ``externalNativeBuild {}`` under the ``android {}`` section.  This specifies that we want to do an external native build with CMake and further specifies the version and the path to our ``CMakeLists.txt``. We also add ``buildFeatures { prefab true }``. This allow any prefabs to be used in build.
+	* We specify the ``ndkVersion`` and add in an ``externalNativeBuild {}`` under the ``android {}`` section.  This specifies that we want to do an external native build with CMake and further specifies the version and the path to our ``CMakeLists.txt``. We also add ``buildFeatures { prefab true }``. This allows the OpenXR loader AAR, specified in the ``dependencies {}`` section to work correctly.
 	* In the ``dependencies {}`` section remove all the existing entries and add ``implementation 'org.khronos.openxr:openxr_loader_for_android:...'``. This provides an ``AndroidManifest.xml`` that will be merged into our own, setting some required properties for the package and application. With this though, we are still required to add to our own ``AndroidManifest.xml`` file the relevant intent filters, such as ``<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />``. It also provides the OpenXR headers and library binaries in a format that the Android Gradle Plugin will expose to CMake.
 
 	.. literalinclude:: ../Chapter2/build.gradle
@@ -377,7 +377,7 @@ GraphicsAPI
 
 	:download:`GraphicsAPI_Vulkan.cpp <../Common/GraphicsAPI_Vulkan.cpp>`
 
-This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The drived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and grapchis API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. This tutorial demonstrates all five graphics APIs, you will only need to select one ``XR_USE_PLATFORM_...`` macro and one ``XR_USE_GRAPHICS_API_...`` macro.
+This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The derived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and grapchis API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. This tutorial demonstrates all five graphics APIs, you will only need to select one ``XR_USE_PLATFORM_...`` macro and one ``XR_USE_GRAPHICS_API_...`` macro.
 
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp
