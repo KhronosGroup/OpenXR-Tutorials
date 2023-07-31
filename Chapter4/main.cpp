@@ -139,14 +139,21 @@ private:
 
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
         for (auto &requestExtension : m_instanceExtensions) {
+			bool found=false;
             for (auto &extensionProperty : extensionProperties) {
                 if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
                     continue;
                 } else {
                     m_activeInstanceExtensions.push_back(requestExtension.c_str());
+					found=true;
                     break;
                 }
             }
+			if(!found)
+			{
+				std::cerr<<"Failed to find OpenXR instance extension: "<<requestExtension<<"\n";
+				DebugBreak();
+			}
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension
 
@@ -211,17 +218,17 @@ private:
         // XR_DOCS_TAG_END_CreateActionSet
 
         // XR_DOCS_TAG_BEGIN_CreateActions
-        auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType) -> void {
+        auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType,std::vector<const char*> subaction_paths={}) -> void {
             XrActionCreateInfo actionCI{XR_TYPE_ACTION_CREATE_INFO};
             actionCI.actionType = xrActionType;
             strncpy(actionCI.actionName, name, XR_MAX_ACTION_NAME_SIZE);
             strncpy(actionCI.localizedActionName, name, XR_MAX_LOCALIZED_ACTION_NAME_SIZE);
             OPENXR_CHECK(xrCreateAction(m_actionSet, &actionCI, &xrAction), "Failed to create Action.");
         };
-        CreateAction(m_selectAction, "select", XR_ACTION_TYPE_BOOLEAN_INPUT);
-        CreateAction(m_triggerAction, "trigger", XR_ACTION_TYPE_FLOAT_INPUT);
-        CreateAction(m_leftGripPoseAction, "left-grip", XR_ACTION_TYPE_POSE_INPUT);
-        CreateAction(m_rightHapticAction, "right-haptic", XR_ACTION_TYPE_VIBRATION_OUTPUT);
+        CreateAction(m_selectAction, "select", XR_ACTION_TYPE_BOOLEAN_INPUT,{"/user/hand/left","/user/hand/right"});
+        CreateAction(m_triggerAction, "shoot", XR_ACTION_TYPE_FLOAT_INPUT);
+        CreateAction(m_leftGripPoseAction, "controller-grip", XR_ACTION_TYPE_POSE_INPUT,{"/user/hand/left","/user/hand/right"});
+        CreateAction(m_rightHapticAction, "buzz", XR_ACTION_TYPE_VIBRATION_OUTPUT,{"/user/hand/left","/user/hand/right"});
     }
     // XR_DOCS_TAG_END_CreateActions
 
@@ -234,18 +241,36 @@ private:
     // XR_DOCS_TAG_END_CreateXrPath
     // XR_DOCS_TAG_BEGIN_SuggestBindings
     void SuggestBindings() {
-        std::vector<XrActionSuggestedBinding> suggestedBindings = {
+        auto SuggestBindings= [this]( const char *profile_path, std::vector<XrActionSuggestedBinding> bindings) -> bool {
+			// The application can call xrSuggestInteractionProfileBindings once per interaction profile that it supports.
+			XrInteractionProfileSuggestedBinding interactionProfileSuggestedBinding{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+			interactionProfileSuggestedBinding.interactionProfile = CreateXrPath(profile_path);
+			interactionProfileSuggestedBinding.suggestedBindings = bindings.data();
+			interactionProfileSuggestedBinding.countSuggestedBindings = (uint32_t)bindings.size();
+			if (xrSuggestInteractionProfileBindings(m_xrInstance, &interactionProfileSuggestedBinding)==XrResult::XR_SUCCESS)
+				return true;
+			std::cout<<"Failed to suggest bindings with "<<profile_path<<"\n";
+			return false;
+		};
+		bool any_ok=false;
+        any_ok|=SuggestBindings("/interaction_profiles/khr/simple_controller", {
             {m_selectAction, CreateXrPath("/user/hand/left/input/select/click")},
             {m_triggerAction, CreateXrPath("/user/hand/right/input/menu/click")},
             {m_leftGripPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
-            {m_rightHapticAction, CreateXrPath("/user/hand/right/output/haptic")}};
-
-        // The application can call xrSuggestInteractionProfileBindings once per interaction profile that it supports.
-        XrInteractionProfileSuggestedBinding profileSuggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
-        profileSuggestedBindings.interactionProfile = CreateXrPath("/interaction_profiles/khr/simple_controller");
-        profileSuggestedBindings.suggestedBindings = suggestedBindings.data();
-        profileSuggestedBindings.countSuggestedBindings = (uint32_t)suggestedBindings.size();
-        OPENXR_CHECK(xrSuggestInteractionProfileBindings(m_xrInstance, &profileSuggestedBindings), "Interaction Profile failed to suggest Bindings.");
+            {m_rightHapticAction, CreateXrPath("/user/hand/right/output/haptic")}});
+		any_ok|=SuggestBindings("/interaction_profiles/oculus/go_controller",{
+					{m_selectAction, CreateXrPath("/user/hand/left/input/menu/click")},
+					{m_triggerAction, CreateXrPath("/user/hand/right/input/trigger/value")},
+					{m_leftGripPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
+					{m_rightHapticAction, CreateXrPath("/user/hand/right/output/haptic")}});
+		
+		any_ok|=SuggestBindings("/interaction_profiles/oculus/touch_controller",{
+					{m_selectAction, CreateXrPath("/user/hand/left/input/menu/click")},
+					{m_triggerAction, CreateXrPath("/user/hand/right/input/trigger/value")},
+					{m_leftGripPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
+					{m_rightHapticAction, CreateXrPath("/user/hand/right/output/haptic")}});
+		if(!any_ok)
+			DebugBreak();
     }
     // XR_DOCS_TAG_END_SuggestBindings
     // XR_DOCS_TAG_BEGIN_CreateActionPoses
@@ -482,24 +507,28 @@ private:
 
                 cbuffer CameraConstants
                 {
-                    mat4 viewProj;
-                    mat4 modelViewProj;
-                    mat4 model;
+                    float4x4 viewProj;
+                    float4x4 modelViewProj;
+                    float4x4 model;
                 };
                 struct VS_IN
                 {
+					uint vertex_id:SV_VertexId;
                     float4 a_Positions : TEXCOORD0;
                 };
                 
                 struct VS_OUT
                 {
-                    float4 o_Position : SV_Position;
+                    float4 o_Position	: SV_Position;
+					float2 o_TexCoord		: TEXCOORD0;
                 };
                 
                 VS_OUT main(VS_IN IN)
                 {
                     VS_OUT OUT;
-                    OUT.o_Position = IN.a_Positions;
+                    OUT.o_Position = mul(modelViewProj,IN.a_Positions);
+                    int face = IN.vertex_id / 6;
+                    OUT.o_TexCoord = float2(float(face), 0);
                     return OUT;
                 })";
             m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
@@ -507,6 +536,11 @@ private:
             std::string fragmentSource = R"(
                 //Color Fragment Shader
                 
+                struct PS_IN
+                {
+                    float4 i_Position	: SV_Position;
+					float2 i_TexCoord		: TEXCOORD0;
+                };
                 struct PS_OUT
                 {
                     float4 o_Color : SV_Target0;
@@ -514,13 +548,14 @@ private:
                 
                 cbuffer Data : register(b0)
                 {
-                    float4 d_Data_color;
+                    float4 colors[6];
                 };
                 
-                PS_OUT main()
+                PS_OUT main(PS_IN IN)
                 {
                     PS_OUT OUT;
-                    OUT.o_Color = d_Data_color;
+                    int i = int(IN.i_TexCoord.x);
+                    OUT.o_Color = colors[i];
                     return OUT;
                 })";
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
@@ -863,7 +898,7 @@ private:
             m_graphicsAPI->BeginRendering();
             if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE) {
                 // VR mode use a background color.
-                m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.22f, 0.17f, 0.35f, 1.00f);
+                m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.17f, 0.17f, 0.17f, 1.00f);
             } else {
                 // In AR mode make the background color black.
                 m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
@@ -1063,7 +1098,7 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
-    OpenXRTutorial_Main(OPENGL);
+    OpenXRTutorial_Main(D3D11);
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
