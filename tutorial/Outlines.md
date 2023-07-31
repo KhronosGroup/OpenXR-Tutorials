@@ -27,12 +27,15 @@ What dependencies are required, and where to get them. Again, highly platform- a
 Introduce CMake and briefly explain its use.
 For Android, discuss gradle files, their structure and links to CMake.
 
-## Chapter 2
-There is substantial "Setup" that we expect to be needed before "Creating an XrInstance". Perhaps a whole subsection 2.1 on creating CMake projects and building on PC/Linux or building for Android?
-Possibly separate Ch2 into two chapters, one for setting up the project, one for initiating OpenXR?
-
-## Chapter 2.1 Creating an XRInstance
+## Chapter 1.4 Project Setup
 Boilerplate code around including openxr headers, creating an example app class object "OpenXRTutorial". We will describe at the top the outline of what will be done in this section.
+Details on creating CMake projects and building on PC/Linux or building for Android?
+Possibly separate Ch2 into two chapters, one for setting up the project, one for initiating OpenXR? // Resolve by moving the head of Chapter 2 to Chapter 1.4.
+
+## Chapter 2
+The goal is to create an XrInstance and an XrSession and setup the event loop. Discuss the purpose of this setup OpenXR code.
+
+## Chapter 2.1 Creating an XrInstance
 We will briefly introduce XrInstance, its purpose and scope/lifetime. Discuss XrApplicationInfo and API versioning. Some mention of extensions, and description of what instance extensions we will be using (some platform/API-specific extensions here).
 Describe extension enumeration, and show code to do this.
 Ensure safe shutdown/fallout when necessary extensions are not present.
