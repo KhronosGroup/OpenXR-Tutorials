@@ -545,7 +545,7 @@ void GraphicsAPI_D3D11::DestroySampler(void *&sampler) {
 void *GraphicsAPI_D3D11::CreateBuffer(const BufferCreateInfo &bufferCI) {
     D3D11_SUBRESOURCE_DATA initData{};
     initData.pSysMem = bufferCI.data;
-    initData.SysMemPitch = bufferCI.stride;
+    initData.SysMemPitch = (UINT)bufferCI.stride;
     initData.SysMemSlicePitch = 0;
     bool cpu_access = (bufferCI.type == GraphicsAPI::BufferCreateInfo::Type::UNIFORM);
 
@@ -782,7 +782,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
             element.SemanticIndex = attribute.bindingIndex;
             element.Format = ToDXGI_FORMAT(attribute.vertexType);
             element.InputSlot = attribute.bindingIndex;
-            element.AlignedByteOffset = attribute.offset;
+            element.AlignedByteOffset = (UINT)attribute.offset;
             element.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
             element.InstanceDataStepRate = 0;
             elements.push_back(element);
@@ -965,7 +965,7 @@ void GraphicsAPI_D3D11::SetVertexBuffers(void **vertexBuffers, size_t count) {
     for (size_t i = 0; i < count; i++) {
         for (const VertexInputBinding &vertexBinding : vertexInputState.bindings) {
             if (vertexBinding.bindingIndex == (uint32_t)i) {
-                strides.push_back(vertexBinding.stride);
+                strides.push_back((UINT)vertexBinding.stride);
                 offsets.push_back(0);
             }
         }

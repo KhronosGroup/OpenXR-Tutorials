@@ -131,55 +131,35 @@
 	{
 		platform = "linux"; // Set default here.
 	}
-	var selectd3d11=document.getElementById("selectd3d11");
-	var selectd3d12=document.getElementById("selectd3d12");
-	var selectopengles=document.getElementById("selectopengles");
-	var selectvulkan=document.getElementById("selectvulkan");
-	var selectopengl=document.getElementById("selectopengl");
 	$(".linux").hide();
 	$(".android").hide();
 	$(".windows").hide();
 	if (platform == "windows")
 	{
-	$(".windows").show();
-	if(selectd3d11)
-		selectd3d11.disabled = false;
-	if(selectd3d12)
-		selectd3d12.disabled = false;
-	if(selectopengles)
-		selectopengles.disabled = true;
-	if(selectvulkan)
-		selectvulkan.disabled = false;
-	if(selectopengl)
-		selectopengl.disabled = false;
+		$(".windows").show();
+		$(".selectd3d11").disabled = false;
+		$(".selectd3d12").disabled = false;
+		$(".selectopengles").disabled = true;
+		$(".selectvulkan").disabled = false;
+		$(".selectopengl").disabled = false;
 	}
 	if (platform == "linux")
 	{
-	$(".linux").show();
-	if(selectd3d11)
-		selectd3d11.disabled = true;
-	if(selectd3d12)
-		selectd3d12.disabled = true;
-	if(selectopengles)
-		selectopengles.disabled = true;
-	if(selectvulkan)
-		selectvulkan.disabled = false;
-	if(selectopengl)
-		selectopengl.disabled = false;
+		$(".linux").show();
+		$(".selectd3d11").disabled = true;
+		$(".selectd3d12").disabled = true;
+		$(".selectopengles").disabled = true;
+		$(".selectvulkan").disabled = false;
+		$(".selectopengl").disabled = false;
 	}
 	if (platform == "android")
 	{
-	$(".android").show();
-	if(selectd3d11)
-		selectd3d11.disabled = true;
-	if(selectd3d12)
-		selectd3d12.disabled = true;
-	if(selectopengles)
-		selectopengles.disabled = false;
-	if(selectvulkan)
-		selectvulkan.disabled = false;
-	if(selectopengl)
-		selectopengl.disabled = true;
+		$(".android").show();
+		$(".selectd3d11").disabled = true;
+		$(".selectd3d12").disabled = true;
+		$(".selectopengles").disabled = false;
+		$(".selectvulkan").disabled = false;
+		$(".selectopengl").disabled = true;
 	}
 	var oldelements = document.querySelectorAll(".selected-platform");
 	console.log("selected-platform on "+oldelements.length+" elements.");

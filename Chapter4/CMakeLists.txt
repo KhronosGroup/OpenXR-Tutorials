@@ -9,6 +9,9 @@ set(BUILD_ALL_EXTENSIONS ON CACHE INTERNAL "Build loader and layers with all ext
 set(BUILD_TESTS OFF CACHE INTERNAL "Build tests")
 set(BUILD_CONFORMANCE_TESTS OFF CACHE INTERNAL "Build conformance tests")
 set(BUILD_API_LAYERS ON CACHE INTERNAL "Use OpenXR layers")
+
+set( OPENXR_GRAPHICS_API_TYPE "VULKAN" CACHE STRING "Which graphics API to use" )
+
 FetchContent_Declare(
         OpenXR
         # URL_HASH MD5=390455e9395a92d6b730afb8f23fac8e
@@ -47,6 +50,7 @@ set(HLSL_SHADERS
 
 set(SHADERS )
 if (ANDROID)
+	SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS "VULKAN OPENG_ES" ) 
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
     add_library(OpenXRTutorialChapter4 SHARED ${SOURCES} ${HEADERS} ${SHADERS})
     target_include_directories(OpenXRTutorialChapter4 PUBLIC "../Common/")
@@ -89,10 +93,14 @@ else()
     target_link_libraries(OpenXRTutorialChapter4 openxr_loader)
 
     if (WIN32)
+		SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS VULKAN OPENGL D3D11 D3D12 ) 
         target_link_libraries(OpenXRTutorialChapter4 "d3d11.lib") 
         target_link_libraries(OpenXRTutorialChapter4 "d3d12.lib") 
         target_link_libraries(OpenXRTutorialChapter4 "dxgi.lib") 
         target_link_libraries(OpenXRTutorialChapter4 "d3dcompiler.lib") 
+		target_compile_definitions(OpenXRTutorialChapter4 PUBLIC OPENXR_GRAPHICS_API_TYPE=${OPENXR_GRAPHICS_API_TYPE})
+	else()
+		SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS "VULKAN OPENGL" ) 
     endif()
 
     find_package(Vulkan)
