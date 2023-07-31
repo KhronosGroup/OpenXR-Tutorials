@@ -4,8 +4,15 @@
 #if defined(XR_USE_GRAPHICS_API_D3D11)
 class GraphicsAPI_D3D11 : public GraphicsAPI {
 public:
+    GraphicsAPI_D3D11();
     GraphicsAPI_D3D11(XrInstance m_xrInstance, XrSystemId systemId);
     ~GraphicsAPI_D3D11();
+
+    virtual void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) override;
+    virtual void DestroyDesktopSwapchain(void*& swapchain) override;
+    virtual void* GetDesktopSwapchainImage(void* swapchain, uint32_t index) override;
+    virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) override;
+    virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
 
     virtual int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }
 
@@ -55,7 +62,7 @@ private:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
 
 private:
-    IDXGIFactory1* factory = nullptr;
+    IDXGIFactory4* factory = nullptr;
     ID3D11Device* device = nullptr;
 	
 	ID3D11Debug *d3dDebug=nullptr;

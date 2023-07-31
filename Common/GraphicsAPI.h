@@ -76,11 +76,10 @@ bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type);
 
 const char* GetGraphicsAPIInstanceExtensionString(GraphicsAPI_Type type);
 
-
 class GraphicsAPI {
 public:
-    // Pipeline Helpers
-    #pragma region Pipeline Helpers
+// Pipeline Helpers
+#pragma region Pipeline Helpers
     enum class VertexType : uint8_t {
         FLOAT,
         VEC2,
@@ -200,7 +199,7 @@ public:
         NAND = 14,
         SET = 15
     };
-    #pragma endregion
+#pragma endregion
 
     struct ShaderCreateInfo {
         enum class Type : uint8_t {
@@ -283,16 +282,25 @@ public:
         ColourBlendState colourBlendState;
     };
 
+    struct SwapchainCreateInfo {
+        uint32_t width;
+        uint32_t height;
+        uint32_t count;
+        void* windowHandle;
+        int64_t format;
+        bool vsync;
+    };
+
     struct BufferCreateInfo {
         enum class Type : uint8_t {
             VERTEX,
             INDEX,
             UNIFORM,
         } type;
-		size_t stride;
+        size_t stride;
         size_t size;
         void* data;
-        bool indexBufferUint16; //Otherwise uint32
+        bool indexBufferUint16;  // Otherwise uint32
     };
 
     struct ImageCreateInfo {
@@ -340,7 +348,7 @@ public:
     };
 
     struct SamplerCreateInfo {
-        enum class Filter :uint8_t {
+        enum class Filter : uint8_t {
             NEAREST,
             LINEAR
         } magFilter, minFilter;
@@ -408,6 +416,13 @@ public:
 
     int64_t SelectSwapchainFormat(const std::vector<int64_t>& formats);
 
+    // TODO: Make pure virtual
+    virtual void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) { return nullptr; }
+    virtual void DestroyDesktopSwapchain(void*& swapchain){};
+    virtual void* GetDesktopSwapchainImage(void* swapchain, uint32_t index) { return nullptr; };
+    virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index){};
+    virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index){};
+
     virtual int64_t GetDepthFormat() = 0;
 
     virtual void* GetGraphicsBinding() = 0;
@@ -420,7 +435,7 @@ public:
 
     virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) = 0;
     virtual void DestroyImageView(void*& imageView) = 0;
-    
+
     // TODO: Make pure virtual
     virtual void* CreateSampler(const SamplerCreateInfo& samplerCI) { return nullptr; };
     virtual void DestroySampler(void*& sampler){};
