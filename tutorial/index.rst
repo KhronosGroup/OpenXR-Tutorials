@@ -14,7 +14,7 @@ runtime you use, if it's compliant with the OpenXR standard, your OpenXR-complia
 work with it.
 
 This tutorial introduces programming with OpenXR. If you use a game engine such as Unreal Engine, Unity or Godot,
-you may not need to interact directly with OpenXR: the engine abstracts this away. It may be benificial
+you may not need to interact directly with OpenXR: the engine abstracts this away. It may be beneficial
 to learn the underlying concepts however.
 
 OpenXR is designed to work with various different graphics API's: Vulkan, Direct3D 11 and 12,
@@ -33,7 +33,7 @@ Tutorial Structure
 ------------------
 
 The tutorial is divided into several main sections. Each section walks you through
-part of the process of creating an XR program, and assumes that the previous secions have
+part of the process of creating an XR program, and assumes that the previous sections have
 been completed.
 
 At the end of each section is a link to download the full example source code up to that point.

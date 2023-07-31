@@ -51,7 +51,7 @@ Each device can support any number of interaction profiles, either the nine prof
 
 See also https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles.
 
-We will see in Section 4.4 how  to suggest a binding between interaction profile paths and application inputs and outputs. Firt, we will learn how to define these inputs and outputs, which in OpenXR, we call *actions*.
+We will see in Section 4.4 how  to suggest a binding between interaction profile paths and application inputs and outputs. First, we will learn how to define these inputs and outputs, which in OpenXR, we call *actions*.
 
 ************************************
 4.3 Creating Actions and Action Sets
