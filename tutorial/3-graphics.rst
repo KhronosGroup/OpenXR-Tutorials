@@ -567,7 +567,7 @@ Environment blend is done at the final stage after the compositor has flatten an
 	:end-before: XR_DOCS_TAG_END_GetEnvironmentBlendModes
 	:dedent: 4
 
-We enumerate the environment blend modes as shown above. This function take a pointer to the first element in an array of ``XrEnvironmentBlendMode`` s as multiple environment blend modes could be available to the system. The runtime will return the array ordered by its preference for the system.
+We enumerate the environment blend modes as shown above. This function take a pointer to the first element in an array of ``XrEnvironmentBlendMode`` s as multiple environment blend modes could be available to the system. The runtime will return the array ordered by its preference for the system. After we enumerate all the ``XrEnvironmentBlendMode`` s, we pick the first one as an absolute default, then we loop through all our ``m_environmentBlendModes`` to try and find it in ``m_environmentBlendModes``, which was just filled by OpenXR.
 
 3.2.2 xrCreateReferenceSpace
 ============================
@@ -584,6 +584,15 @@ Now that OpenXR know what the user should see, we need to tell OpenXR from where
 	:start-after: XR_DOCS_TAG_BEGIN_CreateReferenceSpace
 	:end-before: XR_DOCS_TAG_END_CreateReferenceSpace
 	:dedent: 4
+
+First, we fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``
+
++----------------------+---------------------------------------+
+| XrReferenceSpaceType | Description                           |
++----------------------+---------------------------------------+XR_REFERENCE_SPACE_TYPE_VIEW 
++----------------------+---------------------------------------+
++----------------------+---------------------------------------+
++----------------------+---------------------------------------+
 
 3.2.3 RenderFrame
 =================
