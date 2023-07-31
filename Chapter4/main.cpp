@@ -277,12 +277,13 @@ private:
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
         m_environmentBlendModes.resize(environmentBlendModeSize);
-        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, m_environmentBlendModes.data()), "Failed to enumerate ViewConfigurationViews.");
+        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, m_environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
+
         m_environmentBlendMode = m_environmentBlendModes[0];
         // Pick the first application supported blend mode supported by the hardware.
-        for (auto mode : m_applicationEnvironmentBlendModes) {
-            if (std::find(m_environmentBlendModes.begin(), m_environmentBlendModes.end(), mode) != m_environmentBlendModes.end()) {
-                m_environmentBlendMode = mode;
+        for (const XrEnvironmentBlendMode &environmentBlendMode : m_applicationEnvironmentBlendModes) {
+            if (std::find(m_environmentBlendModes.begin(), m_environmentBlendModes.end(), environmentBlendMode) != m_environmentBlendModes.end()) {
+                m_environmentBlendMode = environmentBlendMode;
                 break;
             }
         }
