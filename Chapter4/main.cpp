@@ -506,7 +506,7 @@ private:
             std::string vertexSource = R"(
                 //Color Vertex Shader
 
-                cbuffer CameraConstants
+                cbuffer CameraConstants : register(b1)
                 {
                     float4x4 viewProj;
                     float4x4 modelViewProj;
@@ -514,21 +514,21 @@ private:
                 };
                 struct VS_IN
                 {
-					uint vertex_id:SV_VertexId;
+                    uint vertexId : SV_VertexId;
                     float4 a_Positions : TEXCOORD0;
                 };
                 
                 struct VS_OUT
                 {
-                    float4 o_Position	: SV_Position;
-					float2 o_TexCoord		: TEXCOORD0;
+                    float4 o_Position : SV_Position;
+                    float2 o_TexCoord : TEXCOORD0;
                 };
                 
                 VS_OUT main(VS_IN IN)
                 {
                     VS_OUT OUT;
                     OUT.o_Position = mul(modelViewProj,IN.a_Positions);
-                    int face = IN.vertex_id / 6;
+                    int face = IN.vertexId / 6;
                     OUT.o_TexCoord = float2(float(face), 0);
                     return OUT;
                 })";
@@ -539,8 +539,8 @@ private:
                 
                 struct PS_IN
                 {
-                    float4 i_Position	: SV_Position;
-					float2 i_TexCoord		: TEXCOORD0;
+                    float4 i_Position : SV_Position;
+                    float2 i_TexCoord : TEXCOORD0;
                 };
                 struct PS_OUT
                 {
@@ -569,8 +569,8 @@ private:
         pipelineCI.vertexInputState.bindings = {{0, 0, 4 * sizeof(float)}};
         pipelineCI.inputAssemblyState = {GraphicsAPI::PrimitiveTopology::TRIANGLE_LIST, false};
         pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
-        pipelineCI.multisampleState = {1, false, 1.0f, 0, false, false};
-        pipelineCI.depthStencilState = {false, false, GraphicsAPI::CompareOp::GREATER, false, false, {}, {}, 0.0f, 1.0f};
+        pipelineCI.multisampleState = {1, false, 1.0f, 0xFFFFFFFF, false, false};
+        pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
         pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
     }
@@ -803,7 +803,7 @@ private:
         m_graphicsAPI->SetPipeline(m_pipeline);
 
         m_graphicsAPI->SetBufferData(m_uniformBuffer_Vert, 0, sizeof(CameraConstants), &cameraConstants);
-        m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER});
+        m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
 
         m_graphicsAPI->SetBufferData(m_uniformBuffer_Frag, 0, sizeof(colors), (void *)colors);
         m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
@@ -914,7 +914,7 @@ private:
             // Compute the view-projection transform.
             // All matrices (including OpenXR's) are column-major, right-handed.
             XrMatrix4x4f proj;
-            XrMatrix4x4f_CreateProjectionFov(&proj, OPENGL_ES, views[i].fov, 0.05f, 100.0f);
+            XrMatrix4x4f_CreateProjectionFov(&proj, m_apiType, views[i].fov, 0.05f, 100.0f);
             XrMatrix4x4f toView;
             XrVector3f scale1m{1.0f, 1.0f, 1.0f};
             XrMatrix4x4f_CreateTranslationRotationScale(&toView, &views[i].pose.position, &views[i].pose.orientation, &scale1m);
