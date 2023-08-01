@@ -7654,3 +7654,11 @@ button.select-graphics-api-inline > img
 {
 filter: grayscale(0%);
 }
+
+.disclaimer
+{
+	color:red;
+	background:white;
+	margin-left:120px;
+	font-weight:900;
+}

@@ -152,7 +152,6 @@ private:
 			if(!found)
 			{
 				std::cerr<<"Failed to find OpenXR instance extension: "<<requestExtension<<"\n";
-				DebugBreak();
 			}
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension
@@ -799,7 +798,7 @@ private:
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
-
+		
         m_graphicsAPI->SetPipeline(m_pipeline);
 
         m_graphicsAPI->SetBufferData(m_uniformBuffer_Vert, 0, sizeof(CameraConstants), &cameraConstants);

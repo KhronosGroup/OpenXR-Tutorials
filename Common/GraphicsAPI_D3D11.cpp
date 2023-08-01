@@ -208,6 +208,11 @@ GraphicsAPI_D3D11::GraphicsAPI_D3D11(XrInstance m_xrInstance, XrSystemId systemI
     }
 
     D3D11_CHECK(D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, 0, D3D11_CREATE_DEVICE_DEBUG, &graphicsRequirements.minFeatureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &immediateContext), "Failed to create D3D11 Device.");
+
+	device->QueryInterface( __uuidof(ID3D11Debug), (void**)&d3dDebug );
+	d3dDebug->QueryInterface( __uuidof(ID3D11InfoQueue), (void**)&infoQueue );
+	infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
+	infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
 }
 
 GraphicsAPI_D3D11::~GraphicsAPI_D3D11() {
