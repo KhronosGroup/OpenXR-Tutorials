@@ -33,28 +33,8 @@ other purposes. We don't use it to generate view matrices for rendering, because
 
 See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
 
-
-*************************************
-4.2 Interaction Profiles and Bindings
-*************************************
-
-As OpenXR is an API for many different devices, it needs to provide a way for you as a developer to refer to the various buttons, joysticks, inputs and outputs that a device may have, without needing to know in advance which device or devices the user will have.
-
-To do this, OpenXR defines the concept of *interaction profiles*. An interaction profile is a collection of interactions supported by the given device and runtime, and defined by means of textual paths.
-
-The first element of the interaction profile is the Profile Path, of the form "/interaction_profiles/<vendor_name>/<type_name>". Then, each interaction is defined by a
-path with three elements: the Profile Path, the User Path, and the Component Path. The User Path is a string identifying the controller device, e.g. "/user/hand/left", or "/user/gamepad". The Component Path is a string identifying the specific input or output, e.g. "/input/select/click" or "/output/haptic_left_trigger".
-
-For example, the Khronos Simple Controller Profile, supported by many devices, has the path "/interaction_profiles/khr/simple_controller", and user paths "/user/hand/left" and "/user/hand/right". The component paths are "/input/select/click", "/input/menu/click", "/input/grip/pose", "/input/aim/pose", "/output/haptic". Putting the three parts together, we might identify the select button on the left hand controller as "/interaction_profiles/khr/simple_controller/user/hand/left/input/select/click".
-
-Each device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_adding_input_sources_via_extensions).
-
-See also https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles.
-
-We will see in Section 4.4 how  to suggest a binding between interaction profile paths and application inputs and outputs. First, we will learn how to define these inputs and outputs, which in OpenXR, we call *actions*.
-
 ************************************
-4.3 Creating Actions and Action Sets
+4.2 Creating Actions and Action Sets
 ************************************
 
 At the end of your application class, add this code:
@@ -76,7 +56,15 @@ ActionSets are created before the session is initialized, so in Run(), after the
 	:end-before: XR_DOCS_TAG_END_CallCreateActionSet
 	:dedent: 1
 
-Now we will define the function: insert this after the definition of GetSystemID():
+After the definition of GetSystemID(), we'll add this helper function that converts a string into an XrPath. Add:
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateXrPath
+	:end-before: XR_DOCS_TAG_END_CreateXrPath
+	:dedent: 1
+
+Now we will define the `CreateActionSet` function:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -92,38 +80,58 @@ You can create multiple ActionSets, but we only need one for this example. The A
 	:end-before: XR_DOCS_TAG_END_CreateActions
 	:dedent: 1
 
-Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is.
+Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is. It also, optionally, has a list of sub-action paths. A sub-action is, essentially the same action on a different control device: left- or right-hand controllers for example.
 
-************************
-4.4 Binding Interactions
-************************
+*************************************
+4.2 Interaction Profiles and Bindings
+*************************************
+
+As OpenXR is an API for many different devices, it needs to provide a way for you as a developer to refer to the various buttons, joysticks, inputs and outputs that a device may have, without needing to know in advance which device or devices the user will have.
+
+To do this, OpenXR defines the concept of *interaction profiles*. An interaction profile is a collection of interactions supported by a given device and runtime, and defined by means of textual paths.
+
+The first element of the interaction profile is the Profile Path, of the form "/interaction_profiles/<vendor_name>/<type_name>". Then, each interaction is defined by a
+path with three elements: the Profile Path, the User Path, and the Component Path. The User Path is a string identifying the controller device, e.g. "/user/hand/left", or "/user/gamepad". The Component Path is a string identifying the specific input or output, e.g. "/input/select/click" or "/output/haptic_left_trigger".
+
+For example, the Khronos Simple Controller Profile, supported by many devices, has the path "/interaction_profiles/khr/simple_controller", and user paths "/user/hand/left" and "/user/hand/right". The component paths are "/input/select/click", "/input/menu/click", "/input/grip/pose", "/input/aim/pose", "/output/haptic". Putting the three parts together, we might identify the select button on the left hand controller as "/interaction_profiles/khr/simple_controller/user/hand/left/input/select/click".
+
+It's important to note that although the profile paths mention specific devices, it's not the case that each device has its own profile path, or that each device supports only one profile. Rather, these should be considered as examples of known controller arrangements. A device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_adding_input_sources_via_extensions).
+
+See also https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles.
+
+We will now show how to suggest a these profiles are used in practice.
+
+Binding Interactions
+--------------------
 
 We will set up bindings for the actions. A binding is a *suggested* correspondence between an action (which is app-defined), and the input/output on the
-user's devices. After the definition of CreateActionSet(), we'll add this helper function that converts a string into an XrPath. Add:
-
-.. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateXrPath
-	:end-before: XR_DOCS_TAG_END_CreateXrPath
-	:dedent: 1
+user's devices. 
 
 XrPath is a 64-bit number that hopefully uniquely identifies any given forward-slash-delimited path string, allowing us to refer to paths without putting cumbersome string-handling in our runtime code. After the call to CreateActionSet() in Run(), add the line:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallSuggestBindings
-	:end-before: XR_DOCS_TAG_END_CallSuggestBindings
+	:start-after: XR_DOCS_TAG_BEGIN_CallSuggestBindings1
+	:end-before: XR_DOCS_TAG_END_CallSuggestBindings1
 	:dedent: 1
 
 After the definition of CreateActionSet(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_SuggestBindings
-	:end-before: XR_DOCS_TAG_END_SuggestBindings
+	:start-after: XR_DOCS_TAG_BEGIN_SuggestBindings1
+	:end-before: XR_DOCS_TAG_END_SuggestBindings1
 	:dedent: 1
 
-Here, we create a *suggested* match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile "/interaction_profiles/khr/simple_controller", it will recognize these paths and can map them to its own controls. If the user's device does not support this profile, the bindings will be ignored.
+By means of a lambda function `SuggestBindings`, we call into OpenXR with a given list of suggestions. Let's try this:
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_SuggestBindings2
+	:end-before: XR_DOCS_TAG_END_SuggestBindings2
+	:dedent: 1
+
+Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile "/interaction_profiles/khr/simple_controller", it will recognize these paths and can map them to its own controls. If the user's device does not support this profile, the bindings will be ignored.
 
 **Bindings best practices**
 

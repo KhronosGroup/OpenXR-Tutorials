@@ -110,12 +110,12 @@ void CreateResources() {
                 mat4 model;
             };
             layout(location = 0) in highp vec4 a_Positions;
-            layout(location = 0) out highp vec2 o_TexCoord;
+                layout(location = 0) out flat uvec2 o_TexCoord;
             void main()
             {
                 gl_Position = modelViewProj * a_Positions;
                 int face = gl_VertexID / 6;
-                o_TexCoord = vec2(float(face), 0);
+                    o_TexCoord = uvec2(face, 0);
             })";
         vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
@@ -148,19 +148,19 @@ void CreateResources() {
                 mat4 model;
             };
             layout(location = 0) in highp vec4 a_Positions;
-            layout(location = 0) out highp vec2 o_TexCoord;
+                layout(location = 0) out flat uvec2 o_TexCoord;
             void main()
             {
                 gl_Position = modelViewProj * a_Positions;
                 int face = gl_VertexID / 6;
-                o_TexCoord = vec2(float(face), 0);
+                    o_TexCoord = uvec2(face, 0);
             })";
         vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
         std::string fragmentSource = R"(
             #version 310 es
             //Color Fragment Shader
-            layout(location = 0) in highp vec2 i_TexCoord;
+                layout(location = 0) in flat uvec2 i_TexCoord;
             layout(location = 0) out highp vec4 o_Color;
             layout(std140, binding = 0) uniform Data
             {
@@ -169,7 +169,7 @@ void CreateResources() {
             
             void main()
             {
-                int i = int(i_TexCoord.x);
+                    uint i = i_TexCoord.x;
                 o_Color = d_Data.colors[i];
             })";
         fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
@@ -188,22 +188,22 @@ void CreateResources() {
             };
             struct VS_IN
             {
-				uint vertex_id:SV_VertexId;
+                    uint vertexId : SV_VertexId;
                 float4 a_Positions : TEXCOORD0;
             };
             
             struct VS_OUT
             {
                 float4 o_Position	: SV_Position;
-				float2 o_TexCoord		: TEXCOORD0;
+					uint2 o_TexCoord		: TEXCOORD0;
             };
             
             VS_OUT main(VS_IN IN)
             {
                 VS_OUT OUT;
                 OUT.o_Position = mul(modelViewProj,IN.a_Positions);
-                int face = IN.vertex_id / 6;
-                OUT.o_TexCoord = float2(float(face), 0);
+                    int face = IN.vertexId / 6;
+                    OUT.o_TexCoord = uint2(face, 0);
                 return OUT;
             })";
         vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
@@ -214,7 +214,7 @@ void CreateResources() {
             struct PS_IN
             {
                 float4 i_Position	: SV_Position;
-				float2 i_TexCoord		: TEXCOORD0;
+					uint2 i_TexCoord		: TEXCOORD0;
             };
             struct PS_OUT
             {
@@ -229,7 +229,7 @@ void CreateResources() {
             PS_OUT main(PS_IN IN)
             {
                 PS_OUT OUT;
-                uint i = (uint(IN.i_TexCoord.x))%uint(6);
+                    int i = int(IN.i_TexCoord.x);
                 OUT.o_Color = colors[i];
                 return OUT;
             })";
@@ -361,24 +361,24 @@ int main() {
     depthImageCI.mipLevels = 1;
     depthImageCI.arrayLayers = 1;
     depthImageCI.sampleCount = 1;
-    depthImageCI.format = d3d11->GetDepthFormat();
+    depthImageCI.format = graphicsAPI->GetDepthFormat();
     depthImageCI.cubemap = false;
     depthImageCI.colorAttachment = false;
     depthImageCI.depthAttachment = true;
     depthImageCI.sampled = false;
-    void* depthImage = d3d11->CreateImage(depthImageCI);
+    void* depthImage = graphicsAPI->CreateImage(depthImageCI);
 
     GraphicsAPI::ImageViewCreateInfo imageViewCI;
     imageViewCI.image = depthImage;
     imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::DSV;
     imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D;
-    imageViewCI.format = d3d11->GetDepthFormat();
+    imageViewCI.format = graphicsAPI->GetDepthFormat();
     imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::DEPTH_BIT;
     imageViewCI.baseMipLevel = 0;
     imageViewCI.levelCount = 1;
     imageViewCI.baseArrayLayer = 0;
     imageViewCI.layerCount = 1;
-    void* depthImageView = d3d11->CreateImageView(imageViewCI);
+    void* depthImageView = graphicsAPI->CreateImageView(imageViewCI);
 
     struct CameraConstants {
         XrMatrix4x4f viewProj;
@@ -425,18 +425,18 @@ int main() {
         30, 31, 32, 33, 34, 35,  // +Z
     };
 
-    void* vertexBuffer = d3d11->CreateBuffer(
+    void* vertexBuffer = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices),
          &cubeVertices, false});
 
-    void* indexBuffer = d3d11->CreateBuffer(
+    void* indexBuffer = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices),
          &cubeIndices, false});
 
-    void* uniformBuffer_Frag = d3d11->CreateBuffer(
+    void* uniformBuffer_Frag = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colors), colors, false});
 
-    void* uniformBuffer_Vert = d3d11->CreateBuffer(
+    void* uniformBuffer_Vert = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants, false});
 
     std::string vertexSource = R"(
@@ -468,7 +468,7 @@ int main() {
             OUT.o_TexCoord = float2(float(face), 0);
             return OUT;
         })";
-    void* vertexShader = d3d11->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+    void* vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
     std::string fragmentSource = R"(
         //Color Fragment Shader
@@ -495,7 +495,7 @@ int main() {
             OUT.o_Color = colors[i];
             return OUT;
         })";
-    void* fragmentShader = d3d11->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    void* fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
 
     GraphicsAPI::PipelineCreateInfo pipelineCI;
     pipelineCI.shaders = {vertexShader, fragmentShader};
@@ -506,7 +506,7 @@ int main() {
     pipelineCI.multisampleState = {1, false, 1.0f, 0xFFFFFFFF, false, false};
     pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
     pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
-    void* pipeline = d3d11->CreatePipeline(pipelineCI);
+    void* pipeline = graphicsAPI->CreatePipeline(pipelineCI);
 
     // Main Render Loop
     while (!g_WindowQuit) {
@@ -520,15 +520,13 @@ int main() {
         graphicsAPI->ClearColor(swapchainImageViews[imageIndex], 0.22f, 0.17f, 0.35f, 1.00f);
 		
 		graphicsAPI->SetRenderAttachments(swapchainImageViews, 1, nullptr);
-		GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
-	    GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
-        d3d11->ClearDepth(depthImageView, 1.0f);
+        graphicsAPI->ClearDepth(depthImageView, 1.0f);
 
-        d3d11->SetRenderAttachments(&swapchainImageViews[imageIndex], 1, depthImageView);
+        graphicsAPI->SetRenderAttachments(&swapchainImageViews[imageIndex], 1, depthImageView);
         GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
         GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
-        d3d11->SetViewports(&viewport, 1);
-        d3d11->SetScissors(&scissor, 1);
+        graphicsAPI->SetViewports(&viewport, 1);
+        graphicsAPI->SetScissors(&scissor, 1);
 
         float fov_deg_v = 90.0f;
         float fov_deg_h = fov_deg_v * (float(height) / float(width));
@@ -553,19 +551,19 @@ int main() {
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
 
-        d3d11->SetPipeline(pipeline);
+        graphicsAPI->SetPipeline(pipeline);
 
-        d3d11->SetBufferData(uniformBuffer_Vert, 0, sizeof(CameraConstants), &cameraConstants);
-        d3d11->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
+        graphicsAPI->SetBufferData(uniformBuffer_Vert, 0, sizeof(CameraConstants), &cameraConstants);
+        graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
         
-        d3d11->SetBufferData(uniformBuffer_Frag, 0, sizeof(colors), (void*)colors);
-        d3d11->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+        graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colors), (void*)colors);
+        graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
 
-        d3d11->SetVertexBuffers(&vertexBuffer, 1);
-        d3d11->SetIndexBuffer(indexBuffer);
-        d3d11->DrawIndexed(36);
+        graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
+        graphicsAPI->SetIndexBuffer(indexBuffer);
+        graphicsAPI->DrawIndexed(36);
 
-        d3d11->EndRendering();
+        graphicsAPI->EndRendering();
 
 		DrawTestObject();
 
@@ -574,13 +572,13 @@ int main() {
         graphicsAPI->PresentDesktopSwapchainImage(swapchain, imageIndex);
     }
 
-    d3d11->DestroyPipeline(pipeline);
-    d3d11->DestroyShader(fragmentShader);
-    d3d11->DestroyShader(vertexShader);
-    d3d11->DestroyBuffer(uniformBuffer_Vert);
-    d3d11->DestroyBuffer(uniformBuffer_Frag);
-    d3d11->DestroyBuffer(indexBuffer);
-    d3d11->DestroyBuffer(vertexBuffer);
+    graphicsAPI->DestroyPipeline(pipeline);
+    graphicsAPI->DestroyShader(fragmentShader);
+    graphicsAPI->DestroyShader(vertexShader);
+    graphicsAPI->DestroyBuffer(uniformBuffer_Vert);
+    graphicsAPI->DestroyBuffer(uniformBuffer_Frag);
+    graphicsAPI->DestroyBuffer(indexBuffer);
+    graphicsAPI->DestroyBuffer(vertexBuffer);
 
     FreeLibrary(RenderDoc);
 }
