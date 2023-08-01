@@ -904,6 +904,7 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
+        break;
     }
     case DescriptorInfo::Stage::TESSELLATION_CONTROL: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
@@ -915,6 +916,7 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
+        break;
     }
     case DescriptorInfo::Stage::TESSELLATION_EVALUATION: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
@@ -926,6 +928,7 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
+        break;
     }
     case DescriptorInfo::Stage::GEOMETRY: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
@@ -937,6 +940,7 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
+        break;
     }
     case DescriptorInfo::Stage::FRAGMENT: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
@@ -948,6 +952,7 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
+        break;
     }
     case DescriptorInfo::Stage::COMPUTE: {  // UAVs?
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
@@ -959,6 +964,7 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
+        break;
     }
     default:
         break;
