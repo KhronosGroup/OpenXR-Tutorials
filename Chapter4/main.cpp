@@ -268,8 +268,9 @@ private:
 					{m_triggerAction, CreateXrPath("/user/hand/right/input/trigger/value")},
 					{m_leftGripPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
 					{m_rightHapticAction, CreateXrPath("/user/hand/right/output/haptic")}});
-		if(!any_ok)
-			DebugBreak();
+		if(!any_ok) {
+            DEBUG_BREAK;
+        }
     }
     // XR_DOCS_TAG_END_SuggestBindings
     // XR_DOCS_TAG_BEGIN_CreateActionPoses
@@ -435,19 +436,19 @@ private:
                     mat4 model;
                 };
                 layout(location = 0) in highp vec4 a_Positions;
-                layout(location = 0) out highp vec2 o_TexCoord;
+                layout(location = 0) out flat uvec2 o_TexCoord;
                 void main()
                 {
                     gl_Position = modelViewProj * a_Positions;
                     int face = gl_VertexID / 6;
-                    o_TexCoord = vec2(float(face), 0);
+                    o_TexCoord = uvec2(face, 0);
                 })";
             m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
             std::string fragmentSource = R"(
                 #version 450
                 //Texture Fragment Shader
-                layout(location = 0) in highp vec2 i_TexCoord;
+                layout(location = 0) in flat uvec2 i_TexCoord;
                 layout(location = 0) out highp vec4 o_Color;
                 layout(std140, binding = 0) uniform Data
                 {
@@ -455,7 +456,7 @@ private:
                 } d_Data;
                 void main()
                 {
-                    int i = int(i_TexCoord.x);
+                    uint i = i_TexCoord.x;
                     o_Color = d_Data.colors[i];
                 })";
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
@@ -473,19 +474,19 @@ private:
                     mat4 model;
                 };
                 layout(location = 0) in highp vec4 a_Positions;
-                layout(location = 0) out highp vec2 o_TexCoord;
+                layout(location = 0) out flat uvec2 o_TexCoord;
                 void main()
                 {
                     gl_Position = modelViewProj * a_Positions;
                     int face = gl_VertexID / 6;
-                    o_TexCoord = vec2(float(face), 0);
+                    o_TexCoord = uvec2(face, 0);
                 })";
             m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
             std::string fragmentSource = R"(
                 #version 310 es
                 //Color Fragment Shader
-                layout(location = 0) in highp vec2 i_TexCoord;
+                layout(location = 0) in flat uvec2 i_TexCoord;
                 layout(location = 0) out highp vec4 o_Color;
                 layout(std140, binding = 0) uniform Data
                 {
@@ -494,7 +495,7 @@ private:
                 
                 void main()
                 {
-                    int i = int(i_TexCoord.x);
+                    uint i = i_TexCoord.x;
                     o_Color = d_Data.colors[i];
                 })";
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
@@ -520,7 +521,7 @@ private:
                 struct VS_OUT
                 {
                     float4 o_Position	: SV_Position;
-					float2 o_TexCoord		: TEXCOORD0;
+					uint2 o_TexCoord		: TEXCOORD0;
                 };
                 
                 VS_OUT main(VS_IN IN)
@@ -528,7 +529,7 @@ private:
                     VS_OUT OUT;
                     OUT.o_Position = mul(modelViewProj,IN.a_Positions);
                     int face = IN.vertex_id / 6;
-                    OUT.o_TexCoord = float2(float(face), 0);
+                    OUT.o_TexCoord = uint2(face, 0);
                     return OUT;
                 })";
             m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
@@ -539,7 +540,7 @@ private:
                 struct PS_IN
                 {
                     float4 i_Position	: SV_Position;
-					float2 i_TexCoord		: TEXCOORD0;
+					uint2 i_TexCoord		: TEXCOORD0;
                 };
                 struct PS_OUT
                 {
@@ -568,7 +569,7 @@ private:
         pipelineCI.vertexInputState.bindings = {{0, 0, 4 * sizeof(float)}};
         pipelineCI.inputAssemblyState = {GraphicsAPI::PrimitiveTopology::TRIANGLE_LIST, false};
         pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
-        pipelineCI.multisampleState = {1, false, 1.0f, 0, false, false};
+        pipelineCI.multisampleState = {1, false, 1.0f, 0xFF, false, false};
         pipelineCI.depthStencilState = {false, false, GraphicsAPI::CompareOp::GREATER, false, false, {}, {}, 0.0f, 1.0f};
         pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
@@ -1098,7 +1099,7 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
-    OpenXRTutorial_Main(D3D11);
+    OpenXRTutorial_Main(OPENGL);
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)

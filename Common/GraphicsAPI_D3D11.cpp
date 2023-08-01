@@ -839,6 +839,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
     rasteriserStateDesc.ScissorEnable = true;
     rasteriserStateDesc.MultisampleEnable = pipelineCI.multisampleState.rasterisationSamples > 1;
     rasteriserStateDesc.AntialiasedLineEnable = false;
+	
     D3D11_CHECK(device->CreateRasterizerState(&rasteriserStateDesc, &rasteriserState), "Failed to create Rasterizer State.");
     immediateContext->RSSetState(rasteriserState);
     D3D11_SAFE_RELEASE(rasteriserState);
@@ -871,6 +872,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
     blendDesc.IndependentBlendEnable = true;
     size_t i = 0;
     for (auto &blend : pipelineCI.colourBlendState.attachments) {
+		blendDesc.RenderTarget[i].RenderTargetWriteMask=0xFF;
         blendDesc.RenderTarget[i].BlendEnable = blend.blendEnable;
         blendDesc.RenderTarget[i].SrcBlend = ToD3D11_BLEND(blend.srcColourBlendFactor);
         blendDesc.RenderTarget[i].DestBlend = ToD3D11_BLEND(blend.dstColourBlendFactor);
