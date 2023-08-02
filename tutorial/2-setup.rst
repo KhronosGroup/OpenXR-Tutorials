@@ -497,7 +497,7 @@ The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will foc
 .. figure:: openxr-session-life-cycle.svg
 	:alt: OpenXR Session Life-Cycle
 	:align: center
-	:width: 99%
+	:figwidth: 99
 
 2.3.3 xrBeginSession and xrEndSession
 =====================================

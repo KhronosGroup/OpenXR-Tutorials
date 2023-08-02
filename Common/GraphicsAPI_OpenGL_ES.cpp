@@ -373,7 +373,7 @@ GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES(XrInstance m_xrInstance, XrSystemId
     glGetIntegerv(GL_MINOR_VERSION, &glMinorVersion);
 
     const XrVersion glApiVersion = XR_MAKE_VERSION(glMajorVersion, glMinorVersion, 0);
-    if (graphicsRequirements.minApiVersionSupported >= glApiVersion) {
+    if (graphicsRequirements.minApiVersionSupported > glApiVersion) {
         int requiredMajorVersion = XR_VERSION_MAJOR(graphicsRequirements.minApiVersionSupported);
         int requiredMinorVersion = XR_VERSION_MINOR(graphicsRequirements.minApiVersionSupported);
         std::cerr << "ERROR: OPENGL ES: The created OpenGL ES version " << glMajorVersion << "." << glMinorVersion << " doesn't meet the minimum required API version " << requiredMajorVersion << "." << requiredMinorVersion << " for OpenXR." << std::endl;
