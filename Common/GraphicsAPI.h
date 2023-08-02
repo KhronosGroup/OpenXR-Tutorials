@@ -272,6 +272,25 @@ public:
         std::vector<ColourBlendAttachmentState> attachments;
         float blendConstants[4];
     };
+
+    struct DescriptorInfo {
+        uint32_t bindingIndex;
+        void* resource;
+        enum class Type : uint8_t {
+            BUFFER,
+            IMAGE,
+            SAMPLER
+        } type;
+        enum class Stage : uint8_t {
+            VERTEX,
+            TESSELLATION_CONTROL,
+            TESSELLATION_EVALUATION,
+            GEOMETRY,
+            FRAGMENT,
+            COMPUTE
+        } stage;
+        bool readWrite;
+    };
     struct PipelineCreateInfo {
         std::vector<void*> shaders;
         VertexInputState vertexInputState;
@@ -280,6 +299,9 @@ public:
         MultisampleState multisampleState;
         DepthStencilState depthStencilState;
         ColourBlendState colourBlendState;
+        std::vector<int64_t> colorFormats;
+        int64_t depthFormat;
+        std::vector<DescriptorInfo> layout;
     };
 
     struct SwapchainCreateInfo {
@@ -372,24 +394,6 @@ public:
         float borderColour[4];
     };
 
-    struct DescriptorInfo {
-        uint32_t bindingIndex;
-        void* resource;
-        enum class Type : uint8_t {
-            BUFFER,
-            IMAGE,
-            SAMPLER
-        } type;
-        enum class Stage : uint8_t {
-            VERTEX,
-            TESSELLATION_CONTROL,
-            TESSELLATION_EVALUATION,
-            GEOMETRY,
-            FRAGMENT,
-            COMPUTE
-        } stage;
-    };
-
     struct Viewport {
         float x;
         float y;
@@ -469,6 +473,7 @@ public:
     // TODO: Make pure virtual
     virtual void SetPipeline(void* pipeline) {}
     virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) {}
+    virtual void UpdateDescriptors(){}
     virtual void SetVertexBuffers(void** vertexBuffers, size_t count) {}
     virtual void SetIndexBuffer(void* indexBuffer) {}
     virtual void DrawIndexed(uint32_t indexCount, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0) {}
