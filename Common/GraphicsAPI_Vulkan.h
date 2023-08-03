@@ -101,8 +101,9 @@ private:
     VkSemaphore submitSemaphore{};
 
     std::unordered_map<VkImage, VkImageLayout> imageStates;
-
     std::unordered_map<VkImage, VkDeviceMemory> imageResources;
     std::unordered_map<VkImageView, ImageViewCreateInfo> imageViewResources;
+    
+    std::unordered_map<VkBuffer, std::pair<VkDeviceMemory, BufferCreateInfo>> bufferResources;
 };
 #endif

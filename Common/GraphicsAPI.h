@@ -322,7 +322,6 @@ public:
         size_t stride;
         size_t size;
         void* data;
-        bool indexBufferUint16;  // Otherwise uint32
     };
 
     struct ImageCreateInfo {
@@ -391,7 +390,7 @@ public:
         CompareOp compareOp;
         float minLod;
         float maxLod;
-        float borderColour[4];
+        float borderColor[4];
     };
 
     struct Viewport {

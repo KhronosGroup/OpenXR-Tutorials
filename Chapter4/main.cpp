@@ -463,17 +463,17 @@ void CreateResources() {
     };
     m_vertexBuffer = m_graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices),
-         &cubeVertices, false});
+         &cubeVertices});
 
     m_indexBuffer = m_graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices),
-         &cubeIndices, false});
+         &cubeIndices});
 
     m_uniformBuffer_Frag = m_graphicsAPI->CreateBuffer(
-        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colors), colors, false});
+        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colors), colors});
 
     m_uniformBuffer_Vert = m_graphicsAPI->CreateBuffer(
-        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants, false});
+        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
 
     // XR_DOCS_TAG_END_CreateResources1
     // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan

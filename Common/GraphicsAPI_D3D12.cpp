@@ -576,10 +576,10 @@ void *GraphicsAPI_D3D12::CreateSampler(const SamplerCreateInfo &samplerCI) {
     samplerDesc.MipLODBias = samplerCI.mipLodBias;
     samplerDesc.MaxAnisotropy = 0;
     samplerDesc.ComparisonFunc = static_cast<D3D12_COMPARISON_FUNC>(static_cast<uint32_t>(samplerCI.compareOp) + 1);
-    samplerDesc.BorderColor[0] = samplerCI.borderColour[0];
-    samplerDesc.BorderColor[1] = samplerCI.borderColour[0];
-    samplerDesc.BorderColor[2] = samplerCI.borderColour[0];
-    samplerDesc.BorderColor[3] = samplerCI.borderColour[0];
+    samplerDesc.BorderColor[0] = samplerCI.borderColor[0];
+    samplerDesc.BorderColor[1] = samplerCI.borderColor[0];
+    samplerDesc.BorderColor[2] = samplerCI.borderColor[0];
+    samplerDesc.BorderColor[3] = samplerCI.borderColor[0];
     samplerDesc.MinLOD = samplerCI.minLod;
     samplerDesc.MaxLOD = samplerCI.maxLod;
 
@@ -1246,7 +1246,7 @@ void GraphicsAPI_D3D12::SetIndexBuffer(void *indexBuffer) {
     D3D12_INDEX_BUFFER_VIEW indexBufferView;
     indexBufferView.BufferLocation = d3d12IndexBuffer->GetGPUVirtualAddress();
     indexBufferView.SizeInBytes = d3d12IndexBuffer->GetDesc().Width;
-    indexBufferView.Format = bufferCI.indexBufferUint16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+    indexBufferView.Format = bufferCI.stride == 4 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
     cmdList->IASetIndexBuffer(&indexBufferView);
 }
 
