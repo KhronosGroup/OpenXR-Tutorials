@@ -86,18 +86,18 @@ void CreateResources() {
     };
     vertexBuffer = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices),
-         &cubeVertices, false});
+         &cubeVertices});
 
     indexBuffer = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices),
-         &cubeIndices, false});
+         &cubeIndices});
 
     uniformBuffer_Frag = graphicsAPI->CreateBuffer(
-        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colors), colors, false});
+        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colors), colors});
     graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colors), (void *)colors);
 
     uniformBuffer_Vert = graphicsAPI->CreateBuffer(
-        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants, false});
+        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
 
     if (apiType == OPENGL || apiType == VULKAN) {
         std::string vertexSource = R"(
@@ -429,17 +429,17 @@ int main() {
 
     void* vertexBuffer = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices),
-         &cubeVertices, false});
+         &cubeVertices});
 
     void* indexBuffer = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices),
-         &cubeIndices, false});
+         &cubeIndices});
 
     void* uniformBuffer_Frag = graphicsAPI->CreateBuffer(
-        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colors), colors, false});
+        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colors), colors});
 
     void* uniformBuffer_Vert = graphicsAPI->CreateBuffer(
-        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants, false});
+        {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
 
     std::string vertexSource = R"(
         //Color Vertex Shader
@@ -525,7 +525,7 @@ int main() {
         graphicsAPI->ClearColor(swapchainImageViews[imageIndex], 0.22f, 0.17f, 0.35f, 1.00f);
         graphicsAPI->ClearDepth(depthImageView, 1.0f);
 
-        graphicsAPI->SetRenderAttachments(&swapchainImageViews[imageIndex], 1, depthImageView);
+        /*graphicsAPI->SetRenderAttachments(&swapchainImageViews[imageIndex], 1, depthImageView);
         GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
         GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
         graphicsAPI->SetViewports(&viewport, 1);
@@ -564,7 +564,7 @@ int main() {
 
         graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
         graphicsAPI->SetIndexBuffer(indexBuffer);
-        graphicsAPI->DrawIndexed(36);
+        graphicsAPI->DrawIndexed(36);*/
 
         graphicsAPI->EndRendering();
 

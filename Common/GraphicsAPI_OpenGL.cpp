@@ -1092,7 +1092,7 @@ void GraphicsAPI_OpenGL::SetIndexBuffer(void *indexBuffer) {
 
 void GraphicsAPI_OpenGL::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) {
     PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC glDrawElementsInstancedBaseVertexBaseInstance = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC)GetExtension("glDrawElementsInstancedBaseVertexBaseInstance");  // 4.2+
-    GLenum indexType = buffers[setIndexBuffer].indexBufferUint16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+    GLenum indexType = buffers[setIndexBuffer].stride == 4 ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT;
     glDrawElementsInstancedBaseVertexBaseInstance(ToGLTopology(pipelines[setPipeline].inputAssemblyState.topology), indexCount, indexType, nullptr, instanceCount, vertexOffset, firstInstance);
 }
 

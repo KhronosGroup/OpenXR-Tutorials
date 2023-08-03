@@ -1000,7 +1000,7 @@ void GraphicsAPI_D3D11::SetVertexBuffers(void **vertexBuffers, size_t count) {
 void GraphicsAPI_D3D11::SetIndexBuffer(void *indexBuffer) {
     ID3D11Buffer *d3d11IndexBuffer = (ID3D11Buffer *)indexBuffer;
     const BufferCreateInfo &bufferCI = buffers[d3d11IndexBuffer];
-    immediateContext->IASetIndexBuffer(d3d11IndexBuffer, bufferCI.indexBufferUint16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+    immediateContext->IASetIndexBuffer(d3d11IndexBuffer, bufferCI.stride == 4 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT, 0);
 }
 
 void GraphicsAPI_D3D11::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) {

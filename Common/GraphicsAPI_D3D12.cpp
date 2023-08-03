@@ -1246,7 +1246,7 @@ void GraphicsAPI_D3D12::SetIndexBuffer(void *indexBuffer) {
     D3D12_INDEX_BUFFER_VIEW indexBufferView;
     indexBufferView.BufferLocation = d3d12IndexBuffer->GetGPUVirtualAddress();
     indexBufferView.SizeInBytes = d3d12IndexBuffer->GetDesc().Width;
-    indexBufferView.Format = bufferCI.indexBufferUint16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+    indexBufferView.Format = bufferCI.stride == 4 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
     cmdList->IASetIndexBuffer(&indexBufferView);
 }
 
