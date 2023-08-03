@@ -2,12 +2,13 @@
 // OpenXR Tutorial for Khronos Group
 
 #include "GraphicsAPI_D3D11.h"
-#include "xr_linear_algebra.h"
-
+#include "GraphicsAPI_D3D12.h"
+#include "GraphicsAPI_Vulkan.h"
 #include "xr_linear_algebra.h"
 
 static HWND window;
 static bool g_WindowQuit = false;
+
 static LRESULT CALLBACK WindProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam) {
     if (msg == WM_DESTROY || msg == WM_CLOSE) {
         PostQuitMessage(0);
@@ -25,8 +26,9 @@ static void WindowUpdate() {
     }
 }
 
-GraphicsAPI_D3D11* graphicsAPI = nullptr;
-GraphicsAPI_Type apiType=D3D11;
+GraphicsAPI *graphicsAPI = nullptr;
+GraphicsAPI_Type apiType = VULKAN;
+int64_t swapchainFormat = 0;
 void *vertexBuffer = nullptr;
 void *indexBuffer = nullptr;
 void *uniformBuffer_Vert = nullptr;
@@ -97,8 +99,6 @@ void CreateResources() {
     uniformBuffer_Vert = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants, false});
 
-    // XR_DOCS_TAG_END_CreateResources1
-    // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
     if (apiType == OPENGL || apiType == VULKAN) {
         std::string vertexSource = R"(
             #version 450
@@ -135,8 +135,6 @@ void CreateResources() {
             })";
         fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
     }
-    // XR_DOCS_TAG_END_CreateResources2_OpenGL_Vulkan
-    // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
     if (apiType == OPENGL_ES) {
         std::string vertexSource = R"(
             #version 310 es
@@ -174,8 +172,6 @@ void CreateResources() {
             })";
         fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
     }
-    // XR_DOCS_TAG_END_CreateResources2_OpenGLES
-    // XR_DOCS_TAG_BEGIN_CreateResources2_D3D
     if (apiType == D3D11 || apiType == D3D12) {
         std::string vertexSource = R"(
             //Color Vertex Shader
@@ -194,8 +190,8 @@ void CreateResources() {
             
             struct VS_OUT
             {
-                float4 o_Position	: SV_Position;
-					uint2 o_TexCoord		: TEXCOORD0;
+                float4 o_Position    : SV_Position;
+                uint2 o_TexCoord     : TEXCOORD0;
             };
             
             VS_OUT main(VS_IN IN)
@@ -213,8 +209,8 @@ void CreateResources() {
             
             struct PS_IN
             {
-                float4 i_Position	: SV_Position;
-					uint2 i_TexCoord		: TEXCOORD0;
+                float4 i_Position    : SV_Position;
+                uint2 i_TexCoord     : TEXCOORD0;
             };
             struct PS_OUT
             {
@@ -235,8 +231,7 @@ void CreateResources() {
             })";
         fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
     }
-    // XR_DOCS_TAG_END_CreateResources2_D3D
-    // XR_DOCS_TAG_BEGIN_CreateResources3
+
     GraphicsAPI::PipelineCreateInfo pipelineCI;
     pipelineCI.shaders = {vertexShader, fragmentShader};
     pipelineCI.vertexInputState.attributes = {{0, 0, GraphicsAPI::VertexType::VEC4, 0, "TEXCOORD"}};
@@ -246,10 +241,12 @@ void CreateResources() {
     pipelineCI.multisampleState = {1, false, 1.0f, 0xFFFFFFFF, false, false};
     pipelineCI.depthStencilState = {false, false, GraphicsAPI::CompareOp::GREATER, false, false, {}, {}, 0.0f, 1.0f};
     pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
+    pipelineCI.colorFormats = {swapchainFormat};
+    pipelineCI.depthFormat = graphicsAPI->GetDepthFormat();
+    pipelineCI.layout = {{1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false}, {0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false}};
     pipeline = graphicsAPI->CreatePipeline(pipelineCI);
 }
-// XR_DOCS_TAG_END_CreateResources3
-// XR_DOCS_TAG_BEGIN_DestroyResources
+
 void DestroyResources() {
     graphicsAPI->DestroyPipeline(pipeline);
     graphicsAPI->DestroyShader(fragmentShader);
@@ -259,17 +256,18 @@ void DestroyResources() {
     graphicsAPI->DestroyBuffer(indexBuffer);
     graphicsAPI->DestroyBuffer(vertexBuffer);
 }
+
 void RenderCuboid(XrPosef pose, XrVector3f scale) {
     XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
     XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
-	
+
     graphicsAPI->SetPipeline(pipeline);
 
     graphicsAPI->SetBufferData(uniformBuffer_Vert, 0, sizeof(CameraConstants), &cameraConstants);
-    graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER});
-
-    graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+    graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false});
+    graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false});
+    graphicsAPI->UpdateDescriptors();
 
     graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
     graphicsAPI->SetIndexBuffer(indexBuffer);
@@ -318,11 +316,18 @@ void DrawTestObject()
 	}
 }
 
-
 int main() {
     HMODULE RenderDoc = LoadLibraryA("C:/Program Files/RenderDoc/renderdoc.dll");
 
-    graphicsAPI = new GraphicsAPI_D3D11();
+    if (apiType == D3D11) {
+        graphicsAPI = new GraphicsAPI_D3D11();
+    } else if (apiType == D3D12) {
+        graphicsAPI = new GraphicsAPI_D3D12();
+    } else if (apiType == VULKAN) {
+        graphicsAPI = new GraphicsAPI_Vulkan();
+    } else {
+        return -1;
+    }
 
     uint32_t width = 800;
     uint32_t height = 600;
@@ -332,7 +337,7 @@ int main() {
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = WindProc;
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wc.lpszClassName = "MIRU_TEST";
+    wc.lpszClassName = "GraphicsAPI_Test";
     RegisterClass(&wc);
 
     window = CreateWindow(wc.lpszClassName, wc.lpszClassName, WS_OVERLAPPEDWINDOW, 100, 100, width, height, 0, 0, 0, 0);
@@ -340,10 +345,10 @@ int main() {
 
     // Swapchain
     const uint32_t swapchainCount = 3;
-    DXGI_FORMAT swapchainFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-    void* swapchain = graphicsAPI->CreateDesktopSwapchain({width, height, swapchainCount, window, swapchainFormat, false});
-    void* swapchainImages[swapchainCount] = {nullptr, nullptr, nullptr};
-    void* swapchainImageViews[swapchainCount] = {nullptr, nullptr, nullptr};
+    swapchainFormat = apiType == VULKAN ? VK_FORMAT_B8G8R8A8_UNORM : DXGI_FORMAT_B8G8R8A8_UNORM;
+    void *swapchain = graphicsAPI->CreateDesktopSwapchain({width, height, swapchainCount, window, swapchainFormat, false});
+    void *swapchainImages[swapchainCount] = {nullptr, nullptr, nullptr};
+    void *swapchainImageViews[swapchainCount] = {nullptr, nullptr, nullptr};
     for (uint32_t i = 0; i < swapchainCount; i++) {
         swapchainImages[i] = graphicsAPI->GetDesktopSwapchainImage(swapchain, i);
 
@@ -359,7 +364,7 @@ int main() {
         imageViewCI.layerCount = 1;
         swapchainImageViews[i] = graphicsAPI->CreateImageView(imageViewCI);
     }
-	CreateResources();
+
     GraphicsAPI::ImageCreateInfo depthImageCI;
     depthImageCI.dimension = 2;
     depthImageCI.width = width;
@@ -373,7 +378,7 @@ int main() {
     depthImageCI.colorAttachment = false;
     depthImageCI.depthAttachment = true;
     depthImageCI.sampled = false;
-    void* depthImage = graphicsAPI->CreateImage(depthImageCI);
+    void *depthImage = graphicsAPI->CreateImage(depthImageCI);
 
     GraphicsAPI::ImageViewCreateInfo imageViewCI;
     imageViewCI.image = depthImage;
@@ -385,7 +390,9 @@ int main() {
     imageViewCI.levelCount = 1;
     imageViewCI.baseArrayLayer = 0;
     imageViewCI.layerCount = 1;
-    void* depthImageView = graphicsAPI->CreateImageView(imageViewCI);
+    void *depthImageView = graphicsAPI->CreateImageView(imageViewCI);
+
+    /*CreateResources();
 
     struct CameraConstants {
         XrMatrix4x4f viewProj;
@@ -460,13 +467,13 @@ int main() {
             uint vertexId : SV_VertexId;
             float4 a_Positions : TEXCOORD0;
         };
-        
+
         struct VS_OUT
         {
             float4 o_Position : SV_Position;
             float2 o_TexCoord : TEXCOORD0;
         };
-        
+
         VS_OUT main(VS_IN IN)
         {
             VS_OUT OUT;
@@ -479,7 +486,7 @@ int main() {
 
     std::string fragmentSource = R"(
         //Color Fragment Shader
-        
+
         struct PS_IN
         {
             float4 i_Position : SV_Position;
@@ -489,12 +496,12 @@ int main() {
         {
             float4 o_Color : SV_Target0;
         };
-        
+
         cbuffer Data : register(b0)
         {
             float4 colors[6];
         };
-        
+
         PS_OUT main(PS_IN IN)
         {
             PS_OUT OUT;
@@ -513,7 +520,10 @@ int main() {
     pipelineCI.multisampleState = {1, false, 1.0f, 0xFFFFFFFF, false, false};
     pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
     pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
-    void* pipeline = graphicsAPI->CreatePipeline(pipelineCI);
+    pipelineCI.colorFormats = {swapchainFormat};
+    pipelineCI.depthFormat = graphicsAPI->GetDepthFormat();
+    pipelineCI.layout = {{1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false}, {0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false}};
+    void* pipeline = graphicsAPI->CreatePipeline(pipelineCI);*/
 
     // Main Render Loop
     while (!g_WindowQuit) {
@@ -525,8 +535,6 @@ int main() {
         // Rendering
         graphicsAPI->BeginRendering();
         graphicsAPI->ClearColor(swapchainImageViews[imageIndex], 0.22f, 0.17f, 0.35f, 1.00f);
-		
-		graphicsAPI->SetRenderAttachments(swapchainImageViews, 1, nullptr);
         graphicsAPI->ClearDepth(depthImageView, 1.0f);
 
         graphicsAPI->SetRenderAttachments(&swapchainImageViews[imageIndex], 1, depthImageView);
@@ -545,7 +553,7 @@ int main() {
 
         XrMatrix4x4f proj;
         XrMatrix4x4f_CreateProjectionFov(&proj, D3D11, fov, 0.05f, 100.0f);
-            
+
         XrMatrix4x4f view = {
             1.0f, 0.0f, 0.0f, 0.0f,
             0.0f, 1.0f, 0.0f, 0.0f,
@@ -561,18 +569,14 @@ int main() {
         graphicsAPI->SetPipeline(pipeline);
 
         graphicsAPI->SetBufferData(uniformBuffer_Vert, 0, sizeof(CameraConstants), &cameraConstants);
-        graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
-        
+        graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false});
         graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colors), (void*)colors);
-        graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+        graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false});
+        graphicsAPI->UpdateDescriptors();
 
         graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
         graphicsAPI->SetIndexBuffer(indexBuffer);
         graphicsAPI->DrawIndexed(36);
-
-        graphicsAPI->EndRendering();
-
-		DrawTestObject();
 
         graphicsAPI->EndRendering();
 

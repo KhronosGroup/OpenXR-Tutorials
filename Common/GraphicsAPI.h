@@ -272,6 +272,25 @@ public:
         std::vector<ColourBlendAttachmentState> attachments;
         float blendConstants[4];
     };
+
+    struct DescriptorInfo {
+        uint32_t bindingIndex;
+        void* resource;
+        enum class Type : uint8_t {
+            BUFFER,
+            IMAGE,
+            SAMPLER
+        } type;
+        enum class Stage : uint8_t {
+            VERTEX,
+            TESSELLATION_CONTROL,
+            TESSELLATION_EVALUATION,
+            GEOMETRY,
+            FRAGMENT,
+            COMPUTE
+        } stage;
+        bool readWrite;
+    };
     struct PipelineCreateInfo {
         std::vector<void*> shaders;
         VertexInputState vertexInputState;
@@ -280,6 +299,9 @@ public:
         MultisampleState multisampleState;
         DepthStencilState depthStencilState;
         ColourBlendState colourBlendState;
+        std::vector<int64_t> colorFormats;
+        int64_t depthFormat;
+        std::vector<DescriptorInfo> layout;
     };
 
     struct SwapchainCreateInfo {
@@ -372,24 +394,6 @@ public:
         float borderColour[4];
     };
 
-    struct DescriptorInfo {
-        uint32_t bindingIndex;
-        void* resource;
-        enum class Type : uint8_t {
-            BUFFER,
-            IMAGE,
-            SAMPLER
-        } type;
-        enum class Stage : uint8_t {
-            VERTEX,
-            TESSELLATION_CONTROL,
-            TESSELLATION_EVALUATION,
-            GEOMETRY,
-            FRAGMENT,
-            COMPUTE
-        } stage;
-    };
-
     struct Viewport {
         float x;
         float y;
@@ -416,12 +420,11 @@ public:
 
     int64_t SelectSwapchainFormat(const std::vector<int64_t>& formats);
 
-    // TODO: Make pure virtual
-    virtual void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) { return nullptr; }
-    virtual void DestroyDesktopSwapchain(void*& swapchain){};
-    virtual void* GetDesktopSwapchainImage(void* swapchain, uint32_t index) { return nullptr; };
-    virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index){};
-    virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index){};
+    virtual void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) = 0;
+    virtual void DestroyDesktopSwapchain(void*& swapchain) = 0;
+    virtual void* GetDesktopSwapchainImage(void* swapchain, uint32_t index) = 0;
+    virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) = 0;
+    virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) = 0;
 
     virtual int64_t GetDepthFormat() = 0;
 
@@ -436,43 +439,37 @@ public:
     virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) = 0;
     virtual void DestroyImageView(void*& imageView) = 0;
 
-    // TODO: Make pure virtual
-    virtual void* CreateSampler(const SamplerCreateInfo& samplerCI) { return nullptr; };
-    virtual void DestroySampler(void*& sampler){};
+    virtual void* CreateSampler(const SamplerCreateInfo& samplerCI) = 0;
+    virtual void DestroySampler(void*& sampler) = 0;
 
-    // TODO: Make pure virtual
-    virtual void* CreateBuffer(const BufferCreateInfo& bufferCI) { return nullptr; }
+    virtual void* CreateBuffer(const BufferCreateInfo& bufferCI) = 0;
     virtual void DestroyBuffer(void*& buffer) {}
 
-    // TODO: Make pure virtual
-    virtual void* CreateShader(const ShaderCreateInfo& shaderCI) { return nullptr; }
-    virtual void DestroyShader(void*& shader) {}
+    virtual void* CreateShader(const ShaderCreateInfo& shaderCI) = 0;
+    virtual void DestroyShader(void*& shader) = 0;
 
-    // TODO: Make pure virtual
-    virtual void* CreatePipeline(const PipelineCreateInfo& pipelineCI) { return nullptr; }
-    virtual void DestroyPipeline(void*& pipeline) {}
+    virtual void* CreatePipeline(const PipelineCreateInfo& pipelineCI) = 0;
+    virtual void DestroyPipeline(void*& pipeline) = 0;
 
-    virtual void BeginRendering(){};
-    virtual void EndRendering(){};
+    virtual void BeginRendering() = 0;
+    virtual void EndRendering() = 0;
 
-    // TODO: Make pure virtual
-    virtual void SetBufferData(void* buffer, size_t offset, size_t size, void* data) {}
+    virtual void SetBufferData(void* buffer, size_t offset, size_t size, void* data) = 0;
 
     virtual void ClearColor(void* imageView, float r, float g, float b, float a) = 0;
     virtual void ClearDepth(void* imageView, float d) = 0;
 
-    // TODO: Make pure virtual
-    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView) {}
-    virtual void SetViewports(Viewport* viewports, size_t count) {}
-    virtual void SetScissors(Rect2D* scissors, size_t count) {}
+    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView) = 0;
+    virtual void SetViewports(Viewport* viewports, size_t count) = 0;
+    virtual void SetScissors(Rect2D* scissors, size_t count) = 0;
 
-    // TODO: Make pure virtual
-    virtual void SetPipeline(void* pipeline) {}
-    virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) {}
-    virtual void SetVertexBuffers(void** vertexBuffers, size_t count) {}
-    virtual void SetIndexBuffer(void* indexBuffer) {}
-    virtual void DrawIndexed(uint32_t indexCount, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0) {}
-    virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) {}
+    virtual void SetPipeline(void* pipeline) = 0;
+    virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) = 0;
+    virtual void UpdateDescriptors() = 0;
+    virtual void SetVertexBuffers(void** vertexBuffers, size_t count) = 0;
+    virtual void SetIndexBuffer(void* indexBuffer) = 0;
+    virtual void DrawIndexed(uint32_t indexCount, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0) = 0;
+    virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
 
 protected:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() = 0;

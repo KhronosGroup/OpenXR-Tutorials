@@ -19,7 +19,7 @@
         }                     \
     }
 
-D3D11_BIND_FLAG ToD3D11BindFlag(GraphicsAPI::BufferCreateInfo::Type type) {
+static D3D11_BIND_FLAG ToD3D11BindFlag(GraphicsAPI::BufferCreateInfo::Type type) {
     switch (type) {
     case GraphicsAPI::BufferCreateInfo::Type::VERTEX: {
         return D3D11_BIND_VERTEX_BUFFER;
@@ -34,7 +34,7 @@ D3D11_BIND_FLAG ToD3D11BindFlag(GraphicsAPI::BufferCreateInfo::Type type) {
     };
 }
 
-D3D11_TEXTURE_ADDRESS_MODE ToD3D11TextureAddressMode(GraphicsAPI::SamplerCreateInfo::AddressMode addressMode) {
+static D3D11_TEXTURE_ADDRESS_MODE ToD3D11TextureAddressMode(GraphicsAPI::SamplerCreateInfo::AddressMode addressMode) {
     if (addressMode == GraphicsAPI::SamplerCreateInfo::AddressMode::CLAMP_TO_BORDER) {
         if (addressMode == GraphicsAPI::SamplerCreateInfo::AddressMode::CLAMP_TO_EDGE) {
             return D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -51,13 +51,13 @@ D3D11_TEXTURE_ADDRESS_MODE ToD3D11TextureAddressMode(GraphicsAPI::SamplerCreateI
     return D3D11_TEXTURE_ADDRESS_WRAP;
 }
 
-D3D11_FILTER ToD3D11Filter(GraphicsAPI::SamplerCreateInfo::Filter filter) {
+static D3D11_FILTER ToD3D11Filter(GraphicsAPI::SamplerCreateInfo::Filter filter) {
     if (filter == GraphicsAPI::SamplerCreateInfo::Filter::LINEAR)
         return D3D11_FILTER_ANISOTROPIC;
     return D3D11_FILTER_MIN_MAG_MIP_POINT;
 }
 
-D3D11_COMPARISON_FUNC ToD3D11Comparison(GraphicsAPI::CompareOp compareOp) {
+static D3D11_COMPARISON_FUNC ToD3D11Comparison(GraphicsAPI::CompareOp compareOp) {
     switch (compareOp) {
     case GraphicsAPI::CompareOp::ALWAYS: {
         return D3D11_COMPARISON_ALWAYS;
@@ -86,7 +86,7 @@ D3D11_COMPARISON_FUNC ToD3D11Comparison(GraphicsAPI::CompareOp compareOp) {
     return D3D11_COMPARISON_LESS;
 }
 
-D3D11_STENCIL_OP ToD3D11StencilOp(GraphicsAPI::StencilOp stencilOp) {
+static D3D11_STENCIL_OP ToD3D11StencilOp(GraphicsAPI::StencilOp stencilOp) {
     switch (stencilOp) {
     case GraphicsAPI::StencilOp::KEEP: {
         return D3D11_STENCIL_OP_KEEP;
@@ -118,7 +118,7 @@ D3D11_STENCIL_OP ToD3D11StencilOp(GraphicsAPI::StencilOp stencilOp) {
     return D3D11_STENCIL_OP_KEEP;
 }
 
-D3D11_BLEND ToD3D11_BLEND(GraphicsAPI::BlendFactor blend) {
+static D3D11_BLEND ToD3D11_BLEND(GraphicsAPI::BlendFactor blend) {
     switch (blend) {
     default:
     case GraphicsAPI::BlendFactor::ZERO:
@@ -144,7 +144,7 @@ D3D11_BLEND ToD3D11_BLEND(GraphicsAPI::BlendFactor blend) {
     }
 }
 
-DXGI_FORMAT ToDXGI_FORMAT(GraphicsAPI::VertexType type) {
+static DXGI_FORMAT ToDXGI_FORMAT(GraphicsAPI::VertexType type) {
     switch (type) {
     case GraphicsAPI::VertexType::FLOAT:
         return DXGI_FORMAT_R32_FLOAT;
@@ -687,7 +687,7 @@ void GraphicsAPI_D3D11::EndRendering() {
 
 void GraphicsAPI_D3D11::SetBufferData(void *buffer, size_t offset, size_t size, void *data) {
     ID3D11Buffer *d3d11Buffer = (ID3D11Buffer *)buffer;
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
     D3D11_CHECK(immediateContext->Map(d3d11Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource), "Failed to map Resource.");
     if (mappedSubresource.pData)
         memcpy(mappedSubresource.pData, data, size);
@@ -954,11 +954,19 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
         }
         break;
     }
-    case DescriptorInfo::Stage::COMPUTE: {  // UAVs?
+    case DescriptorInfo::Stage::COMPUTE: { 
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
-            immediateContext->CSSetConstantBuffers(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource);
+            if (descriptorInfo.readWrite) {
+                // UAVs?
+            } else {
+                immediateContext->CSSetConstantBuffers(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource);
+            }
         } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
-            immediateContext->CSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
+            if (descriptorInfo.readWrite) {
+                immediateContext->CSSetUnorderedAccessViews(slot, 1, (ID3D11UnorderedAccessView *const *)&descriptorInfo.resource, nullptr);
+            } else {
+                immediateContext->CSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
+            }
         } else if (descriptorInfo.type == DescriptorInfo::Type::SAMPLER) {
             immediateContext->CSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
         } else {
@@ -969,6 +977,9 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
     default:
         break;
     }
+}
+
+void GraphicsAPI_D3D11::UpdateDescriptors() {
 }
 
 void GraphicsAPI_D3D11::SetVertexBuffers(void **vertexBuffers, size_t count) {
