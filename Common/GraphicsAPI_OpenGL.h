@@ -39,8 +39,8 @@ public:
     virtual void* CreatePipeline(const PipelineCreateInfo& pipelineCI) override;
     virtual void DestroyPipeline(void*& pipeline) override;
 
-    virtual void BeginRendering();
-    virtual void EndRendering();
+    virtual void BeginRendering() override;
+    virtual void EndRendering() override;
 
     virtual void SetBufferData(void* buffer, size_t offset, size_t size, void* data) override;
 

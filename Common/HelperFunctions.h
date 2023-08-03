@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <cstring>
 #include <unordered_map>
 
 // Debugbreak
@@ -33,7 +34,7 @@ inline bool BitwiseCheck(const T &value, const T &checkValue) {
 }
 
 template <typename T>
-typename T Align(T value, T alignment) {
+T Align(T value, T alignment) {
     return (value + (alignment - 1)) & ~(alignment - 1);
 };
 
