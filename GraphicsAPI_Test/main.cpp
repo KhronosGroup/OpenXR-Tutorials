@@ -3,8 +3,7 @@
 
 #include "GraphicsAPI_D3D11.h"
 #include "GraphicsAPI_D3D12.h"
-#include "xr_linear_algebra.h"
-
+#include "GraphicsAPI_Vulkan.h"
 #include "xr_linear_algebra.h"
 
 static HWND window;
@@ -27,8 +26,8 @@ static void WindowUpdate() {
     }
 }
 
-GraphicsAPI* graphicsAPI = nullptr;
-GraphicsAPI_Type apiType = D3D12;
+GraphicsAPI *graphicsAPI = nullptr;
+GraphicsAPI_Type apiType = VULKAN;
 int64_t swapchainFormat = 0;
 void *vertexBuffer = nullptr;
 void *indexBuffer = nullptr;
@@ -191,8 +190,8 @@ void CreateResources() {
             
             struct VS_OUT
             {
-                float4 o_Position	: SV_Position;
-					uint2 o_TexCoord		: TEXCOORD0;
+                float4 o_Position    : SV_Position;
+                uint2 o_TexCoord     : TEXCOORD0;
             };
             
             VS_OUT main(VS_IN IN)
@@ -210,8 +209,8 @@ void CreateResources() {
             
             struct PS_IN
             {
-                float4 i_Position	: SV_Position;
-					uint2 i_TexCoord		: TEXCOORD0;
+                float4 i_Position    : SV_Position;
+                uint2 i_TexCoord     : TEXCOORD0;
             };
             struct PS_OUT
             {
@@ -262,7 +261,7 @@ void RenderCuboid(XrPosef pose, XrVector3f scale) {
     XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
     XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
-	
+
     graphicsAPI->SetPipeline(pipeline);
 
     graphicsAPI->SetBufferData(uniformBuffer_Vert, 0, sizeof(CameraConstants), &cameraConstants);
@@ -276,46 +275,47 @@ void RenderCuboid(XrPosef pose, XrVector3f scale) {
     graphicsAPI->DrawIndexed(36);
 }
 
-void DrawTestObject()
-{
-	
-	// Compute the view-projection transform.
-	// All matrices (including OpenXR's) are column-major, right-handed.
-	XrMatrix4x4f proj;
-	XrFovf fov={-.5f,.5f,.5f,-.5f};
-	XrMatrix4x4f_CreateProjectionFov(&proj, OPENGL_ES, fov, 0.05f, 100.0f);
-	XrMatrix4x4f toView;
-	XrVector3f scale1m{1.0f, 1.0f, 1.0f};
-	XrVector3f view_position={0,0,0};
-	XrQuaternionf view_orientation={0,0,0,1.0f};
-	XrMatrix4x4f_CreateTranslationRotationScale(&toView, &view_position, &view_orientation, &scale1m);
-	XrMatrix4x4f view;
-	XrMatrix4x4f_InvertRigidBody(&view, &toView);
-	XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
-	
-	// Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
-	RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -1.5f, 0.0f}}, {2.0f, 0.1f, 2.0f});
-	for(int i=0;i<10;i++)
-	{
-		float x=float(i)-5.f;
-		for(int j=0;j<10;j++)
-		{
-			float y=float(j)-5.f;
-			for(int k=0;k<10;k++)
-			{
-				float z=float(k)-5.f;
-				RenderCuboid({{0.382862836f, -0.168145418f, 0.0987696573f, 0.902988195f}, {x,y,z}}, {0.1f, 0.1f, 0.1f});
-	
-			}
-		}
-	}
-}
+void DrawTestObject() {
+    // Compute the view-projection transform.
+    // All matrices (including OpenXR's) are column-major, right-handed.
+    XrMatrix4x4f proj;
+    XrFovf fov = {-.5f, .5f, .5f, -.5f};
+    XrMatrix4x4f_CreateProjectionFov(&proj, OPENGL_ES, fov, 0.05f, 100.0f);
+    XrMatrix4x4f toView;
+    XrVector3f scale1m{1.0f, 1.0f, 1.0f};
+    XrVector3f view_position = {0, 0, 0};
+    XrQuaternionf view_orientation = {0, 0, 0, 1.0f};
+    XrMatrix4x4f_CreateTranslationRotationScale(&toView, &view_position, &view_orientation, &scale1m);
+    XrMatrix4x4f view;
+    XrMatrix4x4f_InvertRigidBody(&view, &toView);
+    XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
 
+    // Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
+    RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -1.5f, 0.0f}}, {2.0f, 0.1f, 2.0f});
+    for (int i = 0; i < 10; i++) {
+        float x = float(i) - 5.f;
+        for (int j = 0; j < 10; j++) {
+            float y = float(j) - 5.f;
+            for (int k = 0; k < 10; k++) {
+                float z = float(k) - 5.f;
+                RenderCuboid({{0.382862836f, -0.168145418f, 0.0987696573f, 0.902988195f}, {x, y, z}}, {0.1f, 0.1f, 0.1f});
+            }
+        }
+    }
+}
 
 int main() {
     HMODULE RenderDoc = LoadLibraryA("C:/Program Files/RenderDoc/renderdoc.dll");
 
-    graphicsAPI = new GraphicsAPI_D3D12();
+    if (apiType == D3D11) {
+        graphicsAPI = new GraphicsAPI_D3D11();
+    } else if (apiType == D3D12) {
+        graphicsAPI = new GraphicsAPI_D3D12();
+    } else if (apiType == VULKAN) {
+        graphicsAPI = new GraphicsAPI_Vulkan();
+    } else {
+        return -1;
+    }
 
     uint32_t width = 800;
     uint32_t height = 600;
@@ -333,10 +333,10 @@ int main() {
 
     // Swapchain
     const uint32_t swapchainCount = 3;
-    swapchainFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-    void* swapchain = graphicsAPI->CreateDesktopSwapchain({width, height, swapchainCount, window, swapchainFormat, false});
-    void* swapchainImages[swapchainCount] = {nullptr, nullptr, nullptr};
-    void* swapchainImageViews[swapchainCount] = {nullptr, nullptr, nullptr};
+    swapchainFormat = apiType == VULKAN ? VK_FORMAT_B8G8R8A8_UNORM : DXGI_FORMAT_B8G8R8A8_UNORM;
+    void *swapchain = graphicsAPI->CreateDesktopSwapchain({width, height, swapchainCount, window, swapchainFormat, false});
+    void *swapchainImages[swapchainCount] = {nullptr, nullptr, nullptr};
+    void *swapchainImageViews[swapchainCount] = {nullptr, nullptr, nullptr};
     for (uint32_t i = 0; i < swapchainCount; i++) {
         swapchainImages[i] = graphicsAPI->GetDesktopSwapchainImage(swapchain, i);
 
@@ -366,7 +366,7 @@ int main() {
     depthImageCI.colorAttachment = false;
     depthImageCI.depthAttachment = true;
     depthImageCI.sampled = false;
-    void* depthImage = graphicsAPI->CreateImage(depthImageCI);
+    void *depthImage = graphicsAPI->CreateImage(depthImageCI);
 
     GraphicsAPI::ImageViewCreateInfo imageViewCI;
     imageViewCI.image = depthImage;
@@ -378,9 +378,9 @@ int main() {
     imageViewCI.levelCount = 1;
     imageViewCI.baseArrayLayer = 0;
     imageViewCI.layerCount = 1;
-    void* depthImageView = graphicsAPI->CreateImageView(imageViewCI);
+    void *depthImageView = graphicsAPI->CreateImageView(imageViewCI);
 
-	CreateResources();
+    /*CreateResources();
 
     struct CameraConstants {
         XrMatrix4x4f viewProj;
@@ -455,13 +455,13 @@ int main() {
             uint vertexId : SV_VertexId;
             float4 a_Positions : TEXCOORD0;
         };
-        
+
         struct VS_OUT
         {
             float4 o_Position : SV_Position;
             float2 o_TexCoord : TEXCOORD0;
         };
-        
+
         VS_OUT main(VS_IN IN)
         {
             VS_OUT OUT;
@@ -474,7 +474,7 @@ int main() {
 
     std::string fragmentSource = R"(
         //Color Fragment Shader
-        
+
         struct PS_IN
         {
             float4 i_Position : SV_Position;
@@ -484,12 +484,12 @@ int main() {
         {
             float4 o_Color : SV_Target0;
         };
-        
+
         cbuffer Data : register(b0)
         {
             float4 colors[6];
         };
-        
+
         PS_OUT main(PS_IN IN)
         {
             PS_OUT OUT;
@@ -511,8 +511,8 @@ int main() {
     pipelineCI.colorFormats = {swapchainFormat};
     pipelineCI.depthFormat = graphicsAPI->GetDepthFormat();
     pipelineCI.layout = {{1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false}, {0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false}};
-    void* pipeline = graphicsAPI->CreatePipeline(pipelineCI);
-   
+    void* pipeline = graphicsAPI->CreatePipeline(pipelineCI);*/
+
     // Main Render Loop
     while (!g_WindowQuit) {
         WindowUpdate();
@@ -541,7 +541,7 @@ int main() {
 
         XrMatrix4x4f proj;
         XrMatrix4x4f_CreateProjectionFov(&proj, D3D11, fov, 0.05f, 100.0f);
-            
+
         XrMatrix4x4f view = {
             1.0f, 0.0f, 0.0f, 0.0f,
             0.0f, 1.0f, 0.0f, 0.0f,

@@ -979,6 +979,9 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
     }
 }
 
+void GraphicsAPI_D3D11::UpdateDescriptors() {
+}
+
 void GraphicsAPI_D3D11::SetVertexBuffers(void **vertexBuffers, size_t count) {
     const VertexInputState &vertexInputState = pipelines[setPipeline].vertexInputState;
     std::vector<UINT> strides;

@@ -246,13 +246,13 @@ void *GraphicsAPI_D3D12::GetDesktopSwapchainImage(void *swapchain, uint32_t inde
 void GraphicsAPI_D3D12::AcquireDesktopSwapchanImage(void *swapchain, uint32_t &index) {
     IDXGISwapChain3 *d3d12Swapchain = reinterpret_cast<IDXGISwapChain3 *>(swapchain);
     index = d3d12Swapchain->GetCurrentBackBufferIndex();
-    currentSwapchainImage = (ID3D12Resource *)GetDesktopSwapchainImage(swapchain, index);
-    imageStates[currentSwapchainImage] = D3D12_RESOURCE_STATE_COMMON;
+    currentDesktopSwapchainImage = (ID3D12Resource *)GetDesktopSwapchainImage(swapchain, index);
+    imageStates[currentDesktopSwapchainImage] = D3D12_RESOURCE_STATE_COMMON;
 }
 
 void GraphicsAPI_D3D12::PresentDesktopSwapchainImage(void *swapchain, uint32_t index) {
-    imageStates.erase(currentSwapchainImage);
-    currentSwapchainImage = nullptr;
+    imageStates.erase(currentDesktopSwapchainImage);
+    currentDesktopSwapchainImage = nullptr;
     IDXGISwapChain *d3d12Swapchain = reinterpret_cast<IDXGISwapChain *>(swapchain);
     if (DesktopSwapchainVsync) {
         D3D12_CHECK(d3d12Swapchain->Present(1, 0), "Failed to present the Image from Swapchain.");
@@ -325,6 +325,7 @@ void GraphicsAPI_D3D12::DestroyImage(void *&image) {
     ID3D12Resource *d3d12Image = reinterpret_cast<ID3D12Resource *>(image);
     ID3D12Heap *heap = imageResources[d3d12Image];
     imageResources.erase(d3d12Image);
+    imageStates.erase(d3d12Image);
     D3D12_SAFE_RELEASE(heap);
     D3D12_SAFE_RELEASE(d3d12Image);
     image = nullptr;
@@ -997,27 +998,27 @@ void GraphicsAPI_D3D12::BeginRendering() {
     CBV_SRV_UAV_DescriptorOffset = 0;
     SAMPLER_DescriptorOffset = 0;
 
-    if (currentSwapchainImage) {
+    if (currentDesktopSwapchainImage) {
         D3D12_RESOURCE_BARRIER swapchainImageBarrier;
         swapchainImageBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         swapchainImageBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        swapchainImageBarrier.Transition.pResource = currentSwapchainImage;
+        swapchainImageBarrier.Transition.pResource = currentDesktopSwapchainImage;
         swapchainImageBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-        swapchainImageBarrier.Transition.StateBefore = imageStates[currentSwapchainImage];
-        swapchainImageBarrier.Transition.StateAfter = imageStates[currentSwapchainImage] = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        swapchainImageBarrier.Transition.StateBefore = imageStates[currentDesktopSwapchainImage];
+        swapchainImageBarrier.Transition.StateAfter = imageStates[currentDesktopSwapchainImage] = D3D12_RESOURCE_STATE_RENDER_TARGET;
         cmdList->ResourceBarrier(1, &swapchainImageBarrier);
     }
 }
 
 void GraphicsAPI_D3D12::EndRendering() {
-    if (currentSwapchainImage) {
+    if (currentDesktopSwapchainImage) {
         D3D12_RESOURCE_BARRIER swapchainImageBarrier;
         swapchainImageBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         swapchainImageBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        swapchainImageBarrier.Transition.pResource = currentSwapchainImage;
+        swapchainImageBarrier.Transition.pResource = currentDesktopSwapchainImage;
         swapchainImageBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-        swapchainImageBarrier.Transition.StateBefore = imageStates[currentSwapchainImage];
-        swapchainImageBarrier.Transition.StateAfter = imageStates[currentSwapchainImage] = D3D12_RESOURCE_STATE_COMMON;
+        swapchainImageBarrier.Transition.StateBefore = imageStates[currentDesktopSwapchainImage];
+        swapchainImageBarrier.Transition.StateAfter = imageStates[currentDesktopSwapchainImage] = D3D12_RESOURCE_STATE_COMMON;
         cmdList->ResourceBarrier(1, &swapchainImageBarrier);
     }
 
@@ -1046,8 +1047,8 @@ void GraphicsAPI_D3D12::ClearColor(void *imageView, float r, float g, float b, f
         barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
         barrier.Transition.pResource = image;
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-        barrier.Transition.StateBefore = imageStates[currentSwapchainImage];
-        barrier.Transition.StateAfter = imageStates[currentSwapchainImage] = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        barrier.Transition.StateBefore = imageStates[currentDesktopSwapchainImage];
+        barrier.Transition.StateAfter = imageStates[currentDesktopSwapchainImage] = D3D12_RESOURCE_STATE_RENDER_TARGET;
         cmdList->ResourceBarrier(1, &barrier);
     }
 
@@ -1057,7 +1058,6 @@ void GraphicsAPI_D3D12::ClearColor(void *imageView, float r, float g, float b, f
 }
 
 void GraphicsAPI_D3D12::ClearDepth(void *imageView, float d) {
-
     ID3D12Resource *image = imageViewResources[(SIZE_T)imageView].second;
     if (imageStates[image] != D3D12_RESOURCE_STATE_DEPTH_WRITE){
         D3D12_RESOURCE_BARRIER barrier;

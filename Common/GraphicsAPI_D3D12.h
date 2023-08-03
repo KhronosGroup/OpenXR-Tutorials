@@ -19,7 +19,11 @@ public:
     virtual void* GetGraphicsBinding() override;
     virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
-    virtual void* GetSwapchainImage(uint32_t index) override { return swapchainImages[index].texture; }
+    virtual void* GetSwapchainImage(uint32_t index) override { 
+        ID3D12Resource* image = swapchainImages[index].texture;
+        imageStates[image] = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        return image;
+    }
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
@@ -76,7 +80,7 @@ private:
 
     std::vector<XrSwapchainImageD3D12KHR> swapchainImages{};
 
-    ID3D12Resource* currentSwapchainImage = nullptr;
+    ID3D12Resource* currentDesktopSwapchainImage = nullptr;
 
     std::unordered_map<ID3D12Resource*, D3D12_RESOURCE_STATES> imageStates;
 
