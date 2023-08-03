@@ -213,6 +213,23 @@ private:
         OPENXR_CHECK(xrStringToPath(m_xrInstance, path_string, &xrPath), "Failed to create XrPath from string.");
         return xrPath;
     }
+	std::string FromXrPath(XrPath path)
+	{
+		uint32_t strl;
+		char text[XR_MAX_PATH_LENGTH];
+		XrResult res;
+		res=xrPathToString(m_xrInstance, path, XR_MAX_PATH_LENGTH, &strl, text);
+		std::string str;
+		if(res==XR_SUCCESS)
+		{
+			str=text;
+		}
+		else
+		{
+			OPENXR_CHECK(res,"Failed to retrieve path.");
+		}
+		return str;
+	}
     // XR_DOCS_TAG_END_CreateXrPath
     // XR_DOCS_TAG_BEGIN_CreateActionSet
     void CreateActionSet() {
@@ -231,16 +248,18 @@ private:
 			{		
 				subaction_xrpaths.push_back(CreateXrPath(p));
 			}
-            actionCI.countSubactionPaths = subaction_xrpaths.size();
+            actionCI.countSubactionPaths = (uint32_t)subaction_xrpaths.size();
             actionCI.subactionPaths = subaction_xrpaths.data();
             strncpy(actionCI.actionName, name, XR_MAX_ACTION_NAME_SIZE);
             strncpy(actionCI.localizedActionName, name, XR_MAX_LOCALIZED_ACTION_NAME_SIZE);
             OPENXR_CHECK(xrCreateAction(m_actionSet, &actionCI, &xrAction), "Failed to create Action.");
         };
-        CreateAction(m_selectAction, "select", XR_ACTION_TYPE_BOOLEAN_INPUT, {"/user/hand/left", "/user/hand/right"});
-        CreateAction(m_throwAction, "throw", XR_ACTION_TYPE_FLOAT_INPUT);
+        CreateAction(m_selectAction, "select", XR_ACTION_TYPE_BOOLEAN_INPUT);
+        CreateAction(m_throwAction, "throw", XR_ACTION_TYPE_FLOAT_INPUT, {"/user/hand/left", "/user/hand/right"});
         CreateAction(m_controllerGripPoseAction, "controller-grip", XR_ACTION_TYPE_POSE_INPUT, {"/user/hand/left", "/user/hand/right"});
         CreateAction(m_buzzAction, "buzz", XR_ACTION_TYPE_VIBRATION_OUTPUT, {"/user/hand/left", "/user/hand/right"});
+		m_handPaths[0]=CreateXrPath("/user/hand/left");
+		m_handPaths[1]=CreateXrPath("/user/hand/right");
     }
     // XR_DOCS_TAG_END_CreateActions
 
@@ -261,43 +280,65 @@ private:
         // XR_DOCS_TAG_BEGIN_SuggestBindings2
         bool any_ok = false;
         any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller", {{m_selectAction				, CreateXrPath("/user/hand/left/input/select/click")},
+																				  {m_selectAction				, CreateXrPath("/user/hand/right/input/select/click")},
+                                                                                  {m_throwAction				, CreateXrPath("/user/hand/left/input/menu/click")},
                                                                                   {m_throwAction				, CreateXrPath("/user/hand/right/input/menu/click")},
                                                                                   {m_controllerGripPoseAction	, CreateXrPath("/user/hand/left/input/grip/pose")},
                                                                                   {m_controllerGripPoseAction	, CreateXrPath("/user/hand/right/input/grip/pose")},
                                                                                   {m_buzzAction					, CreateXrPath("/user/hand/left/output/haptic")},
 																				  {m_buzzAction					, CreateXrPath("/user/hand/right/output/haptic")}
-    });
-    // XR_DOCS_TAG_END_SuggestBindings2
-    // XR_DOCS_TAG_BEGIN_SuggestBindings3
-    any_ok |= SuggestBindings("/interaction_profiles/oculus/go_controller", {{m_selectAction			, CreateXrPath("/user/hand/left/input/system/click")},
-                                                                             {m_throwAction				, CreateXrPath("/user/hand/right/input/trigger/value")},
-                                                                             {m_controllerGripPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
-                                                                             {m_controllerGripPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
-                                                                             {m_buzzAction				, CreateXrPath("/user/hand/right/output/haptic")}});
-
-    any_ok |= SuggestBindings("/interaction_profiles/oculus/touch_controller", {{m_selectAction				, CreateXrPath("/user/hand/left/input/menu/click")},
-                                                                                {m_throwAction				, CreateXrPath("/user/hand/right/input/trigger/value")},
-                                                                                {m_controllerGripPoseAction	, CreateXrPath("/user/hand/left/input/grip/pose")},
-                                                                                {m_buzzAction				, CreateXrPath("/user/hand/right/output/haptic")}});
-    if (!any_ok) {
-        DEBUG_BREAK;
-    }
-}
+		});
+// XR_DOCS_TAG_END_SuggestBindings2
+// XR_DOCS_TAG_BEGIN_SuggestNativeBindings
+#if 0
+		any_ok |= SuggestBindings("/interaction_profiles/oculus/touch_controller", {{m_selectAction				, CreateXrPath("/user/hand/left/input/x/click")},
+																					{m_selectAction				, CreateXrPath("/user/hand/right/input/a/click")},
+																					{m_throwAction				, CreateXrPath("/user/hand/left/input/trigger/value")},
+																					{m_throwAction				, CreateXrPath("/user/hand/right/input/trigger/value")},
+																					{m_controllerGripPoseAction	, CreateXrPath("/user/hand/left/input/grip/pose")},
+																					{m_controllerGripPoseAction	, CreateXrPath("/user/hand/right/input/grip/pose")},
+																					{m_buzzAction				, CreateXrPath("/user/hand/left/output/haptic")},
+																					{m_buzzAction				, CreateXrPath("/user/hand/right/output/haptic")}});
+#endif
+// XR_DOCS_TAG_BEGIN_SuggestNativeBindings
+// XR_DOCS_TAG_BEGIN_SuggestBindings3
+		if (!any_ok) {
+			DEBUG_BREAK;
+		}
+	}
+	void RecordCurrentBindings()
+	{
+		if(m_session)
+		{
+		// now we are ready to:
+			XrInteractionProfileState interactionProfile={XR_TYPE_INTERACTION_PROFILE_STATE,0,0};
+			// for each action, what is the binding?
+			OPENXR_CHECK(xrGetCurrentInteractionProfile(m_session,m_handPaths[0],&interactionProfile),"Failed to get profile.");
+			if(interactionProfile.interactionProfile)
+				std::cout<<" user/hand/left ActiveProfile "<<FromXrPath(interactionProfile.interactionProfile).c_str()<<std::endl;
+			OPENXR_CHECK(xrGetCurrentInteractionProfile(m_session,m_handPaths[1],&interactionProfile),"Failed to get profile.");
+			if(interactionProfile.interactionProfile)
+				std::cout<<"user/hand/right ActiveProfile "<<FromXrPath(interactionProfile.interactionProfile).c_str()<<std::endl;
+		}
+	}
 // XR_DOCS_TAG_END_SuggestBindings3
 // XR_DOCS_TAG_BEGIN_CreateActionPoses
     void CreateActionPoses() {
     // Create an xrSpace for a pose action.
-    auto CreateActionPoseSpace = [this](XrSession session, XrAction xrAction) -> XrSpace {
+    auto CreateActionPoseSpace = [this](XrSession session, XrAction xrAction,const char *subaction_path=nullptr) -> XrSpace {
         XrSpace xrSpace;
         const XrPosef xrPoseIdentity = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
         // Create frame of reference for a pose action
         XrActionSpaceCreateInfo actionSpaceCI{XR_TYPE_ACTION_SPACE_CREATE_INFO};
         actionSpaceCI.action = xrAction;
         actionSpaceCI.poseInActionSpace = xrPoseIdentity;
+		if(subaction_path)
+			actionSpaceCI.subactionPath=CreateXrPath(subaction_path);
         OPENXR_CHECK(xrCreateActionSpace(session, &actionSpaceCI, &xrSpace), "Failed to create ActionSpace.");
         return xrSpace;
     };
-    m_leftGripPoseSpace = CreateActionPoseSpace(m_session, m_controllerGripPoseAction);
+    m_controllerGripPoseSpace[0] = CreateActionPoseSpace(m_session, m_controllerGripPoseAction,"/user/hand/left");
+    m_controllerGripPoseSpace[1] = CreateActionPoseSpace(m_session, m_controllerGripPoseAction,"/user/hand/right");
 }
 // XR_DOCS_TAG_END_CreateActionPoses
 // XR_DOCS_TAG_BEGIN_AttachActionSet
@@ -581,7 +622,7 @@ void CreateResources() {
     pipelineCI.inputAssemblyState = {GraphicsAPI::PrimitiveTopology::TRIANGLE_LIST, false};
     pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
     pipelineCI.multisampleState = {1, false, 1.0f, 0xFF, false, false};
-        pipelineCI.depthStencilState = {false, false, GraphicsAPI::CompareOp::GREATER, false, false, {}, {}, 0.0f, 1.0f};
+        pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
     pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
     m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
 }
@@ -608,24 +649,25 @@ void PollEvents() {
         switch (eventData.type) {
         case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
             XrEventDataEventsLost *eventsLost = reinterpret_cast<XrEventDataEventsLost *>(&eventData);
-            std::cout << "WARN: OPENXR: Events Lost: " << eventsLost->lostEventCount << std::endl;
+            std::cout << "OPENXR: Events Lost: " << eventsLost->lostEventCount << std::endl;
             break;
         }
         case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING: {
             XrEventDataInstanceLossPending *instanceLossPending = reinterpret_cast<XrEventDataInstanceLossPending *>(&eventData);
-            std::cout << "WARN: OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime << std::endl;
+            std::cout << "OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime << std::endl;
             m_sessionRunning = false;
             m_applicationRunning = false;
             break;
         }
         case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
             XrEventDataInteractionProfileChanged *interactionProfileChanged = reinterpret_cast<XrEventDataInteractionProfileChanged *>(&eventData);
-            std::cout << "WARN: OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
+            std::cout << "OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
+			RecordCurrentBindings();
             break;
         }
         case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
             XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
-            std::cout << "WARN: OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
+            std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
             break;
         }
         case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
@@ -673,21 +715,43 @@ void PollActions(XrTime predictedTime) {
 
     actionStateGetInfo.action = m_selectAction;
     OPENXR_CHECK(xrGetActionStateBoolean(m_session, &actionStateGetInfo, &m_selectState), "Failed to get Boolean State.");
-    actionStateGetInfo.action = m_throwAction;
-    OPENXR_CHECK(xrGetActionStateFloat(m_session, &actionStateGetInfo, &m_triggerState), "Failed to get Float State.");
+	
+	for(int i=0;i<2;i++)
+	{
+		actionStateGetInfo.action = m_throwAction;
+		actionStateGetInfo.subactionPath=m_handPaths[i];
+		OPENXR_CHECK(xrGetActionStateFloat(m_session, &actionStateGetInfo, &m_triggerState), "Failed to get Float State.");
+
+		if(m_triggerState.isActive&&m_triggerState.currentState>0)
+		{
+			XrHapticVibration vibration{XR_TYPE_HAPTIC_VIBRATION};
+			vibration.amplitude = m_triggerState.currentState;
+			vibration.duration = XR_MIN_HAPTIC_DURATION;
+			vibration.frequency = XR_FREQUENCY_UNSPECIFIED;
+		
+			XrHapticActionInfo hapticActionInfo{XR_TYPE_HAPTIC_ACTION_INFO};
+			hapticActionInfo.action = m_buzzAction;
+			hapticActionInfo.subactionPath = m_handPaths[i];
+			OPENXR_CHECK(xrApplyHapticFeedback(m_session, &hapticActionInfo, (XrHapticBaseHeader*)&vibration), "Failed to apply haptic feedback.");
+		}
+	}
     // XR_DOCS_TAG_END_PollActions2
     // XR_DOCS_TAG_BEGIN_PollActions3
     actionStateGetInfo.action = m_controllerGripPoseAction;
-    OPENXR_CHECK(xrGetActionStatePose(m_session, &actionStateGetInfo, &m_leftGripPoseState), "Failed to get Pose State.");
-    if (m_leftGripPoseState.isActive) {
-        XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-        XrResult res = xrLocateSpace(m_leftGripPoseSpace, m_localOrStageSpace, predictedTime, &spaceLocation);
-        if (XR_UNQUALIFIED_SUCCESS(res) &&
-            (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
-            (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0) {
-            m_leftGripPose = spaceLocation.pose;
-        }
-    }
+	for(int i=0;i<2;i++)
+	{
+		actionStateGetInfo.subactionPath=m_handPaths[i];
+		OPENXR_CHECK(xrGetActionStatePose(m_session, &actionStateGetInfo, &m_controllerGripPoseState[i]), "Failed to get Pose State.");
+		if (m_controllerGripPoseState[i].isActive) {
+			XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
+			XrResult res = xrLocateSpace(m_controllerGripPoseSpace[i], m_localOrStageSpace, predictedTime, &spaceLocation);
+			if (XR_UNQUALIFIED_SUCCESS(res) &&
+				(spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
+				(spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0) {
+				m_controllerGripPose[i] = spaceLocation.pose;
+			}
+		}
+	}
 }
 // XR_DOCS_TAG_END_PollActions3
 
@@ -938,15 +1002,41 @@ bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjectio
         // Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
         RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f});
 
-        if (m_leftGripPoseState.isActive) {
-            XrVector3f grip_scale{0.02f, 0.04f, 0.10f};
-            RenderCuboid(m_leftGripPose, grip_scale);
-        }
+		for(int i=0;i<2;i++)
+		{
+			if (m_controllerGripPoseState[i].isActive) {
+				XrVector3f grip_scale{0.02f, 0.04f, 0.10f};
+				RenderCuboid(m_controllerGripPose[i], grip_scale);
+			}
+		}
+		float scale=1.0f;
+		if(m_selectState.isActive&&m_selectState.currentState)
+		{
+			scale=1.5f;
+		}
+        float angleRad=float(predictedDisplayTime)*0.002f;
+		for(int i=0;i<4;i++)
+		{
+			float x=scale*(float(i)-1.5f);
+			for(int j=0;j<4;j++)
+			{
+				float y=scale*(float(j)-1.5f);
+				for(int k=0;k<4;k++)
+				{
+					float z=scale*(float(k)-1.5f);
+					XrQuaternionf q;
+					XrVector3f axis={0,0.707f,0.707f};
+					XrQuaternionf_CreateFromAxisAngle(&q,&axis,angleRad);
+					RenderCuboid({q, {x,y,z}}, {0.1f, 0.2f, 0.1f});
+	
+				}
+			}
+		}
         // XR_DOCS_TAG_END_CallRenderCuboid
         m_graphicsAPI->EndRendering();
 
         XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
-        OPENXR_CHECK(xrReleaseSwapchainImage(m_swapchainAndDepthImages[i].swapchain, &releaseInfo), "Failed to release Image back to the Swapchian");
+        OPENXR_CHECK(xrReleaseSwapchainImage(m_swapchainAndDepthImages[i].swapchain, &releaseInfo), "Failed to release Image back to the Swapchain");
     };
     layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
     layerProjection.space = m_localOrStageSpace;
@@ -1091,14 +1181,15 @@ XrActionStateFloat m_triggerState = {XR_TYPE_ACTION_STATE_FLOAT};
 XrAction m_buzzAction;
 // The action for getting the left grip pose.
 XrAction m_controllerGripPoseAction;
+// The XrPaths for left and right hand controllers.
+XrPath m_handPaths[2]={{0},{0}};
 // The space that represents the left grip pose.
-XrSpace m_leftGripPoseSpace;
-XrActionStatePose m_leftGripPoseState = {XR_TYPE_ACTION_STATE_POSE};
+XrSpace m_controllerGripPoseSpace[2];
+XrActionStatePose m_controllerGripPoseState[2] = {{XR_TYPE_ACTION_STATE_POSE},{XR_TYPE_ACTION_STATE_POSE}};
 // The current left grip pose obtained from the XrSpace.
-XrPosef m_leftGripPose;
+XrPosef m_controllerGripPose[2];
 // XR_DOCS_TAG_END_Actions
-}
-;
+};
 
 void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
     DebugOutput debugOutput;
@@ -1111,7 +1202,8 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
-    OpenXRTutorial_Main(OPENGL);
+    HMODULE RenderDoc = LoadLibraryA("C:/Program Files/RenderDoc/renderdoc.dll");
+    OpenXRTutorial_Main(D3D11);
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
