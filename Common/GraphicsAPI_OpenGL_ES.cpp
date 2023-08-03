@@ -538,8 +538,8 @@ void *GraphicsAPI_OpenGL_ES::CreateSampler(const SamplerCreateInfo &samplerCI) {
     glSamplerParameterf(sampler, GL_TEXTURE_MIN_LOD, samplerCI.minLod);
     glSamplerParameterf(sampler, GL_TEXTURE_MAX_LOD, samplerCI.maxLod);
 
-    // BorderColour
-    // glSamplerParameterfv(sampler, GL_TEXTURE_BORDER_COLOR, samplerCI.borderColour); // None for ES
+    // BorderColor
+    // glSamplerParameterfv(sampler, GL_TEXTURE_BORDER_COLOR, samplerCI.borderColor); // None for ES
 
     return (void *)(uint64_t)sampler;
 }

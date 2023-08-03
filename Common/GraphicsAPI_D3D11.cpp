@@ -531,10 +531,15 @@ void *GraphicsAPI_D3D11::CreateSampler(const SamplerCreateInfo &samplerCI) {
     samplerDesc.AddressU = ToD3D11TextureAddressMode(samplerCI.addressModeR);
     samplerDesc.AddressV = ToD3D11TextureAddressMode(samplerCI.addressModeS);
     samplerDesc.AddressW = ToD3D11TextureAddressMode(samplerCI.addressModeT);
+    samplerDesc.MipLODBias = samplerCI.mipLodBias;
+    samplerDesc.MaxAnisotropy = 0;
     samplerDesc.ComparisonFunc = ToD3D11Comparison(samplerCI.compareOp);
-    samplerDesc.MaxAnisotropy = 16;
-    samplerDesc.MinLOD = 0;
-    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    samplerDesc.BorderColor[0] = samplerCI.borderColor[0];
+    samplerDesc.BorderColor[1] = samplerCI.borderColor[0];
+    samplerDesc.BorderColor[2] = samplerCI.borderColor[0];
+    samplerDesc.BorderColor[3] = samplerCI.borderColor[0];
+    samplerDesc.MinLOD = samplerCI.minLod;
+    samplerDesc.MaxLOD = samplerCI.maxLod;
 
     ID3D11SamplerState *d3D11SamplerState = nullptr;
     D3D11_CHECK(device->CreateSamplerState(&samplerDesc, &d3D11SamplerState), "Failed to create Sampler");

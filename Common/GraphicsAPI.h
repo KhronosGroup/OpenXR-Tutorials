@@ -390,7 +390,7 @@ public:
         CompareOp compareOp;
         float minLod;
         float maxLod;
-        float borderColour[4];
+        float borderColor[4];
     };
 
     struct Viewport {
