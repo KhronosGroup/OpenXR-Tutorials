@@ -174,7 +174,7 @@ In this tutorial, we will use CMake ``FetchContent_Declare()`` command in the ``
 	:start-at: # For FetchContent_Declare() and FetchContent_MakeAvailable()
 	:end-before: # Files
 
-If you prefer to git clone or download the SDK yourself from Khronos’s OpenXR-SDK-Source GitHub page `here <https://github.com/KhronosGroupOpenXR-SDK>`_. You can either use your preferred command-line or GUI Git tool, or download it as a .zip file.
+If you prefer to git clone or download the SDK yourself from Khronos’s OpenXR-SDK-Source GitHub page `here <https://github.com/KhronosGroup/OpenXR-SDK>`_. You can either use your preferred command-line or GUI Git tool, or download it as a .zip file.
 
 With the OpenXR loader and your graphics API selected, you're ready to start creating your first OpenXR project.
 
@@ -221,8 +221,8 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	You can use ``XR_RUNTIME_JSON`` to specify an optional runtime. The one provided by your hardware vendor will be automatically used, though this feature is helpful for debugging on different runtimes.
 	Finally, we specify CMake to continue the build into the Chapter2 directory with ``add_subdirectory()``.
 
-	Let's create that ``/Chapter2`` folder, and in it create another ``CMakeLists.txt`` file.
-	This one contains the following code:
+	In the workspace folder, create a folder called ``Chapter2``, and in it create another ``CMakeLists.txt`` file.
+	In it, put the following code:
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake

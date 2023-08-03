@@ -274,34 +274,46 @@ void RenderCuboid(XrPosef pose, XrVector3f scale) {
 
     graphicsAPI->DrawIndexed(36);
 }
-
-void DrawTestObject() {
-    // Compute the view-projection transform.
-    // All matrices (including OpenXR's) are column-major, right-handed.
-    XrMatrix4x4f proj;
-    XrFovf fov = {-.5f, .5f, .5f, -.5f};
-    XrMatrix4x4f_CreateProjectionFov(&proj, OPENGL_ES, fov, 0.05f, 100.0f);
-    XrMatrix4x4f toView;
-    XrVector3f scale1m{1.0f, 1.0f, 1.0f};
-    XrVector3f view_position = {0, 0, 0};
-    XrQuaternionf view_orientation = {0, 0, 0, 1.0f};
-    XrMatrix4x4f_CreateTranslationRotationScale(&toView, &view_position, &view_orientation, &scale1m);
-    XrMatrix4x4f view;
-    XrMatrix4x4f_InvertRigidBody(&view, &toView);
-    XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
-
-    // Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
-    RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -1.5f, 0.0f}}, {2.0f, 0.1f, 2.0f});
-    for (int i = 0; i < 10; i++) {
-        float x = float(i) - 5.f;
-        for (int j = 0; j < 10; j++) {
-            float y = float(j) - 5.f;
-            for (int k = 0; k < 10; k++) {
-                float z = float(k) - 5.f;
-                RenderCuboid({{0.382862836f, -0.168145418f, 0.0987696573f, 0.902988195f}, {x, y, z}}, {0.1f, 0.1f, 0.1f});
-            }
-        }
-    }
+void DrawTestObject()
+{
+	
+	// Compute the view-projection transform.
+	// All matrices (including OpenXR's) are column-major, right-handed.
+	XrMatrix4x4f proj;
+	XrFovf fov={-.5f,.5f,.5f,-.5f};
+	XrMatrix4x4f_CreateProjectionFov(&proj, OPENGL_ES, fov, 0.05f, 100.0f);
+	XrMatrix4x4f toView;
+	XrVector3f scale1m{1.0f, 1.0f, 1.0f};
+	XrVector3f view_position={0,0,0};
+	XrQuaternionf view_orientation={0,0,0,1.0f};
+	XrMatrix4x4f_CreateTranslationRotationScale(&toView, &view_position, &view_orientation, &scale1m);
+	XrMatrix4x4f view;
+	XrMatrix4x4f_InvertRigidBody(&view, &toView);
+	XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
+	
+	// Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
+	RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -1.5f, 0.0f}}, {2.0f, 0.1f, 2.0f});
+	float scale=1.0f;
+	static float time=0.f;
+	time+=0.1f;
+    float angleRad=float(time)*0.002f;
+	for(int i=0;i<4;i++)
+	{
+		float x=scale*(float(i)-1.5f);
+		for(int j=0;j<4;j++)
+		{
+			float y=scale*(float(j)-1.5f);
+			for(int k=0;k<4;k++)
+			{
+				float z=scale*(float(k)-1.5f);
+				XrQuaternionf q;
+				XrVector3f axis={0,0.707f,0.707f};
+				XrQuaternionf_CreateFromAxisAngle(&q,&axis,angleRad);
+				RenderCuboid({q, {x,y,z}}, {0.1f, 0.2f, 0.1f});
+	
+			}
+		}
+	}
 }
 
 int main() {

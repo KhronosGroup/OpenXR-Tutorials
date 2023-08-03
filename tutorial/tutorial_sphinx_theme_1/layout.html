@@ -222,11 +222,17 @@
 			return true;
 		}
 		return false;
-		}
+	}
 	function makeLinksOpenInNewWindow()
 	{ 
+		console.log("makeLinksOpenInNewWindow ");
 		var download_hrefs = document.getElementsByClassName('reference download internal');
 		[].forEach.call(download_hrefs, function(el) {
+			el.setAttribute('target', "_blank");
+			console.log("Adding target blank to "+el.id);
+		});
+		link_hrefs = document.getElementsByClassName('reference external');
+		[].forEach.call(link_hrefs, function(el) {
 			el.setAttribute('target', "_blank");
 			console.log("Adding target blank to "+el.id);
 		});
