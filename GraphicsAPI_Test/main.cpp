@@ -99,136 +99,39 @@ void CreateResources() {
     uniformBuffer_Vert = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
 
-    if (apiType == OPENGL || apiType == VULKAN) {
-        std::string vertexSource = R"(
-            #version 450
-            //Color Vertex Shader
-            layout(std140, binding = 1) uniform CameraConstants
-            {
-                mat4 viewProj;
-                mat4 modelViewProj;
-                mat4 model;
-            };
-            layout(location = 0) in highp vec4 a_Positions;
-                layout(location = 0) out flat uvec2 o_TexCoord;
-            void main()
-            {
-                gl_Position = modelViewProj * a_Positions;
-                int face = gl_VertexID / 6;
-                    o_TexCoord = uvec2(face, 0);
-            })";
-        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
-
-        std::string fragmentSource = R"(
-            #version 450
-            //Texture Fragment Shader
-            layout(location = 0) in highp vec2 i_TexCoord;
-            layout(location = 0) out highp vec4 o_Color;
-            layout(std140, binding = 0) uniform Data
-            {
-                highp vec4 colors[6];
-            } d_Data;
-            void main()
-            {
-                int i = int(i_TexCoord.x);
-                o_Color = d_Data.colors[i];
-            })";
-        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
-    }
     if (apiType == OPENGL_ES) {
-        std::string vertexSource = R"(
-            #version 310 es
-            //Color Vertex Shader
-            layout(std140, binding = 1) uniform CameraConstants
-            {
-                mat4 viewProj;
-                mat4 modelViewProj;
-                mat4 model;
-            };
-            layout(location = 0) in highp vec4 a_Positions;
-                layout(location = 0) out flat uvec2 o_TexCoord;
-            void main()
-            {
-                gl_Position = modelViewProj * a_Positions;
-                int face = gl_VertexID / 6;
-                    o_TexCoord = uvec2(face, 0);
-            })";
+        std::string vertexSource = ReadTextFile("VertexShader_GLES.glsl");
         vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-        std::string fragmentSource = R"(
-            #version 310 es
-            //Color Fragment Shader
-                layout(location = 0) in flat uvec2 i_TexCoord;
-            layout(location = 0) out highp vec4 o_Color;
-            layout(std140, binding = 0) uniform Data
-            {
-                highp vec4 colors[6];
-            } d_Data;
-            
-            void main()
-            {
-                    uint i = i_TexCoord.x;
-                o_Color = d_Data.colors[i];
-            })";
+        std::string fragmentSource = ReadTextFile("PixelShader_GLES.glsl");
         fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
     }
-    if (apiType == D3D11 || apiType == D3D12) {
-        std::string vertexSource = R"(
-            //Color Vertex Shader
-
-            cbuffer CameraConstants: register(b1)
-            {
-                float4x4 viewProj;
-                float4x4 modelViewProj;
-                float4x4 model;
-            };
-            struct VS_IN
-            {
-                    uint vertexId : SV_VertexId;
-                float4 a_Positions : TEXCOORD0;
-            };
-            
-            struct VS_OUT
-            {
-                float4 o_Position    : SV_Position;
-                uint2 o_TexCoord     : TEXCOORD0;
-            };
-            
-            VS_OUT main(VS_IN IN)
-            {
-                VS_OUT OUT;
-                OUT.o_Position = mul(modelViewProj,IN.a_Positions);
-                    int face = IN.vertexId / 6;
-                    OUT.o_TexCoord = uint2(face, 0);
-                return OUT;
-            })";
+    if (apiType == OPENGL) {
+        std::string vertexSource = ReadTextFile("VertexShader.glsl");
         vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-        std::string fragmentSource = R"(
-            //Color Fragment Shader
-            
-            struct PS_IN
-            {
-                float4 i_Position    : SV_Position;
-                uint2 i_TexCoord     : TEXCOORD0;
-            };
-            struct PS_OUT
-            {
-                float4 o_Color : SV_Target0;
-            };
-            
-            cbuffer Data : register(b0)
-            {
-                float4 colors[6];
-            };
-            
-            PS_OUT main(PS_IN IN)
-            {
-                PS_OUT OUT;
-                    int i = int(IN.i_TexCoord.x);
-                OUT.o_Color = colors[i];
-                return OUT;
-            })";
+        std::string fragmentSource = ReadTextFile("PixelShader.glsl");
+        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    }
+    if (apiType == VULKAN) {
+        std::vector<char> vertexSource = ReadBinaryFile("VertexShader.spv");
+        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+        std::vector<char> fragmentSource = ReadBinaryFile("PixelShader.spv");
+        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    }
+    if (apiType == D3D11) {
+        std::vector<char> vertexSource = ReadBinaryFile("VertexShader_5_0.cso");
+        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+        std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_5_0.cso");
+        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    }
+    if (apiType == D3D12) {
+        std::vector<char> vertexSource = ReadBinaryFile("VertexShader_5_1.cso");
+        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+        std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_5_1.cso");
         fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
     }
 
@@ -274,6 +177,7 @@ void RenderCuboid(XrPosef pose, XrVector3f scale) {
 
     graphicsAPI->DrawIndexed(36);
 }
+
 void DrawTestObject()
 {
 	
@@ -392,7 +296,7 @@ int main() {
     imageViewCI.layerCount = 1;
     void *depthImageView = graphicsAPI->CreateImageView(imageViewCI);
 
-    /*CreateResources();
+    //CreateResources();
 
     struct CameraConstants {
         XrMatrix4x4f viewProj;
@@ -453,63 +357,36 @@ int main() {
     void* uniformBuffer_Vert = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
 
-    std::string vertexSource = R"(
-        //Color Vertex Shader
+    void *vertexShader = nullptr;
+    void *fragmentShader =  nullptr;
+    if (apiType == OPENGL) {
+        std::string vertexSource = ReadTextFile("VertexShader.glsl");
+        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-        cbuffer CameraConstants : register(b1)
-        {
-            float4x4 viewProj;
-            float4x4 modelViewProj;
-            float4x4 model;
-        };
-        struct VS_IN
-        {
-            uint vertexId : SV_VertexId;
-            float4 a_Positions : TEXCOORD0;
-        };
+        std::string fragmentSource = ReadTextFile("PixelShader.glsl");
+        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    }
+    if (apiType == VULKAN) {
+        std::vector<char> vertexSource = ReadBinaryFile("VertexShader.spv");
+        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-        struct VS_OUT
-        {
-            float4 o_Position : SV_Position;
-            float2 o_TexCoord : TEXCOORD0;
-        };
+        std::vector<char> fragmentSource = ReadBinaryFile("PixelShader.spv");
+        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    }
+    if (apiType == D3D11) {
+        std::vector<char> vertexSource = ReadBinaryFile("VertexShader_5_0.cso");
+        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-        VS_OUT main(VS_IN IN)
-        {
-            VS_OUT OUT;
-            OUT.o_Position = mul(modelViewProj,IN.a_Positions);
-            int face = IN.vertexId / 6;
-            OUT.o_TexCoord = float2(float(face), 0);
-            return OUT;
-        })";
-    void* vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+        std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_5_0.cso");
+        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    }
+    if (apiType == D3D12) {
+        std::vector<char> vertexSource = ReadBinaryFile("VertexShader_5_1.cso");
+        vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-    std::string fragmentSource = R"(
-        //Color Fragment Shader
-
-        struct PS_IN
-        {
-            float4 i_Position : SV_Position;
-            float2 i_TexCoord : TEXCOORD0;
-        };
-        struct PS_OUT
-        {
-            float4 o_Color : SV_Target0;
-        };
-
-        cbuffer Data : register(b0)
-        {
-            float4 colors[6];
-        };
-
-        PS_OUT main(PS_IN IN)
-        {
-            PS_OUT OUT;
-            int i = int(IN.i_TexCoord.x);
-            OUT.o_Color = colors[i];
-            return OUT;
-        })";
-    void* fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_5_1.cso");
+        fragmentShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    }
 
     GraphicsAPI::PipelineCreateInfo pipelineCI;
     pipelineCI.shaders = {vertexShader, fragmentShader};
@@ -523,7 +400,7 @@ int main() {
     pipelineCI.colorFormats = {swapchainFormat};
     pipelineCI.depthFormat = graphicsAPI->GetDepthFormat();
     pipelineCI.layout = {{1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false}, {0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false}};
-    void* pipeline = graphicsAPI->CreatePipeline(pipelineCI);*/
+    void* pipeline = graphicsAPI->CreatePipeline(pipelineCI);
 
     // Main Render Loop
     while (!g_WindowQuit) {

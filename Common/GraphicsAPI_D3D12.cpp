@@ -665,56 +665,22 @@ void GraphicsAPI_D3D12::DestroyBuffer(void *&buffer) {
 }
 
 void *GraphicsAPI_D3D12::CreateShader(const ShaderCreateInfo &shaderCI) {
-    std::string shaderModel = "";
-    switch (shaderCI.type) {
-    case ShaderCreateInfo::Type::VERTEX: {
-        shaderModel = "vs_";
-        break;
-    }
-    case ShaderCreateInfo::Type::TESSELLATION_CONTROL: {
-        shaderModel = "hs_";
-        break;
-    }
-    case ShaderCreateInfo::Type::TESSELLATION_EVALUATION: {
-        shaderModel = "ds_";
-        break;
-    }
-    case ShaderCreateInfo::Type::GEOMETRY: {
-        shaderModel = "gs_";
-        break;
-    }
-    case ShaderCreateInfo::Type::FRAGMENT: {
-        shaderModel = "ps_";
-        break;
-    }
-    case ShaderCreateInfo::Type::COMPUTE: {
-        shaderModel = "cs_";
-        break;
-    }
-    default:
-        std::cout << "ERROR: D3D12: Unknown Shader Type." << std::endl;
-        return nullptr;
-    }
-    shaderModel += "5_1";
-
-    ID3DBlob *compiledBinary = nullptr;
-    ID3DBlob *errorMsgs = nullptr;
-    UINT flags = D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_WARNINGS_ARE_ERRORS;
-
-    HRESULT res = D3DCompile((LPCVOID)shaderCI.sourceData, shaderCI.sourceSize, nullptr, nullptr, nullptr, "main", shaderModel.c_str(), flags, 0, &compiledBinary, &errorMsgs);
-    if (FAILED(res)) {
-        std::string errorMsg((const char *)errorMsgs->GetBufferPointer(), errorMsgs->GetBufferSize());
-        std::cout << errorMsg << std::endl;
-        DEBUG_BREAK;
-    }
-    shaders[compiledBinary] = shaderCI;
-    return compiledBinary;
+    D3D12_SHADER_BYTECODE* byteCode = new D3D12_SHADER_BYTECODE();
+    
+    shaders[byteCode].first.resize(shaderCI.sourceSize);
+    memcpy(shaders[byteCode].first.data(), shaderCI.sourceData, shaderCI.sourceSize);
+    shaders[byteCode].second = shaderCI;
+    
+    byteCode->pShaderBytecode = shaders[byteCode].first.data();
+    byteCode->BytecodeLength = shaders[byteCode].first.size();
+    
+    return byteCode;
 }
 
 void GraphicsAPI_D3D12::DestroyShader(void *&shader) {
-    ID3DBlob *compiledBinary = reinterpret_cast<ID3DBlob *>(shader);
-    shaders.erase(compiledBinary);
-    D3D12_SAFE_RELEASE(compiledBinary);
+    D3D12_SHADER_BYTECODE *byteCode = reinterpret_cast<D3D12_SHADER_BYTECODE *>(shader);
+    shaders.erase(byteCode);
+    delete byteCode;
     shader = nullptr;
 }
 
@@ -723,27 +689,24 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
 
     // ShaderStages
     for (void *shader : pipelineCI.shaders) {
-        ID3DBlob *compiledBinary = reinterpret_cast<ID3DBlob *>(shader);
-        D3D12_SHADER_BYTECODE byteCode;
-        byteCode.pShaderBytecode = compiledBinary->GetBufferPointer();
-        byteCode.BytecodeLength = compiledBinary->GetBufferSize();
+        D3D12_SHADER_BYTECODE *byteCode = reinterpret_cast<D3D12_SHADER_BYTECODE *>(shader);
 
-        const ShaderCreateInfo& shaderCreateInfo = shaders[compiledBinary];
+        const ShaderCreateInfo &shaderCreateInfo = shaders[byteCode].second;
         switch (shaderCreateInfo.type) {
         case ShaderCreateInfo::Type::VERTEX:
-            GPSD.VS = byteCode;
+            GPSD.VS = *byteCode;
             continue;
         case ShaderCreateInfo::Type::FRAGMENT:
-            GPSD.PS = byteCode;
+            GPSD.PS = *byteCode;
             continue;
         case ShaderCreateInfo::Type::TESSELLATION_EVALUATION:
-            GPSD.DS = byteCode;
+            GPSD.DS = *byteCode;
             continue;
         case ShaderCreateInfo::Type::TESSELLATION_CONTROL:
-            GPSD.HS = byteCode;
+            GPSD.HS = *byteCode;
             continue;
         case ShaderCreateInfo::Type::GEOMETRY:
-            GPSD.GS = byteCode;
+            GPSD.GS = *byteCode;
             continue;
         default:
             continue;

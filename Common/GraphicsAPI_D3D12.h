@@ -90,7 +90,7 @@ private:
 
     std::unordered_map<ID3D12Resource*, std::pair<ID3D12Heap*, BufferCreateInfo>> bufferResources;
 
-    std::unordered_map<ID3DBlob*, ShaderCreateInfo> shaders;
+    std::unordered_map<D3D12_SHADER_BYTECODE*, std::pair<std::vector<char>, ShaderCreateInfo>> shaders;
 
     std::vector<DescriptorInfo> descriptorInfos = {};
     ID3D12DescriptorHeap* CBV_SRV_UAV_DescriptorHeap = nullptr;

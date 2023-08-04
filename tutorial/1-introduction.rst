@@ -317,7 +317,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	Now, we set up the project file by adding an executable with the ``${SOURCES}`` and ``${HEADERS}``. Next, we optionally set a the ``XR_RUNTIME_JSON`` in the debugger environment. We add the ``../Common`` folder as an include directory and link ``openxr_loader`` from ``FetchContent``. We don't have to add OpenXR as a include directory; as we specified them to be located in the CMake Build directory under ``openxr/`` when using ``FetchContent``, so we just include the OpenXR headers from the CMake Build directory.
 	
 	Next, is the include directories and linkage for the graphics APIs.
-	For Microsoft Windows, we link ``d3d11.lib``, ``d3d12.lib``, ``dxgi.lib`` and ``d3dcompiler.lib``, so that we can use Direct3D 11, Direct3D 12, the DirectX Graphics Infrastructure and the D3D Compiler. The headers are automatically included as part of the Visual Studio project.
+	For Microsoft Windows, we link ``d3d11.lib``, ``d3d12.lib`` and ``dxgi.lib``, so that we can use Direct3D 11, Direct3D 12 and the DirectX Graphics Infrastructure. The headers are automatically included as part of the Visual Studio project.
 	If you have the Vulkan SDK installed, we try to find that package, add the include directories and link the Vulkan libraries.
 	As a default, we add gfxwrapper for OpenGL, we add the include directories and link the gfxwrapper libraries from the OpenXR-SDK.
 

@@ -22,7 +22,7 @@ public:
     virtual void* GetSwapchainImage(uint32_t index) override {
         VkImage image = swapchainImages[index].image;
         imageStates[image] = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        return image;
+        return (void *)image;
     }
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
@@ -94,7 +94,7 @@ private:
 
     std::vector<XrSwapchainImageVulkanKHR> swapchainImages{};
 
-    VkImage currentDesktopSwapchainImage = nullptr;
+    VkImage currentDesktopSwapchainImage = VK_NULL_HANDLE;
 
     std::unordered_map<VkSwapchainKHR, VkSurfaceKHR> surfaces;
     VkSemaphore acquireSemaphore{};
@@ -105,5 +105,8 @@ private:
     std::unordered_map<VkImageView, ImageViewCreateInfo> imageViewResources;
     
     std::unordered_map<VkBuffer, std::pair<VkDeviceMemory, BufferCreateInfo>> bufferResources;
+
+    std::unordered_map<VkShaderModule, ShaderCreateInfo> shaderResources;
+    std::unordered_map<VkPipeline, std::tuple<VkPipelineLayout, VkDescriptorSetLayout, VkRenderPass>> pipelineResources;
 };
 #endif

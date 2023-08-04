@@ -77,7 +77,7 @@ private:
 
     std::unordered_map<ID3D11Buffer*, BufferCreateInfo> buffers;
 
-    std::unordered_map<ID3D11DeviceChild*, ID3DBlob*> shaderCompiledBinaries;
+    std::unordered_map<ID3D11DeviceChild*, std::vector<char>> shaderCompiledBinaries;
     std::unordered_map<UINT64, PipelineCreateInfo> pipelines;
     UINT64 setPipeline = 0;
 };

@@ -15,6 +15,27 @@
 #include "xr_linear_algebra.h"
 // XR_DOCS_TAG_END_include_linear_algebra
 
+#if defined(__ANDROID__)
+#include "android/asset_manager.h"
+std::string ReadTextFile(const std::string &filepath, AAssetManager* assetManager) {
+    AAsset* file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
+    size_t fileLength = AAsset_getLength(file);
+    std::string text;
+    text.resize(fileLength);
+    AAsset_read(file, (void *)text.data(), fileLength);
+    AAsset_close(file);
+    return text;
+}
+std::vector<char> ReadBinaryFile(const std::string &filepath, AAssetManager *assetManager) {
+    AAsset *file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
+    size_t fileLength = AAsset_getLength(file);
+    std::vector<char> binary(fileLength);
+    AAsset_read(file, (void *)binary.data(), fileLength);
+    AAsset_close(file);
+    return binary;
+}
+#endif
+
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_5
 
 class OpenXRTutorial {
@@ -477,144 +498,64 @@ void CreateResources() {
 
     // XR_DOCS_TAG_END_CreateResources1
     // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
-    if (m_apiType == OPENGL || m_apiType == VULKAN) {
-        std::string vertexSource = R"(
-                #version 450
-                //Color Vertex Shader
-                layout(std140, binding = 1) uniform CameraConstants
-                {
-                    mat4 viewProj;
-                    mat4 modelViewProj;
-                    mat4 model;
-                };
-                layout(location = 0) in highp vec4 a_Positions;
-                layout(location = 0) out flat uvec2 o_TexCoord;
-                void main()
-                {
-                    gl_Position = modelViewProj * a_Positions;
-                    int face = gl_VertexID / 6;
-                    o_TexCoord = uvec2(face, 0);
-                })";
+    if (m_apiType == OPENGL) {
+        std::string vertexSource = ReadTextFile("VertexShader.glsl");
         m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-        std::string fragmentSource = R"(
-                #version 450
-                //Texture Fragment Shader
-                layout(location = 0) in flat uvec2 i_TexCoord;
-                layout(location = 0) out highp vec4 o_Color;
-                layout(std140, binding = 0) uniform Data
-                {
-                    highp vec4 colors[6];
-                } d_Data;
-                void main()
-                {
-                    uint i = i_TexCoord.x;
-                    o_Color = d_Data.colors[i];
-                })";
+        std::string fragmentSource = ReadTextFile("PixelShader.glsl");
+        m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    }
+    if (m_apiType == VULKAN) {
+#if defined(__ANDROID__)
+        std::vector<char> vertexSource = ReadBinaryFile("shaders/VertexShader.spv", androidApp->activity->assetManager);
+#else
+        std::vector<char> vertexSource = ReadBinaryFile("VertexShader.spv");
+#endif
+        m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+#if defined(__ANDROID__)
+        std::vector<char> fragmentSource = ReadBinaryFile("shaders/PixelShader.spv", androidApp->activity->assetManager);
+#else
+        std::vector<char> fragmentSource = ReadBinaryFile("PixelShader.spv");
+#endif
         m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
     }
     // XR_DOCS_TAG_END_CreateResources2_OpenGL_Vulkan
     // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
     if (m_apiType == OPENGL_ES) {
-        std::string vertexSource = R"(
-                #version 310 es
-                //Color Vertex Shader
-                layout(std140, binding = 1) uniform CameraConstants
-                {
-                    mat4 viewProj;
-                    mat4 modelViewProj;
-                    mat4 model;
-                };
-                layout(location = 0) in highp vec4 a_Positions;
-                layout(location = 0) out flat uvec2 o_TexCoord;
-                void main()
-                {
-                    gl_Position = modelViewProj * a_Positions;
-                    int face = gl_VertexID / 6;
-                    o_TexCoord = uvec2(face, 0);
-                })";
+#if defined(__ANDROID__)
+        std::string vertexSource = ReadTextFile("shaders/VertexShader_GLES.glsl", androidApp->activity->assetManager);
+#else
+        std::string vertexSource = ReadTextFile("VertexShader_GLES.glsl");
+#endif
         m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-        std::string fragmentSource = R"(
-                #version 310 es
-                //Color Fragment Shader
-                layout(location = 0) in flat uvec2 i_TexCoord;
-                layout(location = 0) out highp vec4 o_Color;
-                layout(std140, binding = 0) uniform Data
-                {
-                    highp vec4 colors[6];
-                } d_Data;
-                
-                void main()
-                {
-                    uint i = i_TexCoord.x;
-                    o_Color = d_Data.colors[i];
-                })";
+#if defined(__ANDROID__)
+        std::string fragmentSource = ReadTextFile("shaders/PixelShader_GLES.glsl", androidApp->activity->assetManager);
+#else
+        std::string fragmentSource = ReadTextFile("PixelShader_GLES.glsl");
+#endif
         m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
     }
     // XR_DOCS_TAG_END_CreateResources2_OpenGLES
     // XR_DOCS_TAG_BEGIN_CreateResources2_D3D
-    if (m_apiType == D3D11 || m_apiType == D3D12) {
-        std::string vertexSource = R"(
-                //Color Vertex Shader
-
-                cbuffer CameraConstants : register(b1)
-                {
-                    float4x4 viewProj;
-                    float4x4 modelViewProj;
-                    float4x4 model;
-                };
-                struct VS_IN
-                {
-                    uint vertexId : SV_VertexId;
-                    float4 a_Positions : TEXCOORD0;
-                };
-                
-                struct VS_OUT
-                {
-                    float4 o_Position	: SV_Position;
-					uint2 o_TexCoord		: TEXCOORD0;
-                };
-                
-                VS_OUT main(VS_IN IN)
-                {
-                    VS_OUT OUT;
-                    OUT.o_Position = mul(modelViewProj,IN.a_Positions);
-                    int face = IN.vertexId / 6;
-                    OUT.o_TexCoord = uint2(face, 0);
-                    return OUT;
-                })";
+    if (m_apiType == D3D11) {
+        std::vector<char> vertexSource = ReadBinaryFile("VertexShader_5_0.cso");
         m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-        std::string fragmentSource = R"(
-                //Color Fragment Shader
-                
-                struct PS_IN
-                {
-                    float4 i_Position	: SV_Position;
-					uint2 i_TexCoord		: TEXCOORD0;
-                };
-                struct PS_OUT
-                {
-                    float4 o_Color : SV_Target0;
-                };
-                
-                cbuffer Data : register(b0)
-                {
-                    float4 colors[6];
-                };
-                
-                PS_OUT main(PS_IN IN)
-                {
-                    PS_OUT OUT;
-                    int i = int(IN.i_TexCoord.x);
-                    OUT.o_Color = colors[i];
-                    return OUT;
-                })";
+        std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_5_0.cso");
+        m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+    }
+    if (m_apiType == D3D12) {
+        std::vector<char> vertexSource = ReadBinaryFile("VertexShader_5_1.cso");
+        m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+        std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_5_1.cso");
         m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
     }
     // XR_DOCS_TAG_END_CreateResources2_D3D
     // XR_DOCS_TAG_BEGIN_CreateResources3
+
     GraphicsAPI::PipelineCreateInfo pipelineCI;
     pipelineCI.shaders = {m_vertexShader, m_fragmentShader};
     pipelineCI.vertexInputState.attributes = {{0, 0, GraphicsAPI::VertexType::VEC4, 0, "TEXCOORD"}};
@@ -622,7 +563,7 @@ void CreateResources() {
     pipelineCI.inputAssemblyState = {GraphicsAPI::PrimitiveTopology::TRIANGLE_LIST, false};
     pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
     pipelineCI.multisampleState = {1, false, 1.0f, 0xFF, false, false};
-        pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
+    pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
     pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
     m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
 }
@@ -1233,7 +1174,7 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
-    OpenXRTutorial_Main(OPENGL_ES);
+    OpenXRTutorial_Main(VULKAN);
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__
 #endif
