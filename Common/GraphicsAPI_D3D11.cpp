@@ -668,7 +668,7 @@ void GraphicsAPI_D3D11::ClearDepth(void *imageView, float d) {
     immediateContext->ClearDepthStencilView((ID3D11DepthStencilView *)imageView, D3D11_CLEAR_DEPTH, d, 0);
 }
 
-void GraphicsAPI_D3D11::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView) {
+void GraphicsAPI_D3D11::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView, uint32_t width, uint32_t height, void *pipeline) {
     immediateContext->OMSetRenderTargets((UINT)colorViewCount, (ID3D11RenderTargetView *const *)colorViews, (ID3D11DepthStencilView *)depthStencilView);
 }
 

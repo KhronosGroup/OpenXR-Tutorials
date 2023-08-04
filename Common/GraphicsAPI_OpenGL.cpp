@@ -764,7 +764,7 @@ void GraphicsAPI_OpenGL::ClearDepth(void *imageView, float d) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GraphicsAPI_OpenGL::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView) {
+void GraphicsAPI_OpenGL::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView, uint32_t width, uint32_t height, void *pipeline) {
     // Reset Framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDeleteFramebuffers(1, &setFramebuffer);

@@ -1047,7 +1047,7 @@ void GraphicsAPI_D3D12::SetBufferData(void *buffer, size_t offset, size_t size, 
     d3d12Buffer->Unmap(0, nullptr);
 }
 
-void GraphicsAPI_D3D12::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView) {
+void GraphicsAPI_D3D12::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView, uint32_t width, uint32_t height, void *pipeline) {
     std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> d3d12RTVs;
     d3d12RTVs.reserve(colorViewCount);
     for (size_t i = 0; i < colorViewCount; i++) {

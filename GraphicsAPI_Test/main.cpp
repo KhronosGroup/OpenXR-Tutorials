@@ -8,12 +8,18 @@
 
 static HWND window;
 static bool g_WindowQuit = false;
+uint32_t width = 800;
+uint32_t height = 600;
 
 static LRESULT CALLBACK WindProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam) {
     if (msg == WM_DESTROY || msg == WM_CLOSE) {
         PostQuitMessage(0);
         g_WindowQuit = true;
         return 0;
+    }
+    if (msg == WM_SIZE) {
+        width = LOWORD(lparam);
+        height = HIWORD(lparam);
     }
     return DefWindowProc(handle, msg, wparam, lparam);
 }
@@ -233,9 +239,6 @@ int main() {
         return -1;
     }
 
-    uint32_t width = 800;
-    uint32_t height = 600;
-
     // Creates the windows
     WNDCLASS wc = {0};
     wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -414,7 +417,7 @@ int main() {
         graphicsAPI->ClearColor(swapchainImageViews[imageIndex], 0.22f, 0.17f, 0.35f, 1.00f);
         graphicsAPI->ClearDepth(depthImageView, 1.0f);
 
-        /*graphicsAPI->SetRenderAttachments(&swapchainImageViews[imageIndex], 1, depthImageView);
+        graphicsAPI->SetRenderAttachments(&swapchainImageViews[imageIndex], 1, depthImageView, width, height, pipeline);
         GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
         GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
         graphicsAPI->SetViewports(&viewport, 1);
@@ -453,7 +456,7 @@ int main() {
 
         graphicsAPI->SetVertexBuffers(&vertexBuffer, 1);
         graphicsAPI->SetIndexBuffer(indexBuffer);
-        graphicsAPI->DrawIndexed(36);*/
+        graphicsAPI->DrawIndexed(36);
 
         graphicsAPI->EndRendering();
 

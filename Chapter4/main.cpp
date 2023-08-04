@@ -923,7 +923,7 @@ bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjectio
         m_graphicsAPI->ClearDepth(m_swapchainAndDepthImages[i].depthImageView, 1.0f);
 
         // XR_DOCS_TAG_BEGIN_SetupFrameRendering
-        m_graphicsAPI->SetRenderAttachments(&m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, m_swapchainAndDepthImages[i].depthImageView);
+        m_graphicsAPI->SetRenderAttachments(&m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, m_swapchainAndDepthImages[i].depthImageView, m_pipeline);
         m_graphicsAPI->SetViewports(&viewport, 1);
         m_graphicsAPI->SetScissors(&scissor, 1);
 
