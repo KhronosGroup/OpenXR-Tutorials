@@ -1,14 +1,21 @@
-
-
-struct vertexOutput
+//Color Fragment Shader
+struct PS_IN
 {
-	float4 hPosition:SV_POSITION;
-	float3 normal:TEXCOORD2;
+    float4 i_Position : SV_Position;
+    float2 i_TexCoord : TEXCOORD0;
 };
-
-
-float4 main(vertexOutput IN):SV_TARGET
+struct PS_OUT
 {
-	float4 c=float4(IN.normal,1.0);
-	return c;
+    float4 o_Color : SV_Target0;
+};
+cbuffer Data : register(b0)
+{
+    float4 colors[6];
+};
+PS_OUT main(PS_IN IN)
+{
+    PS_OUT OUT;
+    int i = int(IN.i_TexCoord.x);
+    OUT.o_Color = colors[i];
+    return OUT;
 }
