@@ -164,7 +164,7 @@ else()
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
             get_source_file_property(shadermodel ${FILE} ShaderModel)
-            add_custom_command(TARGET GraphicsAPI_Test
+            add_custom_command(TARGET OpenXRTutorialChapter4
                                COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso /Fd ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb ${FILE}
                                MAIN_DEPENDENCY ${FILE}
                                COMMENT "HLSL ${FILE}"
@@ -177,7 +177,7 @@ else()
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
             get_source_file_property(shadermodel ${FILE} ShaderModel)
-            add_custom_command(TARGET GraphicsAPI_Test
+            add_custom_command(TARGET OpenXRTutorialChapter4
                                COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso /Fd ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb ${FILE}
                                MAIN_DEPENDENCY ${FILE}
                                COMMENT "HLSL ${FILE}"
@@ -195,7 +195,7 @@ else()
         foreach(FILE ${GLSL_SHADERS})
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
-            add_custom_command(TARGET GraphicsAPI_Test
+            add_custom_command(TARGET OpenXRTutorialChapter4
                                COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} $<IF:$<CONFIG:DEBUG>,-Od,> -g -o ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv
                                MAIN_DEPENDENCY ${FILE}
                                COMMENT "GLSL ${FILE}"
@@ -207,7 +207,7 @@ else()
     #OpenGL
     foreach(FILE ${GLSL_SHADERS})
         get_filename_component(FILE_WE ${FILE} NAME_WE)
-        add_custom_command(TARGET GraphicsAPI_Test 
+        add_custom_command(TARGET OpenXRTutorialChapter4 
                            COMMAND ${CMAKE_COMMAND} -E copy 
                            ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} 
                            ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.glsl
