@@ -10,6 +10,7 @@ bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type) {
 #if defined(XR_USE_PLATFORM_ANDROID) || defined(XR_USE_PLATFORM_XCB) || defined(XR_USE_PLATFORM_WAYLAND)
     return (type == OPENGL_ES) || (type == VULKAN);
 #endif
+	return false;
 }
 
 const char *GetGraphicsAPIInstanceExtensionString(GraphicsAPI_Type type) {

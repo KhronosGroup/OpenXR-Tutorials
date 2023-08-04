@@ -86,6 +86,8 @@ else() # Windows / Linux
         target_link_libraries(OpenXRTutorialChapter2 "d3d11.lib") 
         target_link_libraries(OpenXRTutorialChapter2 "d3d12.lib") 
         target_link_libraries(OpenXRTutorialChapter2 "dxgi.lib") 
+    else()
+        target_compile_definitions(OpenXRTutorialChapter2 PUBLIC OS_LINUX_WAYLAND=1 XR_USE_PLATFORM_WAYLAND=1 XR_USE_GRAPHICS_API_OPENGL=1 LINUX=1)#XR_USE_GRAPHICS_API_VULKAN=1 
     endif()
 
     find_package(Vulkan)

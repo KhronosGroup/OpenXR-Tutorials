@@ -6,6 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <cstring>
 #include <unordered_map>
 
 // Debugbreak

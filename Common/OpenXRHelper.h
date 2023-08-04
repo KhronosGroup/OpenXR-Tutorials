@@ -1,5 +1,20 @@
 #pragma once
 
+// XR_DOCS_TAG_BEGIN_include_Linux
+#ifdef XR_USE_PLATFORM_WAYLAND
+#include "wayland-client.h"
+#endif
+
+#ifdef XR_USE_PLATFORM_XLIB
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#endif
+
+#ifdef XR_USE_PLATFORM_XCB
+#include <xcb/xcb.h>
+#endif
+// XR_DOCS_TAG_END_include_Linux
+
 // Define any XR_USE_PLATFORM_... / XR_USE_GRAPHICS_API_... before this header file.
 
 // OpenXR Headers

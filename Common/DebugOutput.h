@@ -94,7 +94,18 @@ protected:
 };
 #else
 #endif
+#ifdef LINUX
+#include <iostream>
+class DebugOutput {
+public:
+	DebugOutput()
+	{
+		std::cout<<"Testing cout redirect."<<std::endl;
+		std::cerr<<"Testing cerr redirect."<<std::endl;
+	}
 
+};
+#endif
 #ifdef __ANDROID__
 #include <iostream>
 #include <stdarg.h>

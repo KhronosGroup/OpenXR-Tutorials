@@ -1,5 +1,7 @@
 // Simul Software Ltd 2023
 // OpenXR Tutorial for Khronos Group
+#include <memory>
+
 
 #include "DebugOutput.h"
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
