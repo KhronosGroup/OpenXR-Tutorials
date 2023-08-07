@@ -587,21 +587,102 @@ Now that OpenXR know what the user should see, we need to tell OpenXR from where
 
 First, we fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``
 
-+----------------------+---------------------------------------+
-| XrReferenceSpaceType | Description                           |
-+----------------------+---------------------------------------+XR_REFERENCE_SPACE_TYPE_VIEW 
-+----------------------+---------------------------------------+
-+----------------------+---------------------------------------+
-+----------------------+---------------------------------------+
+.. list-table:: OpenXR Reference Spaces
+	:widths: 1 3 1
+	:class: longtable
+	:header-rows: 1
+
+	* - XrReferenceSpaceType
+	  - Diagram
+	  - Description
+	* - XR_REFERENCE_SPACE_TYPE_VIEW
+	  - .. figure:: OpenXR-ReferenceSpace-View.png
+			:alt: OpenXR Reference Space View
+			:align: center
+	  - The View Reference Space uses the view origin (or the centroid of the views in the case of stereo) as the origin of the sapce. +Y is up, +X is to the right, and -Z is forward. The space is aligned in front of the viewer and it is not gravity aligned. It is most often used for rendering small head-locked content like a HUD.
+
+	* -	XR_REFERENCE_SPACE_TYPE_LOCAL
+	  - .. figure:: OpenXR-ReferenceSpace-Local.png
+			:alt: OpenXR Reference Space Local
+			:align: center
+	  - The Local Reference Space uses an initial location to establish a world-locked, gravity aligned point as the origin of the sapce. +Y is up, +X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at application start up or from a calibreated origin point. It is most often used for rendering seated-scale experiences such as car racing or aircraft cockpits, where a physical floor is not required. When recentering, the runtime will queue ``XrEventDataReferenceSpaceChangePending`` structure for the application to respond to.
+
+	* - XR_REFERENCE_SPACE_TYPE_STAGE
+	  - .. figure:: OpenXR-ReferenceSpace-Stage.png
+			:alt: OpenXR Reference Space Stage
+			:align: center
+	  - The Stage Reference Space defines a rectangular area that is flat and devoid of obstructions. The origin is define to be on the floor and at the center of the rectangular area. +Y is up, +X is to the right, and -Z is forward. The origin is also axis aligned to the XZ plane. It is most often used for rendering standing-scale experiences (no bounds) or room-scale experiences (with bounds) where a physical floor is required. When the user is redefining the origin or bounds of the area, the runtime will queue ``XrEventDataReferenceSpaceChangePending`` structure for the application to respond to.
+
+`7.1. Reference Spaces <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#reference-spaces>`_.
+
+The default coordinate system in OpenXR is right-handed with +Y up, +X to the right, and -Z forward.
+
+.. figure:: OpenXR-Coordinate-System.png
+	:alt: OpenXR Default Coordinate System
+	:align: center
+	:width: 50%
+
+You may wish to call ``xrEnumerateReferenceSpaces()`` to get all ``XrReferenceSpaceType`` s available to the system, before choosing one that is suitable for your application and the user's environment.
 
 3.2.3 RenderFrame
 =================
+
+In the ``OpenXRTutorial`` class, add the ``RenderFrame()`` and ``RenderLayer()`` methods.
+
+.. code-block:: cpp
+
+	class OpenXRTutorial {
+	public:
+		// [...]
+	
+		void Run() {
+			// [...]
+	
+			while (applicationRunning) {
+				PollSystemEvents();
+				PollEvents();
+				if (sessionRunning) {
+					RenderFrame();
+				}
+			}
+	
+			// [...]
+		}
+		// [...]
+
+	private:
+		RenderLayer();
+		// [...]
+	}
+
+Below is the code needed for rendering a frame in OpenXR. Each frame, we sequence through the three primary functions ``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()``. These functions wrap around our rendering code and communicate to the OpenXR rumtime that we are rendering and that we need to synchronize with the XR compositor's frame hook.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_RenderFrame
 	:end-before: XR_DOCS_TAG_END_RenderFrame
 	:dedent: 4
+
+The primary structure in use here is the ``XrFrameState``, which contains various helpful members such ``predictedDisplayTime``, which is the predicted time that the frame will be displayed to the user, and ``shouldRender``, which states whether the application should render any graphics. This could occurs when the application is transitioning into or out of a running sesssion or that the system UI is focused and covering the application.
+
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+	:language: cpp
+	:start-at: typedef struct XrFrameState {
+	:end-at: } XrFrameState;
+
+``xrBeginFrame()`` and ``xrEndFrame()`` should 'book-end' all the rendering code in the XR frame and should be called in pairs. ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign the ``displayTime``, which could be adjusted from the ``XrFrameState::predictedDisplayTime`` and we assign our ``XrEnvironmentBlendMode``. We also assign a count and pointer to an array of ``XrCompositionLayerBaseHeader *`` s. These Composition Layers are used by the OpenXR compositor to create the final image for the views.
+
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+	:language: cpp
+	:start-at: typedef struct XR_MAY_ALIAS XrCompositionLayerBaseHeader {
+	:end-at: } XrCompositionLayerBaseHeader;
+
+In this tutorial, we use the a single ``XrCompositionLayerProjection``, which describes an ``XrSpace`` and an array of ``XrCompositionLayerProjectionView``, which in turn descibe the ``XrPosef`` of the views relative to the reference space, the Field Of View of the views and which ``XrSwapchainSubImage`` the view relative to.
+
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+	:language: cpp
+	:start-at: typedef struct XrSwapchainSubImage {
+	:end-at: } XrCompositionLayerProjection;
 
 3.2.4 RenderLayer
 =================
