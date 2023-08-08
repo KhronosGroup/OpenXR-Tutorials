@@ -67,7 +67,7 @@ After the definition of GetSystemID(), we'll add these helper functions that con
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateXrPath
 	:end-before: XR_DOCS_TAG_END_CreateXrPath
-	:dedent: 1
+	:dedent: 0
 
 Now we will define the `CreateActionSet` function:
 
@@ -75,7 +75,7 @@ Now we will define the `CreateActionSet` function:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateActionSet
 	:end-before: XR_DOCS_TAG_END_CreateActionSet
-	:dedent: 1
+	:dedent: 0
 
 An ActionSet is a group of actions that apply in a specific context. You might have an ActionSet for when your XR game is showing a pause menu or control panel, and a different ActionSet for in-game. There might even be different
 ActionSets for different situations in an XR application: rowing in a boat, climbing a cliff, and so on.
@@ -85,7 +85,7 @@ So you can create multiple ActionSets, but we only need one for this example. Th
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateActions
 	:end-before: XR_DOCS_TAG_END_CreateActions
-	:dedent: 1
+	:dedent: 0
 
 Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is. It also, optionally, has a list of sub-action paths. A sub-action is, essentially the same action on a different control device: left- or right-hand controllers for example.
 
@@ -118,7 +118,7 @@ XrPath is a 64-bit number that hopefully uniquely identifies any given forward-s
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CallSuggestBindings1
 	:end-before: XR_DOCS_TAG_END_CallSuggestBindings1
-	:dedent: 1
+	:dedent: 0
 
 After the definition of CreateActionSet(), add:
 
@@ -126,7 +126,7 @@ After the definition of CreateActionSet(), add:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_SuggestBindings1
 	:end-before: XR_DOCS_TAG_END_SuggestBindings1
-	:dedent: 1
+	:dedent: 0
 
 By means of a lambda function `SuggestBindings`, we call into OpenXR with a given list of suggestions. Let's try this:
 
@@ -134,7 +134,7 @@ By means of a lambda function `SuggestBindings`, we call into OpenXR with a give
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_SuggestBindings2
 	:end-before: XR_DOCS_TAG_END_SuggestBindings2
-	:dedent: 1
+	:dedent: 0
 
 Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile ( and "/interaction_profiles/khr/simple_controller" should *always* be supported in an OpenXR-compliant runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
 The suggested bindings are not guaranteed to be used: that's up to the runtime. Some runtimes allow users to override the default bindings, and OpenXR expects this.
@@ -172,7 +172,7 @@ Now after the definition of SuggestBindings(), add:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateActionPoses
 	:end-before: XR_DOCS_TAG_END_CreateActionPoses
-	:dedent: 1
+	:dedent: 0
 
 For one pose, this didn't need to be a lambda, but it will make it easier to add more poses later. Here, we're creating the XrSpace that represents the left grip pose action. As with the reference space, we use an identity XrPosef to indicate that we'll take the pose as-is, without offsets.
 
@@ -190,7 +190,7 @@ Finally as far as action setup goes, we will attach the ActionSet to the session
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_AttachActionSet
 	:end-before: XR_DOCS_TAG_END_AttachActionSet
-	:dedent: 1
+	:dedent: 0
 
 As you can see, it's possible here to attach multiple Action Sets. But `xrAttachSessionActionSets` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the app is ready to proceed.
 
@@ -208,7 +208,7 @@ And add this function after the definition of PollEvents():
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_PollActions
 	:end-before: XR_DOCS_TAG_END_PollActions
-	:dedent: 1
+	:dedent: 0
 
 Here we enable the Action Set we're interested in (in our case we have only one), and tell OpenXR to prepare the actions' per-frame data with xrSyncActions().
 
@@ -216,7 +216,7 @@ Here we enable the Action Set we're interested in (in our case we have only one)
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_PollActions2
 	:end-before: XR_DOCS_TAG_END_PollActions2
-	:dedent: 1
+	:dedent: 0
 
 Finally in this function, we'll poll the left Grip Pose:
 
@@ -224,7 +224,7 @@ Finally in this function, we'll poll the left Grip Pose:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_PollActions3
 	:end-before: XR_DOCS_TAG_END_PollActions3
-	:dedent: 1
+	:dedent: 0
 
 If, and only if the action is active, we use `xrLocateSpace` to obtain the current pose of the controller. We specify that we want this relative to our reference space `localOrStageSpace`, because this is the global space we're using for rendering. We'll use `leftGripPose` in the next section to render the
 controller's position.
@@ -247,7 +247,7 @@ This provides a simple matrix and vector library for our render code. Now, after
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateResources1
 	:end-before: XR_DOCS_TAG_END_CreateResources1
-	:dedent: 1
+	:dedent: 0
 
 We've created a struct to represent a small uniform buffer (constant buffer), CameraConstants, and defined an instance to store its values globally. We've defined the start of the function CreateResources(), with the vertices and indices for a cube, and we've created the corresponding buffers with our choice of graphics API.
 
@@ -267,7 +267,7 @@ We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
 		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL_Vulkan
-		:dedent: 1
+		:dedent: 0
 		
 .. container:: opengles
 
@@ -277,7 +277,7 @@ We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
 		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGLES
-		:dedent: 1
+		:dedent: 0
 		
 .. container:: d3d11 d3d12
 
@@ -287,7 +287,7 @@ We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_D3D
 		:end-before: XR_DOCS_TAG_END_CreateResources2_D3D
-		:dedent: 1
+		:dedent: 0
 
 Now we'll combine the shaders, the vertex input layout, and the rendering state for drawing a solid cube, into a pipeline object. Add:		
 
@@ -295,7 +295,7 @@ Now we'll combine the shaders, the vertex input layout, and the rendering state 
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateResources3
 	:end-before: XR_DOCS_TAG_END_CreateResources3
-	:dedent: 1
+	:dedent: 0
 
 To destroy the resources when a session is ended, add:
 
@@ -303,7 +303,7 @@ To destroy the resources when a session is ended, add:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_DestroyResources
 	:end-before: XR_DOCS_TAG_END_DestroyResources
-	:dedent: 1
+	:dedent: 0
 
 We'll call this before the call to DestroySession() in the function Run(). So after this, add:
 
@@ -311,7 +311,7 @@ We'll call this before the call to DestroySession() in the function Run(). So af
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CallDestroyResources
 	:end-before: XR_DOCS_TAG_END_CallDestroyResources
-	:dedent: 1
+	:dedent: 0
 
 Recall that we've already inserted a call to PollActions() in the function RenderFrame(), so we're ready to render the controller position and input values. In RenderLayer, after the call to ClearDepth(), let's set up the rendering state:
 
@@ -337,7 +337,7 @@ Let's implement RenderCuboid(). After the definition of DestroySwapchain(), add:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_RenderCuboid
 	:end-before: XR_DOCS_TAG_END_RenderCuboid
-	:dedent: 1
+	:dedent: 0
 
 From the passed-in pose and scale, we create the _model_ matrix, and multiply that with cameraConstants.viewProj to obtain cameraConstants.modelViewProj, the matrix that transforms from vertices in our unit cube into positions in projection-space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing our six face colours for the cuboid pixel shader. We assign our vertex and index buffers and draw 36 indices.
 

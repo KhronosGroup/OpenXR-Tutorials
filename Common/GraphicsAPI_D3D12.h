@@ -51,7 +51,7 @@ public:
 
     virtual void SetBufferData(void* buffer, size_t offset, size_t size, void* data) override;
 
-    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView) override;
+    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView, uint32_t width, uint32_t height, void* pipeline) override;
     virtual void SetViewports(Viewport* viewports, size_t count) override;
     virtual void SetScissors(Rect2D* scissors, size_t count) override;
 
@@ -90,7 +90,7 @@ private:
 
     std::unordered_map<ID3D12Resource*, std::pair<ID3D12Heap*, BufferCreateInfo>> bufferResources;
 
-    std::unordered_map<ID3DBlob*, ShaderCreateInfo> shaders;
+    std::unordered_map<D3D12_SHADER_BYTECODE*, std::pair<std::vector<char>, ShaderCreateInfo>> shaders;
 
     std::vector<DescriptorInfo> descriptorInfos = {};
     ID3D12DescriptorHeap* CBV_SRV_UAV_DescriptorHeap = nullptr;

@@ -130,7 +130,6 @@ static D3D12_LOGIC_OP ToD3D12_LOGIC_OP(GraphicsAPI::LogicOp logic) {
 }
 
 static D3D12_PRIMITIVE_TOPOLOGY ToD3D12_PRIMITIVE_TOPOLOGY(GraphicsAPI::PrimitiveTopology topology) {
-
     switch (topology) {
     case GraphicsAPI::PrimitiveTopology::POINT_LIST:
         return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
@@ -170,6 +169,45 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12() {
     commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     commandQueueDesc.NodeMask = 0;
     D3D12_CHECK(device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&queue)), "Failed to create D3D12 Command Queue.");
+
+    D3D12_FEATURE_DATA_D3D12_OPTIONS d3d12Options{};
+    D3D12_CHECK(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &d3d12Options, sizeof(d3d12Options)), "Unable to CheckFeatureSupport for D3D12_FEATURE_D3D12_OPTIONS.");
+
+    struct ResourceBindingCapabilities {
+        uint32_t maxDescriptorCount;
+        uint32_t maxCBVsPerStage;
+        uint32_t maxSRVsPerStage;
+        uint32_t maxUAVsPerStage;
+        uint32_t maxSamplersPerStage;
+        uint32_t maxSamplerCount = 2048;
+    } resourceBindingCapabilities;
+
+    switch (d3d12Options.ResourceBindingTier) {
+    case D3D12_RESOURCE_BINDING_TIER_3: {
+        resourceBindingCapabilities = {1000000, 1000000, 1000000, 1000000, 1000000, 2048};
+        break;
+    }
+    case D3D12_RESOURCE_BINDING_TIER_2: {
+        resourceBindingCapabilities = {1000000, 14, 1000000, 64, 1000000, 2048};
+        break;
+    }
+    case D3D12_RESOURCE_BINDING_TIER_1:
+    default: {
+        uint32_t maxUAVsPerStage = /*D3D_FEATURE_LEVEL_11_0*/ true ? 8 : 64;
+        resourceBindingCapabilities = {1000000, 14, 128, maxUAVsPerStage, 16, 2048};
+        break;
+    }
+    }
+
+    D3D12_DESCRIPTOR_HEAP_DESC DescriptorHeapDesc;
+    DescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    DescriptorHeapDesc.NumDescriptors = resourceBindingCapabilities.maxDescriptorCount;
+    DescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    DescriptorHeapDesc.NodeMask = 0;
+    device->CreateDescriptorHeap(&DescriptorHeapDesc, IID_PPV_ARGS(&CBV_SRV_UAV_DescriptorHeap));
+    DescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+    DescriptorHeapDesc.NumDescriptors = resourceBindingCapabilities.maxSamplerCount;
+    device->CreateDescriptorHeap(&DescriptorHeapDesc, IID_PPV_ARGS(&SAMPLER_DescriptorHeap));
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
@@ -178,9 +216,9 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
     XrGraphicsRequirementsD3D12KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR};
     OPENXR_CHECK(xrGetD3D12GraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for D3D12.");
 
-    /*D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
+    D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
     debug->EnableDebugLayer();
-    reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);*/
+    reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);
 
     D3D12_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
 
@@ -202,11 +240,52 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
     commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     commandQueueDesc.NodeMask = 0;
     D3D12_CHECK(device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&queue)), "Failed to create D3D12 Command Queue.");
+
+    D3D12_FEATURE_DATA_D3D12_OPTIONS d3d12Options{};
+    D3D12_CHECK(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &d3d12Options, sizeof(d3d12Options)), "Unable to CheckFeatureSupport for D3D12_FEATURE_D3D12_OPTIONS.");
+
+    struct ResourceBindingCapabilities {
+        uint32_t maxDescriptorCount;
+        uint32_t maxCBVsPerStage;
+        uint32_t maxSRVsPerStage;
+        uint32_t maxUAVsPerStage;
+        uint32_t maxSamplersPerStage;
+        uint32_t maxSamplerCount = 2048;
+    } resourceBindingCapabilities;
+
+    switch (d3d12Options.ResourceBindingTier) {
+    case D3D12_RESOURCE_BINDING_TIER_3: {
+        resourceBindingCapabilities = {1000000, 1000000, 1000000, 1000000, 1000000, 2048};
+        break;
+    }
+    case D3D12_RESOURCE_BINDING_TIER_2: {
+        resourceBindingCapabilities = {1000000, 14, 1000000, 64, 1000000, 2048};
+        break;
+    }
+    case D3D12_RESOURCE_BINDING_TIER_1:
+    default: {
+        uint32_t maxUAVsPerStage = /*D3D_FEATURE_LEVEL_11_0*/ true ? 8 : 64;
+        resourceBindingCapabilities = {1000000, 14, 128, maxUAVsPerStage, 16, 2048};
+        break;
+    }
+    }
+
+    D3D12_DESCRIPTOR_HEAP_DESC DescriptorHeapDesc;
+    DescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    DescriptorHeapDesc.NumDescriptors = resourceBindingCapabilities.maxDescriptorCount;
+    DescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    DescriptorHeapDesc.NodeMask = 0;
+    device->CreateDescriptorHeap(&DescriptorHeapDesc, IID_PPV_ARGS(&CBV_SRV_UAV_DescriptorHeap));
+    DescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+    DescriptorHeapDesc.NumDescriptors = resourceBindingCapabilities.maxSamplerCount;
+    device->CreateDescriptorHeap(&DescriptorHeapDesc, IID_PPV_ARGS(&SAMPLER_DescriptorHeap));
 }
 
 GraphicsAPI_D3D12 ::~GraphicsAPI_D3D12() {
-    D3D12_SAFE_RELEASE(device);
+    D3D12_SAFE_RELEASE(SAMPLER_DescriptorHeap);
+    D3D12_SAFE_RELEASE(CBV_SRV_UAV_DescriptorHeap);
     D3D12_SAFE_RELEASE(queue);
+    D3D12_SAFE_RELEASE(device);
 }
 // XR_DOCS_TAG_END_GraphicsAPI_D3D12
 
@@ -665,56 +744,22 @@ void GraphicsAPI_D3D12::DestroyBuffer(void *&buffer) {
 }
 
 void *GraphicsAPI_D3D12::CreateShader(const ShaderCreateInfo &shaderCI) {
-    std::string shaderModel = "";
-    switch (shaderCI.type) {
-    case ShaderCreateInfo::Type::VERTEX: {
-        shaderModel = "vs_";
-        break;
-    }
-    case ShaderCreateInfo::Type::TESSELLATION_CONTROL: {
-        shaderModel = "hs_";
-        break;
-    }
-    case ShaderCreateInfo::Type::TESSELLATION_EVALUATION: {
-        shaderModel = "ds_";
-        break;
-    }
-    case ShaderCreateInfo::Type::GEOMETRY: {
-        shaderModel = "gs_";
-        break;
-    }
-    case ShaderCreateInfo::Type::FRAGMENT: {
-        shaderModel = "ps_";
-        break;
-    }
-    case ShaderCreateInfo::Type::COMPUTE: {
-        shaderModel = "cs_";
-        break;
-    }
-    default:
-        std::cout << "ERROR: D3D12: Unknown Shader Type." << std::endl;
-        return nullptr;
-    }
-    shaderModel += "5_1";
+    D3D12_SHADER_BYTECODE *byteCode = new D3D12_SHADER_BYTECODE();
 
-    ID3DBlob *compiledBinary = nullptr;
-    ID3DBlob *errorMsgs = nullptr;
-    UINT flags = D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_WARNINGS_ARE_ERRORS;
+    shaders[byteCode].first.resize(shaderCI.sourceSize);
+    memcpy(shaders[byteCode].first.data(), shaderCI.sourceData, shaderCI.sourceSize);
+    shaders[byteCode].second = shaderCI;
 
-    HRESULT res = D3DCompile((LPCVOID)shaderCI.sourceData, shaderCI.sourceSize, nullptr, nullptr, nullptr, "main", shaderModel.c_str(), flags, 0, &compiledBinary, &errorMsgs);
-    if (FAILED(res)) {
-        std::string errorMsg((const char *)errorMsgs->GetBufferPointer(), errorMsgs->GetBufferSize());
-        std::cout << errorMsg << std::endl;
-        DEBUG_BREAK;
-    }
-    shaders[compiledBinary] = shaderCI;
-    return compiledBinary;
+    byteCode->pShaderBytecode = shaders[byteCode].first.data();
+    byteCode->BytecodeLength = shaders[byteCode].first.size();
+
+    return byteCode;
 }
 
 void GraphicsAPI_D3D12::DestroyShader(void *&shader) {
-    ID3DBlob *compiledBinary = reinterpret_cast<ID3DBlob *>(shader);
-    shaders.erase(compiledBinary);
-    D3D12_SAFE_RELEASE(compiledBinary);
+    D3D12_SHADER_BYTECODE *byteCode = reinterpret_cast<D3D12_SHADER_BYTECODE *>(shader);
+    shaders.erase(byteCode);
+    delete byteCode;
     shader = nullptr;
 }
 
@@ -723,27 +768,24 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
 
     // ShaderStages
     for (void *shader : pipelineCI.shaders) {
-        ID3DBlob *compiledBinary = reinterpret_cast<ID3DBlob *>(shader);
-        D3D12_SHADER_BYTECODE byteCode;
-        byteCode.pShaderBytecode = compiledBinary->GetBufferPointer();
-        byteCode.BytecodeLength = compiledBinary->GetBufferSize();
+        D3D12_SHADER_BYTECODE *byteCode = reinterpret_cast<D3D12_SHADER_BYTECODE *>(shader);
 
-        const ShaderCreateInfo& shaderCreateInfo = shaders[compiledBinary];
+        const ShaderCreateInfo &shaderCreateInfo = shaders[byteCode].second;
         switch (shaderCreateInfo.type) {
         case ShaderCreateInfo::Type::VERTEX:
-            GPSD.VS = byteCode;
+            GPSD.VS = *byteCode;
             continue;
         case ShaderCreateInfo::Type::FRAGMENT:
-            GPSD.PS = byteCode;
+            GPSD.PS = *byteCode;
             continue;
         case ShaderCreateInfo::Type::TESSELLATION_EVALUATION:
-            GPSD.DS = byteCode;
+            GPSD.DS = *byteCode;
             continue;
         case ShaderCreateInfo::Type::TESSELLATION_CONTROL:
-            GPSD.HS = byteCode;
+            GPSD.HS = *byteCode;
             continue;
         case ShaderCreateInfo::Type::GEOMETRY:
-            GPSD.GS = byteCode;
+            GPSD.GS = *byteCode;
             continue;
         default:
             continue;
@@ -795,7 +837,7 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     GPSD.RasterizerState.DepthBiasClamp = pipelineCI.rasterisationState.depthBiasClamp;
     GPSD.RasterizerState.SlopeScaledDepthBias = pipelineCI.rasterisationState.depthBiasSlopeFactor;
     GPSD.RasterizerState.DepthClipEnable = pipelineCI.rasterisationState.depthClampEnable;
-    GPSD.RasterizerState.MultisampleEnable = pipelineCI.multisampleState.rasterisationSamples > 1;  // Sets AA algorithm
+    GPSD.RasterizerState.MultisampleEnable = pipelineCI.multisampleState.rasterisationSamples > 1;      // Sets AA algorithm
     GPSD.RasterizerState.AntialiasedLineEnable = pipelineCI.multisampleState.rasterisationSamples > 1;  // Sets AA algorithm
     GPSD.RasterizerState.ForcedSampleCount = 0;
     GPSD.RasterizerState.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
@@ -871,22 +913,22 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
         switch (descInfo.type) {
         case DescriptorInfo::Type::BUFFER: {
             if (descInfo.readWrite) {
-                descriptorRange.RangeType =  D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+                descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
             } else {
-                descriptorRange.RangeType =  D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+                descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
             }
             break;
         }
         case DescriptorInfo::Type::IMAGE: {
             if (descInfo.readWrite) {
-                descriptorRange.RangeType =  D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+                descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
             } else {
-                descriptorRange.RangeType =  D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+                descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
             }
             break;
         }
         case DescriptorInfo::Type::SAMPLER: {
-            descriptorRange.RangeType =  D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+            descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
             break;
         }
         }
@@ -924,7 +966,7 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     }
     D3D12_CHECK(res, "Failed to serialise RootSignature.");
     D3D12_CHECK(device->CreateRootSignature(0, serializedRootSignature->GetBufferPointer(), serializedRootSignature->GetBufferSize(), IID_PPV_ARGS(&rootSignature)), "Failed to create RootSignature.");
-   
+
     GPSD.pRootSignature = rootSignature;
     GPSD.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
     GPSD.NodeMask = 0;
@@ -954,45 +996,6 @@ void GraphicsAPI_D3D12::DestroyPipeline(void *&pipeline) {
 void GraphicsAPI_D3D12::BeginRendering() {
     D3D12_CHECK(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAllocator)), "Failed to create CommandAllocator.");
     D3D12_CHECK(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAllocator, nullptr, IID_PPV_ARGS(&cmdList)), "Failed to create CommandList.");
-
-    D3D12_FEATURE_DATA_D3D12_OPTIONS d3d12Options;
-    D3D12_CHECK(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &d3d12Options, sizeof(d3d12Options)), "Unable to CheckFeatureSupport for D3D12_FEATURE_D3D12_OPTIONS.");
-
-    struct ResourceBindingCapabilities {
-        uint32_t maxDescriptorCount;
-        uint32_t maxCBVsPerStage;
-        uint32_t maxSRVsPerStage;
-        uint32_t maxUAVsPerStage;
-        uint32_t maxSamplersPerStage;
-        uint32_t maxSamplerCount = 2048;
-    } resourceBindingCapabilities;
-
-    switch (d3d12Options.ResourceBindingTier) {
-    case D3D12_RESOURCE_BINDING_TIER_3: {
-        resourceBindingCapabilities = {1000000, 1000000, 1000000, 1000000, 1000000, 2048};
-        break;
-    }
-    case D3D12_RESOURCE_BINDING_TIER_2: {
-        resourceBindingCapabilities = {1000000, 14, 1000000, 64, 1000000, 2048};
-        break;
-    }
-    case D3D12_RESOURCE_BINDING_TIER_1:
-    default: {
-        uint32_t maxUAVsPerStage = /*D3D_FEATURE_LEVEL_11_0*/ true ? 8 : 64;
-        resourceBindingCapabilities = {1000000, 14, 128, maxUAVsPerStage, 16, 2048};
-        break;
-    }
-    }
-
-    D3D12_DESCRIPTOR_HEAP_DESC DescriptorHeapDesc;
-    DescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    DescriptorHeapDesc.NumDescriptors = resourceBindingCapabilities.maxDescriptorCount;
-    DescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    DescriptorHeapDesc.NodeMask = 0;
-    device->CreateDescriptorHeap(&DescriptorHeapDesc, IID_PPV_ARGS(&CBV_SRV_UAV_DescriptorHeap));
-    DescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-    DescriptorHeapDesc.NumDescriptors = resourceBindingCapabilities.maxSamplerCount;
-    device->CreateDescriptorHeap(&DescriptorHeapDesc, IID_PPV_ARGS(&SAMPLER_DescriptorHeap));
 
     setDescriptorHeap = true;
     CBV_SRV_UAV_DescriptorOffset = 0;
@@ -1034,9 +1037,6 @@ void GraphicsAPI_D3D12::EndRendering() {
 
     D3D12_SAFE_RELEASE(cmdList);
     D3D12_SAFE_RELEASE(cmdAllocator);
-
-    D3D12_SAFE_RELEASE(SAMPLER_DescriptorHeap);
-    D3D12_SAFE_RELEASE(CBV_SRV_UAV_DescriptorHeap);
 }
 
 void GraphicsAPI_D3D12::ClearColor(void *imageView, float r, float g, float b, float a) {
@@ -1059,7 +1059,7 @@ void GraphicsAPI_D3D12::ClearColor(void *imageView, float r, float g, float b, f
 
 void GraphicsAPI_D3D12::ClearDepth(void *imageView, float d) {
     ID3D12Resource *image = imageViewResources[(SIZE_T)imageView].second;
-    if (imageStates[image] != D3D12_RESOURCE_STATE_DEPTH_WRITE){
+    if (imageStates[image] != D3D12_RESOURCE_STATE_DEPTH_WRITE) {
         D3D12_RESOURCE_BARRIER barrier;
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
@@ -1084,7 +1084,7 @@ void GraphicsAPI_D3D12::SetBufferData(void *buffer, size_t offset, size_t size, 
     d3d12Buffer->Unmap(0, nullptr);
 }
 
-void GraphicsAPI_D3D12::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView) {
+void GraphicsAPI_D3D12::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView, uint32_t width, uint32_t height, void *pipeline) {
     std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> d3d12RTVs;
     d3d12RTVs.reserve(colorViewCount);
     for (size_t i = 0; i < colorViewCount; i++) {
@@ -1129,7 +1129,6 @@ void GraphicsAPI_D3D12::SetPipeline(void *pipeline) {
 }
 
 void GraphicsAPI_D3D12::SetDescriptor(const DescriptorInfo &descriptorInfo) {
-
     if (setDescriptorHeap) {
         ID3D12DescriptorHeap *heaps[2] = {CBV_SRV_UAV_DescriptorHeap, SAMPLER_DescriptorHeap};
         cmdList->SetDescriptorHeaps(2, heaps);
@@ -1139,7 +1138,6 @@ void GraphicsAPI_D3D12::SetDescriptor(const DescriptorInfo &descriptorInfo) {
 }
 
 void GraphicsAPI_D3D12::UpdateDescriptors() {
-
     UINT CBV_SRV_UAV_DescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     UINT SAMPLER_DescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 
@@ -1148,7 +1146,6 @@ void GraphicsAPI_D3D12::UpdateDescriptors() {
 
     size_t rootParameterIndex = 0;
     for (const DescriptorInfo &descriptorInfo : descriptorInfos) {
-        
         switch (descriptorInfo.type) {
         case DescriptorInfo::Type::BUFFER: {
             D3D12_CPU_DESCRIPTOR_HANDLE destCpuHandle = {};
@@ -1200,7 +1197,7 @@ void GraphicsAPI_D3D12::UpdateDescriptors() {
             destCpuHandle.ptr = SAMPLER_DescriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr + Current_SAMPLER_DescriptorOffset;
             D3D12_GPU_DESCRIPTOR_HANDLE destGpuHandle = {};
             destGpuHandle.ptr = SAMPLER_DescriptorHeap->GetGPUDescriptorHandleForHeapStart().ptr + Current_SAMPLER_DescriptorOffset;
-            
+
             device->CopyDescriptorsSimple(1, destCpuHandle, srcCpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 
             cmdList->SetGraphicsRootDescriptorTable(rootParameterIndex, destGpuHandle);
@@ -1215,8 +1212,8 @@ void GraphicsAPI_D3D12::UpdateDescriptors() {
         rootParameterIndex++;
     }
 
-    CBV_SRV_UAV_DescriptorOffset += Current_CBV_SRV_UAV_DescriptorOffset;
-    SAMPLER_DescriptorOffset += Current_SAMPLER_DescriptorOffset;
+    CBV_SRV_UAV_DescriptorOffset = Current_CBV_SRV_UAV_DescriptorOffset;
+    SAMPLER_DescriptorOffset = Current_SAMPLER_DescriptorOffset;
 
     descriptorInfos.clear();
 }

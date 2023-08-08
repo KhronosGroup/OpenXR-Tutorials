@@ -414,7 +414,7 @@ private:
             OPENXR_CHECK(xrBeginFrame(m_session, &frameBeginInfo), "Failed to begin the XR Frame.");
 
             bool rendered = false;
-            XrCompositionLayerBaseHeader *layers[1] = {nullptr};
+            std::vector<XrCompositionLayerBaseHeader *> layers;
             XrCompositionLayerProjection layerProjection{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
             std::vector<XrCompositionLayerProjectionView> layerProjectionViews;
 
@@ -422,20 +422,15 @@ private:
             if (sessionActive && frameState.shouldRender) {
                 rendered = RenderLayer(frameState.predictedDisplayTime, layerProjection, layerProjectionViews);
                 if (rendered) {
-                    layers[0] = reinterpret_cast<XrCompositionLayerBaseHeader *>(&layerProjection);
+                    layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader *>(&layerProjection));
                 }
             }
 
             XrFrameEndInfo frameEndInfo{XR_TYPE_FRAME_END_INFO};
             frameEndInfo.displayTime = frameState.predictedDisplayTime;
             frameEndInfo.environmentBlendMode = m_environmentBlendMode;
-            if (rendered) {
-                frameEndInfo.layerCount = 1;
-                frameEndInfo.layers = reinterpret_cast<XrCompositionLayerBaseHeader **>(&layers);
-            } else {
-                frameEndInfo.layerCount = 0;
-                frameEndInfo.layers = nullptr;
-            }
+            frameEndInfo.layerCount = static_cast<uint32_t>(layers.size());
+            frameEndInfo.layers = layers.data();
             OPENXR_CHECK(xrEndFrame(m_session, &frameEndInfo), "Failed to end the XR Frame.");
         }
     }
@@ -469,8 +464,6 @@ private:
 
             const uint32_t &width = m_viewConfigurationViews[i].recommendedImageRectWidth;
             const uint32_t &height = m_viewConfigurationViews[i].recommendedImageRectHeight;
-            GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
-            GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
 
             layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
             layerProjectionViews[i].pose = views[i].pose;
@@ -630,7 +623,7 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
-    OpenXRTutorial_Main(VULKAN);
+    OpenXRTutorial_Main(OPENGL);
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)

@@ -1,4 +1,6 @@
+#if defined(_WIN32)
 #define VK_USE_PLATFORM_WIN32_KHR
+#endif
 #include "GraphicsAPI_Vulkan.h"
 
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
@@ -16,7 +18,7 @@
 #define VK_MAKE_API_VERSION(variant, major, minor, patch) VK_MAKE_VERSION(major, minor, patch)
 #endif
 
-bool MemoryTypeFromProperties(VkPhysicalDeviceMemoryProperties memoryProperties, uint32_t typeBits, VkMemoryPropertyFlags requirementsMask, uint32_t *typeIndex) {
+static bool MemoryTypeFromProperties(VkPhysicalDeviceMemoryProperties memoryProperties, uint32_t typeBits, VkMemoryPropertyFlags requirementsMask, uint32_t *typeIndex) {
     // Search memory types to find first index with those properties
     for (uint32_t i = 0; i < VK_MAX_MEMORY_TYPES; i++) {
         if ((typeBits & 1) == 1) {
@@ -31,6 +33,56 @@ bool MemoryTypeFromProperties(VkPhysicalDeviceMemoryProperties memoryProperties,
     // No memory types matched, return failure
     return false;
 };
+
+static VkFormat ToVkFormat(GraphicsAPI::VertexType type) {
+    switch (type) {
+    case GraphicsAPI::VertexType::FLOAT:
+        return VK_FORMAT_R32_SFLOAT;
+    case GraphicsAPI::VertexType::VEC2:
+        return VK_FORMAT_R32G32_SFLOAT;
+    case GraphicsAPI::VertexType::VEC3:
+        return VK_FORMAT_R32G32B32_SFLOAT;
+    case GraphicsAPI::VertexType::VEC4:
+        return VK_FORMAT_R32G32B32A32_SFLOAT;
+    case GraphicsAPI::VertexType::INT:
+        return VK_FORMAT_R32_SINT;
+    case GraphicsAPI::VertexType::IVEC2:
+        return VK_FORMAT_R32G32_SINT;
+    case GraphicsAPI::VertexType::IVEC3:
+        return VK_FORMAT_R32G32B32_SINT;
+    case GraphicsAPI::VertexType::IVEC4:
+        return VK_FORMAT_R32G32B32A32_SINT;
+    case GraphicsAPI::VertexType::UINT:
+        return VK_FORMAT_R32_UINT;
+    case GraphicsAPI::VertexType::UVEC2:
+        return VK_FORMAT_R32G32_UINT;
+    case GraphicsAPI::VertexType::UVEC3:
+        return VK_FORMAT_R32G32B32_UINT;
+    case GraphicsAPI::VertexType::UVEC4:
+        return VK_FORMAT_R32G32B32A32_UINT;
+    default:
+        return VK_FORMAT_UNDEFINED;
+    }
+}
+VkDescriptorType ToVkDescrtiptorType(const GraphicsAPI::DescriptorInfo& descInfo) {
+    VkDescriptorType vkType;
+    switch (descInfo.type) {
+    default:
+    case GraphicsAPI::DescriptorInfo::Type::BUFFER: {
+        vkType = descInfo.readWrite ? VK_DESCRIPTOR_TYPE_STORAGE_BUFFER : VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        break;
+    }
+    case GraphicsAPI::DescriptorInfo::Type::IMAGE: {
+        vkType = descInfo.readWrite ? VK_DESCRIPTOR_TYPE_STORAGE_IMAGE : VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        break;
+    }
+    case GraphicsAPI::DescriptorInfo::Type::SAMPLER: {
+        vkType = VK_DESCRIPTOR_TYPE_SAMPLER;
+        break;
+    }
+    }
+    return vkType;
+}
 
 GraphicsAPI_Vulkan::GraphicsAPI_Vulkan() {
     // Instance
@@ -49,7 +101,13 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan() {
     std::vector<VkExtensionProperties> instanceExtensionProperties;
     instanceExtensionProperties.resize(instanceExtensionCount);
     VULKAN_CHECK(vkEnumerateInstanceExtensionProperties(nullptr, &instanceExtensionCount, instanceExtensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     const std::vector<std::string> &instanceExtensionNames = {VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_EXTENSION_NAME};
+#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
+    const std::vector<std::string> &instanceExtensionNames = {VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_ANDROID_SURFACE_EXTENSION_NAME};
+#else
+    const std::vector<std::string> &instanceExtensionNames = {};
+#endif
     for (const std::string &requestExtension : instanceExtensionNames) {
         for (const VkExtensionProperties &extensionProperty : instanceExtensionProperties) {
             if (strcmp(requestExtension.c_str(), extensionProperty.extensionName))
@@ -178,8 +236,6 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance m_xrInstance, XrSystemId syste
         }
     }
 
-    activeInstanceLayers = {"VK_LAYER_KHRONOS_validation"};
-
     VkInstanceCreateInfo instanceCI;
     instanceCI.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instanceCI.pNext = nullptr;
@@ -279,6 +335,7 @@ GraphicsAPI_Vulkan::~GraphicsAPI_Vulkan() {
 
 void *GraphicsAPI_Vulkan::CreateDesktopSwapchain(const SwapchainCreateInfo &swapchainCI) {
     VkSurfaceKHR surface{};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkWin32SurfaceCreateInfoKHR surfaceCI;
     surfaceCI.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
     surfaceCI.pNext = nullptr;
@@ -286,6 +343,14 @@ void *GraphicsAPI_Vulkan::CreateDesktopSwapchain(const SwapchainCreateInfo &swap
     surfaceCI.hinstance = GetModuleHandle(nullptr);
     surfaceCI.hwnd = (HWND)swapchainCI.windowHandle;
     VULKAN_CHECK(vkCreateWin32SurfaceKHR(instance, &surfaceCI, nullptr, &surface), "Failed to create Device.");
+#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
+    VkAndroidSurfaceCreateInfoKHR surfaceCI;
+    surfaceCI.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+    surfaceCI.pNext = nullptr;
+    surfaceCI.flags = 0;
+    surfaceCI.window = reinterpret_cast<ANativeWindow *>(m_CI.pWindow);
+    VULKAN_CHECK(vkCreateAndroidSurfaceKHR(m_Instance, &surfaceCI, nullptr, &surface), "Failed to create AndroidSurface.");
+#endif
 
     VkBool32 surfaceSupport;
     VULKAN_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface, &surfaceSupport), "Failed to get PhysicalDeviceSurfaceSupport.");
@@ -378,6 +443,7 @@ void *GraphicsAPI_Vulkan::GetDesktopSwapchainImage(void *swapchain, uint32_t ind
 
     return (void *)swapchainImages[index];
 }
+
 void GraphicsAPI_Vulkan::AcquireDesktopSwapchanImage(void *swapchain, uint32_t &index) {
     VULKAN_CHECK(vkAcquireNextImageKHR(device, (VkSwapchainKHR)swapchain, UINT64_MAX, acquireSemaphore, VK_NULL_HANDLE, &index), "Failed to acquire next Image from Swapchain.");
 
@@ -461,7 +527,7 @@ void *GraphicsAPI_Vulkan::CreateImage(const ImageCreateInfo &imageCI) {
     VULKAN_CHECK(vkAllocateMemory(device, &allocateInfo, nullptr, &memory), "Failed to allocate Memory.");
     VULKAN_CHECK(vkBindImageMemory(device, image, memory, 0), "Failed to bind Memory to Image.");
 
-    imageResources[image] = memory;
+    imageResources[image] = {memory, imageCI};
     imageStates[image] = vkImageCI.initialLayout;
 
     return (void *)image;
@@ -469,7 +535,7 @@ void *GraphicsAPI_Vulkan::CreateImage(const ImageCreateInfo &imageCI) {
 
 void GraphicsAPI_Vulkan::DestroyImage(void *&image) {
     VkImage vkImage = (VkImage)image;
-    VkDeviceMemory memory = imageResources[vkImage];
+    VkDeviceMemory memory = imageResources[vkImage].first;
     vkFreeMemory(device, memory, nullptr);
     vkDestroyImage(device, vkImage, nullptr);
     imageResources.erase(vkImage);
@@ -546,8 +612,7 @@ void *GraphicsAPI_Vulkan::CreateBuffer(const BufferCreateInfo &bufferCI) {
     vkBufferCI.pNext = nullptr;
     vkBufferCI.flags = 0;
     vkBufferCI.size = static_cast<VkDeviceSize>(bufferCI.size);
-    vkBufferCI.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | (bufferCI.type == BufferCreateInfo::Type::VERTEX ? VK_BUFFER_USAGE_VERTEX_BUFFER_BIT : 0) 
-        | (bufferCI.type == BufferCreateInfo::Type::INDEX ? VK_BUFFER_USAGE_INDEX_BUFFER_BIT : 0) | (bufferCI.type == BufferCreateInfo::Type::UNIFORM ? VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT : 0);
+    vkBufferCI.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | (bufferCI.type == BufferCreateInfo::Type::VERTEX ? VK_BUFFER_USAGE_VERTEX_BUFFER_BIT : 0) | (bufferCI.type == BufferCreateInfo::Type::INDEX ? VK_BUFFER_USAGE_INDEX_BUFFER_BIT : 0) | (bufferCI.type == BufferCreateInfo::Type::UNIFORM ? VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT : 0);
     vkBufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     vkBufferCI.queueFamilyIndexCount = 0;
     vkBufferCI.pQueueFamilyIndices = nullptr;
@@ -569,23 +634,342 @@ void *GraphicsAPI_Vulkan::CreateBuffer(const BufferCreateInfo &bufferCI) {
     VULKAN_CHECK(vkAllocateMemory(device, &allocateInfo, nullptr, &memory), "Failed to allocate Memory.");
     VULKAN_CHECK(vkBindBufferMemory(device, buffer, memory, 0), "Failed to bind Memory to Buffer.");
 
-    SetBufferData(buffer, 0, bufferCI.size, bufferCI.data);
     bufferResources[buffer] = {memory, bufferCI};
+    SetBufferData((void *)buffer, 0, bufferCI.size, bufferCI.data);
 
-    return buffer;
+    return (void *)buffer;
 }
+
 void GraphicsAPI_Vulkan::DestroyBuffer(void *&buffer) {
-    VkBuffer vkBuffer = (VkBuffer) buffer;
+    VkBuffer vkBuffer = (VkBuffer)buffer;
     VkDeviceMemory memory = bufferResources[vkBuffer].first;
     vkFreeMemory(device, memory, nullptr);
     vkDestroyBuffer(device, vkBuffer, nullptr);
     bufferResources.erase(vkBuffer);
     buffer = nullptr;
 }
-void *GraphicsAPI_Vulkan::CreateShader(const ShaderCreateInfo &shaderCI) { return nullptr; }
-void GraphicsAPI_Vulkan::DestroyShader(void *&shader) {}
-void *GraphicsAPI_Vulkan::CreatePipeline(const PipelineCreateInfo &pipelineCI) { return nullptr; }
-void GraphicsAPI_Vulkan::DestroyPipeline(void *&pipeline) {}
+
+void *GraphicsAPI_Vulkan::CreateShader(const ShaderCreateInfo &shaderCI) {
+    VkShaderModule shaderModule{};
+    VkShaderModuleCreateInfo shaderModuleCI;
+    shaderModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    shaderModuleCI.pNext = nullptr;
+    shaderModuleCI.flags = 0;
+    shaderModuleCI.codeSize = static_cast<uint32_t>(shaderCI.sourceSize);
+    shaderModuleCI.pCode = reinterpret_cast<const uint32_t *>(shaderCI.sourceData);
+    VULKAN_CHECK(vkCreateShaderModule(device, &shaderModuleCI, nullptr, &shaderModule), "Failed to create ShaderModule.");
+
+    shaderResources[shaderModule] = shaderCI;
+    return (void *)shaderModule;
+}
+
+void GraphicsAPI_Vulkan::DestroyShader(void *&shader) {
+    VkShaderModule shaderModule = (VkShaderModule)shader;
+    vkDestroyShaderModule(device, shaderModule, nullptr);
+    shader = nullptr;
+}
+
+void *GraphicsAPI_Vulkan::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
+    // RenderPass
+    std::vector<VkAttachmentDescription> attachmentDescriptions{};
+    std::vector<VkAttachmentReference> colorAttachmentReferences{};
+    VkAttachmentReference depthAttachmentReference;
+    for (const auto &colorFormat : pipelineCI.colorFormats) {
+        attachmentDescriptions.push_back({
+            static_cast<VkAttachmentDescriptionFlags>(0),
+            static_cast<VkFormat>(colorFormat),
+            static_cast<VkSampleCountFlagBits>(1),
+            VK_ATTACHMENT_LOAD_OP_LOAD,
+            VK_ATTACHMENT_STORE_OP_STORE,
+            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        });
+        colorAttachmentReferences.push_back({static_cast<uint32_t>(attachmentDescriptions.size() - 1),
+                                             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL});
+    }
+    if (pipelineCI.depthFormat) {
+        attachmentDescriptions.push_back({
+            static_cast<VkAttachmentDescriptionFlags>(0),
+            static_cast<VkFormat>(pipelineCI.depthFormat),
+            static_cast<VkSampleCountFlagBits>(1),
+            VK_ATTACHMENT_LOAD_OP_LOAD,
+            VK_ATTACHMENT_STORE_OP_STORE,
+            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+        });
+        depthAttachmentReference = {
+            static_cast<uint32_t>(attachmentDescriptions.size() - 1),
+            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
+    }
+
+    VkSubpassDescription subpassDescription;
+    subpassDescription.flags = static_cast<VkSubpassDescriptionFlags>(0);
+    subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpassDescription.inputAttachmentCount = 0;
+    subpassDescription.pInputAttachments = nullptr;
+    subpassDescription.colorAttachmentCount = static_cast<uint32_t>(colorAttachmentReferences.size());
+    subpassDescription.pColorAttachments = colorAttachmentReferences.data();
+    subpassDescription.pResolveAttachments = nullptr;
+    subpassDescription.pDepthStencilAttachment = pipelineCI.depthFormat ? &depthAttachmentReference : nullptr;
+    subpassDescription.preserveAttachmentCount = 0;
+    subpassDescription.pPreserveAttachments = nullptr;
+
+    VkSubpassDependency subpassDependency;
+    subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    subpassDependency.dstSubpass = 0;
+    subpassDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    subpassDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    subpassDependency.srcAccessMask = VkAccessFlagBits(0);
+    subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    subpassDependency.dependencyFlags = VkDependencyFlagBits(0);
+
+    VkRenderPass renderPass{};
+    VkRenderPassCreateInfo renderPassCI;
+    renderPassCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderPassCI.pNext = nullptr;
+    renderPassCI.flags = 0;
+    renderPassCI.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
+    renderPassCI.pAttachments = attachmentDescriptions.data();
+    renderPassCI.subpassCount = 1;
+    renderPassCI.pSubpasses = &subpassDescription;
+    renderPassCI.dependencyCount = 1;
+    renderPassCI.pDependencies = &subpassDependency;
+    VULKAN_CHECK(vkCreateRenderPass(device, &renderPassCI, nullptr, &renderPass), "Failed to create RenderPass.");
+
+    // Pipeline Layout and DescriptorSetLayout
+    std::vector<VkDescriptorSetLayoutBinding> descSetLayouBindings;
+    for (const DescriptorInfo &descInfo : pipelineCI.layout) {
+        VkDescriptorSetLayoutBinding descSetLayouBinding;
+        descSetLayouBinding.binding = descInfo.bindingIndex;
+        descSetLayouBinding.descriptorType = ToVkDescrtiptorType(descInfo);
+        descSetLayouBinding.descriptorCount = 1;
+        descSetLayouBinding.stageFlags = static_cast<VkShaderStageFlagBits>(1 << (uint32_t)descInfo.stage);
+        descSetLayouBinding.pImmutableSamplers = nullptr;
+        descSetLayouBindings.push_back(descSetLayouBinding);
+    }
+
+    VkDescriptorSetLayout descSetLayout{};
+    VkDescriptorSetLayoutCreateInfo descSetLayoutCI;
+    descSetLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    descSetLayoutCI.pNext = nullptr;
+    descSetLayoutCI.flags = 0;
+    descSetLayoutCI.bindingCount = static_cast<uint32_t>(descSetLayouBindings.size());
+    descSetLayoutCI.pBindings = descSetLayouBindings.data();
+    VULKAN_CHECK(vkCreateDescriptorSetLayout(device, &descSetLayoutCI, nullptr, &descSetLayout), "Failed to create PipelineLayout.");
+
+    VkPipelineLayout pipelineLayout{};
+    VkPipelineLayoutCreateInfo PLCI{};
+    PLCI.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    PLCI.pNext = nullptr;
+    PLCI.flags = 0;
+    PLCI.setLayoutCount = 1;
+    PLCI.pSetLayouts = &descSetLayout;
+    PLCI.pushConstantRangeCount = 0;
+    PLCI.pPushConstantRanges = nullptr;
+    VULKAN_CHECK(vkCreatePipelineLayout(device, &PLCI, nullptr, &pipelineLayout), "Failed to create PipelineLayout.");
+
+    // ShaderStages
+    std::vector<VkPipelineShaderStageCreateInfo> vkShaderStages;
+    vkShaderStages.reserve(pipelineCI.shaders.size());
+    for (auto &shader : pipelineCI.shaders) {
+        VkShaderModule shaderModule = (VkShaderModule)shader;
+        VkPipelineShaderStageCreateInfo shaderStageCI;
+        shaderStageCI.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageCI.pNext = nullptr;
+        shaderStageCI.flags = 0;
+        shaderStageCI.stage = static_cast<VkShaderStageFlagBits>(1 << (uint32_t)shaderResources[shaderModule].type);
+        shaderStageCI.module = shaderModule;
+        shaderStageCI.pName = "main";
+        shaderStageCI.pSpecializationInfo = nullptr;
+        vkShaderStages.push_back(shaderStageCI);
+    }
+
+    // VertexInput
+    std::vector<VkVertexInputBindingDescription> vkVertexInputBindingDescriptions;
+    vkVertexInputBindingDescriptions.reserve(pipelineCI.vertexInputState.bindings.size());
+    for (auto &binding : pipelineCI.vertexInputState.bindings)
+        vkVertexInputBindingDescriptions.push_back({binding.bindingIndex, (uint32_t)binding.stride, VK_VERTEX_INPUT_RATE_VERTEX});
+
+    std::vector<VkVertexInputAttributeDescription> vkVertexInputAttributeDescriptions;
+    vkVertexInputAttributeDescriptions.reserve(pipelineCI.vertexInputState.attributes.size());
+    for (auto &attribute : pipelineCI.vertexInputState.attributes)
+        vkVertexInputAttributeDescriptions.push_back({attribute.attribIndex, attribute.bindingIndex,
+                                                      ToVkFormat(attribute.vertexType), (uint32_t)attribute.offset});
+
+    VkPipelineVertexInputStateCreateInfo vkVertexInputState;
+    vkVertexInputState.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vkVertexInputState.pNext = nullptr;
+    vkVertexInputState.flags = 0;
+    vkVertexInputState.vertexBindingDescriptionCount = static_cast<uint32_t>(vkVertexInputBindingDescriptions.size());
+    vkVertexInputState.pVertexBindingDescriptions = vkVertexInputBindingDescriptions.data();
+    vkVertexInputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(vkVertexInputAttributeDescriptions.size());
+    vkVertexInputState.pVertexAttributeDescriptions = vkVertexInputAttributeDescriptions.data();
+
+    // InputAssembly
+    VkPipelineInputAssemblyStateCreateInfo vkInputAssemblyState;
+    vkInputAssemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    vkInputAssemblyState.pNext = nullptr;
+    vkInputAssemblyState.flags = 0;
+    vkInputAssemblyState.topology = static_cast<VkPrimitiveTopology>(pipelineCI.inputAssemblyState.topology);
+    vkInputAssemblyState.primitiveRestartEnable = pipelineCI.inputAssemblyState.primitiveRestartEnable;
+
+    // Tessellation
+    VkPipelineTessellationStateCreateInfo vkTessellationState;
+    vkTessellationState.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+    vkTessellationState.pNext = nullptr;
+    vkTessellationState.flags = 0;
+    vkTessellationState.patchControlPoints = 0;
+
+    // Viewport
+    std::vector<VkViewport> vkViewports;
+    vkViewports.resize(pipelineCI.colorFormats.size());
+    std::vector<VkRect2D> vkRect2D;
+    vkRect2D.resize(pipelineCI.colorFormats.size());
+
+    VkPipelineViewportStateCreateInfo vkViewportState;
+    vkViewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    vkViewportState.pNext = nullptr;
+    vkViewportState.flags = 0;
+    vkViewportState.viewportCount = static_cast<uint32_t>(vkViewports.size());
+    vkViewportState.pViewports = vkViewports.data();
+    vkViewportState.scissorCount = static_cast<uint32_t>(vkRect2D.size());
+    vkViewportState.pScissors = vkRect2D.data();
+
+    // Rasterisation
+    VkPipelineRasterizationStateCreateInfo vkRasterisationState;
+    vkRasterisationState.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    vkRasterisationState.pNext = nullptr;
+    vkRasterisationState.flags = 0;
+    vkRasterisationState.depthClampEnable = pipelineCI.rasterisationState.depthClampEnable;
+    vkRasterisationState.rasterizerDiscardEnable = pipelineCI.rasterisationState.rasteriserDiscardEnable;
+    vkRasterisationState.polygonMode = static_cast<VkPolygonMode>(pipelineCI.rasterisationState.polygonMode);
+    vkRasterisationState.cullMode = static_cast<VkCullModeFlagBits>(pipelineCI.rasterisationState.cullMode);
+    vkRasterisationState.frontFace = static_cast<VkFrontFace>(pipelineCI.rasterisationState.frontFace);
+    vkRasterisationState.depthBiasEnable = pipelineCI.rasterisationState.depthBiasEnable;
+    vkRasterisationState.depthBiasConstantFactor = pipelineCI.rasterisationState.depthBiasConstantFactor;
+    vkRasterisationState.depthBiasClamp = pipelineCI.rasterisationState.depthBiasClamp;
+    vkRasterisationState.depthBiasSlopeFactor = pipelineCI.rasterisationState.depthBiasSlopeFactor;
+    vkRasterisationState.lineWidth = pipelineCI.rasterisationState.lineWidth;
+
+    // Multisample
+    VkPipelineMultisampleStateCreateInfo vkMultisampleState;
+    vkMultisampleState.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    vkMultisampleState.pNext = nullptr;
+    vkMultisampleState.flags = 0;
+    vkMultisampleState.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pipelineCI.multisampleState.rasterisationSamples);
+    vkMultisampleState.sampleShadingEnable = pipelineCI.multisampleState.sampleShadingEnable;
+    vkMultisampleState.minSampleShading = pipelineCI.multisampleState.minSampleShading;
+    vkMultisampleState.pSampleMask = static_cast<const VkSampleMask *>(&pipelineCI.multisampleState.sampleMask);
+    vkMultisampleState.alphaToCoverageEnable = pipelineCI.multisampleState.alphaToCoverageEnable;
+    vkMultisampleState.alphaToOneEnable = pipelineCI.multisampleState.alphaToOneEnable;
+
+    // DepthStencil
+    VkPipelineDepthStencilStateCreateInfo vkDepthStencilState;
+    vkDepthStencilState.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    vkDepthStencilState.pNext = nullptr;
+    vkDepthStencilState.flags = 0;
+    vkDepthStencilState.depthTestEnable = pipelineCI.depthStencilState.depthTestEnable;
+    vkDepthStencilState.depthWriteEnable = pipelineCI.depthStencilState.depthWriteEnable;
+    vkDepthStencilState.depthCompareOp = static_cast<VkCompareOp>(pipelineCI.depthStencilState.depthCompareOp);
+    vkDepthStencilState.depthBoundsTestEnable = pipelineCI.depthStencilState.depthBoundsTestEnable;
+    vkDepthStencilState.stencilTestEnable = pipelineCI.depthStencilState.stencilTestEnable;
+    vkDepthStencilState.front.failOp = static_cast<VkStencilOp>(pipelineCI.depthStencilState.front.failOp);
+    vkDepthStencilState.front.passOp = static_cast<VkStencilOp>(pipelineCI.depthStencilState.front.passOp);
+    vkDepthStencilState.front.depthFailOp = static_cast<VkStencilOp>(pipelineCI.depthStencilState.front.depthFailOp);
+    vkDepthStencilState.front.compareOp = static_cast<VkCompareOp>(pipelineCI.depthStencilState.front.compareOp);
+    vkDepthStencilState.front.compareMask = pipelineCI.depthStencilState.front.compareMask;
+    vkDepthStencilState.front.writeMask = pipelineCI.depthStencilState.front.writeMask;
+    vkDepthStencilState.front.reference = pipelineCI.depthStencilState.front.reference;
+    vkDepthStencilState.back.failOp = static_cast<VkStencilOp>(pipelineCI.depthStencilState.back.failOp);
+    vkDepthStencilState.back.passOp = static_cast<VkStencilOp>(pipelineCI.depthStencilState.back.passOp);
+    vkDepthStencilState.back.depthFailOp = static_cast<VkStencilOp>(pipelineCI.depthStencilState.back.depthFailOp);
+    vkDepthStencilState.back.compareOp = static_cast<VkCompareOp>(pipelineCI.depthStencilState.back.compareOp);
+    vkDepthStencilState.back.compareMask = pipelineCI.depthStencilState.back.compareMask;
+    vkDepthStencilState.back.writeMask = pipelineCI.depthStencilState.back.writeMask;
+    vkDepthStencilState.back.reference = pipelineCI.depthStencilState.back.reference;
+    vkDepthStencilState.minDepthBounds = pipelineCI.depthStencilState.minDepthBounds;
+    vkDepthStencilState.maxDepthBounds = pipelineCI.depthStencilState.maxDepthBounds;
+
+    // ColourBlend
+    std::vector<VkPipelineColorBlendAttachmentState> vkPipelineColorBlendAttachmentStates;
+    vkPipelineColorBlendAttachmentStates.reserve(pipelineCI.colourBlendState.attachments.size());
+    for (auto &attachment : pipelineCI.colourBlendState.attachments)
+        vkPipelineColorBlendAttachmentStates.push_back(
+            {attachment.blendEnable,
+             static_cast<VkBlendFactor>(attachment.srcColourBlendFactor),
+             static_cast<VkBlendFactor>(attachment.dstColourBlendFactor),
+             static_cast<VkBlendOp>(attachment.colourBlendOp),
+             static_cast<VkBlendFactor>(attachment.srcAlphaBlendFactor),
+             static_cast<VkBlendFactor>(attachment.dstAlphaBlendFactor),
+             static_cast<VkBlendOp>(attachment.alphaBlendOp),
+             static_cast<VkColorComponentFlags>(attachment.colourWriteMask)});
+
+    VkPipelineColorBlendStateCreateInfo vkColourBlendState;
+    vkColourBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    vkColourBlendState.pNext = nullptr;
+    vkColourBlendState.flags = 0;
+    vkColourBlendState.logicOpEnable = pipelineCI.colourBlendState.logicOpEnable;
+    vkColourBlendState.logicOp = static_cast<VkLogicOp>(pipelineCI.colourBlendState.logicOp);
+    vkColourBlendState.attachmentCount = static_cast<uint32_t>(vkPipelineColorBlendAttachmentStates.size());
+    vkColourBlendState.pAttachments = vkPipelineColorBlendAttachmentStates.data();
+    vkColourBlendState.blendConstants[0] = pipelineCI.colourBlendState.blendConstants[0];
+    vkColourBlendState.blendConstants[1] = pipelineCI.colourBlendState.blendConstants[1];
+    vkColourBlendState.blendConstants[2] = pipelineCI.colourBlendState.blendConstants[2];
+    vkColourBlendState.blendConstants[3] = pipelineCI.colourBlendState.blendConstants[3];
+
+    // Dynamic
+    std::vector<VkDynamicState> vkDynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkPipelineDynamicStateCreateInfo vkDynamicState;
+    vkDynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    vkDynamicState.pNext = nullptr;
+    vkDynamicState.flags = 0;
+    vkDynamicState.dynamicStateCount = static_cast<uint32_t>(vkDynamicStates.size());
+    vkDynamicState.pDynamicStates = vkDynamicStates.data();
+
+    // Fill Vulkan structure
+    VkPipeline pipeline{};
+    VkGraphicsPipelineCreateInfo GPCI;
+    GPCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    GPCI.pNext = nullptr;
+    GPCI.flags = 0;
+    GPCI.stageCount = static_cast<uint32_t>(vkShaderStages.size());
+    GPCI.pStages = vkShaderStages.data();
+    GPCI.pVertexInputState = &vkVertexInputState;
+    GPCI.pInputAssemblyState = &vkInputAssemblyState;
+    GPCI.pTessellationState = &vkTessellationState;
+    GPCI.pViewportState = &vkViewportState;
+    GPCI.pRasterizationState = &vkRasterisationState;
+    GPCI.pMultisampleState = &vkMultisampleState;
+    GPCI.pDepthStencilState = &vkDepthStencilState;
+    GPCI.pColorBlendState = &vkColourBlendState;
+    GPCI.pDynamicState = &vkDynamicState;
+    GPCI.layout = pipelineLayout;
+    GPCI.renderPass = renderPass;
+    GPCI.subpass = 0;
+    GPCI.basePipelineHandle = VK_NULL_HANDLE;
+    GPCI.basePipelineIndex = -1;
+
+    VULKAN_CHECK(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &GPCI, nullptr, &pipeline), "Failed to create Graphics Pipeline.");
+    pipelineResources[pipeline] = {pipelineLayout, descSetLayout, renderPass, pipelineCI};
+
+    return (void *)pipeline;
+}
+
+void GraphicsAPI_Vulkan::DestroyPipeline(void *&pipeline) {
+    VkPipeline vkPipeline = (VkPipeline)pipeline;
+    VkPipelineLayout pipelineLayout = std::get<0>(pipelineResources[vkPipeline]);
+    VkDescriptorSetLayout descSetLayout = std::get<1>(pipelineResources[vkPipeline]);
+    VkRenderPass renderPass = std::get<2>(pipelineResources[vkPipeline]);
+    vkDestroyRenderPass(device, renderPass, nullptr);
+    vkDestroyDescriptorSetLayout(device, descSetLayout, nullptr);
+    vkDestroyPipeline(device, vkPipeline, nullptr);
+    pipelineResources.erase(vkPipeline);
+    pipeline = nullptr;
+}
 
 void GraphicsAPI_Vulkan::BeginRendering() {
     VkCommandPoolCreateInfo cmdPoolCI;
@@ -630,6 +1014,11 @@ void GraphicsAPI_Vulkan::BeginRendering() {
 }
 
 void GraphicsAPI_Vulkan::EndRendering() {
+    if (inRenderPass) {
+        vkCmdEndRenderPass(cmdBuffer);
+        inRenderPass = false;
+    }
+    
     if (currentDesktopSwapchainImage) {
         VkImageMemoryBarrier barrier;
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -678,6 +1067,17 @@ void GraphicsAPI_Vulkan::EndRendering() {
     VULKAN_CHECK(vkWaitForFences(device, 1, &fence, true, UINT64_MAX), "Failed to wait for Fence");
     vkDestroyFence(device, fence, nullptr);
 
+    for (const auto &descPoolSet : cmdBufferDescriptorSets[cmdBuffer]) {
+        VULKAN_CHECK(vkFreeDescriptorSets(device, descPoolSet.first, 1, &descPoolSet.second), "Failed to free DescriptorSet.");
+        vkDestroyDescriptorPool(device, descPoolSet.first, nullptr);
+    }
+    cmdBufferDescriptorSets.erase(cmdBuffer);
+
+    for (const VkFramebuffer& framebuffer : cmdBufferFramebuffers[cmdBuffer]) {
+        vkDestroyFramebuffer(device, framebuffer, nullptr);
+    }
+    cmdBufferFramebuffers.erase(cmdBuffer);
+
     vkFreeCommandBuffers(device, cmdPool, 1, &cmdBuffer);
     vkDestroyCommandPool(device, cmdPool, nullptr);
 }
@@ -685,11 +1085,13 @@ void GraphicsAPI_Vulkan::EndRendering() {
 void GraphicsAPI_Vulkan::SetBufferData(void *buffer, size_t offset, size_t size, void *data) {
     VkBuffer vkBuffer = (VkBuffer)buffer;
     VkDeviceMemory memory = bufferResources[vkBuffer].first;
-    void *mappedData;
+    void *mappedData = nullptr;
     VULKAN_CHECK(vkMapMemory(device, memory, offset, size, 0, &mappedData), "Can not map Buffer.");
-    memcpy(mappedData, data, size);
-    //Because the VkDeviceMemory use a heap with properties (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-    //We don't need to use vkFlushMappedMemoryRanges() or vkInvalidateMappedMemoryRanges()
+    if (mappedData) {
+        memcpy(mappedData, data, size);
+        // Because the VkDeviceMemory use a heap with properties (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+        // We don't need to use vkFlushMappedMemoryRanges() or vkInvalidateMappedMemoryRanges()
+    }
     vkUnmapMemory(device, memory);
 };
 
@@ -767,9 +1169,59 @@ void GraphicsAPI_Vulkan::ClearDepth(void *imageView, float d) {
     vkCmdPipelineBarrier(cmdBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
 
     vkCmdClearDepthStencilImage(cmdBuffer, vkImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &clearDepth, 1, &range);
+
+    imageBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    imageBarrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+    imageBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    imageBarrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    imageBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    imageBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    imageBarrier.image = vkImage;
+    imageBarrier.subresourceRange = range;
+    vkCmdPipelineBarrier(cmdBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, VkDependencyFlagBits(0), 0, nullptr, 0, nullptr, 1, &imageBarrier);
 }
 
-void GraphicsAPI_Vulkan::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView) {
+void GraphicsAPI_Vulkan::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView, uint32_t width, uint32_t height, void *pipeline) {
+    if (inRenderPass){
+        vkCmdEndRenderPass(cmdBuffer);
+    }
+
+    VkRenderPass renderPass = std::get<2>(pipelineResources[(VkPipeline)pipeline]);
+
+    std::vector<VkImageView> vkImageViews;
+    for (size_t i = 0; i < colorViewCount; i++) {
+        vkImageViews.push_back((VkImageView)colorViews[i]);
+    }
+    if (depthStencilView) {
+        vkImageViews.push_back((VkImageView)depthStencilView);
+    }
+
+    VkFramebuffer framebuffer{};
+    VkFramebufferCreateInfo framebufferCI;
+    framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    framebufferCI.pNext = nullptr;
+    framebufferCI.flags = 0;
+    framebufferCI.renderPass = renderPass;
+    framebufferCI.attachmentCount = static_cast<uint32_t>(vkImageViews.size());
+    framebufferCI.pAttachments = vkImageViews.data();
+    framebufferCI.width = width;
+    framebufferCI.height = height;
+    framebufferCI.layers = 1;
+    VULKAN_CHECK(vkCreateFramebuffer(device, &framebufferCI, nullptr, &framebuffer), "Failed to create Framebuffer");
+    cmdBufferFramebuffers[cmdBuffer].push_back(framebuffer);
+
+    VkRenderPassBeginInfo renderPassBegin;
+    renderPassBegin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassBegin.pNext = nullptr;
+    renderPassBegin.renderPass = renderPass;
+    renderPassBegin.framebuffer = framebuffer;
+    renderPassBegin.renderArea.offset = {0, 0};
+    renderPassBegin.renderArea.extent.width = framebufferCI.width;
+    renderPassBegin.renderArea.extent.height = framebufferCI.height;
+    renderPassBegin.clearValueCount = 0;
+    renderPassBegin.pClearValues = nullptr;
+    vkCmdBeginRenderPass(cmdBuffer, &renderPassBegin, VK_SUBPASS_CONTENTS_INLINE);
+    inRenderPass    = true;
 }
 
 void GraphicsAPI_Vulkan::SetViewports(Viewport *viewports, size_t count) {
@@ -794,12 +1246,99 @@ void GraphicsAPI_Vulkan::SetScissors(Rect2D *scissors, size_t count) {
 }
 void GraphicsAPI_Vulkan::SetPipeline(void *pipeline) {
     vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, (VkPipeline)pipeline);
+    setPipeline = (VkPipeline)pipeline;
 }
 
 void GraphicsAPI_Vulkan::SetDescriptor(const DescriptorInfo &descriptorInfo) {
+    VkWriteDescriptorSet writeDescSet;
+    writeDescSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeDescSet.pNext = nullptr;
+    writeDescSet.dstSet = VK_NULL_HANDLE;
+    writeDescSet.dstBinding = descriptorInfo.bindingIndex;
+    writeDescSet.dstArrayElement = 0;
+    writeDescSet.descriptorCount = 1;
+    writeDescSet.descriptorType = ToVkDescrtiptorType(descriptorInfo);
+    writeDescSet.pImageInfo = nullptr;
+    writeDescSet.pBufferInfo = nullptr;
+    writeDescSet.pTexelBufferView = nullptr;
+    writeDescSets.push_back({writeDescSet, {}, {}});
+
+    if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
+        VkDescriptorBufferInfo &descBufferInfo = std::get<1>(writeDescSets.back());
+        VkBuffer buffer = (VkBuffer)descriptorInfo.resource;
+        const BufferCreateInfo &bufferCI = bufferResources[buffer].second;
+        descBufferInfo.buffer = buffer;
+        descBufferInfo.offset = 0;
+        descBufferInfo.range = bufferCI.size;
+    } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
+        VkDescriptorImageInfo &descImageInfo = std::get<2>(writeDescSets.back());
+        VkImageView imageView = (VkImageView)descriptorInfo.resource;
+        descImageInfo.sampler = VK_NULL_HANDLE;
+        descImageInfo.imageView = imageView;
+        descImageInfo.imageLayout = descriptorInfo.readWrite ? VK_IMAGE_LAYOUT_GENERAL : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    } else if (descriptorInfo.type == DescriptorInfo::Type::SAMPLER) {
+        VkDescriptorImageInfo &descImageInfo = std::get<2>(writeDescSets.back());
+        VkSampler sampler = (VkSampler)descriptorInfo.resource;
+        descImageInfo.sampler = sampler;
+        descImageInfo.imageView = VK_NULL_HANDLE;
+        descImageInfo.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    } else {
+        std::cout << "Unknown Descriptor Type" << std::endl;
+        DEBUG_BREAK;
+        return;
+    }
 }
 
 void GraphicsAPI_Vulkan::UpdateDescriptors() {
+    VkPipelineLayout pipelineLayout = std::get<0>(pipelineResources[(VkPipeline)setPipeline]);
+    VkDescriptorSetLayout descSetLayout = std::get<1>(pipelineResources[(VkPipeline)setPipeline]);
+    PipelineCreateInfo pipelinCI = std::get<3>(pipelineResources[(VkPipeline)setPipeline]);
+
+    std::vector<VkDescriptorPoolSize> poolSizes;
+    for (const DescriptorInfo &descInfo : pipelinCI.layout) {
+        poolSizes.push_back({ToVkDescrtiptorType(descInfo), 1});
+    }
+
+    VkDescriptorPool descPool{};
+    VkDescriptorPoolCreateInfo descPoolCI;
+    descPoolCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descPoolCI.pNext = nullptr;
+    descPoolCI.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    descPoolCI.maxSets = 1;
+    descPoolCI.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+    descPoolCI.pPoolSizes = poolSizes.data();
+    VULKAN_CHECK(vkCreateDescriptorPool(device, &descPoolCI, nullptr, &descPool), "Failed to create DescriptorPool");
+
+    VkDescriptorSet descSet{};
+    VkDescriptorSetAllocateInfo descSetAI;
+    descSetAI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    descSetAI.pNext = nullptr;
+    descSetAI.descriptorPool = descPool;
+    descSetAI.descriptorSetCount = 1;
+    descSetAI.pSetLayouts = &descSetLayout;
+    VULKAN_CHECK(vkAllocateDescriptorSets(device, &descSetAI, &descSet), "Failed to allocate DescriptorSet.");
+
+    std::vector<VkWriteDescriptorSet> vkWriteDescSets;
+    for (auto &writeDescSet : writeDescSets) {
+        VkWriteDescriptorSet &vkWriteDescSet = std::get<0>(writeDescSet);
+        VkDescriptorBufferInfo &vkDescBufferInfo = std::get<1>(writeDescSet);
+        VkDescriptorImageInfo &vkDescImageInfo = std::get<2>(writeDescSet);
+        
+        vkWriteDescSet.dstSet = descSet;
+        if (vkDescBufferInfo.buffer) {
+            vkWriteDescSet.pBufferInfo = &vkDescBufferInfo;
+        } else if (vkDescImageInfo.imageView || vkDescImageInfo.sampler) {
+            vkWriteDescSet.pImageInfo = &vkDescImageInfo;
+        } else {
+            continue;
+        }
+        vkWriteDescSets.push_back(vkWriteDescSet);
+    }
+    vkUpdateDescriptorSets(device, static_cast<uint32_t>(vkWriteDescSets.size()), vkWriteDescSets.data(), 0, nullptr);
+    writeDescSets.clear();
+
+    vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descSet, 0, nullptr);
+    cmdBufferDescriptorSets[cmdBuffer].push_back({descPool, descSet});
 }
 
 void GraphicsAPI_Vulkan::SetVertexBuffers(void **vertexBuffers, size_t count) {

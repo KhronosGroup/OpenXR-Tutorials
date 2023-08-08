@@ -580,83 +580,43 @@ void GraphicsAPI_D3D11::DestroyBuffer(void *&buffer) {
 }
 
 void *GraphicsAPI_D3D11::CreateShader(const ShaderCreateInfo &shaderCI) {
-    std::string shaderModel = "";
-    switch (shaderCI.type) {
-    case ShaderCreateInfo::Type::VERTEX: {
-        shaderModel = "vs_";
-        break;
-    }
-    case ShaderCreateInfo::Type::TESSELLATION_CONTROL: {
-        shaderModel = "hs_";
-        break;
-    }
-    case ShaderCreateInfo::Type::TESSELLATION_EVALUATION: {
-        shaderModel = "ds_";
-        break;
-    }
-    case ShaderCreateInfo::Type::GEOMETRY: {
-        shaderModel = "gs_";
-        break;
-    }
-    case ShaderCreateInfo::Type::FRAGMENT: {
-        shaderModel = "ps_";
-        break;
-    }
-    case ShaderCreateInfo::Type::COMPUTE: {
-        shaderModel = "cs_";
-        break;
-    }
-    default:
-        std::cout << "ERROR: D3D11: Unknown Shader Type." << std::endl;
-        return nullptr;
-    }
-    shaderModel += "5_0";
-
-    ID3DBlob *compiledBinary = nullptr;
-    ID3DBlob *errorMsgs = nullptr;
-    UINT flags = D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_WARNINGS_ARE_ERRORS;
-
-    HRESULT res = D3DCompile((LPCVOID)shaderCI.sourceData, shaderCI.sourceSize, nullptr, nullptr, nullptr, "main", shaderModel.c_str(), flags, 0, &compiledBinary, &errorMsgs);
-    if (FAILED(res)) {
-        std::string errorMsg((const char *)errorMsgs->GetBufferPointer(), errorMsgs->GetBufferSize());
-        std::cout << errorMsg << std::endl;
-        DEBUG_BREAK;
-    }
+    std::vector<char> compiledBinary(shaderCI.sourceSize);
+    memcpy(compiledBinary.data(), shaderCI.sourceData, shaderCI.sourceSize);
 
     switch (shaderCI.type) {
     case ShaderCreateInfo::Type::VERTEX: {
         ID3D11VertexShader *vertexShader = nullptr;
-        D3D11_CHECK(device->CreateVertexShader(compiledBinary->GetBufferPointer(), compiledBinary->GetBufferSize(), nullptr, &vertexShader), "Failed to create Vertex Shader.");
+        D3D11_CHECK(device->CreateVertexShader(compiledBinary.data(), compiledBinary.size(), nullptr, &vertexShader), "Failed to create Vertex Shader.");
         shaderCompiledBinaries[vertexShader] = compiledBinary;
         return vertexShader;
     }
     case ShaderCreateInfo::Type::TESSELLATION_CONTROL: {
         ID3D11HullShader *hullShader = nullptr;
-        D3D11_CHECK(device->CreateHullShader(compiledBinary->GetBufferPointer(), compiledBinary->GetBufferSize(), nullptr, &hullShader), "Failed to create Hull Shader.");
+        D3D11_CHECK(device->CreateHullShader(compiledBinary.data(), compiledBinary.size(), nullptr, &hullShader), "Failed to create Hull Shader.");
         shaderCompiledBinaries[hullShader] = compiledBinary;
         return hullShader;
     }
     case ShaderCreateInfo::Type::TESSELLATION_EVALUATION: {
         ID3D11DomainShader *domainShader = nullptr;
-        D3D11_CHECK(device->CreateDomainShader(compiledBinary->GetBufferPointer(), compiledBinary->GetBufferSize(), nullptr, &domainShader), "Failed to create Domain Shader.");
+        D3D11_CHECK(device->CreateDomainShader(compiledBinary.data(), compiledBinary.size(), nullptr, &domainShader), "Failed to create Domain Shader.");
         shaderCompiledBinaries[domainShader] = compiledBinary;
         return domainShader;
     }
     case ShaderCreateInfo::Type::GEOMETRY: {
         ID3D11GeometryShader *geometryShader = nullptr;
-        D3D11_CHECK(device->CreateGeometryShader(compiledBinary->GetBufferPointer(), compiledBinary->GetBufferSize(), nullptr, &geometryShader), "Failed to create Geometry Shader.");
+        D3D11_CHECK(device->CreateGeometryShader(compiledBinary.data(), compiledBinary.size(), nullptr, &geometryShader), "Failed to create Geometry Shader.");
         shaderCompiledBinaries[geometryShader] = compiledBinary;
         return geometryShader;
     }
     case ShaderCreateInfo::Type::FRAGMENT: {
         ID3D11PixelShader *pixelShader = nullptr;
-        D3D11_CHECK(device->CreatePixelShader(compiledBinary->GetBufferPointer(), compiledBinary->GetBufferSize(), nullptr, &pixelShader), "Failed to create Pixel Shader.");
+        D3D11_CHECK(device->CreatePixelShader(compiledBinary.data(), compiledBinary.size(), nullptr, &pixelShader), "Failed to create Pixel Shader.");
         shaderCompiledBinaries[pixelShader] = compiledBinary;
         return pixelShader;
     }
     case ShaderCreateInfo::Type::COMPUTE: {
         ID3D11ComputeShader *computeShader = nullptr;
-        D3D11_CHECK(device->CreateComputeShader(compiledBinary->GetBufferPointer(), compiledBinary->GetBufferSize(), nullptr, &computeShader), "Failed to create Compute Shader.");
+        D3D11_CHECK(device->CreateComputeShader(compiledBinary.data(), compiledBinary.size(), nullptr, &computeShader), "Failed to create Compute Shader.");
         shaderCompiledBinaries[computeShader] = compiledBinary;
         return computeShader;
     }
@@ -708,7 +668,7 @@ void GraphicsAPI_D3D11::ClearDepth(void *imageView, float d) {
     immediateContext->ClearDepthStencilView((ID3D11DepthStencilView *)imageView, D3D11_CLEAR_DEPTH, d, 0);
 }
 
-void GraphicsAPI_D3D11::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView) {
+void GraphicsAPI_D3D11::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView, uint32_t width, uint32_t height, void *pipeline) {
     immediateContext->OMSetRenderTargets((UINT)colorViewCount, (ID3D11RenderTargetView *const *)colorViews, (ID3D11DepthStencilView *)depthStencilView);
 }
 
@@ -783,7 +743,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
     ID3D11VertexShader *vertexShader = nullptr;
     immediateContext->VSGetShader(&vertexShader, nullptr, 0);
     if (vertexShader) {
-        ID3DBlob *vsCompiledBinary = shaderCompiledBinaries[vertexShader];
+        std::vector<char> vsCompiledBinary = shaderCompiledBinaries[vertexShader];
 
         std::vector<D3D11_INPUT_ELEMENT_DESC> elements;
         for (const VertexInputAttribute &attribute : pipelineCI.vertexInputState.attributes) {
@@ -799,7 +759,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
         }
 
         ID3D11InputLayout *inputLayout = nullptr;
-        D3D11_CHECK(device->CreateInputLayout(elements.data(), (UINT)elements.size(), vsCompiledBinary->GetBufferPointer(), vsCompiledBinary->GetBufferSize(), &inputLayout), "Failed to create InputLayout");
+        D3D11_CHECK(device->CreateInputLayout(elements.data(), (UINT)elements.size(), vsCompiledBinary.data(), vsCompiledBinary.size(), &inputLayout), "Failed to create InputLayout");
         immediateContext->IASetInputLayout(inputLayout);
         D3D11_SAFE_RELEASE(inputLayout);
     }

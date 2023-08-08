@@ -22,7 +22,7 @@ public:
     virtual void* GetSwapchainImage(uint32_t index) override {
         VkImage image = swapchainImages[index].image;
         imageStates[image] = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        return image;
+        return (void *)image;
     }
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
@@ -51,7 +51,7 @@ public:
     virtual void ClearColor(void* imageView, float r, float g, float b, float a) override;
     virtual void ClearDepth(void* imageView, float d) override;
 
-    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView) override;
+    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView, uint32_t width, uint32_t height, void* pipeline) override;
     virtual void SetViewports(Viewport* viewports, size_t count) override;
     virtual void SetScissors(Rect2D* scissors, size_t count) override;
 
@@ -77,7 +77,6 @@ private:
     uint32_t queueFamilyIndex = 0xFFFFFFFF;
     uint32_t queueIndex = 0xFFFFFFFF;
 
-
     VkCommandPool cmdPool{};
     VkCommandBuffer cmdBuffer{};
 
@@ -94,16 +93,27 @@ private:
 
     std::vector<XrSwapchainImageVulkanKHR> swapchainImages{};
 
-    VkImage currentDesktopSwapchainImage = nullptr;
+    VkImage currentDesktopSwapchainImage = VK_NULL_HANDLE;
 
     std::unordered_map<VkSwapchainKHR, VkSurfaceKHR> surfaces;
     VkSemaphore acquireSemaphore{};
     VkSemaphore submitSemaphore{};
 
     std::unordered_map<VkImage, VkImageLayout> imageStates;
-    std::unordered_map<VkImage, VkDeviceMemory> imageResources;
+    std::unordered_map<VkImage, std::pair<VkDeviceMemory, ImageCreateInfo>> imageResources;
     std::unordered_map<VkImageView, ImageViewCreateInfo> imageViewResources;
     
     std::unordered_map<VkBuffer, std::pair<VkDeviceMemory, BufferCreateInfo>> bufferResources;
+
+    std::unordered_map<VkShaderModule, ShaderCreateInfo> shaderResources;
+    std::unordered_map<VkPipeline, std::tuple<VkPipelineLayout, VkDescriptorSetLayout, VkRenderPass, PipelineCreateInfo>> pipelineResources;
+
+    std::unordered_map<VkCommandBuffer, std::vector<VkFramebuffer>> cmdBufferFramebuffers;
+    bool inRenderPass = false;
+
+    VkPipeline setPipeline = VK_NULL_HANDLE;
+    std::unordered_map<VkCommandBuffer, std::vector<std::pair<VkDescriptorPool, VkDescriptorSet>>> cmdBufferDescriptorSets;
+    std::vector<std::tuple<VkWriteDescriptorSet, VkDescriptorBufferInfo, VkDescriptorImageInfo>> writeDescSets;
+
 };
 #endif

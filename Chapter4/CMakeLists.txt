@@ -41,18 +41,22 @@ set(HEADERS
     "../Common/GraphicsAPI_Vulkan.h"
     "../Common/HelperFunctions.h"
     "../Common/OpenXRDebugUtils.h"
-    "../Common/OpenXRHelper.h" 
-)
-set(HLSL_SHADERS
-    "../Shaders/VertexShader.hlsl" 
-    "../Shaders/PixelShader.hlsl" 
-)
+    "../Common/OpenXRHelper.h")
 
-set(SHADERS )
+set(HLSL_SHADERS
+    "../Shaders/VertexShader.hlsl"
+    "../Shaders/PixelShader.hlsl")
+set(GLSL_SHADERS
+    "../Shaders/VertexShader.glsl"
+    "../Shaders/PixelShader.glsl")
+set(ES_GLSL_SHADERS
+    "../Shaders/VertexShader_GLES.glsl"
+    "../Shaders/PixelShader_GLES.glsl")
+
 if (ANDROID)
-	SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS "VULKAN OPENG_ES" ) 
+	SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS "OPENG_ES VULKAN")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
-    add_library(OpenXRTutorialChapter4 SHARED ${SOURCES} ${HEADERS} ${SHADERS})
+    add_library(OpenXRTutorialChapter4 SHARED ${SOURCES} ${HEADERS})
     target_include_directories(OpenXRTutorialChapter4 PUBLIC "../Common/")
 
     # native_app_glue
@@ -83,8 +87,40 @@ if (ANDROID)
             ${vulkan-lib}
             openxr-gfxwrapper)
 
+    #Shaders
+    #if (Vulkan_FOUND) #TODO: Use NDK, not Vulkan SDK.
+        # GLSL Shaders
+        set_source_files_properties(../Shaders/VertexShader.glsl PROPERTIES ShaderType "vert")
+        set_source_files_properties(../Shaders/PixelShader.glsl PROPERTIES ShaderType "frag")
+    
+        #Vulkan
+        foreach(FILE ${GLSL_SHADERS})
+            get_filename_component(FILE_WE ${FILE} NAME_WE)
+            get_source_file_property(shadertype ${FILE} ShaderType)
+            add_custom_command(TARGET OpenXRTutorialChapter4
+                               COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} $<IF:$<CONFIG:DEBUG>,-Od,> -g -o ${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders/${FILE_WE}.spv
+                               MAIN_DEPENDENCY ${FILE}
+                               COMMENT "GLSL ${FILE}"
+                               WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                               VERBATIM)
+        endforeach(FILE)
+    #endif()
+
+    #OpenGL ES
+    foreach(FILE ${ES_GLSL_SHADERS})
+        get_filename_component(FILE_WE ${FILE} NAME_WE)
+        add_custom_command(TARGET OpenXRTutorialChapter4 
+                           COMMAND ${CMAKE_COMMAND} -E copy 
+                           ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} 
+                           ${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders/${FILE_WE}.glsl
+                           MAIN_DEPENDENCY ${FILE}
+                           COMMENT "GLSL ${FILE}"
+                           WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                           VERBATIM)
+    endforeach(FILE)
+
 else()
-    add_executable(OpenXRTutorialChapter4 ${SOURCES} ${HEADERS} ${SHADERS})
+    add_executable(OpenXRTutorialChapter4 ${SOURCES} ${HEADERS})
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
         set_target_properties( OpenXRTutorialChapter4 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
@@ -97,7 +133,6 @@ else()
         target_link_libraries(OpenXRTutorialChapter4 "d3d11.lib") 
         target_link_libraries(OpenXRTutorialChapter4 "d3d12.lib") 
         target_link_libraries(OpenXRTutorialChapter4 "dxgi.lib") 
-        target_link_libraries(OpenXRTutorialChapter4 "d3dcompiler.lib") 
 		target_compile_definitions(OpenXRTutorialChapter4 PUBLIC OPENXR_GRAPHICS_API_TYPE=${OPENXR_GRAPHICS_API_TYPE})
 	else()
 		SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS "VULKAN OPENGL" ) 
@@ -117,15 +152,68 @@ else()
     set_source_files_properties(../Shaders/PixelShader.hlsl PROPERTIES ShaderType "ps")
     set_source_files_properties(${HLSL_SHADERS} PROPERTIES ShaderModel "4_0")
 
-    foreach(FILE ${HLSL_SHADERS})
-      get_filename_component(FILE_WE ${FILE} NAME_WE)
-      get_source_file_property(shadertype ${FILE} ShaderType)
-      get_source_file_property(shadermodel ${FILE} ShaderModel)
-      add_custom_command(TARGET OpenXRTutorialChapter4
-                         COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.cso /Fd ${CMAKE_BINARY_DIR}/${FILE_WE}.pdb ${FILE}
-                         MAIN_DEPENDENCY ${FILE}
-                         COMMENT "HLSL ${FILE}"
-                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                         VERBATIM)
+    #Shaders
+    if (WIN32)
+        # HLSL Shaders
+        set_source_files_properties(../Shaders/VertexShader.hlsl PROPERTIES ShaderType "vs")
+        set_source_files_properties(../Shaders/PixelShader.hlsl PROPERTIES ShaderType "ps")
+        
+        # D3D11
+        set_source_files_properties(${HLSL_SHADERS} PROPERTIES ShaderModel "5_0")
+        foreach(FILE ${HLSL_SHADERS})
+            get_filename_component(FILE_WE ${FILE} NAME_WE)
+            get_source_file_property(shadertype ${FILE} ShaderType)
+            get_source_file_property(shadermodel ${FILE} ShaderModel)
+            add_custom_command(TARGET OpenXRTutorialChapter4
+                               COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso /Fd ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb ${FILE}
+                               MAIN_DEPENDENCY ${FILE}
+                               COMMENT "HLSL ${FILE}"
+                               WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                               VERBATIM)
+        endforeach(FILE)
+        # D3D12
+        set_source_files_properties(${HLSL_SHADERS} PROPERTIES ShaderModel "5_1")
+        foreach(FILE ${HLSL_SHADERS})
+            get_filename_component(FILE_WE ${FILE} NAME_WE)
+            get_source_file_property(shadertype ${FILE} ShaderType)
+            get_source_file_property(shadermodel ${FILE} ShaderModel)
+            add_custom_command(TARGET OpenXRTutorialChapter4
+                               COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso /Fd ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb ${FILE}
+                               MAIN_DEPENDENCY ${FILE}
+                               COMMENT "HLSL ${FILE}"
+                               WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                               VERBATIM)
+        endforeach(FILE)
+    endif()
+
+    if (Vulkan_FOUND)
+        # GLSL Shaders
+        set_source_files_properties(../Shaders/VertexShader.glsl PROPERTIES ShaderType vert)
+        set_source_files_properties(../Shaders/PixelShader.glsl PROPERTIES ShaderType frag)
+    
+        #Vulkan
+        foreach(FILE ${GLSL_SHADERS})
+            get_filename_component(FILE_WE ${FILE} NAME_WE)
+            get_source_file_property(shadertype ${FILE} ShaderType)
+            add_custom_command(TARGET OpenXRTutorialChapter4
+                               COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} $<IF:$<CONFIG:DEBUG>,-Od,> -g -o ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv
+                               MAIN_DEPENDENCY ${FILE}
+                               COMMENT "GLSL ${FILE}"
+                               WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                               VERBATIM)
+        endforeach(FILE)
+    endif()
+    
+    #OpenGL
+    foreach(FILE ${GLSL_SHADERS})
+        get_filename_component(FILE_WE ${FILE} NAME_WE)
+        add_custom_command(TARGET OpenXRTutorialChapter4 
+                           COMMAND ${CMAKE_COMMAND} -E copy 
+                           ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} 
+                           ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.glsl
+                           MAIN_DEPENDENCY ${FILE}
+                           COMMENT "GLSL ${FILE}"
+                           WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                           VERBATIM)
     endforeach(FILE)
 endif()
