@@ -663,21 +663,29 @@ Below is the code needed for rendering a frame in OpenXR. Each frame, we sequenc
 	:end-before: XR_DOCS_TAG_END_RenderFrame
 	:dedent: 4
 
-The primary structure in use here is the ``XrFrameState``, which contains various helpful members such ``predictedDisplayTime``, which is the predicted time that the frame will be displayed to the user, and ``shouldRender``, which states whether the application should render any graphics. This could occurs when the application is transitioning into or out of a running sesssion or that the system UI is focused and covering the application.
+The primary structure in use here is the ``XrFrameState``, which contains vital members for timing and rendering such ``predictedDisplayTime``, which is the predicted time that the frame will be displayed to the user, and ``shouldRender``, which states whether the application should render any graphics. This could occurs when the application is transitioning into or out of a running sesssion or that the system UI is focused and covering the application.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XrFrameState {
 	:end-at: } XrFrameState;
 
-``xrBeginFrame()`` and ``xrEndFrame()`` should 'book-end' all the rendering code in the XR frame and should be called in pairs. ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign the ``displayTime``, which could have been adjusted from the ``XrFrameState::predictedDisplayTime`` and we assign our ``XrEnvironmentBlendMode``. We also assign a count and pointer to an array of ``XrCompositionLayerBaseHeader *`` s. These Composition Layers are used by the OpenXR compositor to create the final image for the views.
+``xrBeginFrame()`` and ``xrEndFrame()`` should 'book-end' all the rendering in the XR frame and thus should be called as a pair. ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign the ``displayTime``, which could have been adjusted from the ``XrFrameState::predictedDisplayTime`` and we assign our ``XrEnvironmentBlendMode``. We also assign a count and pointer to an array of ``XrCompositionLayerBaseHeader *`` s. These Composition Layers are used by the OpenXR compositor to create the final image for the views.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XrFrameEndInfo {
 	:end-at: } XrFrameEndInfo;
 
-``XrCompositionLayerBaseHeader`` is the base structure from which all other ``XrCompositionLayer...`` types extend. Below is a table of the Core 1.0 and ``XR_KHR_composition_layer_...`` ones.
+``XrCompositionLayerBaseHeader`` is the base structure from which all other ``XrCompositionLayer...`` types extend, and they describe type of layer to be composited and along with the relevant information. We cast a pointer our ``XrCompositionLayer...`` structure to a ``XrCompositionLayerBaseHeader *``, which is just an element in our ``XrCompositionLayerBaseHeader *`` array.
+If we have rendered grapchis this frame, we set the cou
+
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+	:language: cpp
+	:start-at: typedef struct XR_MAY_ALIAS XrCompositionLayerBaseHeader {
+	:end-at: } XrCompositionLayerBaseHeader;
+
+Below is a table of the ``XrCompositionLayer...`` types provided by Core 1.0 and ``XR_KHR_composition_layer_...`` extensions.
 
 +-------------------------------------------+-------------------------------------+
 | Extension                                 | Structure                           |
@@ -700,11 +708,6 @@ The primary structure in use here is the ``XrFrameState``, which contains variou
 +-------------------------------------------+-------------------------------------+
 
 Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` are also in the OpenXR 1.0 specification. 
-
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
-	:language: cpp
-	:start-at: typedef struct XR_MAY_ALIAS XrCompositionLayerBaseHeader {
-	:end-at: } XrCompositionLayerBaseHeader;
 
 In this tutorial, we use the a single ``XrCompositionLayerProjection``, which describes an ``XrSpace`` and an array of ``XrCompositionLayerProjectionView``, which in turn descibe the ``XrPosef`` of the views relative to the reference space, the Field Of View of the views and which ``XrSwapchainSubImage`` the view relative to.
 

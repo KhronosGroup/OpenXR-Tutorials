@@ -1117,8 +1117,7 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
-    OpenXRTutorial_Main(VULKAN
-    );
+    OpenXRTutorial_Main(D3D12);
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)

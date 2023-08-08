@@ -2,7 +2,7 @@
 struct PS_IN
 {
     float4 i_Position : SV_Position;
-    float2 i_TexCoord : TEXCOORD0;
+    nointerpolation float2 i_TexCoord : TEXCOORD0;
 };
 struct PS_OUT
 {

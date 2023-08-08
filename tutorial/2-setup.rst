@@ -231,6 +231,8 @@ Above is the code for creating and destroying an ``XrSession``. ``xrDestroySessi
 
 	Finally, we call ``D3D11CreateDevice`` with found adapter and the ``minFeatureLevel`` from ``XrGraphicsRequirementsD3D11KHR``, if successful the function will return ``S_OK`` and ``ID3D11Device *`` is non-null.
 
+	We also create ``ID3D11Debug`` and ``ID3D11InfoQueue`` for debugging.
+
 	.. literalinclude:: ../Common/GraphicsAPI_D3D11.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetGraphicsBinding
@@ -258,6 +260,8 @@ Above is the code for creating and destroying an ``XrSession``. ``xrDestroySessi
 	From this structure, we use the ``adapterLuid`` to find the appropriate ``IDXGIAdapter1 *``. We create a ``IDXGIFactory4 *`` and then call ``IDXGIFactory4::EnumAdapters1()`` and ``IDXGIAdapter1::GetDesc()`` to get the ``DXGI_ADAPTER_DESC``, so that we can compare the ``adapterLuid`` values.
 
 	Finally, we call ``D3D12CreateDevice`` with found adapter and the ``minFeatureLevel`` from ``XrGraphicsRequirementsD3D12KHR``, if successful the function will return ``S_OK`` and ``ID3D12Device *`` is non-null. Next, we create a simple a ``ID3D12CommandQueue *`` of type ``D3D12_COMMAND_LIST_TYPE_DIRECT``.
+
+	We also query the maximum number of descriptors and set up ``ID3D12DescriptorHeap *`` s for use in rendering. There's also commented out code to enable D3D12 debugging and GPU Based Validation.
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D12.cpp
 		:language: cpp
@@ -287,6 +291,8 @@ Above is the code for creating and destroying an ``XrSession``. ``xrDestroySessi
 
 	Here, we call ``ksGpuWindow_Create()`` and pass the required parameters to setup the OpenGL context. Next, we query the OpenGL version with ``glGetIntegerv()`` with ``GL_MAJOR_VERSION`` and ``GL_MINOR_VERSION``. With these values, we can construct a ``XrVersion`` value to compare with ``XrGraphicsRequirementsOpenGLKHR::minApiVersionSupported``.
 
+	We also setup ``glDebugMessageCallback`` to help with debugging.
+
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetGraphicsBinding
@@ -314,6 +320,8 @@ Above is the code for creating and destroying an ``XrSession``. ``xrDestroySessi
 	In this tutorial, we are using the 'gfxwrapper' for the OpenGL ES API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. Originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ and `OpenGL ES 3.1 <https://registry.khronos.org/OpenGL/specs/es/3.1/es_spec_3.1.withchanges.pdf>`_ specifications.
 
 	Here, we call ``ksGpuWindow_Create()`` and pass the required parameters to setup the OpenGL ES context. Next, we query the OpenGL ES version with ``glGetIntegerv()`` with ``GL_MAJOR_VERSION`` and ``GL_MINOR_VERSION``. With these values, we can construct a ``XrVersion`` value to compare with ``XrGraphicsRequirementsOpenGLESKHR::minApiVersionSupported``.
+
+	We also setup ``glDebugMessageCallback`` to help with debugging.
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL_ES.cpp
 		:language: cpp

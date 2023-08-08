@@ -14,7 +14,7 @@ struct VS_IN
 struct VS_OUT
 {
     float4 o_Position : SV_Position;
-    float2 o_TexCoord : TEXCOORD0;
+    nointerpolation float2 o_TexCoord : TEXCOORD0;
 };
 VS_OUT main(VS_IN IN)
 {
