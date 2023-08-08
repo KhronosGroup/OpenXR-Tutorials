@@ -475,7 +475,7 @@ The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will foc
 +-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
 | XR_SESSION_STATE_UNKNOWN      | This is an unknown, pseudo-default state and should not be returned by the runtime.                                     |
 +-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
-| XR_SESSION_STATE_IDLE         | This is an initial state after creating or after ending the session.                                                     |
+| XR_SESSION_STATE_IDLE         | This is an initial state after creating or after ending the session.                                                    |
 +-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
 | XR_SESSION_STATE_READY        | This state, raised from the runtime, indicates that the session is ready to begin.                                      |
 +-------------------------------+-------------------------------------------------------------------------------------------------------------------------+

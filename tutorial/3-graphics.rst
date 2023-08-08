@@ -670,7 +670,12 @@ The primary structure in use here is the ``XrFrameState``, which contains variou
 	:start-at: typedef struct XrFrameState {
 	:end-at: } XrFrameState;
 
-``xrBeginFrame()`` and ``xrEndFrame()`` should 'book-end' all the rendering code in the XR frame and should be called in pairs. ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign the ``displayTime``, which could be adjusted from the ``XrFrameState::predictedDisplayTime`` and we assign our ``XrEnvironmentBlendMode``. We also assign a count and pointer to an array of ``XrCompositionLayerBaseHeader *`` s. These Composition Layers are used by the OpenXR compositor to create the final image for the views.
+``xrBeginFrame()`` and ``xrEndFrame()`` should 'book-end' all the rendering code in the XR frame and should be called in pairs. ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign the ``displayTime``, which could have been adjusted from the ``XrFrameState::predictedDisplayTime`` and we assign our ``XrEnvironmentBlendMode``. We also assign a count and pointer to an array of ``XrCompositionLayerBaseHeader *`` s. These Composition Layers are used by the OpenXR compositor to create the final image for the views.
+
+.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+	:language: cpp
+	:start-at: typedef struct XrFrameEndInfo {
+	:end-at: } XrFrameEndInfo;
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
