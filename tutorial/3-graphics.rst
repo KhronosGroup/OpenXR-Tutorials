@@ -587,6 +587,31 @@ Now that OpenXR know what the user should see, we need to tell OpenXR from where
 
 First, we fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``
 
+When we create the reference space, we specify a pose (``poseInReferenceSpace``) of identity:
+
+    ``referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};``
+
+i.e. an identity quaternion for the orientation, a position at the origin. Had we specified a different pose, the origin of the reference space would have been offset from the runtime's default.
+
+A space is a frame of reference defined not by its instantaneous values, but semantically, by its purpose and relationship to other spaces. For the actual, instantaneous position and orientation of a space, we call this a "pose".
+
+By using a local space - defined with ``XR_REFERENCE_SPACE_TYPE_LOCAL`` - we specify that the views are relative to the XR hardware's "local" space - either the headset's starting position or some other world-locked origin.
+
+Some devices support stage space - ``XR_REFERENCE_SPACE_TYPE_STAGE`` - this implies a roomscale space with its origin on the floor.
+
+.. figure:: images/OpenXRSpaces.png
+	:alt: OpenXR Reference Spaces
+	:align: left
+
+	Reference Spaces in OpenXR
+
+How these are interpreted is a matter for the OpenXR runtime.
+
+Another kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``).
+View space is oriented with the user's head, and is useful for user-interface and many
+other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
+
+See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
 .. list-table:: OpenXR Reference Spaces
 	:widths: 1 3 1
 	:class: longtable

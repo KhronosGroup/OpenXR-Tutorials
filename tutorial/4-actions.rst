@@ -4,41 +4,6 @@
 
 An OpenXR application has interactions with the user which can be user input to the application, or haptic output back to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: spaces, actions, and bindings.
 
-*****************
-4.1. Using Spaces
-*****************
-
-Key to the interaction system is the concept of a *space*. A space is a frame of reference
-defined not by its instantaneous values, but semantically, by its purpose and relationship to other spaces. For the actual, instantaneous position and orientation of a space, we call this a "pose".
-
-In Section 3.2, we created a _reference_ space called ``localOrStageSpace`` which represents the stationary space within which the application runs. We needed this space to call ``xrLocateViews`` because this function generates a view matrix for each eye. Recall that a view matrix transforms from a "global" reference frame into one oriented with the eye or camera.
-
-By using a local space - defined with ``XR_REFERENCE_SPACE_TYPE_LOCAL`` - we specify that the views are relative to the XR hardware's "local" space - either the headset's starting position or some other world-locked origin.
-
-Some devices support stage space - ``XR_REFERENCE_SPACE_TYPE_STAGE`` - this implies a roomscale space with its origin on the floor.
-
-.. figure:: images/OpenXRSpaces.png
-	:alt: OpenXR Reference Spaces
-	:align: left
-
-	Reference Spaces in OpenXR
-
-How these are actually interpreted is a matter for the OpenXR runtime.
-
-When we created the reference space, we specified a pose (``poseInReferenceSpace``) of identity:
-
-    ``referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};``
-
-i.e. an identity quaternion for the orientation, a position at the origin.
-
-Had we specified a different pose, the origin of the reference space would have been offset from the runtime's default.
-
-Another kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``).
-View space is oriented with the user's head, and is useful for user-interface and many
-other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
-
-See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
-
 ************************************
 4.2 Creating Actions and Action Sets
 ************************************
@@ -144,14 +109,14 @@ Theory and Best Practices for Interaction Profiles
 
 To get the best results from your app on the end-user's device, it is important to understand the key principles behind the Interaction Profile system. These are laid out in the OpenXR Guide (https://github.com/KhronosGroup/OpenXR-Guide/blob/main/chapters/goals_design_philosophy.md) but in brief:
 
-* An app written for OpenXR should work without modification on any device/runtime combination, even those created after the app has been written.
-* A device and runtime that support OpenXR should work with any OpenXR-compatible application, even those written after the device has been built.
+* An app written for OpenXR should work without modification on device/runtime combination, even those created after the app has been written.
+* An OpenXR device and runtime should work with any OpenXR application, even those not tested with that device.
 
-The way this is achieved is as follows: usually, each device will have its own "native" profile, and should also support "khr/simple_controller". As a developer, *you should test the devices and runtimes you have*, and you should *specify profile bindings for each device you have tested*. You should *not* implement profiles you have not tested or try to anticipate profiles or features that have not been implemented. It is the *runtime's responsibility* to support non-native runtimes where possible, 
+The way this is achieved is as follows: usually, each device will have its own "native" profile, and should also support "khr/simple_controller". As a developer, *you should test the devices and runtimes you have*, and you should *specify profile bindings for each device you have tested*. You should *not* implement profiles you have not tested. It is the *runtime's responsibility* to support non-native profiles where possible, either automatically, or with the aid of user-specified rebinding.
 
 A device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_adding_input_sources_via_extensions).
 
-See also https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles.
+See also `semantic-path-interaction-profiles <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles>`_.
 
 
 ****************************
