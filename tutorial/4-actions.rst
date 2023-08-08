@@ -92,7 +92,7 @@ Here we've created each action with a little local lambda function `CreateAction
 Each Action and ActionSet has both a name, for internal use, and a localized description to show to the end-user. This is because the user may want to re-map actions from the default controls, so there must be a human-readable name to show them.
 
 *************************************
-4.2 Interaction Profiles and Bindings
+4.3 Interaction Profiles and Bindings
 *************************************
 
 As OpenXR is an API for many different devices, it needs to provide a way for you as a developer to refer to the various buttons, joysticks, inputs and outputs that a device may have, without needing to know in advance which device or devices the user will have.
@@ -136,7 +136,7 @@ By means of a lambda function `SuggestBindings`, we call into OpenXR with a give
 	:end-before: XR_DOCS_TAG_END_SuggestBindings2
 	:dedent: 0
 
-Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile ( and "/interaction_profiles/khr/simple_controller" should *always* be supported in an OpenXR-compliant runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
+Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile ( and "/interaction_profiles/khr/simple_controller" should *always* be supported in an OpenXR runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
 The suggested bindings are not guaranteed to be used: that's up to the runtime. Some runtimes allow users to override the default bindings, and OpenXR expects this.
 
 Theory and Best Practices for Interaction Profiles
@@ -145,18 +145,18 @@ Theory and Best Practices for Interaction Profiles
 To get the best results from your app on the end-user's device, it is important to understand the key principles behind the Interaction Profile system. These are laid out in the OpenXR Guide (https://github.com/KhronosGroup/OpenXR-Guide/blob/main/chapters/goals_design_philosophy.md) but in brief:
 
 * An app written for OpenXR should work without modification on any device/runtime combination, even those created after the app has been written.
-* A device and runtime that are OpenXR-compliant should work with any OpenXR-compatible application, even those written after the device has been built.
+* A device and runtime that support OpenXR should work with any OpenXR-compatible application, even those written after the device has been built.
 
 The way this is achieved is as follows: usually, each device will have its own "native" profile, and should also support "khr/simple_controller". As a developer, *you should test the devices and runtimes you have*, and you should *specify profile bindings for each device you have tested*. You should *not* implement profiles you have not tested or try to anticipate profiles or features that have not been implemented. It is the *runtime's responsibility* to support non-native runtimes where possible, 
 
 A device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_adding_input_sources_via_extensions).
 
+See also https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles.
 
-See also https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles and 
 
-
-Using Actions in the app
-------------------------
+****************************
+4.4 Using Actions in the app
+****************************
 
 ActionSets and Suggested Bindings are created before the session is initialized. There is session-specific setup to be done for our actions also. After the call to CreateResources(), add:
 
