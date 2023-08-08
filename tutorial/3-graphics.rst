@@ -677,6 +677,30 @@ The primary structure in use here is the ``XrFrameState``, which contains variou
 	:start-at: typedef struct XrFrameEndInfo {
 	:end-at: } XrFrameEndInfo;
 
+``XrCompositionLayerBaseHeader`` is the base structure from which all other ``XrCompositionLayer...`` types extend. Below is a table of the Core 1.0 and ``XR_KHR_composition_layer_...`` ones.
+
++-------------------------------------------+-------------------------------------+
+| Extension                                 | Structure                           |
++-------------------------------------------+-------------------------------------+
+| Core 1.0                                  | XrCompositionLayerProjection        |
++-------------------------------------------+-------------------------------------+
+| Core 1.0                                  | XrCompositionLayerQuad              |
++-------------------------------------------+-------------------------------------+
+| XR_KHR_composition_layer_cube             | XrCompositionLayerCubeKHR           |
++-------------------------------------------+-------------------------------------+
+| XR_KHR_composition_layer_depth            | XrCompositionLayerDepthInfoKHR      |
++-------------------------------------------+-------------------------------------+
+| XR_KHR_composition_layer_cylinder         | XrCompositionLayerCylinderKHR       |
++-------------------------------------------+-------------------------------------+
+| XR_KHR_composition_layer_equirect         | XrCompositionLayerEquirectKHR       |
++-------------------------------------------+-------------------------------------+
+| XR_KHR_composition_layer_color_scale_bias | XrCompositionLayerColorScaleBiasKHR |
++-------------------------------------------+-------------------------------------+
+| XR_KHR_composition_layer_equirect2        | XrCompositionLayerEquirect2KHR      |
++-------------------------------------------+-------------------------------------+
+
+Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` are also in the OpenXR 1.0 specification. 
+
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XR_MAY_ALIAS XrCompositionLayerBaseHeader {

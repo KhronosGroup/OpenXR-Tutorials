@@ -414,7 +414,7 @@ private:
             OPENXR_CHECK(xrBeginFrame(m_session, &frameBeginInfo), "Failed to begin the XR Frame.");
 
             bool rendered = false;
-            XrCompositionLayerBaseHeader *layers[1] = {nullptr};
+            std::vector<XrCompositionLayerBaseHeader *> layers;
             XrCompositionLayerProjection layerProjection{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
             std::vector<XrCompositionLayerProjectionView> layerProjectionViews;
 
@@ -422,20 +422,15 @@ private:
             if (sessionActive && frameState.shouldRender) {
                 rendered = RenderLayer(frameState.predictedDisplayTime, layerProjection, layerProjectionViews);
                 if (rendered) {
-                    layers[0] = reinterpret_cast<XrCompositionLayerBaseHeader *>(&layerProjection);
+                    layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader *>(&layerProjection));
                 }
             }
 
             XrFrameEndInfo frameEndInfo{XR_TYPE_FRAME_END_INFO};
             frameEndInfo.displayTime = frameState.predictedDisplayTime;
             frameEndInfo.environmentBlendMode = m_environmentBlendMode;
-            if (rendered) {
-                frameEndInfo.layerCount = 1;
-                frameEndInfo.layers = reinterpret_cast<XrCompositionLayerBaseHeader **>(&layers);
-            } else {
-                frameEndInfo.layerCount = 0;
-                frameEndInfo.layers = nullptr;
-            }
+            frameEndInfo.layerCount = static_cast<uint32_t>(layers.size());
+            frameEndInfo.layers = layers.data();
             OPENXR_CHECK(xrEndFrame(m_session, &frameEndInfo), "Failed to end the XR Frame.");
         }
     }

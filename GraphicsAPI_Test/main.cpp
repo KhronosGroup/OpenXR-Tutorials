@@ -33,7 +33,7 @@ static void WindowUpdate() {
 }
 
 GraphicsAPI *graphicsAPI = nullptr;
-GraphicsAPI_Type apiType = VULKAN;
+GraphicsAPI_Type apiType = D3D12;
 int64_t swapchainFormat = 0;
 void *vertexBuffer = nullptr;
 void *indexBuffer = nullptr;

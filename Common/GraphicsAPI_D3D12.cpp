@@ -178,9 +178,9 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
     XrGraphicsRequirementsD3D12KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR};
     OPENXR_CHECK(xrGetD3D12GraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for D3D12.");
 
-    /*D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
+    D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
     debug->EnableDebugLayer();
-    reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);*/
+    reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);
 
     D3D12_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
 
@@ -1178,8 +1178,8 @@ void GraphicsAPI_D3D12::UpdateDescriptors() {
         rootParameterIndex++;
     }
 
-    CBV_SRV_UAV_DescriptorOffset += Current_CBV_SRV_UAV_DescriptorOffset;
-    SAMPLER_DescriptorOffset += Current_SAMPLER_DescriptorOffset;
+    CBV_SRV_UAV_DescriptorOffset = Current_CBV_SRV_UAV_DescriptorOffset;
+    SAMPLER_DescriptorOffset = Current_SAMPLER_DescriptorOffset;
 
     descriptorInfos.clear();
 }
