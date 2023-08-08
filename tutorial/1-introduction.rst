@@ -182,7 +182,7 @@ With the OpenXR loader and your graphics API selected, you're ready to start cre
 1.4 Project Setup
 *****************
 
-This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.1 Creating an XrInstance / xrGetSystem>` and will make references to the ``/Chapter2`` folder. It explains including the OpenXR headers, linking the ``openxr_loader`` library, grpahics API integration, other boilerplate code and finally creating a simple stub-application with the ``OpenXRTutorial`` class to test.
+This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.1 Creating an XrInstance / xrGetSystem>` and will make references to the ``/Chapter2`` folder. It explains including the OpenXR headers, linking the ``openxr_loader`` library, graphics API integration, other boilerplate code and finally creating a simple stub-application with the ``OpenXRTutorial`` class to test.
 
 1.4.1 CMake and Project Files
 =============================
@@ -272,7 +272,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:end-before: if (ANDROID) # Android
 			:emphasize-lines: 4, 9, 13, 18
 
-	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your grapchis API choice.
+	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
 
 	.. container:: d3d11
 		:name: d3d11-id-1
@@ -550,7 +550,7 @@ GraphicsAPI
 
 	:download:`GraphicsAPI_Vulkan.cpp <../Common/GraphicsAPI_Vulkan.cpp>`
 
-This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The derived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and grapchis API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. This tutorial demonstrates all five graphics APIs, you will only need to select one ``XR_USE_PLATFORM_...`` macro and one ``XR_USE_GRAPHICS_API_...`` macro.
+This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The derived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and graphics API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. This tutorial demonstrates all five graphics APIs, you will only need to select one ``XR_USE_PLATFORM_...`` macro and one ``XR_USE_GRAPHICS_API_...`` macro.
 
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp

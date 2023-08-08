@@ -670,29 +670,28 @@ The primary structure in use here is the ``XrFrameState``, which contains vital 
 	:start-at: typedef struct XrFrameState {
 	:end-at: } XrFrameState;
 
-``xrBeginFrame()`` and ``xrEndFrame()`` should 'book-end' all the rendering in the XR frame and thus should be called as a pair. ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign the ``displayTime``, which could have been adjusted from the ``XrFrameState::predictedDisplayTime`` and we assign our ``XrEnvironmentBlendMode``. We also assign a count and pointer to an array of ``XrCompositionLayerBaseHeader *`` s. These Composition Layers are used by the OpenXR compositor to create the final image for the views.
+``xrBeginFrame()`` and ``xrEndFrame()`` should 'book-end' all the rendering in the XR frame and thus should be called as a pair. ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign ``XrFrameState::predictedDisplayTime`` to ``XrFrameEndInfo::displayTime``. It should be noted that we can modify this value during the frame. Next, we assign to ``XrFrameEndInfo::environmentBlendMode`` our selected environment blend mode. Last, we assign the size of and a pointer to an ``std::vector<XrCompositionLayerBaseHeader *>``. These Composition Layers are used by the OpenXR compositor to create the final image for the views.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XrFrameEndInfo {
 	:end-at: } XrFrameEndInfo;
 
-``XrCompositionLayerBaseHeader`` is the base structure from which all other ``XrCompositionLayer...`` types extend, and they describe type of layer to be composited and along with the relevant information. We cast a pointer our ``XrCompositionLayer...`` structure to a ``XrCompositionLayerBaseHeader *``, which is just an element in our ``XrCompositionLayerBaseHeader *`` array.
-If we have rendered grapchis this frame, we set the cou
+``XrCompositionLayerBaseHeader`` is the base structure from which all other ``XrCompositionLayer...`` types extend. They describe the type of layer to be composited along with the relevant information. If we have rendered any graphics this frame, we cast the memory address our ``XrCompositionLayer...`` structure to a ``XrCompositionLayerBaseHeader *`` and push it back into out ``std::vector<XrCompositionLayerBaseHeader *>``, which is assigned in our ``XrFrameEndInfo`` structure.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XR_MAY_ALIAS XrCompositionLayerBaseHeader {
 	:end-at: } XrCompositionLayerBaseHeader;
 
-Below is a table of the ``XrCompositionLayer...`` types provided by Core 1.0 and ``XR_KHR_composition_layer_...`` extensions.
+Below is a table of the ``XrCompositionLayer...`` types provided by OpenXR 1.0 Core Specification and ``XR_KHR_composition_layer_...`` extensions.
 
 +-------------------------------------------+-------------------------------------+
 | Extension                                 | Structure                           |
 +-------------------------------------------+-------------------------------------+
-| Core 1.0                                  | XrCompositionLayerProjection        |
+| OpenXR 1.0 Core Specification             | XrCompositionLayerProjection        |
 +-------------------------------------------+-------------------------------------+
-| Core 1.0                                  | XrCompositionLayerQuad              |
+| OpenXR 1.0 Core Specification             | XrCompositionLayerQuad              |
 +-------------------------------------------+-------------------------------------+
 | XR_KHR_composition_layer_cube             | XrCompositionLayerCubeKHR           |
 +-------------------------------------------+-------------------------------------+
@@ -709,18 +708,55 @@ Below is a table of the ``XrCompositionLayer...`` types provided by Core 1.0 and
 
 Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` are also in the OpenXR 1.0 specification. 
 
-In this tutorial, we use the a single ``XrCompositionLayerProjection``, which describes an ``XrSpace`` and an array of ``XrCompositionLayerProjectionView``, which in turn descibe the ``XrPosef`` of the views relative to the reference space, the Field Of View of the views and which ``XrSwapchainSubImage`` the view relative to.
-
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XrSwapchainSubImage {
 	:end-at: } XrCompositionLayerProjection;
 
+In this tutorial, we use the a single ``XrCompositionLayerProjection``, which describes the ``XrCompositionLayerFlags``, an ``XrSpace`` and a count and pointer to an array of ``XrCompositionLayerProjectionView``.
+
+The compositing of layers can be set on a per-layer basis through the use of the per-texel alpha channel. This is done throught the use of the ``XrCompositionLayerFlags`` member. Below is a description of these flags.
+
++-------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+
+| XrCompositionLayerFlags                               | Descriptions                                                                                              |
++-------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+
+| XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT | Enables chromatic aberration correction if not already done. It is planned to be deprecated in OpenXR 1.1 |
++-------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+
+| XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT   | Enables the layer texture's alpha channel for blending                                                    |
++-------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+
+| XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT        | States that the color channels have not been pre-multiplied with alpha for transparency                   |
++-------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+
+`10.6.1. Composition Layer Flags <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#composition-layer-flags>`_.
+
+``XrCompositionLayerProjectionView`` descibes the ``XrPosef`` of the view relative to the reference space, the field of view of the view and to which ``XrSwapchainSubImage`` the view relates.
+
+Before we call ``RenderLayer()``, we check that the ``XrSession`` is active, as we don't want to needlessly render graphics and we check whether OpenXR wants us to render.
+
 3.2.4 RenderLayer
 =================
+
+From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate the views within the reference space, render to our swapachain images and fill out the ``XrCompositionLayerProjection`` and ``std::vector<XrCompositionLayerProjectionView>`` parameters.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer
 	:end-before: XR_DOCS_TAG_END_RenderLayer
 	:dedent: 4
+
+Our first call is to ``xrLocateViews()``, which takes a ``XrViewLocateInfo`` structure and return a ``XrViewState`` structure and an array of ``XrView`` s. This functions tells us where the views are in relation to the reference space, as an ``XrPosef``, as well as the field of view, as an ``XrFovf``, for each view; this information is stored the ``std::vector<XrView>``. The returned ``XrViewState`` contains a member of type ``XrViewStateFlags``, which descibes whether the position and/or orientation is valid and/or tracked.
+
+The ``XrViewLocateInfo`` structure take a reference space and a display time, from which the view poses are calculated, and  takes the view configuration type to locate the correct number of view for the system. If we can't locate the views, we return ``false`` from this function.
+
+We resize our ``std::vector<XrCompositionLayerProjectionView>`` parameter, and for each view we render our graphics based on the acquired ``XrView``. The following section is repeated for each view.
+
+We now acquire an image from the swapchain to render to by calling ``xrAcquireSwapchainImage()``. This returns to us an index, with which we can use to index into an array of swapchain images, or in the case of this tutorial the array of structures containing our swapachain images. Next, we call ``xrWaitSwapchainImage()``, we do this avoid writing to an image that the OpenXR compositor in still reading from. The call will block the CPU thread until the swapachain image is available to use. Skipping a little bit forward to the end of the rendering of the view, we call ``xrReleaseSwapchainImage()``. This call hands the swapchain image back to OpenXR for the compositor to use in create the image for the view. Like with ``xrBeginFrame()`` and ``xrEndFrame()``, the ``xr...SwapchainImage()`` functions need to be called in sequence for correct API usage.
+
+After we have waited for the swapachain image, before releasing it, we fill out the ``XrCompositionLayerProjectionView`` associated with the view and render our graphics. First, we quickly get the ``width`` and ``height`` of the view from the ``XrViewConfigurationView``. We used the ``recommendedImageRectWidth`` and ``recommendedImageRectHeight`` values when creating the swapachains.
+
+We can now fill out the ``XrCompositionLayerProjectionView`` using the ``pose`` and ``fov`` from the associated ``XrView``. For the ``XrSwapchainSubImage`` member, we assign the ``swapachain`` used, the ``offset`` and ``extent`` of the render area and ``imageArrayIndex``. If you are using multiview rendering and your single swapachain is comprised of 2D Array images, where each subresource layer in the image relates to a view, you can use ``imageArrayIndex`` to specifies the subresource layer of the image used in the rendering of this view.
+
+After filling out the ``XrCompositionLayerProjectionView`` structure, we can use this tutorial's ``GraphicsAPI`` to clear the images as a very simple test. We first call ``GraphicsAPI::BeginRendering()`` to setup any API-specific objects needed for rendering. Next, we call ``GraphicsAPI::ClearColor()`` taking the created color image view for the swapachain image; note here that we use different clear colors depending on whether our environment blend mode is opaque or otherwise. We also clear our depth image view with ``GraphicsAPI::ClearDepth()``. Finally, we call ``GraphicsAPI::EndRendering()`` to finish the rendering then this function will submit the GPU work and wait for it to be completed.
+
+Now that we have rendered both view, we fill out the ``XrCompositionLayerProjection`` structure, we assign our compositing flags of ``XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT`` and assign our reference space. We assign to the member ``viewCount`` the size of the ``std::vector<XrCompositionLayerProjectionView>`` and to the member ``views`` a pointer to the first element in the ``std::vector<XrCompositionLayerProjectionView>``. Finally, we return ``true`` from the function to state that we have successfully completed our rendering.
+
+We should now have clear colors rendered to each view in your XR system. From here, you can easily expand the graphical complexity of the scene. In the next chapter, we will discuss how to use OpenXR to interact with your XR application enabling new experiences in spatial computing.
