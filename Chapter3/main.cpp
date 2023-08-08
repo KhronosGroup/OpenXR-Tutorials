@@ -464,8 +464,6 @@ private:
 
             const uint32_t &width = m_viewConfigurationViews[i].recommendedImageRectWidth;
             const uint32_t &height = m_viewConfigurationViews[i].recommendedImageRectHeight;
-            GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
-            GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
 
             layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
             layerProjectionViews[i].pose = views[i].pose;
