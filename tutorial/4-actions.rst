@@ -11,23 +11,29 @@ An OpenXR application has interactions with the user which can be user input to 
 Key to the interaction system is the concept of a *space*. A space is a frame of reference
 defined not by its instantaneous values, but semantically, by its purpose and relationship to other spaces. For the actual, instantaneous position and orientation of a space, we call this a "pose".
 
-In Section 3.2, we created a _reference_ space called ```localOrStageSpace``` which represents the stationary space within which the application runs. We needed this space to call ```xrLocateViews``` because this function generates a view matrix for each eye. Recall that a view matrix transforms from a "global" reference frame into one oriented with the eye or camera.
+In Section 3.2, we created a _reference_ space called ``localOrStageSpace`` which represents the stationary space within which the application runs. We needed this space to call ``xrLocateViews`` because this function generates a view matrix for each eye. Recall that a view matrix transforms from a "global" reference frame into one oriented with the eye or camera.
 
-By using a local space - defined with ```XR_REFERENCE_SPACE_TYPE_LOCAL``` - we specify that the views are relative to the XR hardware's "local" space - either the headset's starting position or some other world-locked origin.
+By using a local space - defined with ``XR_REFERENCE_SPACE_TYPE_LOCAL`` - we specify that the views are relative to the XR hardware's "local" space - either the headset's starting position or some other world-locked origin.
 
-Some devices support stage space - ```XR_REFERENCE_SPACE_TYPE_STAGE``` - this implies a roomscale space with its origin on the floor.
+Some devices support stage space - ``XR_REFERENCE_SPACE_TYPE_STAGE`` - this implies a roomscale space with its origin on the floor.
+
+.. figure:: images/OpenXRSpaces.png
+	:alt: OpenXR Reference Spaces
+	:align: left
+
+	Reference Spaces in OpenXR
 
 How these are actually interpreted is a matter for the OpenXR runtime.
 
-When we created the reference space, we specified a pose (```poseInReferenceSpace```) of identity:
+When we created the reference space, we specified a pose (``poseInReferenceSpace``) of identity:
 
-    referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
+    ``referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};``
 
 i.e. an identity quaternion for the orientation, a position at the origin.
 
 Had we specified a different pose, the origin of the reference space would have been offset from the runtime's default.
 
-Another kind of reference space is view space (```XR_REFERENCE_SPACE_TYPE_VIEW```).
+Another kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``).
 View space is oriented with the user's head, and is useful for user-interface and many
 other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
 
@@ -43,10 +49,9 @@ At the end of your application class, add this code:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_Actions
 	:end-before: XR_DOCS_TAG_END_Actions
-	:dedent: 1
+	:dedent: 0
 
 Here, we have defined an Action Set: a group of related actions that are created together. The individual actions, such as selectAction and triggerAction, will belong to this set. For a pose action, we need an XrSpace, so leftGripPoseSpace has been declared. And we'll keep a copy of the pose itself, leftGripPose, which will change per-frame.
-
 
 ActionSets are created before the session is initialized, so in Run(), after the call to GetSystemID(), add this line:
 
@@ -54,9 +59,9 @@ ActionSets are created before the session is initialized, so in Run(), after the
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CallCreateActionSet
 	:end-before: XR_DOCS_TAG_END_CallCreateActionSet
-	:dedent: 1
+	:dedent: 2
 
-After the definition of GetSystemID(), we'll add this helper function that converts a string into an XrPath. Add:
+After the definition of GetSystemID(), we'll add these helper functions that convert a string into an XrPath, and vice-versa. Add:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -72,7 +77,9 @@ Now we will define the `CreateActionSet` function:
 	:end-before: XR_DOCS_TAG_END_CreateActionSet
 	:dedent: 1
 
-You can create multiple ActionSets, but we only need one for this example. The ActionSet is created with a name, and a localized string for its description. Now add:
+An ActionSet is a group of actions that apply in a specific context. You might have an ActionSet for when your XR game is showing a pause menu or control panel, and a different ActionSet for in-game. There might even be different
+ActionSets for different situations in an XR application: rowing in a boat, climbing a cliff, and so on.
+So you can create multiple ActionSets, but we only need one for this example. The ActionSet is created with a name, and a localized string for its description. Now add:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -81,6 +88,8 @@ You can create multiple ActionSets, but we only need one for this example. The A
 	:dedent: 1
 
 Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is. It also, optionally, has a list of sub-action paths. A sub-action is, essentially the same action on a different control device: left- or right-hand controllers for example.
+
+Each Action and ActionSet has both a name, for internal use, and a localized description to show to the end-user. This is because the user may want to re-map actions from the default controls, so there must be a human-readable name to show them.
 
 *************************************
 4.2 Interaction Profiles and Bindings
@@ -93,11 +102,7 @@ To do this, OpenXR defines the concept of *interaction profiles*. An interaction
 The first element of the interaction profile is the Profile Path, of the form "/interaction_profiles/<vendor_name>/<type_name>". Then, each interaction is defined by a
 path with three elements: the Profile Path, the User Path, and the Component Path. The User Path is a string identifying the controller device, e.g. "/user/hand/left", or "/user/gamepad". The Component Path is a string identifying the specific input or output, e.g. "/input/select/click" or "/output/haptic_left_trigger".
 
-For example, the Khronos Simple Controller Profile, supported by many devices, has the path "/interaction_profiles/khr/simple_controller", and user paths "/user/hand/left" and "/user/hand/right". The component paths are "/input/select/click", "/input/menu/click", "/input/grip/pose", "/input/aim/pose", "/output/haptic". Putting the three parts together, we might identify the select button on the left hand controller as "/interaction_profiles/khr/simple_controller/user/hand/left/input/select/click".
-
-It's important to note that although the profile paths mention specific devices, it's not the case that each device has its own profile path, or that each device supports only one profile. Rather, these should be considered as examples of known controller arrangements. A device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_adding_input_sources_via_extensions).
-
-See also https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles.
+For example, the Khronos Simple Controller Profile has the path "/interaction_profiles/khr/simple_controller", and user paths "/user/hand/left" and "/user/hand/right". The component paths are "/input/select/click", "/input/menu/click", "/input/grip/pose", "/input/aim/pose", "/output/haptic". Putting the three parts together, we might identify the select button on the left hand controller as "/interaction_profiles/khr/simple_controller/user/hand/left/input/select/click".
 
 We will now show how to suggest a these profiles are used in practice.
 
@@ -131,11 +136,27 @@ By means of a lambda function `SuggestBindings`, we call into OpenXR with a give
 	:end-before: XR_DOCS_TAG_END_SuggestBindings2
 	:dedent: 1
 
-Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile "/interaction_profiles/khr/simple_controller", it will recognize these paths and can map them to its own controls. If the user's device does not support this profile, the bindings will be ignored.
-
-**Bindings best practices**
-
+Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile ( and "/interaction_profiles/khr/simple_controller" should *always* be supported in an OpenXR-compliant runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
 The suggested bindings are not guaranteed to be used: that's up to the runtime. Some runtimes allow users to override the default bindings, and OpenXR expects this.
+
+Theory and Best Practices for Interaction Profiles
+--------------------------------------------------
+
+To get the best results from your app on the end-user's device, it is important to understand the key principles behind the Interaction Profile system. These are laid out in the OpenXR Guide (https://github.com/KhronosGroup/OpenXR-Guide/blob/main/chapters/goals_design_philosophy.md) but in brief:
+
+* An app written for OpenXR should work without modification on any device/runtime combination, even those created after the app has been written.
+* A device and runtime that are OpenXR-compliant should work with any OpenXR-compatible application, even those written after the device has been built.
+
+The way this is achieved is as follows: usually, each device will have its own "native" profile, and should also support "khr/simple_controller". As a developer, *you should test the devices and runtimes you have*, and you should *specify profile bindings for each device you have tested*. You should *not* implement profiles you have not tested or try to anticipate profiles or features that have not been implemented. It is the *runtime's responsibility* to support non-native runtimes where possible, 
+
+A device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_adding_input_sources_via_extensions).
+
+
+See also https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles and 
+
+
+Using Actions in the app
+------------------------
 
 ActionSets and Suggested Bindings are created before the session is initialized. There is session-specific setup to be done for our actions also. After the call to CreateResources(), add:
 
@@ -154,6 +175,14 @@ Now after the definition of SuggestBindings(), add:
 	:dedent: 1
 
 For one pose, this didn't need to be a lambda, but it will make it easier to add more poses later. Here, we're creating the XrSpace that represents the left grip pose action. As with the reference space, we use an identity XrPosef to indicate that we'll take the pose as-is, without offsets.
+
+For OpenXR hand controllers, we distinguish between a "grip pose", representing the orientation of the handle of the device, and an "aim pose" - which is oriented where the device "points". The relative orientations of these will vary between different controller configurations, so again, it's important to test with the devices you have. Let the runtime worry about adaptating to different devices that you haven't tested.
+
+.. figure:: images/standard-poses.png
+	:alt: OpenXR Standard Controller Poses
+	:align: left
+
+	Standard Grip and Aim poses for OpenXR Controllers.
 
 Finally as far as action setup goes, we will attach the ActionSet to the session. Add this function:
 
