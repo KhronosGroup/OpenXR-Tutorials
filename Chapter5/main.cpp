@@ -1,4 +1,4 @@
-// Copyright Khronos Group 2023
+// Simul Software Ltd 2023
 // OpenXR Tutorial for Khronos Group
 
 #include "DebugOutput.h"
@@ -12,9 +12,8 @@
 #include "OpenXRDebugUtils.h"
 
 // XR_DOCS_TAG_BEGIN_include_linear_algebra
-// include xr linear algebra for XrVector and XrMatrix classes.
 #include "xr_linear_algebra.h"
-// Declare some useful operators for vectors:
+// Declare some useful operator functions:
 XrVector3f operator-(XrVector3f a,XrVector3f b)
 {
 	return {a.x-b.x,a.y-b.y,a.z-b.z};
@@ -23,16 +22,11 @@ XrVector3f operator*(XrVector3f a,float b)
 {
 	return {a.x*b,a.y*b,a.z*b};
 }
-// Include <algorithm> for std::min and max
-#include <algorithm> 
-// Random numbers for colourful blocks
-#include <random>
-static std::uniform_real_distribution<float> pseudorandom_distribution(0,1.f);
-static std::mt19937 pseudo_random_generator;
+#include <algorithm> // for std::min and max
 // XR_DOCS_TAG_END_include_linear_algebra
 
+// XR_DOCS_TAG_BEGIN_ReadFiles
 #if defined(__ANDROID__)
-// XR_DOCS_TAG_BEGIN_ReadFiles_Android
 #include "android/asset_manager.h"
 std::string ReadTextFile(const std::string &filepath, AAssetManager *assetManager) {
     AAsset *file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
@@ -51,8 +45,8 @@ std::vector<char> ReadBinaryFile(const std::string &filepath, AAssetManager *ass
     AAsset_close(file);
     return binary;
 }
-// XR_DOCS_TAG_END_ReadFiles_Android
 #endif
+// XR_DOCS_TAG_END_ReadFiles
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_5
 
 class OpenXRTutorial {
@@ -500,7 +494,7 @@ void GetEnvironmentBlendModes() {
         m_indexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices), &cubeIndices});
 
         m_uniformBuffer_Frag = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colours), colours});
-
+		
         m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
         m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 1, sizeof(normals), &normals});
 
@@ -590,8 +584,7 @@ void GetEnvironmentBlendModes() {
                     XrQuaternionf q;
                     XrVector3f axis = {0, 0.707f, 0.707f};
                     XrQuaternionf_CreateFromAxisAngle(&q, &axis, angleRad);
-                    XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
-                    blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f},colour});
+                    blocks.push_back(std::pair<XrPosef,XrVector3f>({q, {x, y, z}}, {0.095f, 0.095f, 0.095f}));
                 }
             }
         }
@@ -756,7 +749,7 @@ void GetEnvironmentBlendModes() {
 				if(m_controllerGripPoseState[i].isActive) {
 					for(int j=0;j<blocks.size();j++) {
 						auto block=blocks[j];
-						XrVector3f diff=block.pose.position-m_controllerGripPose[i].position;
+						XrVector3f diff=block.first.position-m_controllerGripPose[i].position;
 						float distance=std::max(fabs(diff.x),std::max(fabs(diff.y),fabs(diff.z)));
 						if(distance<0.1f&&distance<nearest) {
 							nearBlock[i]=j;
@@ -773,9 +766,9 @@ void GetEnvironmentBlendModes() {
 			{
 				nearBlock[i]=grabbedBlock[i];
 				if(m_controllerGripPoseState[i].isActive)
-					blocks[grabbedBlock[i]].pose.position=m_controllerGripPose[i].position;
+					blocks[grabbedBlock[i]].first.position=m_controllerGripPose[i].position;
 				if(!m_grabState[i].isActive||m_grabState[i].currentState<0.5f) {
-					blocks[grabbedBlock[i]].pose.position=FixPosition(blocks[grabbedBlock[i]].pose.position);
+					blocks[grabbedBlock[i]].first.position=FixPosition(blocks[grabbedBlock[i]].first.position);
 					grabbedBlock[i]=-1;
 					buzz[i]=0.2f;
 				}
@@ -908,7 +901,7 @@ void GetEnvironmentBlendModes() {
     // XR_DOCS_TAG_END_DestroySwapchain
 
     // XR_DOCS_TAG_BEGIN_RenderCuboid
-    void RenderCuboid(XrPosef pose, XrVector3f scale,XrVector3f colour) {
+    void RenderCuboid(XrPosef pose, XrVector3f scale) {
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
@@ -918,7 +911,6 @@ void GetEnvironmentBlendModes() {
         m_graphicsAPI->SetBufferData(m_uniformBuffer_Camera, 0, sizeof(CameraConstants), &cameraConstants);
         m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Camera, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
         m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Normals, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
-		colours[0]={colour.x,colour.y,colour.z,1.0};
         m_graphicsAPI->SetBufferData(m_uniformBuffer_Frag, 0, sizeof(colours), (void *)colours);
         m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
         m_graphicsAPI->UpdateDescriptors();
@@ -1039,23 +1031,23 @@ void GetEnvironmentBlendModes() {
             // XR_DOCS_TAG_END_SetupFrameRendering
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid
             // Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
-            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f},{0.4f,0.5f,0.5f});
+            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f});
             // Let's draw a cuboid for a "table".
-            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM+0.9f, -0.6f}}, {1.0f, 0.2f, 1.0f},{0.6f,0.6f,0.6f});
+            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM+0.9f, -0.6f}}, {1.0f, 0.2f, 1.0f});
 
            for (int i = 0; i < 2; i++) {
                 if (m_controllerGripPoseState[i].isActive) {
                     XrVector3f grip_scale{0.02f, 0.04f, 0.10f};
-                    RenderCuboid(m_controllerGripPose[i], grip_scale,{1.f,1.f,1.f});
+                    RenderCuboid(m_controllerGripPose[i], grip_scale);
                 }
             }
 			for(int i=0;i<blocks.size();i++)
 			{
 				auto p=blocks[i];
-				XrVector3f sc=p.scale;
+				XrVector3f sc=p.second;
 				if(i==nearBlock[0]||i==nearBlock[1])
-					sc=p.scale*1.05f;
-                RenderCuboid(p.pose,sc,p.colour);
+					sc=p.second*1.05f;
+                RenderCuboid(p.first,sc);
 			}
 
             // XR_DOCS_TAG_END_CallRenderCuboid
@@ -1219,13 +1211,7 @@ private:
 
 	
     // XR_DOCS_TAG_BEGIN_Objects
-	struct Block
-	{
-		XrPosef pose;
-		XrVector3f scale;
-		XrVector3f colour;
-	};
-	std::vector<Block> blocks;
+	std::vector<std::pair<XrPosef,XrVector3f>> blocks;
 	int grabbedBlock[2]={-1,-1};
 	int nearBlock[2]={-1,-1};
     // XR_DOCS_TAG_END_Objects

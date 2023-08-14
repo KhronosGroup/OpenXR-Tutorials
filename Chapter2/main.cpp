@@ -17,8 +17,8 @@
 
 class OpenXRTutorial {
 public:
-    OpenXRTutorial(GraphicsAPI_Type apiType)
-        : m_apiType(apiType) {
+    OpenXRTutorial(GraphicsAPI_Type api)
+        : m_apiType(api) {
         if (!CheckGraphicsAPI_TypeIsValidForPlatform(m_apiType)) {
             std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
             DEBUG_BREAK;
@@ -95,13 +95,18 @@ private:
 
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
         for (auto &requestExtension : m_instanceExtensions) {
+            bool found = false;
             for (auto &extensionProperty : extensionProperties) {
                 if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
                     continue;
                 } else {
                     m_activeInstanceExtensions.push_back(requestExtension.c_str());
+                    found = true;
                     break;
                 }
+            }
+            if (!found) {
+                std::cerr << "Failed to find OpenXR instance extension: " << requestExtension << "\n";
             }
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension
@@ -208,24 +213,24 @@ private:
             switch (eventData.type) {
             case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
                 XrEventDataEventsLost *eventsLost = reinterpret_cast<XrEventDataEventsLost *>(&eventData);
-                std::cout << "WARN: OPENXR: Events Lost: " << eventsLost->lostEventCount << std::endl;
+                std::cout << "OPENXR: Events Lost: " << eventsLost->lostEventCount << std::endl;
                 break;
             }
             case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING: {
                 XrEventDataInstanceLossPending *instanceLossPending = reinterpret_cast<XrEventDataInstanceLossPending *>(&eventData);
-                std::cout << "WARN: OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime << std::endl;
+                std::cout << "OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime << std::endl;
                 m_sessionRunning = false;
                 m_applicationRunning = false;
                 break;
             }
             case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
                 XrEventDataInteractionProfileChanged *interactionProfileChanged = reinterpret_cast<XrEventDataInteractionProfileChanged *>(&eventData);
-                std::cout << "WARN: OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
+                std::cout << "OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
                 break;
             }
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
-                std::cout << "WARN: OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
+                std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
                 break;
             }
             case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
@@ -346,19 +351,20 @@ private:
     GraphicsAPI_Type m_apiType = UNKNOWN;
     std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
 
-    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
     XrSession m_session = {};
     XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
     bool m_applicationRunning = true;
     bool m_sessionRunning = false;
+    
+    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 };
 
-void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
+void OpenXRTutorial_Main(GraphicsAPI_Type api) {
     DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 2." << std::endl;
 
-    OpenXRTutorial app(apiType);
+    OpenXRTutorial app(api);
     app.Run();
 }
 

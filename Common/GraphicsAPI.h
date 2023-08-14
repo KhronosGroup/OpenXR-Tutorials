@@ -470,4 +470,5 @@ public:
 
 protected:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() = 0;
+	bool debugAPI=false;
 };

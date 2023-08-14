@@ -4,21 +4,30 @@ plugins {
 
 android {
     namespace 'com.simul.OpenXRTutorialChapter4'
-    compileSdk 29
+    compileSdk 31
     ndkVersion '23.1.7779620'
 
     defaultConfig {
         applicationId "com.simul.OpenXRTutorialChapter4"
         minSdk 24
-        targetSdk 29
+        targetSdk 31
         versionCode 1
         versionName "1.0"
     }
 
     buildTypes {
+        debug {
+            ndk {
+                abiFilters "arm64-v8a"
+            }
+        }
         release {
+            ndk {
+                abiFilters "arm64-v8a"
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
 
