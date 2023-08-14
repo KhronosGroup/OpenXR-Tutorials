@@ -585,33 +585,31 @@ Now that OpenXR know what the user should see, we need to tell OpenXR from where
 	:end-before: XR_DOCS_TAG_END_CreateReferenceSpace
 	:dedent: 4
 
-First, we fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``
+First, we fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``.
 
-When we create the reference space, we specify a pose (``poseInReferenceSpace``) of identity:
+When we create the *reference space*, we need to specify an ``XrPosef``, which we will be the origin transform of the space. For our tutorial, we will set ``XrReferenceSpaceCreateInfo::poseInReferenceSpace`` to an identity, where we use an identity quaternion for the orientation and a position at the origin. If we had specified a different pose, the origin of the reference space would have been offset from the runtime's default.
 
-    ``referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};``
+.. code-block:: cpp
+	// Example
+	referenceSpaceCreateInfo.poseInReferenceSpace.orientation = {0.0f, 0.0f, 0.0f, 1.0f};
+	referenceSpaceCreateInfo.poseInReferenceSpace.position = {0.0f, 0.0f, 0.0f};
 
-i.e. an identity quaternion for the orientation, a position at the origin. Had we specified a different pose, the origin of the reference space would have been offset from the runtime's default.
+An ``XrSpace`` is a frame of reference defined not by its instantaneous values, but instead defined semantically by its purpose and relationship to other spaces. The actual, instantaneous position and orientation of an 	``XrSpace`` is called its *pose*.
 
-A space is a frame of reference defined not by its instantaneous values, but semantically, by its purpose and relationship to other spaces. For the actual, instantaneous position and orientation of a space, we call this a "pose".
+One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``). View space is oriented with the user's head, and is useful for user-interface and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
 
-By using a local space - defined with ``XR_REFERENCE_SPACE_TYPE_LOCAL`` - we specify that the views are relative to the XR hardware's "local" space - either the headset's starting position or some other world-locked origin.
+By using a local space (``XR_REFERENCE_SPACE_TYPE_LOCAL``), we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
 
-Some devices support stage space - ``XR_REFERENCE_SPACE_TYPE_STAGE`` - this implies a roomscale space with its origin on the floor.
+Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this implies a roomscale space with its origin on the floor.
+
+See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
 
 .. figure:: images/OpenXRSpaces.png
 	:alt: OpenXR Reference Spaces
-	:align: left
+	:align: center
 
 	Reference Spaces in OpenXR
 
-How these are interpreted is a matter for the OpenXR runtime.
-
-Another kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``).
-View space is oriented with the user's head, and is useful for user-interface and many
-other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
-
-See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
 .. list-table:: OpenXR Reference Spaces
 	:widths: 1 3 1
 	:class: longtable
