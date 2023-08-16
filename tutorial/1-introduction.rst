@@ -234,7 +234,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 		:start-at: # For FetchContent_Declare() and FetchContent_MakeAvailable()
 		:end-before: # Files
 
-	After setting our CMake version, we include ``FetchContent`` and use it to get the OpenXR-SDK from Khronos's GitHub page.
+	After setting our CMake version, we include ``FetchContent`` and use it to get the OpenXR-SDK from Khronos's GitHub page. Now, we will add to our ``CMakeLists.txt`` to specify the source and header files by adding the following code. Here, we are including all the files needed for our project. 
 
 	.. container:: d3d11
 		:name: d3d11-id-1
@@ -272,7 +272,13 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:end-before: if (ANDROID) # Android
 			:emphasize-lines: 4, 9, 13, 18
 
-	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
+	All the files listed above with ``../Common/*.*`` are available to download from this tutorial website. In the next section, you will find the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice. 
+	
+	You should remove the ``GraphicsAPI`` cpp and header files that do not relate to your chosen graphics API from the ``Chapter2/CMakeList.txt`` files. You must keep ``GraphicsAPI.cpp`` and ``OpenXRDebugUtils.cpp`` in the ``SOURCES `` list and also keep ``DebugOutput.h``, ``GraphicsAPI.h``, ``HelperFunctions.h``, ``OpenXRDebugUtils.h`` and ``OpenXRHelper.h`` in the ``HEADERS `` list.
+
+	At this point, we'll also create our text file called ``main.cpp`` in the ``/Chapter2`` directory. This will be our main source file, which we will use later in this chapter.
+
+	Now, we will continue with the ``Chapter2/CMakeList.txt``, adding the following code.
 
 	.. container:: d3d11
 		:name: d3d11-id-1
@@ -314,14 +320,16 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:dedent: 4
 			:emphasize-lines: 16-20
 
-	Now, we set up the project file by adding an executable with the ``${SOURCES}`` and ``${HEADERS}``. Next, we optionally set a the ``XR_RUNTIME_JSON`` in the debugger environment. We add the ``../Common`` folder as an include directory and link ``openxr_loader`` from ``FetchContent``. We don't have to add OpenXR as a include directory; as we specified them to be located in the CMake Build directory under ``openxr/`` when using ``FetchContent``, so we just include the OpenXR headers from the CMake Build directory.
+	Now, we have set up the project by adding an executable by using ``add_executable()`` specifying the ``${SOURCES}`` and ``${HEADERS}``. We have optionally set a the ``XR_RUNTIME_JSON`` in the debugger environment. We've added the ``../Common`` folder as an include directory and linked ``openxr_loader`` from ``FetchContent``. We didn't have to add OpenXR as a include directory; as we have specified it to be located in the CMake Build directory under ``openxr/`` when using ``FetchContent``, so we've only included the OpenXR headers from the CMake Build directory.
 	
-	Next, is the include directories and linkage for the graphics APIs.
-	For Microsoft Windows, we link ``d3d11.lib``, ``d3d12.lib`` and ``dxgi.lib``, so that we can use Direct3D 11, Direct3D 12 and the DirectX Graphics Infrastructure. The headers are automatically included as part of the Visual Studio project.
-	If you have the Vulkan SDK installed, we try to find that package, add the include directories and link the Vulkan libraries.
-	As a default, we add gfxwrapper for OpenGL, we add the include directories and link the gfxwrapper libraries from the OpenXR-SDK.
+	We have also added the include directories and linkage for the graphics APIs.
+	For Microsoft Windows, we've linked ``d3d11.lib``, ``d3d12.lib`` and ``dxgi.lib``, so that we can use Direct3D 11, Direct3D 12 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project.
+	If you have the Vulkan SDK installed, this CMake code will try to find that package, add the include directories and link the Vulkan libraries.
+	As a default, this CMake has added gfxwrapper for OpenGL, we've added the include directories and linked the gfxwrapper libraries from the OpenXR-SDK.
 
-	That's all we need for CMake, we need for this project. 
+	Note: You can remove or comment out from the above CMake code any references to graphics APIs that are not in use, if you wish to do so. Leaving them in place will not effect your project.
+
+	That's all the CMake code that we require for this project. 
 
 .. container:: android
 	:name: android-id-1
@@ -448,7 +456,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 1.4.2 Common Files
 ==================
 
-Now, that we have set up the project and source file. We will create a few files in a ``/Common`` directory in the *workspace* folder. Below are all the files available to download:
+Now, that we have set up the project and source file. We will create a ``/Common`` folder with in the *workspace* directory. In that folder, we will add the following files. Below are all the files available to download:
 
 DebugOutput
 -----------
@@ -551,6 +559,8 @@ GraphicsAPI
 	:download:`GraphicsAPI_Vulkan.cpp <../Common/GraphicsAPI_Vulkan.cpp>`
 
 This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The derived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and graphics API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. This tutorial demonstrates all five graphics APIs, you will only need to select one ``XR_USE_PLATFORM_...`` macro and one ``XR_USE_GRAPHICS_API_...`` macro.
+
+The code below is an example of how you might implement the inclusion and definition the relevant graphics API header along with the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros. This will already be set up in the ``GraphicsAPI.h`` file.
 
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp
@@ -686,7 +696,9 @@ This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the bas
 1.4.3 OpenXRTutorial and Main
 =============================
 
-We can now start adding code to our ``main.cpp`` file. First, we add ``DebugOutput.h``
+We can now start adding code to our ``main.cpp`` file that we have created in the ``Chapter2/`` folder. Open ``main.cpp`` text file with Visual Studio. We will just use Visual Studio to edit the file and we will later set up the project files with CMake. 
+
+First, we add ``DebugOutput.h``:
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -766,14 +778,19 @@ Now we will define the main class ``OpenXRTutorial`` of the application. It's ju
 	};
 
 Finally, let's add the main function for the application. It will look slightly different, depending on your
-chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial`` class, taking a ``GraphicsAPI_Type`` parameter, and call the ``Run()``method. ``GraphicsAPI_Type`` can be changed to suit the graphics API that you have chosen.
+chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial`` class, taking a ``GraphicsAPI_Type`` parameter, and call the ``Run()`` method. ``GraphicsAPI_Type`` can be changed to suit the graphics API that you have chosen.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-at: void OpenXRTutorial_Main(GraphicsAPI_Type apiType)
 	:end-at: }
 
-Then, we create the actual platform specific main function (our entry point to the application), which will call ``OpenXRTutorial_Main()`` with our ``GraphicsAPI_Type`` parameter:
+Then, we create the actual platform specific main function (our entry point to the application), which will call ``OpenXRTutorial_Main()`` with our ``GraphicsAPI_Type`` parameter. By default, this tutorial uses ``OPENGL`` as the parameter to ``OpenXRTutorial_Main()``. This must be changed to match on your chosen graphics API.
+
+.. literalinclude:: ../Common/GraphicsAPI.h
+	:language: cpp
+	:start-at: enum GraphicsAPI_Type : uint8_t {
+	:end-at: };
 
 .. container:: windows linux
 	:name: windows-linux-id-1
@@ -806,9 +823,7 @@ Then, we create the actual platform specific main function (our entry point to t
 .. container:: windows
 	:name: windows-id-1
 
-	Now launch CMake GUI, and point the "Where is the source code" box to the root of your solution *workspace* directory,
-	where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``,
-	click Configure, "Yes" to create the build folder, and "OK" to accept the default Generator.
+	In the *workspace* directory, create a ``build/`` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``, that we have just created. Click "Configure" and "OK" to accept the default Generator.
 
 	You can now build and run your program. It should compile and link with no errors or warnings.
 
