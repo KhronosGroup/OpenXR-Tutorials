@@ -174,6 +174,8 @@ In this tutorial, we will use CMake ``FetchContent_Declare()`` command in the ``
 	:start-at: # For FetchContent_Declare() and FetchContent_MakeAvailable()
 	:end-before: # Files
 
+Download :download:`CMakeLists.txt <../Chapter2/CMakeLists.txt>`
+
 If you prefer to git clone or download the SDK yourself from Khronos’s OpenXR-SDK-Source GitHub page `here <https://github.com/KhronosGroup/OpenXR-SDK>`_. You can either use your preferred command-line or GUI Git tool, or download it as a .zip file.
 
 With the OpenXR loader and your graphics API selected, you're ready to start creating your first OpenXR project.
@@ -516,7 +518,7 @@ GraphicsAPI
 .. container:: d3d11
 	:name: d3d11-id-1
 
-	.. rubric:: DirectX 11
+	.. rubric:: Direct3D 11
 
 	:download:`GraphicsAPI_D3D11.h <../Common/GraphicsAPI_D3D11.h>`
 

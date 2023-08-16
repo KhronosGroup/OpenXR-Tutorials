@@ -215,11 +215,12 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
     OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetD3D12GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D12GraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
     XrGraphicsRequirementsD3D12KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR};
     OPENXR_CHECK(xrGetD3D12GraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for D3D12.");
-
-    D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
-    debug->EnableDebugLayer();
-    reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);
-
+	if(debugAPI)
+	{
+		D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
+		debug->EnableDebugLayer();
+		reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);
+	}
     D3D12_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
 
     UINT i = 0;

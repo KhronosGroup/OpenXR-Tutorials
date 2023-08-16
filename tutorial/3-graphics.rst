@@ -9,6 +9,8 @@ Select your platform, as the instructions are different depending on your select
 
 The goal of this chapter is to build an application that creates and clears color and depth buffers within the scope of OpenXR render loop and to demonstrate its interaction with all the Graphics APIs.
 
+Download :download:`CMakeLists.txt <../Chapter3/CMakeLists.txt>`
+
 ***********************
 3.1 Creating Swapchains
 ***********************

@@ -4,8 +4,10 @@
 
 An OpenXR application has interactions with the user which can be user input to the application, or haptic output back to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: spaces, actions, and bindings.
 
+Download :download:`CMakeLists.txt <../Chapter4/CMakeLists.txt>`
+
 ************************************
-4.2 Creating Actions and Action Sets
+4.1 Creating Actions and Action Sets
 ************************************
 
 At the end of your application class, add this code:
@@ -57,7 +59,7 @@ Here we've created each action with a little local lambda function `CreateAction
 Each Action and ActionSet has both a name, for internal use, and a localized description to show to the end-user. This is because the user may want to re-map actions from the default controls, so there must be a human-readable name to show them.
 
 *************************************
-4.3 Interaction Profiles and Bindings
+4.2 Interaction Profiles and Bindings
 *************************************
 
 As OpenXR is an API for many different devices, it needs to provide a way for you as a developer to refer to the various buttons, joysticks, inputs and outputs that a device may have, without needing to know in advance which device or devices the user will have.
@@ -120,7 +122,7 @@ See also `semantic-path-interaction-profiles <https://registry.khronos.org/OpenX
 
 
 ****************************
-4.4 Using Actions in the app
+4.3 Using Actions in the app
 ****************************
 
 ActionSets and Suggested Bindings are created before the session is initialized. There is session-specific setup to be done for our actions also. After the call to CreateResources(), add:
@@ -195,7 +197,7 @@ If, and only if the action is active, we use `xrLocateSpace` to obtain the curre
 controller's position.
 
 *************************************
-4.5 Rendering the Controller position
+4.4 Rendering the Controller position
 *************************************
 
 We will now draw some geometry to represent the controller pose we've obtained as `leftGripPose`. Add this function after the definition of RenderLayer():
@@ -206,7 +208,16 @@ We will now draw some geometry to represent the controller pose we've obtained a
 	:end-before: XR_DOCS_TAG_END_include_linear_algebra
 	:dedent: 0
 
-This provides a simple matrix and vector library for our render code. Now, after the code for DestroySession(), add the following:
+This provides a simple matrix and vector library for our render code.
+Now insert 
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CallCreateResources
+	:end-before: XR_DOCS_TAG_END_CallCreateResources
+	:dedent: 0
+
+Now, after the code for DestroySession(), add the following:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -307,7 +318,7 @@ Let's implement RenderCuboid(). After the definition of DestroySwapchain(), add:
 From the passed-in pose and scale, we create the _model_ matrix, and multiply that with cameraConstants.viewProj to obtain cameraConstants.modelViewProj, the matrix that transforms from vertices in our unit cube into positions in projection-space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing our six face colours for the cuboid pixel shader. We assign our vertex and index buffers and draw 36 indices.
 
 **************************************
-4.6 Checking for Connected Controllers
+4.5 Checking for Connected Controllers
 **************************************
 
 Look again now at the function PollActions().

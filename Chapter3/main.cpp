@@ -15,8 +15,8 @@
 
 class OpenXRTutorial {
 public:
-    OpenXRTutorial(GraphicsAPI_Type apiType)
-        : m_apiType(apiType) {
+    OpenXRTutorial(GraphicsAPI_Type api)
+        : m_apiType(api) {
         if (!CheckGraphicsAPI_TypeIsValidForPlatform(m_apiType)) {
             std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
             DEBUG_BREAK;
@@ -70,19 +70,24 @@ public:
 
 private:
     void CreateInstance() {
+        // XR_DOCS_TAG_BEGIN_XrApplicationInfo
         XrApplicationInfo AI;
         strncpy(AI.applicationName, "OpenXR Tutorial Chapter 3", XR_MAX_APPLICATION_NAME_SIZE);
         AI.applicationVersion = 1;
         strncpy(AI.engineName, "OpenXR Engine", XR_MAX_ENGINE_NAME_SIZE);
         AI.engineVersion = 1;
         AI.apiVersion = XR_CURRENT_API_VERSION;
+        // XR_DOCS_TAG_END_XrApplicationInfo
 
         // Add additional instance layers/extensions
         {
+            // XR_DOCS_TAG_BEGIN_instanceExtensions
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
+            // XR_DOCS_TAG_END_instanceExtensions
         }
 
+        // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
         uint32_t apiLayerCount = 0;
         std::vector<XrApiLayerProperties> apiLayerProperties;
         OPENXR_CHECK(xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr), "Failed to enumerate ApiLayerProperties.");
@@ -107,16 +112,23 @@ private:
 
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
         for (auto &requestExtension : m_instanceExtensions) {
+            bool found = false;
             for (auto &extensionProperty : extensionProperties) {
                 if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
                     continue;
                 } else {
                     m_activeInstanceExtensions.push_back(requestExtension.c_str());
+                    found = true;
                     break;
                 }
             }
+            if (!found) {
+                std::cerr << "Failed to find OpenXR instance extension: " << requestExtension << "\n";
+            }
         }
+        // XR_DOCS_TAG_END_find_apiLayer_extension
 
+        // XR_DOCS_TAG_BEGIN_XrInstanceCreateInfo
         XrInstanceCreateInfo instanceCI{XR_TYPE_INSTANCE_CREATE_INFO};
         instanceCI.createFlags = 0;
         instanceCI.applicationInfo = AI;
@@ -125,12 +137,14 @@ private:
         instanceCI.enabledExtensionCount = static_cast<uint32_t>(m_activeInstanceExtensions.size());
         instanceCI.enabledExtensionNames = m_activeInstanceExtensions.data();
         OPENXR_CHECK(xrCreateInstance(&instanceCI, &m_xrInstance), "Failed to create Instance.");
+        // XR_DOCS_TAG_END_XrInstanceCreateInfo
     }
 
     void DestroyInstance() {
         OPENXR_CHECK(xrDestroyInstance(m_xrInstance), "Failed to destroy Instance.");
     }
 
+    // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
@@ -141,7 +155,9 @@ private:
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);
         }
     }
+    // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
+    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
     void GetInstanceProperties() {
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
@@ -151,7 +167,9 @@ private:
         std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
     }
+    // XR_DOCS_TAG_END_GetInstanceProperties
 
+    // XR_DOCS_TAG_BEGIN_GetSystemID
     void GetSystemID() {
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = m_formFactor;
@@ -160,6 +178,7 @@ private:
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
     }
+    // XR_DOCS_TAG_END_GetSystemID
 
     // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
     void GetEnvironmentBlendModes() {
@@ -188,6 +207,7 @@ private:
     }
     // XR_DOCS_TAG_END_GetViewConfigurationViews
 
+    // XR_DOCS_TAG_BEGIN_CreateDestroySession
     void CreateSession() {
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
 
@@ -225,7 +245,9 @@ private:
     void DestroySession() {
         OPENXR_CHECK(xrDestroySession(m_session), "Failed to destroy Session.");
     }
+    // XR_DOCS_TAG_END_CreateDestroySession
 
+// XR_DOCS_TAG_BEGIN_PollEvents
     void PollEvents() {
         XrResult result = XR_SUCCESS;
         do {
@@ -235,24 +257,24 @@ private:
             switch (eventData.type) {
             case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
                 XrEventDataEventsLost *eventsLost = reinterpret_cast<XrEventDataEventsLost *>(&eventData);
-                std::cout << "WARN: OPENXR: Events Lost: " << eventsLost->lostEventCount << std::endl;
+                std::cout << "OPENXR: Events Lost: " << eventsLost->lostEventCount << std::endl;
                 break;
             }
             case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING: {
                 XrEventDataInstanceLossPending *instanceLossPending = reinterpret_cast<XrEventDataInstanceLossPending *>(&eventData);
-                std::cout << "WARN: OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime << std::endl;
+                std::cout << "OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime << std::endl;
                 m_sessionRunning = false;
                 m_applicationRunning = false;
                 break;
             }
             case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
                 XrEventDataInteractionProfileChanged *interactionProfileChanged = reinterpret_cast<XrEventDataInteractionProfileChanged *>(&eventData);
-                std::cout << "WARN: OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
+                std::cout << "OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
                 break;
             }
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
-                std::cout << "WARN: OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
+                std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
                 break;
             }
             case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
@@ -282,6 +304,7 @@ private:
 
         } while (result == XR_SUCCESS);
     }
+// XR_DOCS_TAG_END_PollEvents
 
     // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
     void CreateReferenceSpace() {
@@ -405,7 +428,7 @@ private:
 
     // XR_DOCS_TAG_BEGIN_RenderFrame
     void RenderFrame() {
-        if (XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2) {
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
             XrFrameState frameState{XR_TYPE_FRAME_STATE};
             XrFrameWaitInfo frameWaitInfo{XR_TYPE_FRAME_WAIT_INFO};
             OPENXR_CHECK(xrWaitFrame(m_session, &frameWaitInfo, &frameState), "Failed to wait for XR Frame.");
@@ -432,8 +455,8 @@ private:
             frameEndInfo.layerCount = static_cast<uint32_t>(layers.size());
             frameEndInfo.layers = layers.data();
             OPENXR_CHECK(xrEndFrame(m_session, &frameEndInfo), "Failed to end the XR Frame.");
+#endif
         }
-    }
     // XR_DOCS_TAG_END_RenderFrame
 
     // XR_DOCS_TAG_BEGIN_RenderLayer
@@ -464,6 +487,8 @@ private:
 
             const uint32_t &width = m_viewConfigurationViews[i].recommendedImageRectWidth;
             const uint32_t &height = m_viewConfigurationViews[i].recommendedImageRectHeight;
+            GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
+            GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
 
             layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
             layerProjectionViews[i].pose = views[i].pose;
@@ -479,7 +504,7 @@ private:
 
             if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE) {
                 // VR mode use a background color.
-                m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.22f, 0.17f, 0.35f, 1.00f);
+                m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.17f, 0.17f, 0.17f, 1.00f);
             } else {
                 // In AR mode make the background color black.
                 m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
@@ -489,7 +514,7 @@ private:
             m_graphicsAPI->EndRendering();
 
             XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
-            OPENXR_CHECK(xrReleaseSwapchainImage(m_swapchainAndDepthImages[i].swapchain, &releaseInfo), "Failed to release Image back to the Swapchian");
+            OPENXR_CHECK(xrReleaseSwapchainImage(m_swapchainAndDepthImages[i].swapchain, &releaseInfo), "Failed to release Image back to the Swapchain");
         };
         layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
         layerProjection.space = m_localOrStageSpace;
@@ -501,6 +526,7 @@ private:
     // XR_DOCS_TAG_END_RenderLayer
 
 #if defined(__ANDROID__)
+    // XR_DOCS_TAG_BEGIN_Android_System_Functionality
 public:
     static android_app *androidApp;
 
@@ -566,6 +592,7 @@ private:
             }
         }
     }
+    // XR_DOCS_TAG_END_Android_System_Functionality
 #else
     void PollSystemEvents() {
         return;
@@ -587,13 +614,14 @@ private:
     GraphicsAPI_Type m_apiType = UNKNOWN;
     std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
 
-    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-    std::vector<XrViewConfigurationView> m_viewConfigurationViews;
-
     XrSession m_session = {};
     XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
     bool m_applicationRunning = true;
     bool m_sessionRunning = false;
+
+    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+// XR_DOCS_TAG_BEGIN_declareSwapchains
+    std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
     struct SwapchainAndDepthImage {
         XrSwapchain swapchain = {};
@@ -610,20 +638,21 @@ private:
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
     XrSpace m_localOrStageSpace = {};
+// XR_DOCS_TAG_ENd_declareSwapchains
 };
 
-void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
+void OpenXRTutorial_Main(GraphicsAPI_Type api) {
     DebugOutput debugOutput;
     std::cout << "OpenXR Tutorial Chapter 3." << std::endl;
 
-    OpenXRTutorial app(apiType);
+    OpenXRTutorial app(api);
     app.Run();
 }
 
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
-    OpenXRTutorial_Main(OPENGL);
+    OpenXRTutorial_Main(D3D11);
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
