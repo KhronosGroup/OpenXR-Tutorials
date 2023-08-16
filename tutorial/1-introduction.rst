@@ -510,7 +510,7 @@ GraphicsAPI
 .. container:: d3d11
 	:name: d3d11-id-1
 
-	.. rubric:: DirectX 11
+	.. rubric:: Direct3D 11
 
 	:download:`GraphicsAPI_D3D11.h <../Common/GraphicsAPI_D3D11.h>`
 

@@ -1038,26 +1038,24 @@ void GetEnvironmentBlendModes() {
 
             // XR_DOCS_TAG_END_SetupFrameRendering
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid
-            // Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
+            // Draw a floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
             RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f},{0.4f,0.5f,0.5f});
-            // Let's draw a cuboid for a "table".
-            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM+0.9f, -0.6f}}, {1.0f, 0.2f, 1.0f},{0.6f,0.6f,0.6f});
+            // Draw a "table".
+            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM+0.9f, -0.7f}}, {1.0f, 0.2f, 1.0f},{0.6f,0.6f,0.6f});
 
+            // Draw some blocks at the controller positions:
            for (int i = 0; i < 2; i++) {
                 if (m_controllerGripPoseState[i].isActive) {
-                    XrVector3f grip_scale{0.02f, 0.04f, 0.10f};
-                    RenderCuboid(m_controllerGripPose[i], grip_scale,{1.f,1.f,1.f});
+                    RenderCuboid(m_controllerGripPose[i], {0.02f, 0.04f, 0.10f},{1.f,1.f,1.f});
                 }
             }
-			for(int i=0;i<blocks.size();i++)
-			{
+			for(int i=0;i<blocks.size();i++) {
 				auto p=blocks[i];
 				XrVector3f sc=p.scale;
 				if(i==nearBlock[0]||i==nearBlock[1])
 					sc=p.scale*1.05f;
                 RenderCuboid(p.pose,sc,p.colour);
 			}
-
             // XR_DOCS_TAG_END_CallRenderCuboid
             m_graphicsAPI->EndRendering();
 
