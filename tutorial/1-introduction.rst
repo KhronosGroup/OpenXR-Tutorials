@@ -227,7 +227,13 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 
 	.. literalinclude:: ../CMakeLists.txt
 		:language: cmake
-		:emphasize-lines: 11
+		:start-at: cmake_minimum_required
+		:end-at: set(XR_RUNTIME_JSON "$ENV{XR_RUNTIME_JSON}" CACHE PATH "Optional location of a specific OpenXR runtime configuration file.")
+
+	.. literalinclude:: ../CMakeLists.txt
+		:language: cmake
+		:start-at: add_subdirectory(Chapter2
+		:end-at: )
 
 	Here, we specify the CMake version, project name and the configurations types, which we limit to just Debug and Release.
 	You can use ``XR_RUNTIME_JSON`` to specify an optional runtime. The one provided by your hardware vendor will be automatically used, though this feature is helpful for debugging on different runtimes.
@@ -777,7 +783,7 @@ Now we will define the main class ``OpenXRTutorial`` of the application. It's ju
 
 	class OpenXRTutorial {
 	public:
-		OpenXRTutorial(GraphicsAPI_Type apiType) = default;
+		OpenXRTutorial(GraphicsAPI_Type apiType) {}
 		~OpenXRTutorial() = default;
 
 		void Run()
@@ -835,7 +841,7 @@ Then, we create the actual platform specific main function (our entry point to t
 .. container:: windows
 	:name: windows-id-4
 
-	In the *workspace* directory, create a ``build/`` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``, that we have just created. Click "Configure" and "OK" to accept the default Generator.
+	In the *workspace* directory, create a ``build/`` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``, that we have just created. Click "Configure" and "OK" to accept the default Generator, then click "Generate" to create the Visual Studio solution and project. Finally click "Open Project" to open that solution with Visual Studio.
 
 	You can now build and run your program. It should compile and link with no errors or warnings.
 
@@ -887,4 +893,3 @@ Then, we create the actual platform specific main function (our entry point to t
 	To debug/run the application click the green bug icon.
 
 Now that we have a basic application up and running with the OpenXR header files and libraries, we can start to set up the core aspects of OpenXR. As a modern Khronos API, the OpenXR is heavily influcencd by the Vulkan API. So those who are familiar with the style of the Vulkan API will find OpenXR easy to follow.
-
