@@ -8,21 +8,29 @@ Select your platform, as the instructions are different depending on your select
 	:file: platforms.html
 
 With your project setup and your application building and running, we can start to use OpenXR to create our application.
-The goal of this chapter is to create an ``XrInstance`` and an ``XrSession``, and setup the OpenXR event loop. This OpenXR code is needed to setup the core functionality of the OpenXR application to have that application interact with the OpenXR runtime and your graphics API correctly.
+The goal of this chapter is to create an ``XrInstance`` and an ``XrSession``, and setup the OpenXR event loop. This OpenXR code is needed to setup the core functionality of an OpenXR application to have that application interact with the OpenXR runtime and your graphics API correctly.
 
 ****************************************
 2.1 Creating an XrInstance / xrGetSystem
 ****************************************
 
-We will continue to use the ``OpenXRTutorial`` class that we created in :ref:`Chapter 1.4 <1.4 Project Setup>`.
+We will continue to use the ``OpenXRTutorial`` class in ``Chapter2/main.cpp`` that we created in :ref:`Chapter 1.4 <1.4 Project Setup>`.
 
-Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()`` and ``DestroyInstance()``. Update ``OpenXRTutorial::Run()`` to call those methods in that order and add to the class in a private section the following members.
+Here, we will add the following highlighted text to the ``OpenXRTutorial`` class:
 
 .. code-block:: cpp
+	:emphasize-lines: 4-9, 14-19 , 22-47
 	
-	class OpenXRTutorial{
+	class OpenXRTutorial {
 	public:
-		// [...]
+		OpenXRTutorial(GraphicsAPI_Type api)
+			: m_apiType(api) {
+			if (!CheckGraphicsAPI_TypeIsValidForPlatform(m_apiType)) {
+				std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
+				DEBUG_BREAK;
+			}
+		}
+		~OpenXRTutorial() = default;
 	
 		void Run()
 		{
@@ -37,9 +45,9 @@ Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, 
 	private:
 		void CreateInstance() 
 		{
-		} 
+		}
 		
-		void DestroyInstance();
+		void DestroyInstance()
 		{
 		}
 	
@@ -52,15 +60,17 @@ Firstly, add to the ``OpenXRTutorial`` class the methods: ``CreateInstance()``, 
 		}
 	
 	private:
-		XrInstance instance = {};
-		std::vector<const char *> activeAPILayers = {};
-		std::vector<const char *> activeInstanceExtensions = {};
-		std::vector<std::string> apiLayers = {};
-		std::vector<std::string> instanceExtensions = {};
+		XrInstance m_xrInstance = {};
+		std::vector<const char *> m_activeAPILayers = {};
+		std::vector<const char *> m_activeInstanceExtensions = {};
+		std::vector<std::string> m_apiLayers = {};
+		std::vector<std::string> m_instanceExtensions = {};
 
-		XrFormFactor formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
-		XrSystemId systemID = {};
-	}
+		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
+		XrSystemId m_systemID = {};
+	};
+
+First, we updated the constructor to initialize ``OpenXRTutorial::m_apiType`` and check that the provided ``GraphicsAPI_Type`` is valid for the platform. Next, we updated ``OpenXRTutorial::Run()`` to call the new methods ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()``and ``DestroyInstance()`` in that order. Finally, we added those methods and the following members to the class within thier separate private sections.
 
 2.1.1 XrInstance
 ================
@@ -191,10 +201,10 @@ Update the Constructor and ``Run()`` method as shown and add the following membe
 	private:
 		// [...]
 
-		GraphicsAPI_Type apiType = UNKNOWN;
-		std::unique_ptr<GraphicsAPI> graphicsAPI = nullptr;
+		GraphicsAPI_Type m_apiType = UNKNOWN;
+		std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
 
-		XrSession session = {};
+		XrSession m_session = {};
 	}
 
 2.2.1 XrSession
@@ -431,12 +441,12 @@ Firstly, we will update the class to add the new methods and members.
 	private:
 		// [...]
 
-		XrViewConfigurationType viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+		XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 		// [...]
 
-		XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
-		bool applicationRunning = true;
-		bool sessionRunning = false;
+		XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
+		bool m_applicationRunning = true;
+		bool m_sessionRunning = false;
 	}
 
 2.3.1 xrPollEvent

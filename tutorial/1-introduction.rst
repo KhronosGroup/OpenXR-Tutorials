@@ -783,16 +783,14 @@ Now we will define the main class ``OpenXRTutorial`` of the application. It's ju
 
 	class OpenXRTutorial {
 	public:
-		OpenXRTutorial(GraphicsAPI_Type apiType) {}
+		OpenXRTutorial(GraphicsAPI_Type apiType) 
+		{
+		}
 		~OpenXRTutorial() = default;
 
 		void Run()
 		{
 		}
-
-	private:
-		 bool m_applicationRunning = true;
-		 bool m_sessionRunning = false;
 	};
 
 Finally, let's add the main function for the application. It will look slightly different, depending on your
