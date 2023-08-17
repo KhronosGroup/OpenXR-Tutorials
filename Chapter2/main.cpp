@@ -140,8 +140,8 @@ private:
     }
     // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
-    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
     void GetInstanceProperties() {
+        // XR_DOCS_TAG_BEGIN_GetInstanceProperties
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
@@ -149,8 +149,8 @@ private:
         std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
+        // XR_DOCS_TAG_END_GetInstanceProperties
     }
-    // XR_DOCS_TAG_END_GetInstanceProperties
 
     // XR_DOCS_TAG_BEGIN_GetSystemID
     void GetSystemID() {
