@@ -225,7 +225,7 @@ Next, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``fac
 The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwapchainFormats()``, which each class implements. It returns an array of API-specific format us to use.
 
 .. container:: d3d11
-	:name: d3d11-id-1
+	:name: d3d11-id-2
 
 	.. rubric:: DirectX 11
 
@@ -235,7 +235,7 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 
 .. container:: d3d12
-	:name: d3d12-id-1
+	:name: d3d12-id-2
 
 	.. rubric:: DirectX 12
 
@@ -245,7 +245,7 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetSupportedSwapchainFormats
 
 .. container:: opengl
-	:name: opengl-id-1
+	:name: opengl-id-2
 
 	.. rubric:: OpenGL
 
@@ -255,7 +255,7 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetSupportedSwapchainFormats
 
 .. container:: opengles
-	:name: opengles-id-1
+	:name: opengles-id-2
 
 	.. rubric:: OpenGL ES
 
@@ -265,7 +265,7 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
 
 .. container:: vulkan
-	:name: vulkan-id-1
+	:name: vulkan-id-2
 
 	.. rubric:: Vulkan
 
@@ -289,7 +289,7 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 	:emphasize-lines: 3
 
 .. container:: d3d11
-	:name: d3d11-id-1
+	:name: d3d11-id-3
 
 	.. rubric:: DirectX 11
 
@@ -308,7 +308,7 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 	The structure contains a ``ID3D11Texture2D *`` member that is the handle to one of the images in the swapchain.
 
 .. container:: d3d12
-	:name: d3d12-id-1
+	:name: d3d12-id-3
 
 	.. rubric:: DirectX 12
 
@@ -327,7 +327,7 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 	The structure contains a ``ID3D12Resource *`` member that is the handle to one of the images in the swapchain.
 
 .. container:: opengl
-	:name: opengl-id-1
+	:name: opengl-id-3
 
 	.. rubric:: OpenGL
 
@@ -346,7 +346,7 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 	The structure contains a ``uint32_t`` member that is the handle to one of the images in the swapchain.
 
 .. container:: opengles
-	:name: opengles-id-1
+	:name: opengles-id-3
 
 	.. rubric:: OpenGL ES
 
@@ -365,7 +365,7 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 	The structure contains a ``uint32_t`` member that is the handle to one of the images in the swapchain.
 
 .. container:: vulkan
-	:name: vulkan-id-1
+	:name: vulkan-id-3
 
 	.. rubric:: Vulkan
 
@@ -398,7 +398,7 @@ Next, we create a depth image so that we can correctly render 3D perspective gra
 Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()``, which return a API-specific image format of type ``D32_F``.
 
 .. container:: d3d11
-	:name: d3d11-id-1
+	:name: d3d11-id-4
 
 	.. rubric:: DirectX 11
 
@@ -408,7 +408,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()
 		:end-at: }
 
 .. container:: d3d12
-	:name: d3d12-id-1
+	:name: d3d12-id-4
 
 	.. rubric:: DirectX 12
 
@@ -418,7 +418,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()
 		:end-at: }
 
 .. container:: opengl
-	:name: opengl-id-1
+	:name: opengl-id-4
 
 	.. rubric:: OpenGL
 
@@ -428,7 +428,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()
 		:end-at: }
 
 .. container:: opengles
-	:name: opengles-id-1
+	:name: opengles-id-4
 
 	.. rubric:: OpenGL ES
 
@@ -438,7 +438,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()
 		:end-at: }
 
 .. container:: vulkan
-	:name: vulkan-id-1
+	:name: vulkan-id-4
 
 	.. rubric:: Vulkan
 
@@ -461,7 +461,7 @@ Now, we create the image views: one per image in the ``XrSwapchain`` and an addi
 Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImage()``, which return a API-specific handle to the image, which is cast to a ``void *``.
 
 .. container:: d3d11
-	:name: d3d11-id-1
+	:name: d3d11-id-5
 
 	.. rubric:: DirectX 11
 
@@ -471,7 +471,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:end-at: }
 
 .. container:: d3d12
-	:name: d3d12-id-1
+	:name: d3d12-id-5
 
 	.. rubric:: DirectX 12
 
@@ -481,7 +481,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:end-at: }
 
 .. container:: opengl
-	:name: opengl-id-1
+	:name: opengl-id-5
 
 	.. rubric:: OpenGL
 
@@ -491,7 +491,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:end-at: }
 
 .. container:: opengles
-	:name: opengles-id-1
+	:name: opengles-id-5
 
 	.. rubric:: OpenGL ES
 
@@ -501,7 +501,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:end-at: }
 
 .. container:: vulkan
-	:name: vulkan-id-1
+	:name: vulkan-id-5
 
 	.. rubric:: Vulkan
 
@@ -556,6 +556,7 @@ Environment blend is done at the final stage after the compositor has flatten an
 |                                       | The composited image will be interpreted as an RGBA image, with the composited alpha channel determining each pixel’s         |
 |                                       | level of blending with the real world behind the display.                                                                     |
 +---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
+
 `XrEnvironmentBlendMode - Enumerant Descriptions <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#compositing>`_.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
@@ -752,6 +753,7 @@ The compositing of layers can be set on a per-layer basis through the use of the
 +-------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+
 | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT        | States that the color channels have not been pre-multiplied with alpha for transparency                   |
 +-------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+
+
 `10.6.1. Composition Layer Flags <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#composition-layer-flags>`_.
 
 ``XrCompositionLayerProjectionView`` descibes the ``XrPosef`` of the view relative to the reference space, the field of view of the view and to which ``XrSwapchainSubImage`` the view relates.

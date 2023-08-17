@@ -95,6 +95,7 @@ by clicking a tab, or one of the buttons below.
 	:file: platforms.html
 
 .. container:: windows
+	:name: windows-id-1
 
 	.. rubric:: Visual Studio
 
@@ -108,21 +109,25 @@ by clicking a tab, or one of the buttons below.
 	Next you'll want to choose which Graphics API you'll be using.
 	
 	.. container:: d3d11 d3d12
+		:name: d3d11-d3d12-id-1
 
 		Direct3D 11 and 12 are built into the Windows SDK's. If you're using Direct3D, D3D12 is recommended, because it supports `View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_. Essentially, it allows you to draw both eye views in one call.
 
 		In both cases, download and install the latest `Windows SDK <https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/>`_.
 		
 	.. container:: vulkan
+		:name: vulkan-id-1
 
 		If you'll be using Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_. Vulkan also supports rendering to both eye views with multiview. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
 
 	.. container:: opengl
+		:name: opengl-id-1
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. It was originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ specification.
 		If you want to use OpenGL stand-alone, you will need to use WGL to create a valid OpenGL Context for Microsoft Windows - `Creating an OpenGL Context WGL <https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_. OpenGL also supports rendering to both eye views with multiview - `OpenGL Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
 
 .. container:: linux
+	:name: linux-id-1
 
 	.. rubric:: Visual Studio Code for Linux
 
@@ -131,15 +136,18 @@ by clicking a tab, or one of the buttons below.
 	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake with Visual Studio Code to build the project.
 
 	.. container:: vulkan
+		:name: vulkan-id-2
 
 		If you'll be using Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_. Vulkan also supports rendering to both eye views with multiview, which simplifies the rendering code. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
 
 	.. container:: opengl
+		:name: opengl-id-2
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. It was originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ specification.
 		If you want to use OpenGL stand-alone, you will need to use GLX to create a valid OpenGL Context for Linux - `Tutorial: OpenGL 3.0 Context Creation (GLX) <Tutorial:_OpenGL_3.0_Context_Creation_(GLX)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_. OpenGL also supports rendering to both eye views with multiview, which simplifies the rendering code. `OpenGL Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
 	
 .. container:: android
+	:name: android-id-1
 	
 	Android Studio is available to download here: `https://developer.android.com/studio <https://developer.android.com/studio>`_.
 	
@@ -154,11 +162,13 @@ by clicking a tab, or one of the buttons below.
 		:emphasize-lines: 5
 
 	.. container:: vulkan
+		:name: vulkan-id-3
 
 		Vulkan is recommended for Android for its modern, low-level API and extension.
 		Vulkan is included as part of the NDK provided Google and is supported on Android 7.0 (Nougat), API level 24 or higher. `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_. Vulkan also supports rendering to both eye views with multiview, which simplifies the rendering code. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
 	
 	.. container:: opengles
+		:name: opengles-id-1
 		
 		Alternatively, OpenGL ES is also an option for Android graphics.
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL ES API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. 
@@ -176,7 +186,7 @@ In this tutorial, we will use CMake ``FetchContent_Declare()`` command in the ``
 
 Download :download:`CMakeLists.txt <../Chapter2/CMakeLists.txt>`
 
-If you prefer to git clone or download the SDK yourself from Khronos’s OpenXR-SDK-Source GitHub page `here <https://github.com/KhronosGroup/OpenXR-SDK>`_. You can either use your preferred command-line or GUI Git tool, or download it as a .zip file.
+If you prefer to git clone or download the SDK yourself from `Khronos’s OpenXR-SDK-Source GitHub page <https://github.com/KhronosGroup/OpenXR-SDK>`_. You can either use your preferred command-line or GUI Git tool, or download it as a .zip file.
 
 With the OpenXR loader and your graphics API selected, you're ready to start creating your first OpenXR project.
 
@@ -190,13 +200,13 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 =============================
 
 .. container:: windows
-	:name: windows-id-1
+	:name: windows-id-2
 
 	For the Microsoft Windows OpenXR project, we'll use CMake to create the solution and project files for Visual Studio.
 	First, create a directory where the code will go, we'll call this the *workspace* directory.
 
 .. container:: linux
-	:name: linux-id-1
+	:name: linux-id-2
 
 	You are free to use any code editor and/or compiler; this tutorial will use Visual Studio Code.
 	For the Linux OpenXR project, we'll use CMake alongside Visual Studio Code to build the project.
@@ -257,7 +267,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:emphasize-lines: 4, 6, 13, 15
 	
 	.. container:: opengl
-		:name: opengl-id-1
+		:name: opengl-id-3
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -266,7 +276,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:emphasize-lines: 4, 7, 13, 16
 
 	.. container:: vulkan
-		:name: vulkan-id-1
+		:name: vulkan-id-4
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -276,51 +286,51 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 
 	All the files listed above with ``../Common/*.*`` are available to download from this tutorial website. In the next section, you will find the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice. 
 	
-	You should remove the ``GraphicsAPI`` cpp and header files that do not relate to your chosen graphics API from the ``Chapter2/CMakeList.txt`` files. You must keep ``GraphicsAPI.cpp`` and ``OpenXRDebugUtils.cpp`` in the ``SOURCES `` list and also keep ``DebugOutput.h``, ``GraphicsAPI.h``, ``HelperFunctions.h``, ``OpenXRDebugUtils.h`` and ``OpenXRHelper.h`` in the ``HEADERS `` list.
+	You should remove the ``GraphicsAPI`` cpp and header files that do not relate to your chosen graphics API from the ``Chapter2/CMakeList.txt`` files. You must keep ``GraphicsAPI.cpp`` and ``OpenXRDebugUtils.cpp`` in the ``SOURCES`` list and also keep ``DebugOutput.h``, ``GraphicsAPI.h``, ``HelperFunctions.h``, ``OpenXRDebugUtils.h`` and ``OpenXRHelper.h`` in the ``HEADERS`` list.
 
 	At this point, we'll also create our text file called ``main.cpp`` in the ``/Chapter2`` directory. This will be our main source file, which we will use later in this chapter.
 
 	Now, we will continue with the ``Chapter2/CMakeList.txt``, adding the following code.
 
 	.. container:: d3d11
-		:name: d3d11-id-1
+		:name: d3d11-id-2
 		
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
 			:start-after: else() # Windows / Linux
 			:end-before: endif() # EOF
 			:dedent: 4
-			:emphasize-lines: 10, 12-13
+			:emphasize-lines: 10, 12
 
 	.. container:: d3d12
-		:name: d3d12-id-1
+		:name: d3d12-id-2
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
 			:start-after: else() # Windows / Linux
 			:end-before: endif() # EOF
 			:dedent: 4
-			:emphasize-lines: 11-13
+			:emphasize-lines: 11-12
 
 	.. container:: opengl
-		:name: opengl-id-1
+		:name: opengl-id-4
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
 			:start-after: else() # Windows / Linux
 			:end-before: endif() # EOF
 			:dedent: 4
-			:emphasize-lines: 22-24
+			:emphasize-lines: 23-25
 
 	.. container:: vulkan
-		:name: vulkan-id-1
+		:name: vulkan-id-5
 		
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
 			:start-after: else() # Windows / Linux
 			:end-before: endif() # EOF
 			:dedent: 4
-			:emphasize-lines: 16-20
+			:emphasize-lines: 17-21
 
 	Now, we have set up the project by adding an executable by using ``add_executable()`` specifying the ``${SOURCES}`` and ``${HEADERS}``. We have optionally set a the ``XR_RUNTIME_JSON`` in the debugger environment. We've added the ``../Common`` folder as an include directory and linked ``openxr_loader`` from ``FetchContent``. We didn't have to add OpenXR as a include directory; as we have specified it to be located in the CMake Build directory under ``openxr/`` when using ``FetchContent``, so we've only included the OpenXR headers from the CMake Build directory.
 	
@@ -334,7 +344,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	That's all the CMake code that we require for this project. 
 
 .. container:: android
-	:name: android-id-1
+	:name: android-id-2
 
 	Here, We'll show how to hand build an Android Studio project that runs a C++ Native Activity.
 	First, we will create a *workspace* folder and in that folder create that ``/Chapter2`` folder,
@@ -366,7 +376,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	After setting our CMake version to 3.22.1 and the project's name, we include ``FetchContent`` and use it to get the OpenXR-SDK from Khronos's GitHub page.
 
 	.. container:: opengles
-		:name: opengles-id-1
+		:name: opengles-id-2
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -375,7 +385,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:emphasize-lines: 4, 8, 13, 17
 	
 	.. container:: vulkan
-		:name: vulkan-id-1
+		:name: vulkan-id-6
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -386,7 +396,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
 
 	.. container:: opengles
-		:name: opengles-id-1
+		:name: opengles-id-3
 	
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -396,7 +406,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:emphasize-lines: 13-22, 30
 	
 	.. container:: vulkan
-		:name: vulkan-id-1
+		:name: vulkan-id-7
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -467,12 +477,12 @@ DebugOutput
 ``DebugOutput`` is a class that redirects ``std::cout`` and ``std::cerr`` to the output window in your IDE.
 
 .. container:: windows linux
-	:name: windows-linux-id-1
+	:name: windows-linux-id-2
 
 	``DebugOutput`` inherites from ``vsBufferedStringStreamBuf``, which inherites from ``std::streambuf``. ``vsBufferedStringStreamBuf`` queues the data from the redirected ``std::streambuf`` and calls ``virtual void writeString(const std::string &)``, which ``DebugOutput`` inplements as a call to ``OutputDebugStringA()``.
 
 .. container:: android
-	:name: android-id-1
+	:name: android-id-3
 
 	``DebugOutput`` inherites from ``AndroidStreambuf``, which inherites from ``std::streambuf``. ``vsBufferedStringStreamBuf`` queues the data from the redirected ``std::streambuf`` and calls ``__android_log_write()`` to log the message to Android Logcat.
 
@@ -516,7 +526,7 @@ GraphicsAPI
 :download:`GraphicsAPI.cpp <../Common/GraphicsAPI.cpp>`
 
 .. container:: d3d11
-	:name: d3d11-id-1
+	:name: d3d11-id-3
 
 	.. rubric:: Direct3D 11
 
@@ -525,7 +535,7 @@ GraphicsAPI
 	:download:`GraphicsAPI_D3D11.cpp <../Common/GraphicsAPI_D3D11.cpp>`
 
 .. container:: d3d12
-	:name: d3d12-id-1
+	:name: d3d12-id-3
 
 	.. rubric:: DirectX 12
 
@@ -534,7 +544,7 @@ GraphicsAPI
 	:download:`GraphicsAPI_D3D12.cpp <../Common/GraphicsAPI_D3D12.cpp>`
 
 .. container:: opengl
-	:name: opengl-id-1
+	:name: opengl-id-5
 
 	.. rubric:: OpenGL
 
@@ -543,7 +553,7 @@ GraphicsAPI
 	:download:`GraphicsAPI_OpenGL.cpp <../Common/GraphicsAPI_OpenGL.cpp>`
 
 .. container:: opengles
-	:name: opengles-id-1
+	:name: opengles-id-4
 
 	.. rubric:: OpenGL ES
 
@@ -552,7 +562,7 @@ GraphicsAPI
 	:download:`GraphicsAPI_OpenGL_ES.cpp <../Common/GraphicsAPI_OpenGL_ES.cpp>`
 
 .. container:: vulkan
-	:name: vulkan-id-1
+	:name: vulkan-id-8
 
 	.. rubric:: Vulkan
 
@@ -570,10 +580,10 @@ The code below is an example of how you might implement the inclusion and defini
 	:end-at: .h"
 
 .. container:: windows
-	:name: windows-id-1
+	:name: windows-id-3
 
 	.. container:: d3d11
-		:name: d3d11-id-1
+		:name: d3d11-id-4
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -582,7 +592,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:emphasize-lines: 5, 7
 
 	.. container:: d3d12
-		:name: d3d12-id-1
+		:name: d3d12-id-4
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -591,7 +601,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:emphasize-lines: 5, 8
 
 	.. container:: opengl
-		:name: opengl-id-1
+		:name: opengl-id-6
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -600,7 +610,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:emphasize-lines: 5, 9
 
 	.. container:: vulkan
-		:name: vulkan-id-1
+		:name: vulkan-id-9
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -609,10 +619,10 @@ The code below is an example of how you might implement the inclusion and defini
 			:emphasize-lines: 5, 10
 
 .. container:: linux
-	:name: linux-id-1
+	:name: linux-id-3
 
 	.. container:: opengl
-		:name: opengl-id-1
+		:name: opengl-id-7
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -621,7 +631,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:emphasize-lines: 2-4, 6
 
 	.. container:: vulkan
-		:name: vulkan-id-1
+		:name: vulkan-id-10
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -630,10 +640,10 @@ The code below is an example of how you might implement the inclusion and defini
 			:emphasize-lines: 2-4, 7
 
 .. container:: android
-	:name: android-id-1
+	:name: android-id-4
 
 	.. container:: opengles
-		:name: opengles-id-1
+		:name: opengles-id-5
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -642,7 +652,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:emphasize-lines: 3, 5
 
 	.. container:: vulkan
-		:name: vulkan-id-1
+		:name: vulkan-id-11
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -651,7 +661,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:emphasize-lines: 3, 6
 
 .. container:: d3d11
-	:name: d3d11-id-1
+	:name: d3d11-id-5
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
@@ -659,7 +669,7 @@ The code below is an example of how you might implement the inclusion and defini
 		:end-at: #endif
 
 .. container:: d3d12
-	:name: d3d12-id-1
+	:name: d3d12-id-5
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
@@ -667,7 +677,7 @@ The code below is an example of how you might implement the inclusion and defini
 		:end-at: #endif
 
 .. container:: opengl
-	:name: opengl-id-1
+	:name: opengl-id-8
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
@@ -675,7 +685,7 @@ The code below is an example of how you might implement the inclusion and defini
 		:end-at: #endif
 
 .. container:: opengles
-	:name: opengles-id-1
+	:name: opengles-id-6
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
@@ -683,7 +693,7 @@ The code below is an example of how you might implement the inclusion and defini
 		:end-at: #endif
 
 .. container:: vulkan
-	:name: vulkan-id-1
+	:name: vulkan-id-12
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
@@ -710,7 +720,7 @@ First, we add ``DebugOutput.h``:
 Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code of your chosen graphics API. This will in turn include ``GraphicsAPI.h``, ``HelperFunctions.h``  and ``OpenXRHelper.h``. In this tutorial, we include all of them, though you would only be picking one.
 
 .. container:: d3d11
-	:name: d3d11-id-1
+	:name: d3d11-id-6
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -719,7 +729,7 @@ Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code o
 		:emphasize-lines: 1
 
 .. container:: d3d12
-	:name: d3d12-id-1
+	:name: d3d12-id-6
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -728,7 +738,7 @@ Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code o
 		:emphasize-lines: 2
 
 .. container:: opengl
-	:name: opengl-id-1
+	:name: opengl-id-9
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -737,7 +747,7 @@ Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code o
 		:emphasize-lines: 3
 
 .. container:: opengles
-	:name: opengles-id-1
+	:name: opengles-id-7
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -746,7 +756,7 @@ Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code o
 		:emphasize-lines: 4
 
 .. container:: vulkan
-	:name: vulkan-id-1
+	:name: vulkan-id-13
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -784,7 +794,7 @@ chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutoria
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
-	:start-at: void OpenXRTutorial_Main(GraphicsAPI_Type apiType)
+	:start-at: void OpenXRTutorial_Main(GraphicsAPI_Type api) {
 	:end-at: }
 
 Then, we create the actual platform specific main function (our entry point to the application), which will call ``OpenXRTutorial_Main()`` with our ``GraphicsAPI_Type`` parameter. By default, this tutorial uses ``OPENGL`` as the parameter to ``OpenXRTutorial_Main()``. This must be changed to match on your chosen graphics API.
@@ -795,7 +805,7 @@ Then, we create the actual platform specific main function (our entry point to t
 	:end-at: };
 
 .. container:: windows linux
-	:name: windows-linux-id-1
+	:name: windows-linux-id-3
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -803,7 +813,7 @@ Then, we create the actual platform specific main function (our entry point to t
 		:end-before: XR_DOCS_TAG_END_main_WIN32___linux__
 
 .. container:: android
-	:name: android-id-1
+	:name: android-id-5
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -823,14 +833,14 @@ Then, we create the actual platform specific main function (our entry point to t
 ===================
 
 .. container:: windows
-	:name: windows-id-1
+	:name: windows-id-4
 
 	In the *workspace* directory, create a ``build/`` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``, that we have just created. Click "Configure" and "OK" to accept the default Generator.
 
 	You can now build and run your program. It should compile and link with no errors or warnings.
 
 .. container:: linux
-	:name: linux-id-1
+	:name: linux-id-4
 
 	You now have the files and folders, laid out as follows:
 
@@ -862,7 +872,7 @@ Then, we create the actual platform specific main function (our entry point to t
 		}
 
 .. container:: android
-	:name: android-id-1
+	:name: android-id-6
 
 	With all the source and build systems set up, we can now build the Android project. In upper right of Android Studio, you should find the toolbar below. Click the green hammer icon to build the project, if all is successful you should see "BUILD SUCCESSFUL in [...]s" in the Build Output window.
 	It is also recommended to sync the gradle files too.
