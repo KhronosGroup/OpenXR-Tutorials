@@ -1,7 +1,5 @@
 // Simul Software Ltd 2023
 // OpenXR Tutorial for Khronos Group
-#include <memory>
-
 
 #include "DebugOutput.h"
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
@@ -152,19 +150,19 @@ private:
         // XR_DOCS_TAG_END_GetInstanceProperties
     }
 
-    // XR_DOCS_TAG_BEGIN_GetSystemID
     void GetSystemID() {
+        // XR_DOCS_TAG_BEGIN_GetSystemID
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
+        // XR_DOCS_TAG_END_GetSystemID
     }
-    // XR_DOCS_TAG_END_GetSystemID
 
-    // XR_DOCS_TAG_BEGIN_CreateDestroySession
     void CreateSession() {
+        // XR_DOCS_TAG_BEGIN_CreateSession
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
 
         if (m_apiType == D3D11) {
@@ -196,12 +194,14 @@ private:
         sessionCI.systemId = m_systemID;
 
         OPENXR_CHECK(xrCreateSession(m_xrInstance, &sessionCI, &m_session), "Failed to create Session.");
+        // XR_DOCS_TAG_END_CreateSession
     }
 
     void DestroySession() {
+        // XR_DOCS_TAG_BEGIN_DestroySession
         OPENXR_CHECK(xrDestroySession(m_session), "Failed to destroy Session.");
+        // XR_DOCS_TAG_END_DestroySession
     }
-    // XR_DOCS_TAG_END_CreateDestroySession
 
     // XR_DOCS_TAG_BEGIN_PollEvents
     void PollEvents() {
