@@ -288,6 +288,8 @@ public:
             COMPUTE
         } stage;
         bool readWrite;
+        size_t bufferOffset;
+        size_t bufferSize;
     };
     struct PipelineCreateInfo {
         std::vector<void*> shaders;

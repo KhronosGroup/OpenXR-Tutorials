@@ -1080,7 +1080,7 @@ void GraphicsAPI_D3D12::SetBufferData(void *buffer, size_t offset, size_t size, 
     void *mappedData = nullptr;
     D3D12_RANGE readRange = {0, 0};
     D3D12_CHECK(d3d12Buffer->Map(0, &readRange, &mappedData), "Failed to map Resource.");
-    if (mappedData)
+    if (mappedData && data)
         memcpy(mappedData, data, size);
     d3d12Buffer->Unmap(0, nullptr);
 }

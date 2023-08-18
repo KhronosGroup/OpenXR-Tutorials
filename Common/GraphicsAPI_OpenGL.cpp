@@ -745,9 +745,11 @@ void GraphicsAPI_OpenGL::SetBufferData(void *buffer, size_t offset, size_t size,
         std::cout << "ERROR: OPENGL: Unknown Buffer Type." << std::endl;
     }
 
-    glBindBuffer(target, glBuffer);
-    glBufferSubData(target, (GLintptr)offset, (GLsizeiptr)size, data);
-    glBindBuffer(target, 0);
+    if (data) {
+        glBindBuffer(target, glBuffer);
+        glBufferSubData(target, (GLintptr)offset, (GLsizeiptr)size, data);
+        glBindBuffer(target, 0);
+    }
 }
 
 void GraphicsAPI_OpenGL::ClearColor(void *imageView, float r, float g, float b, float a) {
@@ -1036,7 +1038,8 @@ void GraphicsAPI_OpenGL::SetDescriptor(const DescriptorInfo &descriptorInfo) {
     GLuint glResource = (GLuint)(uint64_t)descriptorInfo.resource;
     const GLuint &bindingIndex = descriptorInfo.bindingIndex;
     if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
-        glBindBufferBase(GL_UNIFORM_BUFFER, bindingIndex, glResource);
+        PFNGLBINDBUFFERRANGEPROC glBindBufferRange = (PFNGLBINDBUFFERRANGEPROC)GetExtension("glBindBufferRange");  // 3.0+
+        glBindBufferRange(GL_UNIFORM_BUFFER, bindingIndex, glResource, (GLintptr)descriptorInfo.bufferOffset, (GLsizeiptr)descriptorInfo.bufferSize);
     } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
         glActiveTexture(GL_TEXTURE0 + bindingIndex);
         glBindTexture(GetGLTextureTarget(images[glResource]), glResource);

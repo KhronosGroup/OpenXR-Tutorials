@@ -1087,7 +1087,7 @@ void GraphicsAPI_Vulkan::SetBufferData(void *buffer, size_t offset, size_t size,
     VkDeviceMemory memory = bufferResources[vkBuffer].first;
     void *mappedData = nullptr;
     VULKAN_CHECK(vkMapMemory(device, memory, offset, size, 0, &mappedData), "Can not map Buffer.");
-    if (mappedData) {
+    if (mappedData && data) {
         memcpy(mappedData, data, size);
         // Because the VkDeviceMemory use a heap with properties (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
         // We don't need to use vkFlushMappedMemoryRanges() or vkInvalidateMappedMemoryRanges()
@@ -1268,8 +1268,8 @@ void GraphicsAPI_Vulkan::SetDescriptor(const DescriptorInfo &descriptorInfo) {
         VkBuffer buffer = (VkBuffer)descriptorInfo.resource;
         const BufferCreateInfo &bufferCI = bufferResources[buffer].second;
         descBufferInfo.buffer = buffer;
-        descBufferInfo.offset = 0;
-        descBufferInfo.range = bufferCI.size;
+        descBufferInfo.offset = descriptorInfo.bufferOffset;
+        descBufferInfo.range = descriptorInfo.bufferSize;
     } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
         VkDescriptorImageInfo &descImageInfo = std::get<2>(writeDescSets.back());
         VkImageView imageView = (VkImageView)descriptorInfo.resource;

@@ -445,17 +445,36 @@ void GetEnvironmentBlendModes() {
         XrMatrix4x4f viewProj;
         XrMatrix4x4f modelViewProj;
         XrMatrix4x4f model;
+        XrMatrix4x4f pad;
     };
     CameraConstants cameraConstants;
     // Six colours for the six faces of a cube. Bright for +, Dark is -
     // Red for X faces, green for Y, blue for Z.
-    XrVector4f colours[6] = {
+    XrVector4f colours[16] = {
         {1.00f, 0.00f, 0.00f, 1.00f},
         {0.10f, 0.00f, 0.00f, 1.00f},
         {0.00f, 0.60f, 0.00f, 1.00f},
         {0.00f, 0.10f, 0.00f, 1.00f},
         {0.00f, 0.20f, 1.00f, 1.00f},
-        {0.00f, 0.02f, 0.10f, 1.00f}};
+        {0.00f, 0.02f, 0.10f, 1.00f},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+    };
+    XrVector4f normals[6] = {
+        {1.00f, 0.00f, 0.00f, 0},
+        {-1.00f, 0.00f, 0.00f, 0},
+        {0.00f, 1.00f, 0.00f, 0},
+        {0.00f, -1.00f, 0.00f, 0},
+        {0.00f, 0.00f, 1.00f, 0},
+        {0.00f, 0.0f, -1.00f, 0}};
 
     void CreateResources() {
         // Vertices for a 1x1x1 meter cube. (Left/Right, Top/Bottom, Front/Back)
@@ -488,21 +507,16 @@ void GetEnvironmentBlendModes() {
             24, 25, 26, 27, 28, 29,  // -Z
             30, 31, 32, 33, 34, 35,  // +Z
         };
-		XrVector4f normals[6] = {
-			{1.00f , 0.00f	, 0.00f,0},
-			{-1.00f, 0.00f	, 0.00f,0},
-			{0.00f , 1.00f	, 0.00f,0},
-			{0.00f , -1.00f	, 0.00f,0},
-			{0.00f , 0.00f	, 1.00f,0},
-			{0.00f , 0.0f	,-1.00f,0}};
+		
         m_vertexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices), &cubeVertices});
 
         m_indexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices), &cubeIndices});
 
-        m_uniformBuffer_Frag = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colours), colours});
 
-        m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
+        size_t numberOfCuboids = 64 + 2 + 2;
+        m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants) * numberOfCuboids, nullptr});
         m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
+        m_uniformBuffer_Frag = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colours) * numberOfCuboids, nullptr});
 
         // XR_DOCS_TAG_END_CreateResources1
         // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
@@ -575,19 +589,9 @@ void GetEnvironmentBlendModes() {
         pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         pipelineCI.colorFormats = {m_swapchainAndDepthImages[0].swapchainFormat};
         pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
-        pipelineCI.layout = {{0, nullptr
-                                  , GraphicsAPI::DescriptorInfo::Type::BUFFER
-                                  , GraphicsAPI::DescriptorInfo::Stage::VERTEX
-                                  , false}
-                              , {1, nullptr
-                                  , GraphicsAPI::DescriptorInfo::Type::BUFFER
-                                  , GraphicsAPI::DescriptorInfo::Stage::VERTEX
-                                  , false}
-                              , {2
-                                 , nullptr
-                                 , GraphicsAPI::DescriptorInfo::Type::BUFFER
-                                 , GraphicsAPI::DescriptorInfo::Stage::FRAGMENT
-                                 , false}};
+        pipelineCI.layout = {{0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
+                             {1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
+                             {2, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT}};
         m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
 		
 		float scale=0.2f;
@@ -920,24 +924,29 @@ void GetEnvironmentBlendModes() {
     // XR_DOCS_TAG_END_DestroySwapchain
 
     // XR_DOCS_TAG_BEGIN_RenderCuboid
+    size_t renderCuboidIndex = 0;
     void RenderCuboid(XrPosef pose, XrVector3f scale,XrVector3f colour) {
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
+        size_t offsetCameraUB = sizeof(CameraConstants) * renderCuboidIndex;
+        size_t offsetColoursUB = sizeof(colours) * renderCuboidIndex;
 
         m_graphicsAPI->SetPipeline(m_pipeline);
 
-        m_graphicsAPI->SetBufferData(m_uniformBuffer_Camera, 0, sizeof(CameraConstants), &cameraConstants);
-        m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Camera, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
-        m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Normals, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
+        m_graphicsAPI->SetBufferData(m_uniformBuffer_Camera, offsetCameraUB, sizeof(CameraConstants), &cameraConstants);
+        m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Camera, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false, offsetCameraUB, sizeof(CameraConstants)});
+        m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Normals, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false, 0, sizeof(normals)});
 		colours[0]={colour.x,colour.y,colour.z,1.0};
-        m_graphicsAPI->SetBufferData(m_uniformBuffer_Frag, 0, sizeof(colours), (void *)colours);
-        m_graphicsAPI->SetDescriptor({2, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+        m_graphicsAPI->SetBufferData(m_uniformBuffer_Frag, offsetColoursUB, sizeof(colours), (void *)colours);
+        m_graphicsAPI->SetDescriptor({2, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false, offsetColoursUB, sizeof(colours)});
         m_graphicsAPI->UpdateDescriptors();
 
         m_graphicsAPI->SetVertexBuffers(&m_vertexBuffer, 1);
         m_graphicsAPI->SetIndexBuffer(m_indexBuffer);
         m_graphicsAPI->DrawIndexed(36);
+
+        renderCuboidIndex++;
     }
     // XR_DOCS_TAG_END_RenderCuboid
     // XR_DOCS_TAG_BEGIN_RenderFrame
@@ -1050,6 +1059,7 @@ void GetEnvironmentBlendModes() {
 
             // XR_DOCS_TAG_END_SetupFrameRendering
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid
+            renderCuboidIndex = 0;
             // Draw a floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
             RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f},{0.4f,0.5f,0.5f});
             // Draw a "table".
@@ -1252,7 +1262,7 @@ void OpenXRTutorial_Main(GraphicsAPI_Type api) {
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
-    OpenXRTutorial_Main(D3D11);
+    OpenXRTutorial_Main(OPENGL);
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)

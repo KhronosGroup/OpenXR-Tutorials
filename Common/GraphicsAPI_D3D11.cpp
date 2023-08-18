@@ -569,7 +569,10 @@ void *GraphicsAPI_D3D11::CreateBuffer(const BufferCreateInfo &bufferCI) {
 
     ID3D11Buffer *d3D11Buffer = nullptr;
     D3D11_CHECK(device->CreateBuffer(&desc, bufferCI.data ? &initData : nullptr, &d3D11Buffer), "Failed to create Buffer");
+    
+    SetBufferData(d3D11Buffer, 0, bufferCI.size, bufferCI.data);
     buffers[d3D11Buffer] = bufferCI;
+   
     return d3D11Buffer;
 }
 
@@ -654,7 +657,7 @@ void GraphicsAPI_D3D11::SetBufferData(void *buffer, size_t offset, size_t size, 
     ID3D11Buffer *d3d11Buffer = (ID3D11Buffer *)buffer;
     D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
     D3D11_CHECK(immediateContext->Map(d3d11Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource), "Failed to map Resource.");
-    if (mappedSubresource.pData)
+    if (mappedSubresource.pData && data)
         memcpy(mappedSubresource.pData, data, size);
     immediateContext->Unmap(d3d11Buffer, 0);
 }
