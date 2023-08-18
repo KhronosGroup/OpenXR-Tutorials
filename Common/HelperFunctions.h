@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstring>
 #include <unordered_map>
+#include <memory>
 
 // Debugbreak
 #if defined(_MSC_VER)

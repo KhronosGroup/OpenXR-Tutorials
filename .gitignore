@@ -38,3 +38,16 @@ sphinx
 
 # Android build folders
 .idea
+
+# Android Shader output sources/binaries
+Chapter5/app/src/main/assets/shaders/*.spv
+Chapter5/app/src/main/assets/shaders/*.glsl
+
+Chapter4/app/src/main/assets/shaders/*.spv
+Chapter4/app/src/main/assets/shaders/*.glsl
+
+Chapter3/app/src/main/assets/shaders/*.spv
+Chapter3/app/src/main/assets/shaders/*.glsl
+
+Chapter2/app/src/main/assets/shaders/*.spv
+Chapter2/app/src/main/assets/shaders/*.glsl
