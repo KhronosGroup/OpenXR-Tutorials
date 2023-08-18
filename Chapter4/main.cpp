@@ -502,7 +502,7 @@ void GetEnvironmentBlendModes() {
         m_uniformBuffer_Frag = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colours), colours});
 
         m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
-        m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 1, sizeof(normals), &normals});
+        m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
 
         // XR_DOCS_TAG_END_CreateResources1
         // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
@@ -575,7 +575,19 @@ void GetEnvironmentBlendModes() {
         pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         pipelineCI.colorFormats = {m_swapchainAndDepthImages[0].swapchainFormat};
         pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
-        pipelineCI.layout = {{1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false}, {0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false}};
+        pipelineCI.layout = {{0, nullptr
+                                  , GraphicsAPI::DescriptorInfo::Type::BUFFER
+                                  , GraphicsAPI::DescriptorInfo::Stage::VERTEX
+                                  , false}
+                              , {1, nullptr
+                                  , GraphicsAPI::DescriptorInfo::Type::BUFFER
+                                  , GraphicsAPI::DescriptorInfo::Stage::VERTEX
+                                  , false}
+                              , {2
+                                 , nullptr
+                                 , GraphicsAPI::DescriptorInfo::Type::BUFFER
+                                 , GraphicsAPI::DescriptorInfo::Stage::FRAGMENT
+                                 , false}};
         m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
 		
 		float scale=0.2f;
@@ -920,7 +932,7 @@ void GetEnvironmentBlendModes() {
         m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Normals, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
 		colours[0]={colour.x,colour.y,colour.z,1.0};
         m_graphicsAPI->SetBufferData(m_uniformBuffer_Frag, 0, sizeof(colours), (void *)colours);
-        m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+        m_graphicsAPI->SetDescriptor({2, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
         m_graphicsAPI->UpdateDescriptors();
 
         m_graphicsAPI->SetVertexBuffers(&m_vertexBuffer, 1);
@@ -1270,7 +1282,7 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
-    OpenXRTutorial_Main(VULKAN);
+    OpenXRTutorial_Main(OPENGL_ES);
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__
 #endif

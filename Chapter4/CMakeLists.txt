@@ -18,7 +18,7 @@ FetchContent_Declare(
         # URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.27.zip
         URL_HASH MD5=81930f0ccecdca852906e1a22aee4a45
         URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.28.zip
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+      #  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         SOURCE_DIR openxr)
 FetchContent_MakeAvailable(OpenXR)
 

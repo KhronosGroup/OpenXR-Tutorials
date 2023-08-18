@@ -9,7 +9,7 @@ struct PS_OUT
 {
     float4 o_Color : SV_Target0;
 };
-cbuffer Data : register(b0)
+cbuffer Data : register(b2)
 {
     float4 colors[6];
 };
