@@ -33,7 +33,7 @@
 
 // Graphic APIs headers
 #if defined(XR_USE_GRAPHICS_API_D3D11)
-#include <d3d11.h>
+#include <d3d11_1.h>
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_D3D12)

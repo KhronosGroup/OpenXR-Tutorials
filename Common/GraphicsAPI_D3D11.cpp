@@ -557,7 +557,8 @@ void *GraphicsAPI_D3D11::CreateBuffer(const BufferCreateInfo &bufferCI) {
     initData.pSysMem = bufferCI.data;
     initData.SysMemPitch = (UINT)bufferCI.stride;
     initData.SysMemSlicePitch = 0;
-    bool cpu_access = (bufferCI.type == GraphicsAPI::BufferCreateInfo::Type::UNIFORM);
+    bool cpu_access = true;
+    //(bufferCI.type == GraphicsAPI::BufferCreateInfo::Type::UNIFORM);
 
     D3D11_BUFFER_DESC desc{};
     desc.ByteWidth = (UINT)(bufferCI.size);
@@ -658,7 +659,7 @@ void GraphicsAPI_D3D11::SetBufferData(void *buffer, size_t offset, size_t size, 
     D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
     D3D11_CHECK(immediateContext->Map(d3d11Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource), "Failed to map Resource.");
     if (mappedSubresource.pData && data)
-        memcpy(mappedSubresource.pData, data, size);
+        memcpy((char *)mappedSubresource.pData + offset, data, size);
     immediateContext->Unmap(d3d11Buffer, 0);
 }
 
@@ -860,15 +861,20 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
 }
 
 void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
+    ID3D11DeviceContext1 *immediateContext1 = nullptr;
+    D3D11_CHECK(immediateContext->QueryInterface(IID_PPV_ARGS(&immediateContext1)), "Failed to get ID3D11DeviceContext1 * from Immediate Context.");
+
     UINT slot = descriptorInfo.bindingIndex;
+    UINT firstConstant = Align<UINT>(descriptorInfo.bufferOffset / 16, 16);
+    UINT numConstants = Align<UINT>(descriptorInfo.bufferSize / 16, 16);
     switch (descriptorInfo.stage) {
     case DescriptorInfo::Stage::VERTEX: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
-            immediateContext->VSSetConstantBuffers(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource);
+            immediateContext1->VSSetConstantBuffers1(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource, &firstConstant, &numConstants);
         } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
-            immediateContext->VSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
+            immediateContext1->VSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
         } else if (descriptorInfo.type == DescriptorInfo::Type::SAMPLER) {
-            immediateContext->VSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
+            immediateContext1->VSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
@@ -876,11 +882,11 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
     }
     case DescriptorInfo::Stage::TESSELLATION_CONTROL: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
-            immediateContext->HSSetConstantBuffers(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource);
+            immediateContext1->HSSetConstantBuffers1(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource, &firstConstant, &numConstants);
         } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
-            immediateContext->HSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
+            immediateContext1->HSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
         } else if (descriptorInfo.type == DescriptorInfo::Type::SAMPLER) {
-            immediateContext->HSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
+            immediateContext1->HSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
@@ -888,11 +894,11 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
     }
     case DescriptorInfo::Stage::TESSELLATION_EVALUATION: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
-            immediateContext->DSSetConstantBuffers(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource);
+            immediateContext1->DSSetConstantBuffers1(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource, &firstConstant, &numConstants);
         } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
-            immediateContext->DSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
+            immediateContext1->DSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
         } else if (descriptorInfo.type == DescriptorInfo::Type::SAMPLER) {
-            immediateContext->DSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
+            immediateContext1->DSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
@@ -900,11 +906,11 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
     }
     case DescriptorInfo::Stage::GEOMETRY: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
-            immediateContext->GSSetConstantBuffers(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource);
+            immediateContext1->GSSetConstantBuffers1(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource, &firstConstant, &numConstants);
         } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
-            immediateContext->GSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
+            immediateContext1->GSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
         } else if (descriptorInfo.type == DescriptorInfo::Type::SAMPLER) {
-            immediateContext->GSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
+            immediateContext1->GSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
@@ -912,11 +918,11 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
     }
     case DescriptorInfo::Stage::FRAGMENT: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
-            immediateContext->PSSetConstantBuffers(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource);
+            immediateContext1->PSSetConstantBuffers1(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource, &firstConstant, &numConstants);
         } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
-            immediateContext->PSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
+            immediateContext1->PSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
         } else if (descriptorInfo.type == DescriptorInfo::Type::SAMPLER) {
-            immediateContext->PSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
+            immediateContext1->PSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
@@ -927,16 +933,16 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
             if (descriptorInfo.readWrite) {
                 // UAVs?
             } else {
-                immediateContext->CSSetConstantBuffers(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource);
+                immediateContext1->CSSetConstantBuffers1(slot, 1, (ID3D11Buffer *const *)&descriptorInfo.resource, &firstConstant, &numConstants);
             }
         } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
             if (descriptorInfo.readWrite) {
-                immediateContext->CSSetUnorderedAccessViews(slot, 1, (ID3D11UnorderedAccessView *const *)&descriptorInfo.resource, nullptr);
+                immediateContext1->CSSetUnorderedAccessViews(slot, 1, (ID3D11UnorderedAccessView *const *)&descriptorInfo.resource, nullptr);
             } else {
-                immediateContext->CSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
+                immediateContext1->CSSetShaderResources(slot, 1, (ID3D11ShaderResourceView *const *)&descriptorInfo.resource);
             }
         } else if (descriptorInfo.type == DescriptorInfo::Type::SAMPLER) {
-            immediateContext->CSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
+            immediateContext1->CSSetSamplers(slot, 1, (ID3D11SamplerState *const *)&descriptorInfo.resource);
         } else {
             std::cout << "ERROR: D3D11: Unknown Descriptor Type." << std::endl;
         }
@@ -945,6 +951,8 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
     default:
         break;
     }
+
+    D3D11_SAFE_RELEASE(immediateContext1);
 }
 
 void GraphicsAPI_D3D11::UpdateDescriptors() {

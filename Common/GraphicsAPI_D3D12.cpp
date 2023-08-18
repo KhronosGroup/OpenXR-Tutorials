@@ -1081,7 +1081,7 @@ void GraphicsAPI_D3D12::SetBufferData(void *buffer, size_t offset, size_t size, 
     D3D12_RANGE readRange = {0, 0};
     D3D12_CHECK(d3d12Buffer->Map(0, &readRange, &mappedData), "Failed to map Resource.");
     if (mappedData && data)
-        memcpy(mappedData, data, size);
+        memcpy((char *)mappedData + offset, data, size);
     d3d12Buffer->Unmap(0, nullptr);
 }
 
@@ -1162,15 +1162,15 @@ void GraphicsAPI_D3D12::UpdateDescriptors() {
                 uavDesc.Format = d3d12Buffer->GetDesc().Format;
                 uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
                 uavDesc.Buffer.FirstElement = 0;
-                uavDesc.Buffer.NumElements = static_cast<UINT>(bufferCI.size / bufferCI.stride);
+                uavDesc.Buffer.NumElements = static_cast<UINT>(descriptorInfo.bufferSize / bufferCI.stride);
                 uavDesc.Buffer.StructureByteStride = static_cast<UINT>(bufferCI.stride);
-                uavDesc.Buffer.CounterOffsetInBytes = 0;
+                uavDesc.Buffer.CounterOffsetInBytes = descriptorInfo.bufferOffset;
                 uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
                 device->CreateUnorderedAccessView(d3d12Buffer, nullptr, &uavDesc, destCpuHandle);
             } else {
                 D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc;
-                cbvDesc.BufferLocation = d3d12Buffer->GetGPUVirtualAddress();
-                cbvDesc.SizeInBytes = Align<UINT>(static_cast<UINT>(bufferCI.size), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+                cbvDesc.BufferLocation = d3d12Buffer->GetGPUVirtualAddress() + descriptorInfo.bufferOffset;
+                cbvDesc.SizeInBytes = Align<UINT>(static_cast<UINT>(descriptorInfo.bufferSize), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
                 device->CreateConstantBufferView(&cbvDesc, destCpuHandle);
             }
 
