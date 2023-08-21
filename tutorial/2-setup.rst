@@ -551,7 +551,7 @@ OpenXR uses an event based system to describes changes within the XR system. It'
 Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add the highlighted code below. Also add the highlighted code for the new methods and members in their separate private sections.
 
 .. code-block:: cpp
-	:emphasize-lines: 20-26, 58-63, 78-83
+	:emphasize-lines: 20-26, 58-63, 79-83
 
 	class OpenXRTutorial {
 	public:
@@ -572,10 +572,10 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 
 			CreateSession();
 
-			while (applicationRunning) {
+			while (m_applicationRunning) {
 				PollSystemEvents();
 				PollEvents();
-				if (sessionRunning) {
+				if (m_sessionRunning) {
 					// Draw Frame.
 				}
 			}
@@ -641,7 +641,7 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 2.3.1 xrPollEvent
 =================
 
-Code the following code into the ``PollEvents()`` method:
+Copy the following code into the ``PollEvents()`` method:
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -667,7 +667,7 @@ The description of the events come from `2.22.1. Event Polling of the OpenXR spe
 | XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED          | XrEventDataSessionStateChanged         | The application has changed its lifecycle state.                               |
 +---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
 
-As described in the table above, most events are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, after the specified ``lossTime``, until it can create a new instance successfully. ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
+As described in the table above, most events are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully. ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
 
 For some platforms, we need additional functionality provided via the ``PollSystemEvents()`` method, so that our application can react to any relevant updates from the platform correctly.
 
@@ -679,7 +679,7 @@ For some platforms, we need additional functionality provided via the ``PollSyst
 .. container:: android
 	:name: android-id-1
 
-	For Android, we have already provided the code for the ``PollSystemEvents()`` method in :ref:`Chapter 1.4.3 <1.4.3 OpenXRTutorial and Main>`. So its duplicate definition can be removed from the class. This function is outside the scope of OpenXR, but in general polls Android for system events and updates the ``AndroidAppState`` and uses the  ``m_applicationRunning`` and ``m_sessionRunning`` members.
+	For Android, we have already provided the code for the ``PollSystemEvents()`` method in :ref:`Chapter 1.4.3 <1.4.3 OpenXRTutorial and Main>`. So its duplicate definition must be removed from the class. This function is outside the scope of OpenXR, but in general it polls Android for system events,updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members.
 
 
 2.3.2 XrSessionState
