@@ -336,54 +336,86 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 
 	Now, we will continue with the ``Chapter2/CMakeList.txt``, adding the following code.
 
-	.. container:: d3d11
-		:name: d3d11-id-2
-		
-		.. literalinclude:: ../Chapter2/CMakeLists.txt
-			:language: cmake
-			:start-after: else() # Windows / Linux
-			:end-before: endif() # EOF
-			:dedent: 4
-			:emphasize-lines: 10, 12
+	.. literalinclude:: ../Chapter2/CMakeLists.txt
+		:language: cmake
+		:start-after: else() # Windows / Linux
+		:end-at: target_link_libraries(OpenXRTutorialChapter2 openxr_loader)
+		:dedent: 4
 
-	.. container:: d3d12
-		:name: d3d12-id-2
+	Now, we have set up the project by adding an executable by using ``add_executable()`` specifying the ``${SOURCES}`` and ``${HEADERS}``. We have optionally set a the ``XR_RUNTIME_JSON`` in the debugger environment. We've added the ``../Common`` folder as an include directory and linked ``openxr_loader`` from ``FetchContent``. We didn't have to add OpenXR as a include directory; as we have specified it to be located in the CMake Build directory under ``openxr/`` when using ``FetchContent``, so we've only included the OpenXR headers from the CMake Build directory.
+	
+	.. container:: windows
+			:name: windows-id-3
+
+		.. container:: d3d11
+			:name: d3d11-id-2
+
+			.. literalinclude:: ../Chapter2/CMakeLists.txt
+				:language: cmake
+				:start-after: # D3D11
+				:end-before: # D3D12
+				:dedent: 8
+
+		.. container:: d3d12
+			:name: d3d12-id-2
+
+			.. literalinclude:: ../Chapter2/CMakeLists.txt
+				:language: cmake
+				:start-after: # D3D12
+				:end-before: # D3D11 / D3D12
+				:dedent: 8
+
+		.. container:: d3d11 d3d12
+			:name: d3d11-d3d12-id-2
+
+			.. literalinclude:: ../Chapter2/CMakeLists.txt
+				:language: cmake
+				:start-after: # D3D11 / D3D12
+				:end-before: else() # Linux
+				:dedent: 8
+			
+		.. container:: d3d11
+			:name: d3d11-id-2-1
+			
+			For Microsoft Windows, we've linked ``d3d11.lib`` and ``dxgi.lib``, so that we can use Direct3D 11 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project.
+
+		.. container:: d3d12
+			:name: d3d12-id-2-1
+
+			For Microsoft Windows, we've linked ``d3d12.lib`` and ``dxgi.lib``, so that we can use Direct3D 12 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project.
+
+	.. container:: linux
+		:name: linux-id-3
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
-			:language: cmake
-			:start-after: else() # Windows / Linux
-			:end-before: endif() # EOF
-			:dedent: 4
-			:emphasize-lines: 11-12
+				:language: cmake
+				:start-after: else() # Linux
+				:end-before: endif()
+				:dedent: 8
+
+		For Microsoft Windows, we've added some compiler pre-processor directives.
 
 	.. container:: opengl
 		:name: opengl-id-4
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
-			:start-after: else() # Windows / Linux
+			:start-at: # OpenGL
 			:end-before: endif() # EOF
 			:dedent: 4
-			:emphasize-lines: 23-25
+		
+		This CMake code will add gfxwrapper for OpenGL, we've added the include directories and linked the gfxwrapper libraries from the OpenXR-SDK.
 
 	.. container:: vulkan
 		:name: vulkan-id-5
 		
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
-			:start-after: else() # Windows / Linux
-			:end-before: endif() # EOF
+			:start-at: # VulkanSDK
+			:end-at: endif()
 			:dedent: 4
-			:emphasize-lines: 17-21
-
-	Now, we have set up the project by adding an executable by using ``add_executable()`` specifying the ``${SOURCES}`` and ``${HEADERS}``. We have optionally set a the ``XR_RUNTIME_JSON`` in the debugger environment. We've added the ``../Common`` folder as an include directory and linked ``openxr_loader`` from ``FetchContent``. We didn't have to add OpenXR as a include directory; as we have specified it to be located in the CMake Build directory under ``openxr/`` when using ``FetchContent``, so we've only included the OpenXR headers from the CMake Build directory.
-	
-	We have also added the include directories and linkage for the graphics APIs.
-	For Microsoft Windows, we've linked ``d3d11.lib``, ``d3d12.lib`` and ``dxgi.lib``, so that we can use Direct3D 11, Direct3D 12 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project.
-	If you have the Vulkan SDK installed, this CMake code will try to find that package, add the include directories and link the Vulkan libraries.
-	As a default, this CMake has added gfxwrapper for OpenGL, we've added the include directories and linked the gfxwrapper libraries from the OpenXR-SDK.
-
-	Note: You can remove or comment out from the above CMake code any references to graphics APIs that are not in use, if you wish to do so. Leaving them in place will not effect your project.
+		
+		If you have the Vulkan SDK installed, this CMake code will try to find that package, add the include directories and link the Vulkan libraries.
 
 	That's all the CMake code that we require for this project. 
 
@@ -459,31 +491,55 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 
 	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
 
+	.. literalinclude:: ../Chapter2/CMakeLists.txt
+		:language: cmake
+		:start-after: if (ANDROID) # Android
+		:end-before: # VulkanNDK
+		:dedent: 4
+
+	Now, we can set things up by adding a shared library with the ``${SOURCES}`` and ``${HEADERS}``. We add the ``../Common`` folder as an include directory too. Just above that we need to set the ``CMAKE_SHARED_LINKER_FLAGS`` so that ``ANativeActivity_onCreate()`` is exported for the Java Virtual Machine to call. This is used by a static library called ``native_app_glue``, which allows us to interface between the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``void android_main(struct android_app*)`` entry point.  We add ``native_app_glue`` to our project by including ``AndroidNdkModules`` and calling ``android_ndk_import_module_native_app_glue()``. 
+
 	.. container:: opengles
 		:name: opengles-id-3
 	
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
-			:start-after: if (ANDROID) # Android
-			:end-before: else() # Windows / Linux
+			:start-after: # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
+			:end-before: # Final link
 			:dedent: 4
-			:emphasize-lines: 13-22, 30
 	
+		We now add a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL ES. We compile the library the C and header file in ``${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.*`` and add this ``${openxr_SOURCE_DIR}/external/include`` as an include directory. Next, we find the ``GLESv3`` and ``EGL`` libraries and link them to ``openxr-gfxwrapper``. We add the ``${openxr_SOURCE_DIR}/src/common`` and ``${openxr_SOURCE_DIR}/external/include`` folder as include directories to ``OpenXRTutorialChapter2`` as well.
+
+		.. code-block:: cmake
+
+			target_link_libraries(OpenXRTutorialChapter2
+					android
+					native_app_glue
+					openxr_loader
+					openxr-gfxwrapper)
+	
+		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``openxr-gfxwrapper`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will packaged inside our .apk along with any shared libraries that we have linked.
+
 	.. container:: vulkan
 		:name: vulkan-id-7
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
-			:start-after: if (ANDROID) # Android
-			:end-before: else() # Windows / Linux
+			:start-after: # VulkanNDK
+			:end-before: # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
 			:dedent: 4
-			:emphasize-lines: 9-11, 29
-	
-	Now, we can set things up by adding a shared library with the ``${SOURCES}`` and ``${HEADERS}``. We add the ``../Common`` folder as an include directory too. Just above that we need to set the ``CMAKE_SHARED_LINKER_FLAGS`` so that ``ANativeActivity_onCreate()`` is exported for the Java Virtual Machine to call. This is used by a static library called ``native_app_glue``, which allows us to interface between the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``void android_main(struct android_app*)`` entry point.  We add ``native_app_glue`` to our project by including ``AndroidNdkModules`` and calling ``android_ndk_import_module_native_app_glue()``. 
 
-	Next, we find the Vulkan library in the NDK and include the directory to the Android Vulkan headers. We also add a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL ES. We compile the library the C and header file in ``${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.*`` and add this ``${openxr_SOURCE_DIR}/external/include`` as an include directory. Next, we find the ``GLESv3`` and ``EGL`` libraries and link them to ``openxr-gfxwrapper``. We add the ``${openxr_SOURCE_DIR}/src/common`` and ``${openxr_SOURCE_DIR}/external/include`` folder as include directories to ``OpenXRTutorialChapter2`` as well.
+		Next, we find the Vulkan library in the NDK and include the directory to the Android Vulkan headers. 
+
+		.. code-block:: cmake
+
+			target_link_libraries(OpenXRTutorialChapter2
+					android
+					native_app_glue
+					openxr_loader
+					${vulkan-lib})
 	
-	Finally we link the ``android``, ``native_app_glue``, ``openxr_loader``, ``vulkan`` and ``openxr-gfxwrapper`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will packaged inside our .apk along with any shared libraries that we have linked.
+		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``vulkan`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will packaged inside our .apk along with any shared libraries that we have linked.
 
 	.. rubric:: AndroidManifest.xml
 
@@ -644,7 +700,7 @@ The code below is an example of how you might implement the inclusion and defini
 	:end-at: .h"
 
 .. container:: windows
-	:name: windows-id-3
+	:name: windows-id-4
 
 	.. container:: d3d11
 		:name: d3d11-id-4
@@ -683,7 +739,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:emphasize-lines: 5, 10
 
 .. container:: linux
-	:name: linux-id-3
+	:name: linux-id-4
 
 	.. container:: opengl
 		:name: opengl-id-7
@@ -890,14 +946,14 @@ Then, we create the actual platform specific main function (our entry point to t
 ===================
 
 .. container:: windows
-	:name: windows-id-4
+	:name: windows-id-5
 
 	In the *workspace* directory, create a ``build/`` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``, that we have just created. Click "Configure" and "OK" to accept the default Generator, then click "Generate" to create the Visual Studio solution and project. Finally click "Open Project" to open that solution with Visual Studio.
 
 	You can now build and run your program. It should compile and link with no errors or warnings.
 
 .. container:: linux
-	:name: linux-id-4
+	:name: linux-id-5
 
 	You now have the files and folders, laid out as follows:
 

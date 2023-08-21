@@ -50,7 +50,7 @@ if (ANDROID) # Android
     include(AndroidNdkModules)
     android_ndk_import_module_native_app_glue()
 
-    # vulkan - Found in the NDK
+    # VulkanNDK
     find_library(vulkan-lib vulkan)
     target_include_directories(OpenXRTutorialChapter2 PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
 
@@ -82,20 +82,25 @@ else() # Windows / Linux
     target_include_directories(OpenXRTutorialChapter2 PUBLIC "../Common/")
     target_link_libraries(OpenXRTutorialChapter2 openxr_loader)
 
-    if (WIN32)
+    if (WIN32) # Windows 
+        # D3D11
         target_link_libraries(OpenXRTutorialChapter2 "d3d11.lib") 
+        # D3D12
         target_link_libraries(OpenXRTutorialChapter2 "d3d12.lib") 
+        # D3D11 / D3D12
         target_link_libraries(OpenXRTutorialChapter2 "dxgi.lib") 
-    else()
+    else() # Linux
         target_compile_definitions(OpenXRTutorialChapter2 PUBLIC OS_LINUX_WAYLAND=1 XR_USE_PLATFORM_WAYLAND=1 XR_USE_GRAPHICS_API_OPENGL=1 LINUX=1)#XR_USE_GRAPHICS_API_VULKAN=1 
     endif()
 
+    # VulkanSDK
     find_package(Vulkan)
     if (Vulkan_FOUND)
         target_include_directories(OpenXRTutorialChapter2 PUBLIC ${Vulkan_INCLUDE_DIRS})
         target_link_libraries(OpenXRTutorialChapter2 ${Vulkan_LIBRARIES})
     endif()
 
+    # OpenGL
     # Fix redirection to a different project's build folder
     target_include_directories(OpenXRTutorialChapter2 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
     target_link_libraries(OpenXRTutorialChapter2 openxr-gfxwrapper)
