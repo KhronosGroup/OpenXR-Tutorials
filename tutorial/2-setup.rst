@@ -685,7 +685,7 @@ For some platforms, we need additional functionality provided via the ``PollSyst
 2.3.2 XrSessionState
 ====================
 
-The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will focus on for the rest of this chapter. There are currently nine valid ``XrSessionState`` s described:
+The final event type, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, in the above code and table is what we will focus on for the rest of this chapter. There are currently nine valid ``XrSessionState`` s described:
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 		:language: cpp
@@ -720,7 +720,7 @@ Below is a table describing the nine ``XrSessionState`` s:
 
 (*) Applications may wish to re-create objects like ``XrSystemId`` and ``XrSession``, if hardware changes were detected.
 
-Developers should also be aware of the lifecycle of an ``XrSession``. Certain ``XrSessionState`` can only lead to certain others under the correct circumstances. Below is a diagram showing lifecycle of an ``XrSession`` within an OpenXR application.
+Developers should also be aware of the lifecycle of an ``XrSession``. Certain ``XrSessionState``s can only lead to certain others under the correct circumstances. Below is a diagram showing the lifecycle of an ``XrSession`` within an OpenXR application.
 
 .. figure:: openxr-session-life-cycle.svg
 	:alt: OpenXR Session Life-Cycle
