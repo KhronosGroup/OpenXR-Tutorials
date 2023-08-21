@@ -257,43 +257,81 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	.. container:: d3d11
 		:name: d3d11-id-1
 
-		.. literalinclude:: ../Chapter2/CMakeLists.txt
-			:language: cmake
-			:start-at: # Files
-			:end-before: if (ANDROID) # Android
-			:emphasize-lines: 4, 5, 13, 14
+		.. code-block:: cmake
+
+			# Files
+			set(SOURCES 
+				"main.cpp"
+				"../Common/GraphicsAPI.cpp"
+				"../Common/GraphicsAPI_D3D11.cpp"
+				"../Common/OpenXRDebugUtils.cpp")
+			set(HEADERS 
+				"../Common/DebugOutput.h"
+				"../Common/GraphicsAPI.h"
+				"../Common/GraphicsAPI_D3D11.h"
+				"../Common/HelperFunctions.h"
+				"../Common/OpenXRDebugUtils.h"
+				"../Common/OpenXRHelper.h")
 	
 	.. container:: d3d12
 		:name: d3d12-id-1
+		
+		.. code-block:: cmake
 
-		.. literalinclude:: ../Chapter2/CMakeLists.txt
-			:language: cmake
-			:start-at: # Files
-			:end-before: if (ANDROID) # Android
-			:emphasize-lines: 4, 6, 13, 15
+			# Files
+			set(SOURCES 
+				"main.cpp"
+				"../Common/GraphicsAPI.cpp"
+				"../Common/GraphicsAPI_D3D12.cpp"
+				"../Common/OpenXRDebugUtils.cpp")
+			set(HEADERS 
+				"../Common/DebugOutput.h"
+				"../Common/GraphicsAPI.h"
+				"../Common/GraphicsAPI_D3D12.h"
+				"../Common/HelperFunctions.h"
+				"../Common/OpenXRDebugUtils.h"
+				"../Common/OpenXRHelper.h")
 	
 	.. container:: opengl
 		:name: opengl-id-3
 
-		.. literalinclude:: ../Chapter2/CMakeLists.txt
-			:language: cmake
-			:start-at: # Files
-			:end-before: if (ANDROID) # Android
-			:emphasize-lines: 4, 7, 13, 16
+		.. code-block:: cmake
+
+			# Files
+			set(SOURCES 
+				"main.cpp"
+				"../Common/GraphicsAPI.cpp"
+				"../Common/GraphicsAPI_OpenGL.cpp"
+				"../Common/OpenXRDebugUtils.cpp")
+			set(HEADERS 
+				"../Common/DebugOutput.h"
+				"../Common/GraphicsAPI.h"
+				"../Common/GraphicsAPI_OpenGL.h"
+				"../Common/HelperFunctions.h"
+				"../Common/OpenXRDebugUtils.h"
+				"../Common/OpenXRHelper.h")
 
 	.. container:: vulkan
 		:name: vulkan-id-4
 
-		.. literalinclude:: ../Chapter2/CMakeLists.txt
-			:language: cmake
-			:start-at: # Files
-			:end-before: if (ANDROID) # Android
-			:emphasize-lines: 4, 9, 13, 18
+		.. code-block:: cmake
+
+			# Files
+			set(SOURCES 
+				"main.cpp"
+				"../Common/GraphicsAPI.cpp"
+				"../Common/GraphicsAPI_Vulkan.cpp"
+				"../Common/OpenXRDebugUtils.cpp")
+			set(HEADERS 
+				"../Common/DebugOutput.h"
+				"../Common/GraphicsAPI.h"
+				"../Common/GraphicsAPI_Vulkan.h"
+				"../Common/HelperFunctions.h"
+				"../Common/OpenXRDebugUtils.h"
+				"../Common/OpenXRHelper.h")
 
 	All the files listed above with ``../Common/*.*`` are available to download from this tutorial website. In the next section, you will find the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice. 
 	
-	You should remove the ``GraphicsAPI`` cpp and header files that do not relate to your chosen graphics API from the ``Chapter2/CMakeList.txt`` files. You must keep ``GraphicsAPI.cpp`` and ``OpenXRDebugUtils.cpp`` in the ``SOURCES`` list and also keep ``DebugOutput.h``, ``GraphicsAPI.h``, ``HelperFunctions.h``, ``OpenXRDebugUtils.h`` and ``OpenXRHelper.h`` in the ``HEADERS`` list.
-
 	At this point, we'll also create our text file called ``main.cpp`` in the ``/Chapter2`` directory. This will be our main source file, which we will use later in this chapter.
 
 	Now, we will continue with the ``Chapter2/CMakeList.txt``, adding the following code.
@@ -384,20 +422,40 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	.. container:: opengles
 		:name: opengles-id-2
 
-		.. literalinclude:: ../Chapter2/CMakeLists.txt
-			:language: cmake
-			:start-at: # Files
-			:end-before: if (ANDROID) # Android
-			:emphasize-lines: 4, 8, 13, 17
+		.. code-block:: cmake
+
+			# Files
+			set(SOURCES 
+				"main.cpp"
+				"../Common/GraphicsAPI.cpp"
+				"../Common/GraphicsAPI_OpenGL_ES.cpp"
+				"../Common/OpenXRDebugUtils.cpp")
+			set(HEADERS 
+				"../Common/DebugOutput.h"
+				"../Common/GraphicsAPI.h"
+				"../Common/GraphicsAPI_OpenGL_ES.h"
+				"../Common/HelperFunctions.h"
+				"../Common/OpenXRDebugUtils.h"
+				"../Common/OpenXRHelper.h")
 	
 	.. container:: vulkan
 		:name: vulkan-id-6
 
-		.. literalinclude:: ../Chapter2/CMakeLists.txt
-			:language: cmake
-			:start-at: # Files
-			:end-before: if (ANDROID) # Android
-			:emphasize-lines: 4, 9, 13, 18
+		.. code-block:: cmake
+
+			# Files
+			set(SOURCES 
+				"main.cpp"
+				"../Common/GraphicsAPI.cpp"
+				"../Common/GraphicsAPI_Vulkan.cpp"
+				"../Common/OpenXRDebugUtils.cpp")
+			set(HEADERS 
+				"../Common/DebugOutput.h"
+				"../Common/GraphicsAPI.h"
+				"../Common/GraphicsAPI_Vulkan.h"
+				"../Common/HelperFunctions.h"
+				"../Common/OpenXRDebugUtils.h"
+				"../Common/OpenXRHelper.h")
 
 	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
 

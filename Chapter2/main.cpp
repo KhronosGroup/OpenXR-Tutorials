@@ -162,8 +162,9 @@ private:
     }
 
     void CreateSession() {
-        // XR_DOCS_TAG_BEGIN_CreateSession
+        // XR_DOCS_TAG_BEGIN_CreateSession1
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
+        // XR_DOCS_TAG_END_CreateSession1
 
         if (m_apiType == D3D11) {
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -189,12 +190,13 @@ private:
             std::cout << "ERROR: Unknown Graphics API." << std::endl;
             DEBUG_BREAK;
         }
+        // XR_DOCS_TAG_BEGIN_CreateSession2
         sessionCI.next = m_graphicsAPI->GetGraphicsBinding();
         sessionCI.createFlags = 0;
         sessionCI.systemId = m_systemID;
 
         OPENXR_CHECK(xrCreateSession(m_xrInstance, &sessionCI, &m_session), "Failed to create Session.");
-        // XR_DOCS_TAG_END_CreateSession
+        // XR_DOCS_TAG_END_CreateSession2
     }
 
     void DestroySession() {

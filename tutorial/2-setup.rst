@@ -246,52 +246,64 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 2.2.1 XrSession
 ===============
 
-Copy the following code into the ``CreateSession()`` method. Highlighted below is the necessary code for your chosen graphics API. Remove all other graphics API references and amend any ``else if`` statements, also keep the final ``else`` statement.
+Copy the following code into the ``CreateSession()`` method.
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateSession1
+	:end-before: XR_DOCS_TAG_END_CreateSession1
+	:dedent: 8
 
 .. container:: d3d11
 	:name: d3d11-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_CreateSession
-		:end-before: XR_DOCS_TAG_END_CreateSession
-		:emphasize-lines: 3-6
+		:start-at: m_graphicsAPI = std::make_unique<GraphicsAPI_D3D11>
+		:end-at: );
+		:dedent: 12
 
 .. container:: d3d12
 	:name: d3d12-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_CreateSession
-		:end-before: XR_DOCS_TAG_END_CreateSession
-		:emphasize-lines: 7-10
+		:start-at: m_graphicsAPI = std::make_unique<GraphicsAPI_D3D12>
+		:end-at: );
+		:dedent: 12
 
 .. container:: opengl
 	:name: opengl-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_CreateSession
-		:end-before: XR_DOCS_TAG_END_CreateSession
-		:emphasize-lines: 11-14
+		:start-at: m_graphicsAPI = std::make_unique<GraphicsAPI_OpenGL>
+		:end-at: );
+		:dedent: 12
 
 .. container:: opengles
 	:name: opengles-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_CreateSession
-		:end-before: XR_DOCS_TAG_END_CreateSession
-		:emphasize-lines: 15-18
+		:start-at: m_graphicsAPI = std::make_unique<GraphicsAPI_OpenGL_ES>
+		:end-at: );
+		:dedent: 12
 
 .. container:: vulkan
 	:name: vulkan-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_CreateSession
-		:end-before: XR_DOCS_TAG_END_CreateSession
-		:emphasize-lines: 19-22
+		:start-at: m_graphicsAPI = std::make_unique<GraphicsAPI_Vulkan>
+		:end-at: );
+		:dedent: 12
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateSession2
+	:end-before: XR_DOCS_TAG_END_CreateSession2
+	:dedent: 8
 
 For the ``DestroySession()`` method, add the following code:
 
@@ -299,6 +311,7 @@ For the ``DestroySession()`` method, add the following code:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_DestroySession
 	:end-before: XR_DOCS_TAG_END_DestroySession
+	:dedent: 8
 
 Above is the code for creating and destroying an ``XrSession``. ``xrDestroySession()`` will destroy the ``XrSession`` when we are finished and shutting down the application. ``xrCreateSession()`` takes the ``XrInstance``, ``XrSessionCreateInfo`` and ``XrSession`` return object. If the function call was successful, ``xrCreateSession()`` will return ``XR_SUCCESS`` and ``XrSession`` will be non-null. 
 
@@ -306,6 +319,8 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 
 2.2.2 GraphicsAPI
 =================
+
+Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on your selected graphics APIs, and you don't need to copy this code into project. The excerpts demonstrate the interaction of OpenXR with your selected graphics API.
 
 .. container:: d3d11
 	:name: d3d11-id-1
@@ -317,16 +332,16 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11
 
-	Above is the minimum code needed to create a suitable ``ID3D11Device *``. First, we need to get the function pointer for ``xrGetD3D11GraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsD3D11KHR`` structure.
+	Above is the minimum code needed to create a suitable ``ID3D11Device *``. First, we get the function pointer for ``xrGetD3D11GraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsD3D11KHR`` structure.
 	
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrGraphicsRequirementsD3D11KHR {
 		:end-at: } XrGraphicsRequirementsD3D11KHR;
 
-	From this structure, we use the ``adapterLuid`` to find the appropriate ``IDXGIAdapter *``. We create a ``IDXGIFactory1 *`` and then call ``IDXGIFactory1::EnumAdapters()`` and ``IDXGIAdapter::GetDesc()`` to get the ``DXGI_ADAPTER_DESC``, so that we can compare the ``adapterLuid`` values.
+	From this structure, we used the ``adapterLuid`` to find the appropriate ``IDXGIAdapter *``. We created a ``IDXGIFactory1 *`` and then called ``IDXGIFactory1::EnumAdapters()`` and ``IDXGIAdapter::GetDesc()`` to get the ``DXGI_ADAPTER_DESC``, so that we could compare the ``adapterLuid`` values.
 
-	Finally, we call ``D3D11CreateDevice`` with found adapter and the ``minFeatureLevel`` from ``XrGraphicsRequirementsD3D11KHR``, if successful the function will return ``S_OK`` and ``ID3D11Device *`` is non-null.
+	Finally, we called ``D3D11CreateDevice`` with the found adapter and the ``minFeatureLevel`` from ``XrGraphicsRequirementsD3D11KHR``, if successful, the function returned ``S_OK`` and ``ID3D11Device *`` is non-null.
 
 	We also create ``ID3D11Debug`` and ``ID3D11InfoQueue`` for debugging.
 
@@ -347,18 +362,18 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12
 
-	Above is the minimum code needed to create a suitable ``ID3D12Device *``  and ``ID3D12CommandQueue *``. First, we need to get the function pointer for ``xrGetD3D12GraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsD3D12KHR`` structure.
+	Above is the minimum code needed to create a suitable ``ID3D12Device *``  and ``ID3D12CommandQueue *``. First, we get the function pointer for ``xrGetD3D12GraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsD3D12KHR`` structure.
 
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrGraphicsRequirementsD3D12KHR {
 		:end-at: } XrGraphicsRequirementsD3D12KHR;
 
-	From this structure, we use the ``adapterLuid`` to find the appropriate ``IDXGIAdapter1 *``. We create a ``IDXGIFactory4 *`` and then call ``IDXGIFactory4::EnumAdapters1()`` and ``IDXGIAdapter1::GetDesc()`` to get the ``DXGI_ADAPTER_DESC``, so that we can compare the ``adapterLuid`` values.
+	From this structure, we used the ``adapterLuid`` to find the appropriate ``IDXGIAdapter1 *``. We created a ``IDXGIFactory4 *`` and then called ``IDXGIFactory4::EnumAdapters1()`` and ``IDXGIAdapter1::GetDesc()`` to get the ``DXGI_ADAPTER_DESC``, so that we could compare the ``adapterLuid`` values.
 
-	Finally, we call ``D3D12CreateDevice`` with found adapter and the ``minFeatureLevel`` from ``XrGraphicsRequirementsD3D12KHR``, if successful the function will return ``S_OK`` and ``ID3D12Device *`` is non-null. Next, we create a simple a ``ID3D12CommandQueue *`` of type ``D3D12_COMMAND_LIST_TYPE_DIRECT``.
+	Finally, we called ``D3D12CreateDevice`` with the found adapter and the ``minFeatureLevel`` from ``XrGraphicsRequirementsD3D12KHR``, if successful, the function returned ``S_OK`` and ``ID3D12Device *`` is non-null. Next, we created a simple a ``ID3D12CommandQueue *`` of type ``D3D12_COMMAND_LIST_TYPE_DIRECT``.
 
-	We also query the maximum number of descriptors and set up ``ID3D12DescriptorHeap *`` s for use in rendering. There's also commented out code to enable D3D12 debugging and GPU Based Validation.
+	We also queried the maximum number of descriptors and set up ``ID3D12DescriptorHeap *`` s for use in rendering. There's also commented out code to enable D3D12 debugging and GPU Based Validation.
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D12.cpp
 		:language: cpp
@@ -377,7 +392,7 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL
 
-	Above is the minimum code needed to create a suitable OpenGL context. First, we need to get the function pointer for ``xrGetOpenGLGraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsOpenGLKHR`` structure. 
+	Above is the minimum code needed to create a suitable OpenGL context. First, we get the function pointer for ``xrGetOpenGLGraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsOpenGLKHR`` structure. 
 
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
@@ -386,7 +401,7 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 	
 	In this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. Originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ and `OpenGL ES 3.1 <https://registry.khronos.org/OpenGL/specs/es/3.1/es_spec_3.1.withchanges.pdf>`_ specifications.
 
-	Here, we call ``ksGpuWindow_Create()`` and pass the required parameters to setup the OpenGL context. Next, we query the OpenGL version with ``glGetIntegerv()`` with ``GL_MAJOR_VERSION`` and ``GL_MINOR_VERSION``. With these values, we can construct a ``XrVersion`` value to compare with ``XrGraphicsRequirementsOpenGLKHR::minApiVersionSupported``.
+	Here, we called ``ksGpuWindow_Create()`` and passed the required parameters to setup the OpenGL context. Next, we queried the OpenGL version with ``glGetIntegerv()`` with ``GL_MAJOR_VERSION`` and ``GL_MINOR_VERSION``. With these values, we constructed an ``XrVersion`` value to compare with ``XrGraphicsRequirementsOpenGLKHR::minApiVersionSupported``.
 
 	We also setup ``glDebugMessageCallback`` to help with debugging.
 
@@ -395,7 +410,7 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetGraphicsBinding
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetGraphicsBinding
 
-	Because OpenGL is very closely integrated with the platform's windowing system. We have different ``XrGraphicsBindingOpenGL[...]KHR`` structures - one per platform. At present, there are four: ``XrGraphicsBindingOpenGLXcbKHR``, ``XrGraphicsBindingOpenGLXlibKHR``, ``XrGraphicsBindingOpenGLWaylandKHR`` and ``XrGraphicsBindingOpenGLWin32KHR``. Depending on the platform, we fill out the relevant structure and return a pointer to that class member, which will be assigned to ``XrSessionCreateInfo::next``.
+	Because OpenGL is very closely integrated with the platform's windowing system. We have different ``XrGraphicsBindingOpenGL[...]KHR`` structures - one per platform. At present, there are four: ``XrGraphicsBindingOpenGLXcbKHR``, ``XrGraphicsBindingOpenGLXlibKHR``, ``XrGraphicsBindingOpenGLWaylandKHR`` and ``XrGraphicsBindingOpenGLWin32KHR``. Depending on the platform, this function will fill out the relevant structure and return a pointer to that class member, which will be assigned to ``XrSessionCreateInfo::next``.
 	
 .. container:: opengles
 	:name: opengles-id-1
@@ -407,7 +422,7 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES
 
-	Above is the minimum code needed to create a suitable OpenGL ES context. First, we need to get the function pointer for ``xrGetOpenGLESGraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsOpenGLESKHR`` structure. 
+	Above is the minimum code needed to create a suitable OpenGL ES context. First, we get the function pointer for ``xrGetOpenGLESGraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsOpenGLESKHR`` structure. 
 
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
@@ -416,7 +431,7 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 
 	In this tutorial, we are using the 'gfxwrapper' for the OpenGL ES API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. Originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ and `OpenGL ES 3.1 <https://registry.khronos.org/OpenGL/specs/es/3.1/es_spec_3.1.withchanges.pdf>`_ specifications.
 
-	Here, we call ``ksGpuWindow_Create()`` and pass the required parameters to setup the OpenGL ES context. Next, we query the OpenGL ES version with ``glGetIntegerv()`` with ``GL_MAJOR_VERSION`` and ``GL_MINOR_VERSION``. With these values, we can construct a ``XrVersion`` value to compare with ``XrGraphicsRequirementsOpenGLESKHR::minApiVersionSupported``.
+	Here, we called ``ksGpuWindow_Create()`` and passed the required parameters to setup the OpenGL ES context. Next, we query the OpenGL ES version with ``glGetIntegerv()`` with ``GL_MAJOR_VERSION`` and ``GL_MINOR_VERSION``. With these values, we constructed an ``XrVersion`` value to compare with ``XrGraphicsRequirementsOpenGLESKHR::minApiVersionSupported``.
 
 	We also setup ``glDebugMessageCallback`` to help with debugging.
 
@@ -437,7 +452,7 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan
 
-	Above is the minimum code needed to create a suitable Vulkan Instance and Device. First, we call helper method that loads in the pointers for the following functions:
+	Above is the minimum code needed to create a suitable Vulkan Instance and Device. First, we called a helper method that loads in the pointers for the following functions:
 
 		* ``xrGetVulkanGraphicsRequirementsKHR``: Used to fill out a ``XrGraphicsRequirementsVulkanKHR`` structure containing the minimum and maximum supported API version.
 		* ``xrGetVulkanInstanceExtensionsKHR``: To retrieve a list of required ``VkInstance`` extensions.
@@ -449,14 +464,15 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 
-	We can now call ``xrGetVulkanGraphicsRequirementsKHR()`` and fill out the ``XrGraphicsRequirementsVulkanKHR`` structure. 
+	We called ``xrGetVulkanGraphicsRequirementsKHR()`` and fill out the ``XrGraphicsRequirementsVulkanKHR`` structure. 
 	
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrGraphicsRequirementsVulkanKHR {
 		:end-at: } XrGraphicsRequirementsVulkanKHR;
 
-	Next, we fill out a ``VkApplicationInfo`` where we assign ``VkApplicationInfo::apiVersion`` the value in ``XrGraphicsRequirementsVulkanKHR::minApiVersionSupported``. We can now enumerate the Instance extensions and fill out array of structures. We use nested for-loops to find all the requested extensions push them back into a ``std::vector<const char *>`` called ``activeInstanceExtensions``.
+	Then, we filled out a ``VkApplicationInfo`` where we assigned ``VkApplicationInfo::apiVersion`` a value using the retured value in ``XrGraphicsRequirementsVulkanKHR::minApiVersionSupported``. We enumerated the Instance extensions and filled out an array of structures. We used nested for-loops to find all the requested extensions and pushed them back into a ``std::vector<const char *>`` called ``activeInstanceExtensions``.
+
 	``GetInstanceExtensionsForOpenXR()`` is another helper method.
 
 	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.cpp
@@ -464,13 +480,14 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
 
-	``xrGetVulkanInstanceExtensionsKHR()`` is called twice, first to get the size of the ``char`` buffer and the second to fill in the data. We use ``std::stringstream`` and ``std::getline()`` with a deliminator of ``' '`` to break up the string and copy that subcontexts to an element in a ``std::vector<std::string>``, which we use when setting the instance extensions.
+	``xrGetVulkanInstanceExtensionsKHR()`` is called twice, first to get the size of the ``char`` buffer and the second to fill in the data. We used ``std::stringstream`` and ``std::getline()`` with a deliminator of ``' '`` to break up the string and copied that substring to an element in a ``std::vector<std::string>``, which we used when setting the instance extensions.
 
-	We fill out the ``VkInstanceCreateInfo`` structure and call ``vkCreateInstance()``, which if successful will return ``VK_SUCCESS`` and the ``VkInstance`` will be non-null.
+	We filled out the ``VkInstanceCreateInfo`` structure and called ``vkCreateInstance()``, which if successful returned ``VK_SUCCESS`` and the ``VkInstance`` will be non-null.
 
-	Next, we enumerate the ``VkPhysicalDevice`` s. Once we have array of all the physical devices in the system, we can call ``xrGetVulkanGraphicsDeviceKHR()`` to get the ``VkPhysicalDevice`` that OpenXR has requested. We can check the requested physical device against the array of physical devices to select the correct one.
+	Then, we enumerated the ``VkPhysicalDevice`` s. Once we had an array of all the physical devices in the system, we called ``xrGetVulkanGraphicsDeviceKHR()`` to get the ``VkPhysicalDevice`` that OpenXR has requested. We checked the requested physical device against the array of physical devices and selected the correct one.
 
-	With a ``VkPhysicalDevice`` selected, we can now create a ``VkDevice``. We get the ``VkQueueFamilyProperties`` from the ``VkPhysicalDevice`` and fill an array of ``VkDeviceQueueCreateInfo``. We find the first queue family that supports graphics operations and select its index as the ``queueFamilyIndex`` and we also select the first queue in that family too. We can now enumerate the Device extensions and fill out array of structures. We use nested for-loops to find all the requested extensions push them back into a ``std::vector<const char *>`` called ``activeDeviceExtensions``.
+	With a ``VkPhysicalDevice`` selected, we created a ``VkDevice``. We got the ``VkQueueFamilyProperties`` from the ``VkPhysicalDevice`` and filled out an array of ``VkDeviceQueueCreateInfo`` structures. We found the first queue family that supports graphics operations and selected its index as the ``queueFamilyIndex`` and we also selected the first queue in that family too. We enumerated the Device extensions and filled out an array of structures. We used nested for-loops to find all the requested extensions and pushed them back into a ``std::vector<const char *>`` called ``activeDeviceExtensions``.
+
 	``GetDeviceExtensionsForOpenXR()`` is another helper method.
 
 	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.cpp
@@ -478,9 +495,9 @@ The ``XrSessionCreateInfo`` structure is deceptively simple. ``XrSessionCreateIn
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 
-	Like with ``xrGetVulkanInstanceExtensionsKHR()``, ``xrGetVulkanDeviceExtensionsKHR()`` is called twice, first to get the size of the ``char`` buffer and the second to fill in the data. We use ``std::stringstream`` and ``std::getline()`` with a deliminator of ``' '`` to break up the string and copy that subcontexts into an element in a ``std::vector<std::string>``, which we use when setting the device extensions.
+	Like with ``xrGetVulkanInstanceExtensionsKHR()``, ``xrGetVulkanDeviceExtensionsKHR()`` is called twice, first to get the size of the ``char`` buffer and the second to fill in the data. We used ``std::stringstream`` and ``std::getline()`` with a deliminator of ``' '`` to break up the string and copied that substring into an element in a ``std::vector<std::string>``, which we used when setting the device extensions.
 
-	Finally, we get the ``VkPhysicalDeviceFeatures`` by calling ``vkGetPhysicalDeviceFeatures()`` and we can fill in the ``VkDeviceCreateInfo``. We call ``vkCreateDevice()``, which if successful will return ``VK_SUCCESS`` and the ``VkDevice`` will be non-null. 
+	Finally, we got the ``VkPhysicalDeviceFeatures`` by calling ``vkGetPhysicalDeviceFeatures()`` and we filled in the ``VkDeviceCreateInfo``. We called ``vkCreateDevice()``, which if successful returned ``VK_SUCCESS`` and the ``VkDevice`` will be non-null. 
 
 	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.cpp
 		:language: cpp

@@ -39,8 +39,7 @@ set(HEADERS
     "../Common/GraphicsAPI_Vulkan.h"
     "../Common/HelperFunctions.h"
     "../Common/OpenXRDebugUtils.h"
-    "../Common/OpenXRHelper.h" 
-)
+    "../Common/OpenXRHelper.h")
 
 if (ANDROID) # Android
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
