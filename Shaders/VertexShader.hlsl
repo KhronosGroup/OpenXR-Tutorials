@@ -5,6 +5,10 @@ cbuffer CameraConstants : register(b0)
     float4x4 viewProj;
     float4x4 modelViewProj;
     float4x4 model;
+    float4 colour;
+    float4 pad1;
+    float4 pad2;
+    float4 pad3;
 };
 
 cbuffer Normals : register(b1)
@@ -22,6 +26,7 @@ struct VS_OUT
     float4 o_Position : SV_Position;
     nointerpolation float2 o_TexCoord : TEXCOORD0;
     float3 o_Normal : TEXCOORD1;
+    nointerpolation float3 o_Colour : TEXCOORD2;
 };
 VS_OUT main(VS_IN IN)
 {
@@ -30,5 +35,6 @@ VS_OUT main(VS_IN IN)
     int face = IN.vertexId / 6;
     OUT.o_TexCoord = float2(float(face), 0);
     OUT.o_Normal = (mul(model,normals[face])).xyz;
+    OUT.o_Colour =colour;
     return OUT;
 }

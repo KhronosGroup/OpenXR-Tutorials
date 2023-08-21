@@ -50,6 +50,8 @@ device.
 .. toctree::
 	:maxdepth: 4
 	:caption: Contents:
+	
+	licence
 
 	1-introduction
 	2-setup

@@ -103,7 +103,8 @@ public:
 // XR_DOCS_TAG_END_CallCreateActionPoses
 #endif
 // XR_DOCS_TAG_BEGIN_CallCreateHandTracker
-        CreateHandTrackers();
+	if(handTrackingSystemProperties.supportsHandTracking)
+		CreateHandTrackers();
 // XR_DOCS_TAG_END_CallCreateHandTracker
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
@@ -257,8 +258,9 @@ private:
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
-
-        XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
+// XR_DOCS_TAG_BEGIN_SystemHandTrackingProperties
+		systemProperties.next=&handTrackingSystemProperties;
+// XR_DOCS_TAG_END_SystemHandTrackingProperties
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
     }
     // XR_DOCS_TAG_END_GetSystemID
@@ -481,17 +483,19 @@ void GetEnvironmentBlendModes() {
         XrMatrix4x4f viewProj;
         XrMatrix4x4f modelViewProj;
         XrMatrix4x4f model;
+        XrVector4f colour;
+        XrVector4f pad1;
+        XrVector4f pad2;
+        XrVector4f pad3;
     };
     CameraConstants cameraConstants;
-    // Six colours for the six faces of a cube. Bright for +, Dark is -
-    // Red for X faces, green for Y, blue for Z.
-    XrVector4f colours[6] = {
-        {1.00f, 0.00f, 0.00f, 1.00f},
-        {0.10f, 0.00f, 0.00f, 1.00f},
-        {0.00f, 0.60f, 0.00f, 1.00f},
-        {0.00f, 0.10f, 0.00f, 1.00f},
-        {0.00f, 0.20f, 1.00f, 1.00f},
-        {0.00f, 0.02f, 0.10f, 1.00f}};
+        XrVector4f normals[6] = {
+            {1.00f , 0.00f    , 0.00f,0},
+            {-1.00f, 0.00f    , 0.00f,0},
+            {0.00f , 1.00f    , 0.00f,0},
+            {0.00f , -1.00f    , 0.00f,0},
+            {0.00f , 0.00f    , 1.00f,0},
+            {0.00f , 0.0f    ,-1.00f,0}};
 
     void CreateResources() {
         // Vertices for a 1x1x1 meter cube. (Left/Right, Top/Bottom, Front/Back)
@@ -524,20 +528,15 @@ void GetEnvironmentBlendModes() {
             24, 25, 26, 27, 28, 29,  // -Z
             30, 31, 32, 33, 34, 35,  // +Z
         };
-        XrVector4f normals[6] = {
-            {1.00f , 0.00f    , 0.00f,0},
-            {-1.00f, 0.00f    , 0.00f,0},
-            {0.00f , 1.00f    , 0.00f,0},
-            {0.00f , -1.00f    , 0.00f,0},
-            {0.00f , 0.00f    , 1.00f,0},
-            {0.00f , 0.0f    ,-1.00f,0}};
         m_vertexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices), &cubeVertices});
 
         m_indexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices), &cubeIndices});
 
-        m_uniformBuffer_Frag = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colours), colours});
-        
-        m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
+        size_t numberOfCuboids = 64 + 2 + 2;
+// XR_DOCS_TAG_BEGIN_AddHandCuboids
+        numberOfCuboids+=XR_HAND_JOINT_COUNT_EXT*2;
+// XR_DOCS_TAG_BEGIN_AddHandCuboids
+        m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants) * numberOfCuboids, nullptr});
         m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
 
         // XR_DOCS_TAG_END_CreateResources1
@@ -611,19 +610,9 @@ void GetEnvironmentBlendModes() {
         pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         pipelineCI.colorFormats = {m_swapchainAndDepthImages[0].swapchainFormat};
         pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
-        pipelineCI.layout = {{0, nullptr
-                                  , GraphicsAPI::DescriptorInfo::Type::BUFFER
-                                  , GraphicsAPI::DescriptorInfo::Stage::VERTEX
-                                  , false}
-                              , {1, nullptr
-                                  , GraphicsAPI::DescriptorInfo::Type::BUFFER
-                                  , GraphicsAPI::DescriptorInfo::Stage::VERTEX
-                                  , false}
-                              , {2
-                                 , nullptr
-                                 , GraphicsAPI::DescriptorInfo::Type::BUFFER
-                                 , GraphicsAPI::DescriptorInfo::Stage::FRAGMENT
-                                 , false}};
+        pipelineCI.layout = {{0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
+                             {1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
+                             {2, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT}};
         m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
         
         float scale=0.2f;
@@ -652,7 +641,6 @@ void GetEnvironmentBlendModes() {
         m_graphicsAPI->DestroyShader(m_vertexShader);
         m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Camera);
         m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Normals);
-        m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Frag);
         m_graphicsAPI->DestroyBuffer(m_indexBuffer);
         m_graphicsAPI->DestroyBuffer(m_vertexBuffer);
     }
@@ -783,26 +771,28 @@ void GetEnvironmentBlendModes() {
             }
         }
 // XR_DOCS_TAG_BEGIN_PollHands
-        XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
-        XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
-		for(int i=0;i<2;i++)
-        {
-            bool Unobstructed=true;
-			Hand &hand=m_hands[i];
-            XrHandJointsMotionRangeInfoEXT motionRangeInfo{XR_TYPE_HAND_JOINTS_MOTION_RANGE_INFO_EXT};
-            motionRangeInfo.handJointsMotionRange = Unobstructed
-                                                        ? XR_HAND_JOINTS_MOTION_RANGE_UNOBSTRUCTED_EXT
-                                                        : XR_HAND_JOINTS_MOTION_RANGE_CONFORMING_TO_CONTROLLER_EXT;
-            XrHandJointsLocateInfoEXT locateInfo{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT, &motionRangeInfo};
-            locateInfo.baseSpace = m_localOrStageSpace;
-            locateInfo.time =predictedTime;
+		if(handTrackingSystemProperties.supportsHandTracking)
+		{
+			XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
+			XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
+			for(int i=0;i<2;i++)
+			{
+				bool Unobstructed=true;
+				Hand &hand=m_hands[i];
+				XrHandJointsMotionRangeInfoEXT motionRangeInfo{XR_TYPE_HAND_JOINTS_MOTION_RANGE_INFO_EXT};
+				motionRangeInfo.handJointsMotionRange = Unobstructed
+															? XR_HAND_JOINTS_MOTION_RANGE_UNOBSTRUCTED_EXT
+															: XR_HAND_JOINTS_MOTION_RANGE_CONFORMING_TO_CONTROLLER_EXT;
+				XrHandJointsLocateInfoEXT locateInfo{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT, &motionRangeInfo};
+				locateInfo.baseSpace = m_localOrStageSpace;
+				locateInfo.time =predictedTime;
         
-            XrHandJointLocationsEXT locations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
-            locations.jointCount = (uint32_t)XR_HAND_JOINT_COUNT_EXT;
-            locations.jointLocations = hand.m_jointLocations;
-            OPENXR_CHECK(xrLocateHandJointsEXT(hand.m_handTracker, &locateInfo, &locations), "Failed to locate hand joints.");
-        
-        }
+				XrHandJointLocationsEXT locations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
+				locations.jointCount = (uint32_t)XR_HAND_JOINT_COUNT_EXT;
+				locations.jointLocations = hand.m_jointLocations;
+				OPENXR_CHECK(xrLocateHandJointsEXT(hand.m_handTracker, &locateInfo, &locations), "Failed to locate hand joints.");
+			}
+		}
         
 // XR_DOCS_TAG_END_PollHands
     }
@@ -980,24 +970,27 @@ void GetEnvironmentBlendModes() {
     // XR_DOCS_TAG_END_DestroySwapchain
 
     // XR_DOCS_TAG_BEGIN_RenderCuboid
+    size_t renderCuboidIndex = 0;
     void RenderCuboid(XrPosef pose, XrVector3f scale,XrVector3f colour) {
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
+        cameraConstants.colour={colour.x,colour.y,colour.z,1.0};
+        size_t offsetCameraUB = sizeof(CameraConstants) * renderCuboidIndex;
 
         m_graphicsAPI->SetPipeline(m_pipeline);
 
-        m_graphicsAPI->SetBufferData(m_uniformBuffer_Camera, 0, sizeof(CameraConstants), &cameraConstants);
-        m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Camera, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
-        m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Normals, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
-        colours[0]={colour.x,colour.y,colour.z,1.0};
-        m_graphicsAPI->SetBufferData(m_uniformBuffer_Frag, 0, sizeof(colours), (void *)colours);
-        m_graphicsAPI->SetDescriptor({2, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+        m_graphicsAPI->SetBufferData(m_uniformBuffer_Camera, offsetCameraUB, sizeof(CameraConstants), &cameraConstants);
+        m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Camera, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false, offsetCameraUB, sizeof(CameraConstants)});
+        m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Normals, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false, 0, sizeof(normals)});
+
         m_graphicsAPI->UpdateDescriptors();
 
         m_graphicsAPI->SetVertexBuffers(&m_vertexBuffer, 1);
         m_graphicsAPI->SetIndexBuffer(m_indexBuffer);
         m_graphicsAPI->DrawIndexed(36);
+
+        renderCuboidIndex++;
     }
     // XR_DOCS_TAG_END_RenderCuboid
     // XR_DOCS_TAG_BEGIN_RenderFrame
@@ -1110,6 +1103,7 @@ void GetEnvironmentBlendModes() {
 
             // XR_DOCS_TAG_END_SetupFrameRendering
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid
+            renderCuboidIndex = 0;
             // Draw a floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
             RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f},{0.4f,0.5f,0.5f});
             // Draw a "table".
@@ -1132,17 +1126,18 @@ void GetEnvironmentBlendModes() {
             // XR_DOCS_TAG_END_CallRenderCuboid
 			
             // XR_DOCS_TAG_BEGIN_RenderHands
-			for(int i=0;i<2;i++)
-			{
-				auto hand=m_hands[i];
-				XrVector3f hand_colour={1.f,1.f,0.f};
-				for(int j=0;j<XR_HAND_JOINT_COUNT_EXT;j++)
+			if(handTrackingSystemProperties.supportsHandTracking)
+				for(int i=0;i<2;i++)
 				{
-					XrVector3f sc={1.0f,1.0f,1.0f};
-					sc=sc*hand.m_jointLocations[j].radius;
-					RenderCuboid(hand.m_jointLocations[j].pose,sc,hand_colour);
+					auto hand=m_hands[i];
+					XrVector3f hand_colour={1.f,1.f,0.f};
+					for(int j=0;j<XR_HAND_JOINT_COUNT_EXT;j++)
+					{
+						XrVector3f sc={1.5f,1.5f,2.5f};
+						sc=sc*hand.m_jointLocations[j].radius;
+						RenderCuboid(hand.m_jointLocations[j].pose,sc,hand_colour);
+					}
 				}
-			}
             // XR_DOCS_TAG_END_RenderHands
             m_graphicsAPI->EndRendering();
 
@@ -1233,6 +1228,7 @@ private:
 
 private:
     XrInstance m_xrInstance = {};
+    XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};
@@ -1277,7 +1273,6 @@ private:
     void *m_indexBuffer = nullptr;
     void *m_uniformBuffer_Camera = nullptr;
     void *m_uniformBuffer_Normals = nullptr;
-    void *m_uniformBuffer_Frag = nullptr;
 
     void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
     void *m_pipeline = nullptr;
@@ -1313,16 +1308,17 @@ private:
     std::vector<Block> blocks;
     int grabbedBlock[2]={-1,-1};
     int nearBlock[2]={-1,-1};
-    // XR_DOCS_TAG_END_Objects
+// XR_DOCS_TAG_END_Objects
 
-    // XR_DOCS_TAG_BEGIN_HandTracking
+// XR_DOCS_TAG_BEGIN_HandTracking
+	XrSystemHandTrackingPropertiesEXT handTrackingSystemProperties{XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT};
     struct Hand
     {
         XrHandJointLocationEXT m_jointLocations[XR_HAND_JOINT_COUNT_EXT]; 
         XrHandTrackerEXT  m_handTracker=0;
     };
     Hand m_hands[2];
-    // XR_DOCS_TAG_END_HandTracking
+// XR_DOCS_TAG_END_HandTracking
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {

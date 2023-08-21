@@ -2,63 +2,118 @@
 ✨ 5 Extensions
 ###############
 
-*****************************************************************************************************
-5.1 Using Extensions and Layers xrEnumerateInstanceExtensionProperties, xrEnumerateApiLayerProperties
-*****************************************************************************************************
+OpenXR is designed to be an extensible API. 
+***********************************************************************
+5.1 Hand Tracking
+***********************************************************************
 
-****************************************
-5.2 Using xrCreateDebugUtilsMessengerEXT
-****************************************
+Many XR devices now support hand-tracking. Instead of a motion-tracked controller, one or more cameras take images of the surrounding area. If your hands are visible to the cameras, algorithms in or accessible to the runtime try to calculate the positions of your hands and fingers. For further information on this, see XR_EXT_hand_tracking <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking>`_. We'll now enable hand tracking in your project.
 
-XR_EXT_debug_utils is an instance extension for OpenXR, which allows the application to get more information on any errors or warnings etc. You can specify which message severities and types will checked. If a debug message raised, it is passed to the callback function, which can optionally use the user data pointer provided in the ``XrDebugUtilsMessengerCreateInfoEXT`` structure.
+.. container:: android
 
-In the code below, we first check that ``"XR_EXT_debug_utils"`` is in ``activeInstanceExtensions`` which we used to create the ``XrInstance`` with the use of this little helper function ``IsStringInVector()``. Next, we set up the ``XrDebugUtilsMessengerCreateInfoEXT`` struct; specifying all the message severities and types.
+	We'll edit your app/src/main/AndroidManifest.xml to enable the hand tracking feature. Add these lines to the <manifest> block:
+	
+	.. code-block:: xml
 
-Message Severities: 
- * Verbose: Output all diagnostic messages.
- * Info: Output information messages helpful in debugging.
- * Warning: Output messages that could suggest an application bug and that need reviewing.
- * Error: Output messages from errors that may cause undefined behavior and/or crashes.
- 
-Message Types:
- * General: An event type for general information.
- * Validation: An event type that may indicate invalid usage of OpenXR.
- * Performance: An event type that may indicate non-optimal usage of OpenXR.
- * Conformance: An event type that indicating a non-conformant OpenXR result from the runtime.
+		<uses-permission android:name="com.oculus.permission.HAND_TRACKING" />
+		<uses-feature android:name="oculus.software.handtracking" android:required="false" />
 
-`OpenXR Specification 12.26.3. Debug Message Categorization <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#debug-message-categorization>`_. 
+	Add this line to the <application> block:
+	
+	.. code-block:: xml
 
-Next, we set the callback function that we want to use, and it must match the ``PFN_xrDebugUtilsMessengerCallbackEXT`` signature. Optionally, you can set a userData pointer, perhaps to a class, but we have set it to ``nullptr`` in this example.
+		<meta-data android:name="com.oculus.handtracking.frequency" android:value="HIGH"/>
+	
+We saw in :ref:`Chapter 2 <instanceextensions>`  how to create a list of instance extensions before starting up the OpenXR instance. At the top of CreateInstance(), where we're listing the extensions to request, we'll add the name of the one that enables hand tracking:
 
-XR_EXT_debug_utils is an extension and as such its functions are not loaded by default by the OpenXR loader. Therefore, we need to get the address of the function through the use of ``xrGetInstanceProcAddr()``. We pass the ``XrInstance`` and a string of the function we want to get, along a pointer to a function pointer variable. We need to cast that pointer to a function pointer variable to a ``PFN_xrVoidFunction*`` type. Once we have the ``xrCreateDebugUtilsMessengerEXT()`` function, we call it by passing the ``XrInstance``, a pointer to our ``XrDebugUtilsMessengerCreateInfoEXT`` structure and a pointer to our ``XrDebugUtilsMessengerEXT``. If all is successful, we have set up the DebugUtilsMessenger callback.
-
-At the end of the program, we should destroy the ``XrDebugUtilsMessengerEXT``. Again, the ``xrDestroyDebugUtilsMessengerEXT()`` function needs to be loaded through the use of ``xrGetInstanceProcAddr()`` (See example below). Once loaded, we can call it by passing the ``XrDebugUtilsMessengerEXT`` and thus destroying it.
-
-.. literalinclude:: ../Common/HelperFunctions.h
+.. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_Helper_Functions1
-	:end-before: XR_DOCS_TAG_END_Helper_Functions1
+	:start-after: XR_DOCS_TAG_BEGIN_instanceExtensions
+	:end-before: XR_DOCS_TAG_END_instanceExtensions
+	:dedent: 3
 
-.. literalinclude:: ../Chapter2/main.cpp
+.. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
-	:end-before: XR_DOCS_TAG_END_Create_DestroyDebugMessenger
-	:dedent: 4
+	:start-after: XR_DOCS_TAG_BEGIN_handTrackingExtensions
+	:end-before: XR_DOCS_TAG_END_handTrackingExtensions
+	:dedent: 3
 
-.. literalinclude:: ../Common/OpenXRDebugUtils.cpp
+It happens that XR_EXT_HAND_TRACKING is an official extension, so its name and function prototypes are provided in openxr.h. This won't be the case for every extension!
+
+At the start of your main.cpp, underneath where you included "OpenXRDebugUtils.h", add these declarations:
+
+.. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
-	:end-before: XR_DOCS_TAG_END_Create_DestroyDebugMessenger
+	:start-after: XR_DOCS_TAG_BEGIN_DeclareExtensionFunctions
+	:end-before: XR_DOCS_TAG_END_DeclareExtensionFunctions
+	:dedent: 0
 
-Below is an example of a OpenXR DebugUtilsMessenger Callback function. This function can be completely customised to your liking, but here we simply convert the message's severity and type to strings, and create a string to log to stdout. We also add a ``DEBUG_BREAK`` if the severity is an error. Just one thing to note: Applications should always return ``XR_FALSE`` from this function.
+openxr.h has prototyped these functions for us, but we'll need to get the function pointers at runtime, so at the end of CreateInstance(), add this:
 
-.. literalinclude:: ../Common/OpenXRDebugUtils.cpp
+.. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_OpenXRMessageCallbackFunction
-	:end-before: XR_DOCS_TAG_END_OpenXRMessageCallbackFunction
+	:start-after: XR_DOCS_TAG_BEGIN_ExtensionFunctions
+	:end-before: XR_DOCS_TAG_END_ExtensionFunctions
+	:dedent: 2
 
-*********************************************************************
-5.3 Extension examples including XR_EXT_HAND_TRACKING cubes at joints
-*********************************************************************
+These calls require an XrInstance, so we must initialize these after XrCreateInstance() has successfully returned. If hand tracking is not supported (or not enabled), we'll get a warning, and these functions will be null. You can run your app now to check this.
 
-OpenXR Specification 12.31 XR_EXT_hand_tracking <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking>`_. 
+At the end of your OpenXRTutorial application class, declare the following:
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_HandTracking
+	:end-before: XR_DOCS_TAG_END_HandTracking
+	:dedent: 1
+
+`Hand` is a simple struct to encapsulate the XrHandTrackerEXT object for each hand, and the joint location structures that we'll update to track hand motion. Now, in Run(), after the call to AttachActionSet(), add:
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CallCreateHandTracker
+	:end-before: XR_DOCS_TAG_END_CallCreateHandTracker
+	:dedent: 2
+
+Add this function after the definition of AttachActionSet(). For each of two hands, we'll call xrCreateHandTrackerEXT() and fill in the m_handTracker object.
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateHandTracker
+	:end-before: XR_DOCS_TAG_END_CreateHandTracker
+	:dedent: 1
+
+The XrHandTrackerEXT object is a session-lifetime object, so in DestroySession(), at the top of the function we'll add:
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_DestroyHandTracker
+	:end-before: XR_DOCS_TAG_END_DestroyHandTracker
+	:dedent: 2
+
+Hands should be polled once per frame. At the end of PollActions(), we'll poll each hand. We'll assume to begin with that the user isn't holding the controller, so we'll use the XR_HAND_JOINTS_MOTION_RANGE_UNOBSTRUCTED_EXT motion range.
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_PollHands
+	:end-before: XR_DOCS_TAG_END_PollHands
+	:dedent: 2
+
+Finally, we'll render the hands simply by drawing a cuboid at each of the 26 joints of each hand. Where `numberOfCuboids` is defined, add this to make sure we have enough space in the constant buffers:
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_AddHandCuboids
+	:end-before: XR_DOCS_TAG_END_AddHandCuboids
+	:dedent: 2
+
+Now in RenderLayer(), just before the call to `m_graphicsAPI->EndRendering()`, add this so we render both hands, with all their joints:
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderHands
+	:end-before: XR_DOCS_TAG_END_RenderHands
+	:dedent: 3
+
+Run the app: you'll now see both hands, rendered as blocks.
+
+The next thing is to 
