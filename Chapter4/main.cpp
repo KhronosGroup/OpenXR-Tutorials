@@ -734,9 +734,9 @@ void GetEnvironmentBlendModes() {
     // XR_DOCS_TAG_BEGIN_BlockInteraction
 	static XrVector3f FixPosition(XrVector3f pos)
 	{
-		int x=std::nearbyint(pos.x*10.f);
-		int y=std::nearbyint(pos.y*10.f);
-		int z=std::nearbyint(pos.z*10.f);
+		int x=int(std::nearbyint(pos.x*10.f));
+		int y=int(std::nearbyint(pos.y*10.f));
+		int z=int(std::nearbyint(pos.z*10.f));
 		pos.x=float(x)/10.f;
 		pos.y=float(y)/10.f;
 		pos.z=float(z)/10.f;

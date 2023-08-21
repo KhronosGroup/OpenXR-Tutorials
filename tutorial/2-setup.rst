@@ -19,7 +19,7 @@ We will continue to use the ``OpenXRTutorial`` class in ``Chapter2/main.cpp`` th
 Here, we will add the following highlighted text to the ``OpenXRTutorial`` class:
 
 .. code-block:: cpp
-	:emphasize-lines: 10-15 , 18-45
+	:emphasize-lines: 10-17 , 20-48
 	
 	class OpenXRTutorial {
 	public:
@@ -31,10 +31,12 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 		void Run()
 		{
 			CreateInstance();
+			CreateDebugMessenger();
 
 			GetInstanceProperties();
 			GetSystemID();
 
+			DestroyDebugMessenger();
 			DestroyInstance();
 		}
 
@@ -42,15 +44,18 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 		void CreateInstance() 
 		{
 		}
-		
 		void DestroyInstance()
 		{
 		}
-	
+		void CreateDebugMessenger()
+		{
+		}
+		void DestroyDebugMessenger()
+		{
+		}
 		void GetInstanceProperties()
 		{
 		}
-
 		void GetSystemID()
 		{
 		}
@@ -133,7 +138,66 @@ Whilst we have an ``XrInstance``, let's check its properties. Add the following 
 
 Here, we have initialized the ``XrInstanceProperties`` structure with the correct ``XrStructureType`` and passed it along with the ``XrInstance`` to the ``xrGetInstanceProperties()`` function. This function will fill out the rest of that structure for us to use. Next, we have loggod to stdout the runtime's name, and with the use of the ``XR_VERSION_MAJOR``, ``XR_VERSION_MINOR`` and ``XR_VERSION_PATCH`` macros, we have parsed and logged the runtime version.
 
-2.1.2 XrSystemId
+2.1.2 XR_EXT_debug_utils
+========================
+
+XR_EXT_debug_utils is an instance extension for OpenXR, which allows the application to get more information on any errors or warnings etc. raised by the runtime. You can specify which message severities and types will checked. If a debug message raised, it is passed to the callback function, which can optionally use the user data pointer provided in the ``XrDebugUtilsMessengerCreateInfoEXT`` structure.
+
+Message Severities: 
+ * Verbose: Output all diagnostic messages.
+ * Info: Output information messages helpful in debugging.
+ * Warning: Output messages that could suggest an application bug and that need reviewing.
+ * Error: Output messages from errors that may cause undefined behavior and/or crashes.
+ 
+Message Types:
+ * General: An event type for general information.
+ * Validation: An event type that may indicate invalid usage of OpenXR.
+ * Performance: An event type that may indicate non-optimal usage of OpenXR.
+ * Conformance: An event type that indicating a non-conformant OpenXR result from the runtime.
+
+`OpenXR Specification 12.26.3. Debug Message Categorization <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#debug-message-categorization>`_. 
+
+Copy the following code into ``CreateDebugMessenger()`` and ``DestroyDebugMessenger()`` respectively:
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateDebugMessenger
+	:end-before: XR_DOCS_TAG_END_CreateDebugMessenger
+	:dedent: 8
+
+In the code above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or ``"XR_EXT_debug_utils"`` is in ``activeInstanceExtensions``, which we used to create the ``XrInstance``. Next, we call the ``CreateOpenXRDebugUtilsMessenger()`` function. 
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
+	:end-before: XR_DOCS_TAG_END_DestroyDebugMessenger
+	:dedent: 8
+
+At the end of the program, we should destroy the ``XrDebugUtilsMessengerEXT`` by calling ``DestroyOpenXRDebugUtilsMessenger``. 
+
+.. literalinclude:: ../Common/OpenXRDebugUtils.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
+	:end-before: XR_DOCS_TAG_END_Create_DestroyDebugMessenger
+
+*The above code is an excerpt from Common/OpenXRDebugUtils.cpp*
+
+In ``CreateOpenXRDebugUtilsMessenger()``, we use a ``XrDebugUtilsMessengerCreateInfoEXT`` structure to specify which message severities and types will checked. Next, we set the callback function that we want to use, and it must match the ``PFN_xrDebugUtilsMessengerCallbackEXT`` signature. Optionally, you can set a ``userData`` pointer, perhaps to a class, but here we have set it to ``nullptr`` in this example.
+
+XR_EXT_debug_utils is an extension and as such its functions are not loaded by default by the OpenXR loader. Therefore, we need to get the address of the function through the use of ``xrGetInstanceProcAddr()``. We pass the ``XrInstance`` and a string of the function we want to get, along with a pointer to a function pointer variable. We need to cast that pointer to a function pointer variable to a ``PFN_xrVoidFunction*`` type. Once we have the ``xrCreateDebugUtilsMessengerEXT()`` function, we call it by passing the ``XrInstance``, a pointer to our ``XrDebugUtilsMessengerCreateInfoEXT`` structure and a pointer to our ``XrDebugUtilsMessengerEXT``. If all is successful, we have set up the DebugUtilsMessenger callback.
+
+In ``DestroyOpenXRDebugUtilsMessenger()``, the ``xrDestroyDebugUtilsMessengerEXT()`` function also needs to be loaded through the use of ``xrGetInstanceProcAddr()``. Once loaded, we can call the function and pass the ``XrDebugUtilsMessengerEXT`` and thus destroying it.
+
+.. literalinclude:: ../Common/OpenXRDebugUtils.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_OpenXRMessageCallbackFunction
+	:end-before: XR_DOCS_TAG_END_OpenXRMessageCallbackFunction
+
+*The above code is an excerpt from Common/OpenXRDebugUtils.cpp*
+
+Above is an example of a OpenXR DebugUtilsMessenger Callback function. This function can be completely customised to your liking, but here we simply convert the message's severity and type to strings, and create a string to log to stdout. We also add a ``DEBUG_BREAK`` if the severity is an error. Just one thing to note: Applications should always return ``XR_FALSE`` from this function.
+
+2.1.3 XrSystemId
 ================
 
 The next object that we want to get is the ``XrSystemId``. OpenXR 'separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences'. 
@@ -180,7 +244,7 @@ For now, we are just going to create an ``XrSession``. At this point, you'll nee
 Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Run()`` method and also add in the definitions of the new methods and the members to their separate private sections. All the new code is highlighted code below.
 
 .. code-block:: cpp
-	:emphasize-lines: 4-9, 18-19, 41-46, 58-61
+	:emphasize-lines: 4-9, 19-20, 51-56, 68-71
 
 	class OpenXRTutorial {
 	public:
@@ -195,6 +259,7 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 
 		void Run() {
 			CreateInstance();
+			CreateDebugMessenger();
 
 			GetInstanceProperties();
 			GetSystemID();
@@ -202,6 +267,7 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 			CreateSession();
 			DestroySession();
 		
+			DestroyDebugMessenger();
 			DestroyInstance();
 		}
 
@@ -219,6 +285,14 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 			// [...]
 		}
 		void GetSystemID()
+		{
+			// [...]
+		}
+		void CreateDebugMessenger()
+		{
+			// [...]
+		}
+		void DestroyDebugMessenger()
 		{
 			// [...]
 		}
@@ -243,7 +317,7 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 		std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
 
 		XrSession m_session = {};
-	}
+	};
 
 2.2.1 XrSession
 ===============
@@ -553,7 +627,7 @@ OpenXR uses an event based system to describes changes within the XR system. It'
 Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add the highlighted code below. Also add the highlighted code for the new methods and members in their separate private sections.
 
 .. code-block:: cpp
-	:emphasize-lines: 20-26, 58-63, 79-83
+	:emphasize-lines: 21-27, 68-73, 89-93
 
 	class OpenXRTutorial {
 	public:
@@ -568,6 +642,7 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 
 		void Run() {
 			CreateInstance();
+			CreateDebugMessenger();
 
 			GetInstanceProperties();
 			GetSystemID();
@@ -584,6 +659,7 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 
 			DestroySession();
 
+			DestroyDebugMessenger();
 			DestroyInstance();
 	}
 
@@ -601,6 +677,14 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 			// [...]
 		}
 		void GetSystemID()
+		{
+			// [...]
+		}
+		void CreateDebugMessenger()
+		{
+			// [...]
+		}
+		void DestroyDebugMessenger()
 		{
 			// [...]
 		}
@@ -638,7 +722,7 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 		bool m_sessionRunning = false;
 	
 		XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-	}
+	};
 
 2.3.1 xrPollEvent
 =================
@@ -687,7 +771,7 @@ For some platforms, we need additional functionality provided via the ``PollSyst
 2.3.2 XrSessionState
 ====================
 
-The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will focus on for the rest of this chapter. There are currently nine valid ``XrSessionState`` s described:
+The final event type, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, in the above code and table is what we will focus on for the rest of this chapter. There are currently nine valid ``XrSessionState`` s described:
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 		:language: cpp
@@ -722,7 +806,7 @@ Below is a table describing the nine ``XrSessionState`` s:
 
 (*) Applications may wish to re-create objects like ``XrSystemId`` and ``XrSession``, if hardware changes were detected.
 
-Developers should also be aware of the lifecycle of an ``XrSession``. Certain ``XrSessionState`` can only lead to certain others under the correct circumstances. Below is a diagram showing lifecycle of an ``XrSession`` within an OpenXR application.
+Developers should also be aware of the lifecycle of an ``XrSession``. Certain ``XrSessionState``s can only lead to certain others under the correct circumstances. Below is a diagram showing the lifecycle of an ``XrSession`` within an OpenXR application.
 
 .. figure:: openxr-session-life-cycle.svg
 	:alt: OpenXR Session Life-Cycle

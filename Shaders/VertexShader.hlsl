@@ -35,6 +35,6 @@ VS_OUT main(VS_IN IN)
     int face = IN.vertexId / 6;
     OUT.o_TexCoord = float2(float(face), 0);
     OUT.o_Normal = (mul(model,normals[face])).xyz;
-    OUT.o_Colour =colour;
+    OUT.o_Colour =colour.rgb;
     return OUT;
 }
