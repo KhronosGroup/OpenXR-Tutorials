@@ -221,7 +221,7 @@ private:
 		OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrCreateHandTrackerEXT", (PFN_xrVoidFunction *)&xrCreateHandTrackerEXT), "Failed to get xrCreateHandTrackerEXT.");
 		OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrDestroyHandTrackerEXT", (PFN_xrVoidFunction *)&xrDestroyHandTrackerEXT), "Failed to get xrDestroyHandTrackerEXT.");
 		OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrLocateHandJointsEXT", (PFN_xrVoidFunction *)&xrLocateHandJointsEXT), "Failed to get xrLocateHandJointsEXT.");
-		// XR_DOCS_TAG_BEGIN_ExtensionFunctions
+		// XR_DOCS_TAG_END_ExtensionFunctions
     }
 
     void DestroyInstance() {

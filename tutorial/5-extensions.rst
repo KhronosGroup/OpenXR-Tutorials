@@ -2,12 +2,13 @@
 ✨ 5 Extensions
 ###############
 
-OpenXR is designed to be an extensible API. 
-***********************************************************************
-5.1 Hand Tracking
-***********************************************************************
+OpenXR is designed to be an extensible API. As we've seen above, the call to xrCreateInstance() can include one or more extension names, and we can query xrEnumerateInstanceExtensionProperties() in advance to find out which extensions are supported by the runtime. In this section, we'll see how extensions add to the core API and look at a specific case, the hand tracking extension.
 
-Many XR devices now support hand-tracking. Instead of a motion-tracked controller, one or more cameras take images of the surrounding area. If your hands are visible to the cameras, algorithms in or accessible to the runtime try to calculate the positions of your hands and fingers. For further information on this, see XR_EXT_hand_tracking <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking>`_. We'll now enable hand tracking in your project.
+*****************
+5.1 Hand Tracking
+*****************
+
+Many XR devices now support hand-tracking. Instead of a motion-tracked controller, one or more cameras take images of the surrounding area. If your hands are visible to the cameras, algorithms in or accessible to the runtime try to calculate the positions of your hands and fingers. We'll now enable hand tracking in your project.
 
 .. container:: android
 
