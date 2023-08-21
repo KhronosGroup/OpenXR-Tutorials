@@ -125,18 +125,20 @@ private:
         OPENXR_CHECK(xrDestroyInstance(m_xrInstance), "Failed to destroy Instance.");
     }
 
-    // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
+    // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
+    // XR_DOCS_TAG_END_CreateDebugMessenger
     }
     void DestroyDebugMessenger() {
+    // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);
         }
+    // XR_DOCS_TAG_END_DestroyDebugMessenger
     }
-    // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
     void GetInstanceProperties() {
         // XR_DOCS_TAG_BEGIN_GetInstanceProperties
