@@ -393,7 +393,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 				:end-before: endif()
 				:dedent: 8
 
-		For Microsoft Windows, we've added some compiler pre-processor directives.
+		For Linux, we've added some compiler pre-processor directives.
 
 	.. container:: opengl
 		:name: opengl-id-4
@@ -404,7 +404,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:end-before: endif() # EOF
 			:dedent: 4
 		
-		This CMake code will add gfxwrapper for OpenGL, we've added the include directories and linked the gfxwrapper libraries from the OpenXR-SDK.
+		This CMake code will add gfxwrapper for OpenGL. We've added the include directories and linked the gfxwrapper libraries from the OpenXR-SDK.
 
 	.. container:: vulkan
 		:name: vulkan-id-5
@@ -504,7 +504,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
-			:start-after: # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
+			:start-at: # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
 			:end-before: # Final link
 			:dedent: 4
 	
@@ -525,7 +525,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
-			:start-after: # VulkanNDK
+			:start-at: # VulkanNDK
 			:end-before: # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
 			:dedent: 4
 
