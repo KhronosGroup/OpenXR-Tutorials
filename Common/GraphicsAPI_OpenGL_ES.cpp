@@ -630,7 +630,6 @@ void *GraphicsAPI_OpenGL_ES::CreateShader(const ShaderCreateInfo &shaderCI) {
         glDeleteShader(shader);
         shader = 0;
     }
-
     return (void *)(uint64_t)shader;
 }
 

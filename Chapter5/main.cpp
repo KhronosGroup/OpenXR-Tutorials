@@ -1,4 +1,4 @@
-// Simul Software Ltd 2023
+// Copyright Khronos Group 2023
 // OpenXR Tutorial for Khronos Group
 
 #include "DebugOutput.h"
@@ -11,22 +11,34 @@
 // XR_DOCS_TAG_END_include_GraphicsAPIs
 #include "OpenXRDebugUtils.h"
 
+// XR_DOCS_TAG_BEGIN_DeclareExtensionFunctions
+PFN_xrCreateHandTrackerEXT xrCreateHandTrackerEXT=nullptr;
+PFN_xrDestroyHandTrackerEXT xrDestroyHandTrackerEXT=nullptr;
+PFN_xrLocateHandJointsEXT xrLocateHandJointsEXT=nullptr;
+// XR_DOCS_TAG_END_DeclareExtensionFunctions
+
 // XR_DOCS_TAG_BEGIN_include_linear_algebra
+// include xr linear algebra for XrVector and XrMatrix classes.
 #include "xr_linear_algebra.h"
-// Declare some useful operator functions:
+// Declare some useful operators for vectors:
 XrVector3f operator-(XrVector3f a,XrVector3f b)
 {
-	return {a.x-b.x,a.y-b.y,a.z-b.z};
+    return {a.x-b.x,a.y-b.y,a.z-b.z};
 }
 XrVector3f operator*(XrVector3f a,float b)
 {
-	return {a.x*b,a.y*b,a.z*b};
+    return {a.x*b,a.y*b,a.z*b};
 }
-#include <algorithm> // for std::min and max
+// Include <algorithm> for std::min and max
+#include <algorithm> 
+// Random numbers for colourful blocks
+#include <random>
+static std::uniform_real_distribution<float> pseudorandom_distribution(0,1.f);
+static std::mt19937 pseudo_random_generator;
 // XR_DOCS_TAG_END_include_linear_algebra
 
-// XR_DOCS_TAG_BEGIN_ReadFiles
 #if defined(__ANDROID__)
+// XR_DOCS_TAG_BEGIN_ReadFiles_Android
 #include "android/asset_manager.h"
 std::string ReadTextFile(const std::string &filepath, AAssetManager *assetManager) {
     AAsset *file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
@@ -45,8 +57,8 @@ std::vector<char> ReadBinaryFile(const std::string &filepath, AAssetManager *ass
     AAsset_close(file);
     return binary;
 }
+// XR_DOCS_TAG_END_ReadFiles_Android
 #endif
-// XR_DOCS_TAG_END_ReadFiles
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_5
 
 class OpenXRTutorial {
@@ -85,11 +97,14 @@ public:
         CreateSession();
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_4_3
-        // XR_DOCS_TAG_BEGIN_CallCreateActionPoses
+// XR_DOCS_TAG_BEGIN_CallCreateActionPoses
         CreateActionPoses();
         AttachActionSet();
 // XR_DOCS_TAG_END_CallCreateActionPoses
 #endif
+// XR_DOCS_TAG_BEGIN_CallCreateHandTracker
+        CreateHandTrackers();
+// XR_DOCS_TAG_END_CallCreateHandTracker
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         CreateReferenceSpace();
@@ -144,6 +159,9 @@ private:
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
             // XR_DOCS_TAG_END_instanceExtensions
+            // XR_DOCS_TAG_BEGIN_handTrackingExtensions
+            m_instanceExtensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+            // XR_DOCS_TAG_END_handTrackingExtensions
         }
 
         // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
@@ -197,6 +215,12 @@ private:
         instanceCI.enabledExtensionNames = m_activeInstanceExtensions.data();
         OPENXR_CHECK(xrCreateInstance(&instanceCI, &m_xrInstance), "Failed to create Instance.");
         // XR_DOCS_TAG_END_XrInstanceCreateInfo
+
+		// XR_DOCS_TAG_BEGIN_ExtensionFunctions
+		OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrCreateHandTrackerEXT", (PFN_xrVoidFunction *)&xrCreateHandTrackerEXT), "Failed to get xrCreateHandTrackerEXT.");
+		OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrDestroyHandTrackerEXT", (PFN_xrVoidFunction *)&xrDestroyHandTrackerEXT), "Failed to get xrDestroyHandTrackerEXT.");
+		OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrLocateHandJointsEXT", (PFN_xrVoidFunction *)&xrLocateHandJointsEXT), "Failed to get xrLocateHandJointsEXT.");
+		// XR_DOCS_TAG_BEGIN_ExtensionFunctions
     }
 
     void DestroyInstance() {
@@ -305,12 +329,12 @@ private:
         // XR_DOCS_TAG_END_SuggestBindings1
         // XR_DOCS_TAG_BEGIN_SuggestBindings2
         bool any_ok = false;
-        any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller", {{m_grabAction					, CreateXrPath("/user/hand/left/input/select/click")},
-                                                                                  {m_grabAction					, CreateXrPath("/user/hand/right/input/select/click")},
-                                                                                  {m_controllerGripPoseAction	, CreateXrPath("/user/hand/left/input/grip/pose")},
-                                                                                  {m_controllerGripPoseAction	, CreateXrPath("/user/hand/right/input/grip/pose")},
-                                                                                  {m_buzzAction					, CreateXrPath("/user/hand/left/output/haptic")},
-                                                                                  {m_buzzAction					, CreateXrPath("/user/hand/right/output/haptic")}
+        any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller", {{m_grabAction                    , CreateXrPath("/user/hand/left/input/select/click")},
+                                                                                  {m_grabAction                    , CreateXrPath("/user/hand/right/input/select/click")},
+                                                                                  {m_controllerGripPoseAction    , CreateXrPath("/user/hand/left/input/grip/pose")},
+                                                                                  {m_controllerGripPoseAction    , CreateXrPath("/user/hand/right/input/grip/pose")},
+                                                                                  {m_buzzAction                    , CreateXrPath("/user/hand/left/output/haptic")},
+                                                                                  {m_buzzAction                    , CreateXrPath("/user/hand/right/output/haptic")}
         });
 // XR_DOCS_TAG_END_SuggestBindings2
 // XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
@@ -343,32 +367,44 @@ private:
 // XR_DOCS_TAG_END_SuggestBindings3
 // XR_DOCS_TAG_BEGIN_CreateActionPoses
     void CreateActionPoses() {
-    // Create an xrSpace for a pose action.
-    auto CreateActionPoseSpace = [this](XrSession session, XrAction xrAction,const char *subaction_path=nullptr) -> XrSpace {
-        XrSpace xrSpace;
-        const XrPosef xrPoseIdentity = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
-        // Create frame of reference for a pose action
-        XrActionSpaceCreateInfo actionSpaceCI{XR_TYPE_ACTION_SPACE_CREATE_INFO};
-        actionSpaceCI.action = xrAction;
-        actionSpaceCI.poseInActionSpace = xrPoseIdentity;
-        if(subaction_path)
-            actionSpaceCI.subactionPath=CreateXrPath(subaction_path);
-        OPENXR_CHECK(xrCreateActionSpace(session, &actionSpaceCI, &xrSpace), "Failed to create ActionSpace.");
-        return xrSpace;
-    };
-    m_controllerGripPoseSpace[0] = CreateActionPoseSpace(m_session, m_controllerGripPoseAction,"/user/hand/left");
-    m_controllerGripPoseSpace[1] = CreateActionPoseSpace(m_session, m_controllerGripPoseAction,"/user/hand/right");
-}
+        // Create an xrSpace for a pose action.
+        auto CreateActionPoseSpace = [this](XrSession session, XrAction xrAction,const char *subaction_path=nullptr) -> XrSpace {
+            XrSpace xrSpace;
+            const XrPosef xrPoseIdentity = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
+            // Create frame of reference for a pose action
+            XrActionSpaceCreateInfo actionSpaceCI{XR_TYPE_ACTION_SPACE_CREATE_INFO};
+            actionSpaceCI.action = xrAction;
+            actionSpaceCI.poseInActionSpace = xrPoseIdentity;
+            if(subaction_path)
+                actionSpaceCI.subactionPath=CreateXrPath(subaction_path);
+            OPENXR_CHECK(xrCreateActionSpace(session, &actionSpaceCI, &xrSpace), "Failed to create ActionSpace.");
+            return xrSpace;
+        };
+        m_controllerGripPoseSpace[0] = CreateActionPoseSpace(m_session, m_controllerGripPoseAction,"/user/hand/left");
+        m_controllerGripPoseSpace[1] = CreateActionPoseSpace(m_session, m_controllerGripPoseAction,"/user/hand/right");
+    }
 // XR_DOCS_TAG_END_CreateActionPoses
 // XR_DOCS_TAG_BEGIN_AttachActionSet
-void AttachActionSet() {
-    // Attach the action set we just made to the session. We could attach multiple action sets!
-    XrSessionActionSetsAttachInfo actionSetAttachInfo{XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
-    actionSetAttachInfo.countActionSets = 1;
-    actionSetAttachInfo.actionSets = &m_actionSet;
-    OPENXR_CHECK(xrAttachSessionActionSets(m_session, &actionSetAttachInfo), "Failed to attach ActionSet to Session.");
-}
+    void AttachActionSet() {
+        // Attach the action set we just made to the session. We could attach multiple action sets!
+        XrSessionActionSetsAttachInfo actionSetAttachInfo{XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
+        actionSetAttachInfo.countActionSets = 1;
+        actionSetAttachInfo.actionSets = &m_actionSet;
+        OPENXR_CHECK(xrAttachSessionActionSets(m_session, &actionSetAttachInfo), "Failed to attach ActionSet to Session.");
+    }
 // XR_DOCS_TAG_END_AttachActionSet
+// XR_DOCS_TAG_BEGIN_CreateHandTracker
+    void CreateHandTrackers() {
+        for(int i=0;i<2;i++) {
+			Hand &hand=m_hands[i];
+            XrHandTrackerCreateInfoEXT xrHandTrackerCreateInfo={XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT};
+            xrHandTrackerCreateInfo.hand = i==0?XR_HAND_LEFT_EXT:XR_HAND_RIGHT_EXT;
+            xrHandTrackerCreateInfo.handJointSet = XR_HAND_JOINT_SET_DEFAULT_EXT;
+            OPENXR_CHECK( xrCreateHandTrackerEXT(m_session,&xrHandTrackerCreateInfo,&hand.m_handTracker), "Failed to create Hand Tracker.");
+        }
+    }
+// XR_DOCS_TAG_END_CreateHandTracker
+
 // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
 void GetEnvironmentBlendModes() {
     uint32_t environmentBlendModeSize = 0;
@@ -431,6 +467,12 @@ void GetEnvironmentBlendModes() {
     }
 
     void DestroySession() {
+// XR_DOCS_TAG_BEGIN_DestroyHandTracker
+		for(int i=0;i<2;i++)
+        {
+			xrDestroyHandTrackerEXT(m_hands[i].m_handTracker);
+		}
+// XR_DOCS_TAG_END_DestroyHandTracker
         OPENXR_CHECK(xrDestroySession(m_session), "Failed to destroy Session.");
     }
     // XR_DOCS_TAG_END_CreateDestroySession
@@ -482,21 +524,21 @@ void GetEnvironmentBlendModes() {
             24, 25, 26, 27, 28, 29,  // -Z
             30, 31, 32, 33, 34, 35,  // +Z
         };
-		XrVector4f normals[6] = {
-			{1.00f , 0.00f	, 0.00f,0},
-			{-1.00f, 0.00f	, 0.00f,0},
-			{0.00f , 1.00f	, 0.00f,0},
-			{0.00f , -1.00f	, 0.00f,0},
-			{0.00f , 0.00f	, 1.00f,0},
-			{0.00f , 0.0f	,-1.00f,0}};
+        XrVector4f normals[6] = {
+            {1.00f , 0.00f    , 0.00f,0},
+            {-1.00f, 0.00f    , 0.00f,0},
+            {0.00f , 1.00f    , 0.00f,0},
+            {0.00f , -1.00f    , 0.00f,0},
+            {0.00f , 0.00f    , 1.00f,0},
+            {0.00f , 0.0f    ,-1.00f,0}};
         m_vertexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices), &cubeVertices});
 
         m_indexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices), &cubeIndices});
 
         m_uniformBuffer_Frag = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colours), colours});
-		
+        
         m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
-        m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 1, sizeof(normals), &normals});
+        m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
 
         // XR_DOCS_TAG_END_CreateResources1
         // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
@@ -569,22 +611,35 @@ void GetEnvironmentBlendModes() {
         pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         pipelineCI.colorFormats = {m_swapchainAndDepthImages[0].swapchainFormat};
         pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
-        pipelineCI.layout = {{1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false}, {0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false}};
+        pipelineCI.layout = {{0, nullptr
+                                  , GraphicsAPI::DescriptorInfo::Type::BUFFER
+                                  , GraphicsAPI::DescriptorInfo::Stage::VERTEX
+                                  , false}
+                              , {1, nullptr
+                                  , GraphicsAPI::DescriptorInfo::Type::BUFFER
+                                  , GraphicsAPI::DescriptorInfo::Stage::VERTEX
+                                  , false}
+                              , {2
+                                 , nullptr
+                                 , GraphicsAPI::DescriptorInfo::Type::BUFFER
+                                 , GraphicsAPI::DescriptorInfo::Stage::FRAGMENT
+                                 , false}};
         m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
-		
-		float scale=0.2f;
-		XrVector3f centre = {0,-0.2f, -0.7f};
+        
+        float scale=0.2f;
+        XrVector3f centre = {0,-0.2f, -0.7f};
         for (int i = 0; i < 4; i++) {
             float x = scale * (float(i) - 1.5f) + centre.x;
             for (int j = 0; j < 4; j++) {
                 float y = scale * (float(j) - 1.5f) + centre.y;
                 for (int k = 0; k < 4; k++) {
-					float angleRad = 0;
+                    float angleRad = 0;
                     float z = scale * (float(k) - 1.5f) + centre.z;
                     XrQuaternionf q;
                     XrVector3f axis = {0, 0.707f, 0.707f};
                     XrQuaternionf_CreateFromAxisAngle(&q, &axis, angleRad);
-                    blocks.push_back(std::pair<XrPosef,XrVector3f>({q, {x, y, z}}, {0.095f, 0.095f, 0.095f}));
+                    XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
+                    blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f},colour});
                 }
             }
         }
@@ -671,46 +726,46 @@ void GetEnvironmentBlendModes() {
         activeActionSet.actionSet = m_actionSet;
         activeActionSet.subactionPath = XR_NULL_PATH;
 
-		XrActionsSyncInfo actionsSyncInfo{XR_TYPE_ACTIONS_SYNC_INFO};
-		actionsSyncInfo.countActiveActionSets = 1;
-		actionsSyncInfo.activeActionSets = &activeActionSet;
-		OPENXR_CHECK(xrSyncActions(m_session, &actionsSyncInfo), "Failed to sync Actions.");
+        XrActionsSyncInfo actionsSyncInfo{XR_TYPE_ACTIONS_SYNC_INFO};
+        actionsSyncInfo.countActiveActionSets = 1;
+        actionsSyncInfo.activeActionSets = &activeActionSet;
+        OPENXR_CHECK(xrSyncActions(m_session, &actionsSyncInfo), "Failed to sync Actions.");
 // XR_DOCS_TAG_END_PollActions
 // XR_DOCS_TAG_BEGIN_PollActions2
-		XrActionStateGetInfo actionStateGetInfo{XR_TYPE_ACTION_STATE_GET_INFO};
-		actionStateGetInfo.action = m_controllerGripPoseAction;
-		for(int i=0;i<2;i++) {
-			actionStateGetInfo.subactionPath=m_handPaths[i];
-			OPENXR_CHECK(xrGetActionStatePose(m_session, &actionStateGetInfo, &m_controllerGripPoseState[i]), "Failed to get Pose State.");
-			if (m_controllerGripPoseState[i].isActive) {
-				XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-				XrResult res = xrLocateSpace(m_controllerGripPoseSpace[i], m_localOrStageSpace, predictedTime, &spaceLocation);
-				if (XR_UNQUALIFIED_SUCCESS(res) &&
-					(spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
-					(spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0) {
-					m_controllerGripPose[i] = spaceLocation.pose;
-				}
-			}
-		}
+        XrActionStateGetInfo actionStateGetInfo{XR_TYPE_ACTION_STATE_GET_INFO};
+        actionStateGetInfo.action = m_controllerGripPoseAction;
+        for(int i=0;i<2;i++) {
+            actionStateGetInfo.subactionPath=m_handPaths[i];
+            OPENXR_CHECK(xrGetActionStatePose(m_session, &actionStateGetInfo, &m_controllerGripPoseState[i]), "Failed to get Pose State.");
+            if (m_controllerGripPoseState[i].isActive) {
+                XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
+                XrResult res = xrLocateSpace(m_controllerGripPoseSpace[i], m_localOrStageSpace, predictedTime, &spaceLocation);
+                if (XR_UNQUALIFIED_SUCCESS(res) &&
+                    (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
+                    (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0) {
+                    m_controllerGripPose[i] = spaceLocation.pose;
+                }
+            }
+        }
 // XR_DOCS_TAG_END_PollActions2
 // XR_DOCS_TAG_BEGIN_PollActions3
-		for(int i=0;i<2;i++) {
-			actionStateGetInfo.action = m_grabAction;
-			actionStateGetInfo.subactionPath=m_handPaths[i];
-			OPENXR_CHECK(xrGetActionStateFloat(m_session, &actionStateGetInfo, &m_grabState[i]), "Failed to get Float State.");
-			buzz[i]*=0.5f;
-			if(buzz[i]<0.01f)
-				buzz[i]=0.0f;
-			XrHapticVibration vibration{XR_TYPE_HAPTIC_VIBRATION};
-			vibration.amplitude = buzz[i];
-			vibration.duration = XR_MIN_HAPTIC_DURATION;
-			vibration.frequency = XR_FREQUENCY_UNSPECIFIED;
+        for(int i=0;i<2;i++) {
+            actionStateGetInfo.action = m_grabAction;
+            actionStateGetInfo.subactionPath=m_handPaths[i];
+            OPENXR_CHECK(xrGetActionStateFloat(m_session, &actionStateGetInfo, &m_grabState[i]), "Failed to get Float State.");
+            buzz[i]*=0.5f;
+            if(buzz[i]<0.01f)
+                buzz[i]=0.0f;
+            XrHapticVibration vibration{XR_TYPE_HAPTIC_VIBRATION};
+            vibration.amplitude = buzz[i];
+            vibration.duration = XR_MIN_HAPTIC_DURATION;
+            vibration.frequency = XR_FREQUENCY_UNSPECIFIED;
         
-			XrHapticActionInfo hapticActionInfo{XR_TYPE_HAPTIC_ACTION_INFO};
-			hapticActionInfo.action = m_buzzAction;
-			hapticActionInfo.subactionPath = m_handPaths[i];
-			OPENXR_CHECK(xrApplyHapticFeedback(m_session, &hapticActionInfo, (XrHapticBaseHeader*)&vibration), "Failed to apply haptic feedback.");
-		}
+            XrHapticActionInfo hapticActionInfo{XR_TYPE_HAPTIC_ACTION_INFO};
+            hapticActionInfo.action = m_buzzAction;
+            hapticActionInfo.subactionPath = m_handPaths[i];
+            OPENXR_CHECK(xrApplyHapticFeedback(m_session, &hapticActionInfo, (XrHapticBaseHeader*)&vibration), "Failed to apply haptic feedback.");
+        }
 // XR_DOCS_TAG_END_PollActions3
 // XR_DOCS_TAG_BEGIN_PollActions4
         actionStateGetInfo.action = m_controllerGripPoseAction;
@@ -727,55 +782,79 @@ void GetEnvironmentBlendModes() {
                 }
             }
         }
+// XR_DOCS_TAG_BEGIN_PollHands
+        XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
+        XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
+		for(int i=0;i<2;i++)
+        {
+            bool Unobstructed=true;
+			Hand &hand=m_hands[i];
+            XrHandJointsMotionRangeInfoEXT motionRangeInfo{XR_TYPE_HAND_JOINTS_MOTION_RANGE_INFO_EXT};
+            motionRangeInfo.handJointsMotionRange = Unobstructed
+                                                        ? XR_HAND_JOINTS_MOTION_RANGE_UNOBSTRUCTED_EXT
+                                                        : XR_HAND_JOINTS_MOTION_RANGE_CONFORMING_TO_CONTROLLER_EXT;
+            XrHandJointsLocateInfoEXT locateInfo{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT, &motionRangeInfo};
+            locateInfo.baseSpace = m_localOrStageSpace;
+            locateInfo.time =predictedTime;
+        
+            XrHandJointLocationsEXT locations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
+            locations.jointCount = (uint32_t)XR_HAND_JOINT_COUNT_EXT;
+            locations.jointLocations = hand.m_jointLocations;
+            OPENXR_CHECK(xrLocateHandJointsEXT(hand.m_handTracker, &locateInfo, &locations), "Failed to locate hand joints.");
+        
+        }
+        
+// XR_DOCS_TAG_END_PollHands
     }
+    
     // XR_DOCS_TAG_END_PollActions4
     // XR_DOCS_TAG_BEGIN_BlockInteraction
-	static XrVector3f FixPosition(XrVector3f pos)
-	{
-		int x=std::nearbyint(pos.x*10.f);
-		int y=std::nearbyint(pos.y*10.f);
-		int z=std::nearbyint(pos.z*10.f);
-		pos.x=float(x)/10.f;
-		pos.y=float(y)/10.f;
-		pos.z=float(z)/10.f;
-		return pos;
-	}
-	void BlockInteraction() {
-		for(int i=0;i<2;i++)
-		{
-			float nearest=1.0f;
-			if(grabbedBlock[i]==-1) {
-				nearBlock[i]=-1;
-				if(m_controllerGripPoseState[i].isActive) {
-					for(int j=0;j<blocks.size();j++) {
-						auto block=blocks[j];
-						XrVector3f diff=block.first.position-m_controllerGripPose[i].position;
-						float distance=std::max(fabs(diff.x),std::max(fabs(diff.y),fabs(diff.z)));
-						if(distance<0.1f&&distance<nearest) {
-							nearBlock[i]=j;
-							nearest=distance;
-						}
-					}
-				}
-				if(nearBlock[i]!=-1&&m_grabState[i].isActive&&m_grabState[i].currentState>0.5f) {
-					grabbedBlock[i]=nearBlock[i];
-					buzz[i]=1.0f;
-				}
-			}
-			else
-			{
-				nearBlock[i]=grabbedBlock[i];
-				if(m_controllerGripPoseState[i].isActive)
-					blocks[grabbedBlock[i]].first.position=m_controllerGripPose[i].position;
-				if(!m_grabState[i].isActive||m_grabState[i].currentState<0.5f) {
-					blocks[grabbedBlock[i]].first.position=FixPosition(blocks[grabbedBlock[i]].first.position);
-					grabbedBlock[i]=-1;
-					buzz[i]=0.2f;
-				}
-			}
+    static XrVector3f FixPosition(XrVector3f pos)
+    {
+        int x=std::nearbyint(pos.x*10.f);
+        int y=std::nearbyint(pos.y*10.f);
+        int z=std::nearbyint(pos.z*10.f);
+        pos.x=float(x)/10.f;
+        pos.y=float(y)/10.f;
+        pos.z=float(z)/10.f;
+        return pos;
+    }
+    void BlockInteraction() {
+        for(int i=0;i<2;i++)
+        {
+            float nearest=1.0f;
+            if(grabbedBlock[i]==-1) {
+                nearBlock[i]=-1;
+                if(m_controllerGripPoseState[i].isActive) {
+                    for(int j=0;j<blocks.size();j++) {
+                        auto block=blocks[j];
+                        XrVector3f diff=block.pose.position-m_controllerGripPose[i].position;
+                        float distance=std::max(fabs(diff.x),std::max(fabs(diff.y),fabs(diff.z)));
+                        if(distance<0.1f&&distance<nearest) {
+                            nearBlock[i]=j;
+                            nearest=distance;
+                        }
+                    }
+                }
+                if(nearBlock[i]!=-1&&m_grabState[i].isActive&&m_grabState[i].currentState>0.5f) {
+                    grabbedBlock[i]=nearBlock[i];
+                    buzz[i]=1.0f;
+                }
+            }
+            else
+            {
+                nearBlock[i]=grabbedBlock[i];
+                if(m_controllerGripPoseState[i].isActive)
+                    blocks[grabbedBlock[i]].pose.position=m_controllerGripPose[i].position;
+                if(!m_grabState[i].isActive||m_grabState[i].currentState<0.5f) {
+                    blocks[grabbedBlock[i]].pose.position=FixPosition(blocks[grabbedBlock[i]].pose.position);
+                    grabbedBlock[i]=-1;
+                    buzz[i]=0.2f;
+                }
+            }
 
-		}
-	}
+        }
+    }
     // XR_DOCS_TAG_END_BlockInteraction
 
     // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
@@ -901,7 +980,7 @@ void GetEnvironmentBlendModes() {
     // XR_DOCS_TAG_END_DestroySwapchain
 
     // XR_DOCS_TAG_BEGIN_RenderCuboid
-    void RenderCuboid(XrPosef pose, XrVector3f scale) {
+    void RenderCuboid(XrPosef pose, XrVector3f scale,XrVector3f colour) {
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
@@ -911,8 +990,9 @@ void GetEnvironmentBlendModes() {
         m_graphicsAPI->SetBufferData(m_uniformBuffer_Camera, 0, sizeof(CameraConstants), &cameraConstants);
         m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Camera, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
         m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Normals, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX});
+        colours[0]={colour.x,colour.y,colour.z,1.0};
         m_graphicsAPI->SetBufferData(m_uniformBuffer_Frag, 0, sizeof(colours), (void *)colours);
-        m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
+        m_graphicsAPI->SetDescriptor({2, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT});
         m_graphicsAPI->UpdateDescriptors();
 
         m_graphicsAPI->SetVertexBuffers(&m_vertexBuffer, 1);
@@ -941,7 +1021,7 @@ void GetEnvironmentBlendModes() {
 // XR_DOCS_TAG_BEGIN_CallPollActions
             // poll actions here because they require a predicted display time
             PollActions(frameState.predictedDisplayTime);
-			BlockInteraction();
+            BlockInteraction();
 // XR_DOCS_TAG_END_CallPollActions
 #endif
             rendered = RenderLayer(frameState.predictedDisplayTime, layerProjection, layerProjectionViews);
@@ -1030,27 +1110,40 @@ void GetEnvironmentBlendModes() {
 
             // XR_DOCS_TAG_END_SetupFrameRendering
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid
-            // Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
-            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f});
-            // Let's draw a cuboid for a "table".
-            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM+0.9f, -0.6f}}, {1.0f, 0.2f, 1.0f});
+            // Draw a floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
+            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f},{0.4f,0.5f,0.5f});
+            // Draw a "table".
+            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM+0.9f, -0.7f}}, {1.0f, 0.2f, 1.0f},{0.6f,0.6f,0.6f});
 
+            // Draw some blocks at the controller positions:
            for (int i = 0; i < 2; i++) {
                 if (m_controllerGripPoseState[i].isActive) {
-                    XrVector3f grip_scale{0.02f, 0.04f, 0.10f};
-                    RenderCuboid(m_controllerGripPose[i], grip_scale);
+                    RenderCuboid(m_controllerGripPose[i], {0.02f, 0.04f, 0.10f},{1.f,1.f,1.f});
                 }
             }
-			for(int i=0;i<blocks.size();i++)
-			{
-				auto p=blocks[i];
-				XrVector3f sc=p.second;
-				if(i==nearBlock[0]||i==nearBlock[1])
-					sc=p.second*1.05f;
-                RenderCuboid(p.first,sc);
-			}
+            for(int i=0;i<blocks.size();i++) {
+                auto p=blocks[i];
+                XrVector3f sc=p.scale;
+                if(i==nearBlock[0]||i==nearBlock[1])
+                    sc=p.scale*1.05f;
+                RenderCuboid(p.pose,sc,p.colour);
+            }
 
             // XR_DOCS_TAG_END_CallRenderCuboid
+			
+            // XR_DOCS_TAG_BEGIN_RenderHands
+			for(int i=0;i<2;i++)
+			{
+				auto hand=m_hands[i];
+				XrVector3f hand_colour={1.f,1.f,0.f};
+				for(int j=0;j<XR_HAND_JOINT_COUNT_EXT;j++)
+				{
+					XrVector3f sc={1.0f,1.0f,1.0f};
+					sc=sc*hand.m_jointLocations[j].radius;
+					RenderCuboid(hand.m_jointLocations[j].pose,sc,hand_colour);
+				}
+			}
+            // XR_DOCS_TAG_END_RenderHands
             m_graphicsAPI->EndRendering();
 
             XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
@@ -1193,11 +1286,11 @@ private:
     // XR_DOCS_TAG_BEGIN_Actions
     XrActionSet m_actionSet;
     // An action for grabbing blocks.
-	XrAction m_grabAction;
+    XrAction m_grabAction;
     XrActionStateFloat m_grabState[2] = {{XR_TYPE_ACTION_STATE_FLOAT},{XR_TYPE_ACTION_STATE_FLOAT}};
     // The action haptic vibration of the right controller.
     XrAction m_buzzAction;
-	float buzz[2]={0,0};
+    float buzz[2]={0,0};
     // The action for getting the left grip pose.
     XrAction m_controllerGripPoseAction;
     // The XrPaths for left and right hand controllers.
@@ -1209,12 +1302,27 @@ private:
     XrPosef m_controllerGripPose[2];
     // XR_DOCS_TAG_END_Actions
 
-	
+    
     // XR_DOCS_TAG_BEGIN_Objects
-	std::vector<std::pair<XrPosef,XrVector3f>> blocks;
-	int grabbedBlock[2]={-1,-1};
-	int nearBlock[2]={-1,-1};
+    struct Block
+    {
+        XrPosef pose;
+        XrVector3f scale;
+        XrVector3f colour;
+    };
+    std::vector<Block> blocks;
+    int grabbedBlock[2]={-1,-1};
+    int nearBlock[2]={-1,-1};
     // XR_DOCS_TAG_END_Objects
+
+    // XR_DOCS_TAG_BEGIN_HandTracking
+    struct Hand
+    {
+        XrHandJointLocationEXT m_jointLocations[XR_HAND_JOINT_COUNT_EXT]; 
+        XrHandTrackerEXT  m_handTracker=0;
+    };
+    Hand m_hands[2];
+    // XR_DOCS_TAG_END_HandTracking
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {
