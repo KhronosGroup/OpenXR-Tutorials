@@ -781,52 +781,47 @@ First, we add ``DebugOutput.h``:
 	:start-at: #include "DebugOutput
 	:end-at: .h"
 
-Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code of your chosen graphics API. This will in turn include ``GraphicsAPI.h``, ``HelperFunctions.h``  and ``OpenXRHelper.h``. In this tutorial, we include all of them, though you would only be picking one.
+Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code of your chosen graphics API. This will in turn include ``GraphicsAPI.h``, ``HelperFunctions.h``  and ``OpenXRHelper.h``.
 
 .. container:: d3d11
 	:name: d3d11-id-6
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
-		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
-		:emphasize-lines: 1
+		:start-after: #include "GraphicsAPI_D3D11
+		:end-before: .h"
 
 .. container:: d3d12
 	:name: d3d12-id-6
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
-		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
-		:emphasize-lines: 2
+		:start-after: #include "GraphicsAPI_D3D12
+		:end-before: .h"
 
 .. container:: opengl
 	:name: opengl-id-9
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
-		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
-		:emphasize-lines: 3
+		:start-after: #include "GraphicsAPI_OpenGL
+		:end-before: .h"
 
 .. container:: opengles
 	:name: opengles-id-7
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
-		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
-		:emphasize-lines: 4
+		:start-after: #include "GraphicsAPI_OpenGL_ES
+		:end-before: .h"
 
 .. container:: vulkan
 	:name: vulkan-id-13
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
-		:end-before: XR_DOCS_TAG_END_include_GraphicsAPIs
-		:emphasize-lines: 5
+		:start-after: #include "GraphicsAPI_Vulkan
+		:end-before: .h"
 
 You can also include ``OpenXRDebugUtils.h`` to help with set up of ``XrDebugUtilsMessengerEXT``.
 

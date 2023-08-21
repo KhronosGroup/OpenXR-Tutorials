@@ -332,12 +332,16 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11
 
+	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
+
 	Above is the minimum code needed to create a suitable ``ID3D11Device *``. First, we get the function pointer for ``xrGetD3D11GraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsD3D11KHR`` structure.
 	
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrGraphicsRequirementsD3D11KHR {
 		:end-at: } XrGraphicsRequirementsD3D11KHR;
+
+	*The above code is an excerpt from openxr/openxr_platform.h*
 
 	From this structure, we used the ``adapterLuid`` to find the appropriate ``IDXGIAdapter *``. We created a ``IDXGIFactory1 *`` and then called ``IDXGIFactory1::EnumAdapters()`` and ``IDXGIAdapter::GetDesc()`` to get the ``DXGI_ADAPTER_DESC``, so that we could compare the ``adapterLuid`` values.
 
@@ -349,6 +353,8 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetGraphicsBinding
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetGraphicsBinding
+
+	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
 
 	Here, we simply fill out the ``XrGraphicsBindingD3D11KHR`` structure and return a pointer to the class member, which will be assigned to ``XrSessionCreateInfo::next``.
 
@@ -362,12 +368,16 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12
 
+	*The above code is an excerpt from Common/GraphicsAPI_D3D12.cpp*
+
 	Above is the minimum code needed to create a suitable ``ID3D12Device *``  and ``ID3D12CommandQueue *``. First, we get the function pointer for ``xrGetD3D12GraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsD3D12KHR`` structure.
 
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrGraphicsRequirementsD3D12KHR {
 		:end-at: } XrGraphicsRequirementsD3D12KHR;
+
+	*The above code is an excerpt from openxr/openxr_platform.h*
 
 	From this structure, we used the ``adapterLuid`` to find the appropriate ``IDXGIAdapter1 *``. We created a ``IDXGIFactory4 *`` and then called ``IDXGIFactory4::EnumAdapters1()`` and ``IDXGIAdapter1::GetDesc()`` to get the ``DXGI_ADAPTER_DESC``, so that we could compare the ``adapterLuid`` values.
 
@@ -379,6 +389,8 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_GetGraphicsBinding
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetGraphicsBinding
+	
+	*The above code is an excerpt from Common/GraphicsAPI_D3D12.cpp*
 
 	Here, we simply fill out the ``XrGraphicsBindingD3D12KHR`` structure and return a pointer to the class member, which will be assigned to ``XrSessionCreateInfo::next``.
 	
@@ -392,12 +404,16 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL
 
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.cpp*
+
 	Above is the minimum code needed to create a suitable OpenGL context. First, we get the function pointer for ``xrGetOpenGLGraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsOpenGLKHR`` structure. 
 
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrGraphicsRequirementsOpenGLKHR {
 		:end-at: } XrGraphicsRequirementsOpenGLKHR;
+
+	*The above code is an excerpt from openxr/openxr_platform.h*
 	
 	In this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. Originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ and `OpenGL ES 3.1 <https://registry.khronos.org/OpenGL/specs/es/3.1/es_spec_3.1.withchanges.pdf>`_ specifications.
 
@@ -409,6 +425,8 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetGraphicsBinding
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetGraphicsBinding
+	
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.cpp*
 
 	Because OpenGL is very closely integrated with the platform's windowing system. We have different ``XrGraphicsBindingOpenGL[...]KHR`` structures - one per platform. At present, there are four: ``XrGraphicsBindingOpenGLXcbKHR``, ``XrGraphicsBindingOpenGLXlibKHR``, ``XrGraphicsBindingOpenGLWaylandKHR`` and ``XrGraphicsBindingOpenGLWin32KHR``. Depending on the platform, this function will fill out the relevant structure and return a pointer to that class member, which will be assigned to ``XrSessionCreateInfo::next``.
 	
@@ -422,12 +440,16 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES
 
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.cpp*
+
 	Above is the minimum code needed to create a suitable OpenGL ES context. First, we get the function pointer for ``xrGetOpenGLESGraphicsRequirementsKHR``, which went called fills out the ``XrGraphicsRequirementsOpenGLESKHR`` structure. 
 
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrGraphicsRequirementsOpenGLESKHR {
 		:end-at: } XrGraphicsRequirementsOpenGLESKHR;
+
+	*The above code is an excerpt from openxr/openxr_platform.h*
 
 	In this tutorial, we are using the 'gfxwrapper' for the OpenGL ES API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. Originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ and `OpenGL ES 3.1 <https://registry.khronos.org/OpenGL/specs/es/3.1/es_spec_3.1.withchanges.pdf>`_ specifications.
 
@@ -439,6 +461,8 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
+
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.cpp*
 
 	Here, we simply fill out the ``XrGraphicsBindingOpenGLESAndroidKHR`` structure and return a pointer to the class member, which will be assigned to ``XrSessionCreateInfo::next``. Note: This ``XrGraphicsBinding...`` structure differs from the others as it specifically tailored to the Android platform.
 	
@@ -452,9 +476,11 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan
 
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.cpp*
+
 	Above is the minimum code needed to create a suitable Vulkan Instance and Device. First, we called a helper method that loads in the pointers for the following functions:
 
-		* ``xrGetVulkanGraphicsRequirementsKHR``: Used to fill out a ``XrGraphicsRequirementsVulkanKHR`` structure containing the minimum and maximum supported API version.
+		* ``xrGetVulkanGraphicsRequirementsKHR``: Used to fill out an ``XrGraphicsRequirementsVulkanKHR`` structure containing the minimum and maximum supported API version.
 		* ``xrGetVulkanInstanceExtensionsKHR``: To retrieve a list of required ``VkInstance`` extensions.
 		* ``xrGetVulkanDeviceExtensionsKHR``: To retrieve a list of required ``VkDevice`` extensions.
 		* ``xrGetVulkanGraphicsDeviceKHR``:  To get the ``VkPhysicalDevice`` requested by OpenXR.
@@ -463,6 +489,8 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
+	
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.cpp*
 
 	We called ``xrGetVulkanGraphicsRequirementsKHR()`` and fill out the ``XrGraphicsRequirementsVulkanKHR`` structure. 
 	
@@ -470,6 +498,8 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:language: cpp
 		:start-at: typedef struct XrGraphicsRequirementsVulkanKHR {
 		:end-at: } XrGraphicsRequirementsVulkanKHR;
+	
+	*The above code is an excerpt from openxr/openxr_platform.h*
 
 	Then, we filled out a ``VkApplicationInfo`` where we assigned ``VkApplicationInfo::apiVersion`` a value using the retured value in ``XrGraphicsRequirementsVulkanKHR::minApiVersionSupported``. We enumerated the Instance extensions and filled out an array of structures. We used nested for-loops to find all the requested extensions and pushed them back into a ``std::vector<const char *>`` called ``activeInstanceExtensions``.
 
@@ -479,6 +509,8 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
+	
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.cpp*
 
 	``xrGetVulkanInstanceExtensionsKHR()`` is called twice, first to get the size of the ``char`` buffer and the second to fill in the data. We used ``std::stringstream`` and ``std::getline()`` with a deliminator of ``' '`` to break up the string and copied that substring to an element in a ``std::vector<std::string>``, which we used when setting the instance extensions.
 
@@ -495,6 +527,8 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.cpp*
+
 	Like with ``xrGetVulkanInstanceExtensionsKHR()``, ``xrGetVulkanDeviceExtensionsKHR()`` is called twice, first to get the size of the ``char`` buffer and the second to fill in the data. We used ``std::stringstream`` and ``std::getline()`` with a deliminator of ``' '`` to break up the string and copied that substring into an element in a ``std::vector<std::string>``, which we used when setting the device extensions.
 
 	Finally, we got the ``VkPhysicalDeviceFeatures`` by calling ``vkGetPhysicalDeviceFeatures()`` and we filled in the ``VkDeviceCreateInfo``. We called ``vkCreateDevice()``, which if successful returned ``VK_SUCCESS`` and the ``VkDevice`` will be non-null. 
@@ -503,6 +537,8 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetGraphicsBinding
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetGraphicsBinding
+	
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.cpp*
 
 	Here, we simply fill out the ``XrGraphicsBindingVulkanKHR`` structure and return a pointer to the class member, which will be assigned to ``XrSessionCreateInfo::next``.
 
@@ -510,24 +546,32 @@ Below are code excerpts from ``GraphicsAPI`` and ``openxr_platform.h`` based on 
 2.3 Polling the Event Loop
 **************************
 
-OpenXR uses an event based system to describes changes with the XR system. It's the application's responsibility to poll these events and react to them. The polling of events is done by the function ``xrPollEvent()``. The application should continually call this function throughout its lifetime. Within a single XR frame, the application should continuously call ``xrPollEvent()`` until the internal event queue is 'drained'; multiple events can occurs across the XR frame and the application needs to handle and respond to each accordingly.
+OpenXR uses an event based system to describes changes within the XR system. It's the application's responsibility to poll these events and react to them. The polling of events is done by the function ``xrPollEvent()``. The application should continually call this function throughout its lifetime. Within a single XR frame, the application should continuously call ``xrPollEvent()`` until the internal event queue is 'drained'; multiple events can occurs across the XR frame and the application needs to handle and respond to each accordingly.
 
-Firstly, we will update the class to add the new methods and members.
+Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add the highlighted code below. Also add the highlighted code for the new methods and members in their separate private sections.
 
 .. code-block:: cpp
+	:emphasize-lines: 20-26, 58-63, 78-83
 
 	class OpenXRTutorial {
 	public:
-		// [...]
+		OpenXRTutorial(GraphicsAPI_Type api)
+			: apiType(api) {
+			if(!CheckGraphicsAPI_TypeIsValidForPlatform(apiType)) {
+	 			std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
+				DEBUG_BREAK;
+			}
+		}
+		~OpenXRTutorial() = default;
 
 		void Run() {
 			CreateInstance();
-			CreateDebugMessenger();
-		
+
 			GetInstanceProperties();
 			GetSystemID();
+
 			CreateSession();
-		
+
 			while (applicationRunning) {
 				PollSystemEvents();
 				PollEvents();
@@ -535,34 +579,77 @@ Firstly, we will update the class to add the new methods and members.
 					// Draw Frame.
 				}
 			}
-		
+
 			DestroySession();
-			DestroyDebugMessenger();
+
 			DestroyInstance();
-		}
-		// [...]
+	}
 
 	private:
-		// [...]
+		void CreateInstance()
+		{
+			// [...]
+		}
+		void DestroyInstance()
+		{
+			// [...]
+		}
+		void GetInstanceProperties()
+		{
+			// [...]
+		}
+		void GetSystemID()
+		{
+			// [...]
+		}
+		void CreateSession()
+		{
+			// [...]
+		}
+		void DestroySession()
+		{
+			// [...]
+		}
+		void PollEvents()
+		{
+		}
+		void PollSystemEvents()
+		{
+		}
 
-		XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-		// [...]
+	private:
+		XrInstance m_xrInstance = {};
+		std::vector<const char *> m_activeAPILayers = {};
+		std::vector<const char *> m_activeInstanceExtensions = {};
+		std::vector<std::string> m_apiLayers = {};
+		std::vector<std::string> m_instanceExtensions = {};
 
+		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
+		XrSystemId m_systemID = {};
+
+		GraphicsAPI_Type m_apiType = UNKNOWN;
+		std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
+
+		XrSession m_session = {};
 		XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
 		bool m_applicationRunning = true;
 		bool m_sessionRunning = false;
+	
+		XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 	}
 
 2.3.1 xrPollEvent
 =================
 
-Next, we will define the ``PollEvents()`` method. Here, we use a do-while loop to the check the result of ``xrPollEvent()`` - whilst that function returns ``XR_SUCCESS``, there are events for us to process. ``xrPollEvent()`` will fill in the ``XrEventDataBuffer`` structure that we pass to the function call. ``xrPollEvent()`` will update the member variable ``type`` and from this we can use a switch statement to select the appropriate code path. Depending on the updated type, we can use a ``reinterpret_cast<>()`` to get the actual data that ``xrPollEvent()`` returned.
+Code the following code into the ``PollEvents()`` method:
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_PollEvents
 	:end-before: XR_DOCS_TAG_END_PollEvents
-	:dedent: 4
+	:dedent: 8
+
+Above, we have defined the ``PollEvents()`` method. Here, we use a do-while loop to the check the result of ``xrPollEvent()`` - whilst that function returns ``XR_SUCCESS``, there are events for us to process. ``xrPollEvent()`` will fill in the ``XrEventDataBuffer`` structure that we pass to the function call. ``xrPollEvent()`` will update the member variable ``type`` and from this we use a switch statement to select the appropriate code path. Depending on the updated type, we use a ``reinterpret_cast<>()`` to get the actual data that ``xrPollEvent()`` returned.
 
 The description of the events come from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_xrpollevent>`_.
 
@@ -580,7 +667,20 @@ The description of the events come from `2.22.1. Event Polling of the OpenXR spe
 | XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED          | XrEventDataSessionStateChanged         | The application has changed its lifecycle state.                               |
 +---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
 
-As described in the table above, most event are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, after the specified ``lossTime``, until it can create a new instance successfully. ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
+As described in the table above, most events are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, after the specified ``lossTime``, until it can create a new instance successfully. ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
+
+For some platforms, we need additional functionality provided via the ``PollSystemEvents()`` method, so that our application can react to any relevant updates from the platform correctly.
+
+.. container:: windows linux
+	:name: windows-linux-id-1
+
+	For Windows and Linux, there no relevant system event that we need to be aware of, and thus the ``PollSystemEvents()`` method definition can be left blank.
+
+.. container:: android
+	:name: android-id-1
+
+	For Android, we have already provided the code for the ``PollSystemEvents()`` method in :ref:`Chapter 1.4.3 <1.4.3 OpenXRTutorial and Main>`. So its duplicate definition can be removed from the class. This function is outside the scope of OpenXR, but in general polls Android for system events and updates the ``AndroidAppState`` and uses the  ``m_applicationRunning`` and ``m_sessionRunning`` members.
+
 
 2.3.2 XrSessionState
 ====================
@@ -591,6 +691,10 @@ The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will foc
 		:language: cpp
 		:start-at: typedef enum XrSessionState {
 		:end-at: } XrSessionState;
+
+*The above code is an excerpt from openxr/openxr.h*
+
+Below is a table describing the nine ``XrSessionState`` s:
 
 +-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
 | Event Type                    | Description                                                                                                             |
@@ -616,16 +720,19 @@ The final one, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, is what we will foc
 
 (*) Applications may wish to re-create objects like ``XrSystemId`` and ``XrSession``, if hardware changes were detected.
 
+Developers should also be aware of the lifecycle of an ``XrSession``. Certain ``XrSessionState`` can only lead to certain others under the correct circumstances. Below is a diagram showing lifecycle of an ``XrSession`` within an OpenXR application.
+
 .. figure:: openxr-session-life-cycle.svg
 	:alt: OpenXR Session Life-Cycle
 	:align: center
-	:figwidth: 99
+	:width: 99%
+
+	OpenXR Session Life-Cycle
 
 2.3.3 xrBeginSession and xrEndSession
 =====================================
 
-If the ``XrSessionState`` is ``XR_SESSION_STATE_READY``, the application can call ``xrBeginSession()``.
-In the ``XrSessionBeginInfo`` structure, we assign to ``XrSessionBeginInfo::primaryViewConfigurationType`` the ``m_viewConfiguration`` from the class, which in our case is ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye).
+As the application runs, if the ``XrSessionState`` changes to ``XR_SESSION_STATE_READY``, the application can call ``xrBeginSession()`` to begin the session and synchronize the application's with the runtime's frame hook.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -633,7 +740,9 @@ In the ``XrSessionBeginInfo`` structure, we assign to ``XrSessionBeginInfo::prim
 	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
 	:dedent: 16
 
-If the ``XrSessionState`` is ``XR_SESSION_STATE_STOPPING``, the application should call ``xrEndSession()``.
+From the code that we copied in Chpater 2.1.3, we've assigned to ``XrSessionBeginInfo::primaryViewConfigurationType`` the ``m_viewConfiguration`` from the class, which in the case of this tutorial is ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye).
+
+If the ``XrSessionState`` changes to ``XR_SESSION_STATE_STOPPING``, the application should call ``xrEndSession()``. This means that the runtime has stop the session either from a user's input or from some other reason, our application should response by ending the session and freeing any resources. Below is a small excerpt from the code that we copied in Chpater 2.1.3.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
