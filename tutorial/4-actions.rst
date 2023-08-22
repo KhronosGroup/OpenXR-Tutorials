@@ -4,7 +4,22 @@
 
 An OpenXR application has interactions with the user which can be user input to the application, or haptic output back to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: spaces, actions, and bindings.
 
-Download :download:`CMakeLists.txt <../Chapter4/CMakeLists.txt>`
+Download :download:`CMakeLists.txt <../Chapter4/CMakeLists.txt>` for this chapter. This adds shader compilation to the project. Create a "Shaders" folder next to your project folder, and put these files in it:
+
+.. d3d11 d3d12
+
+	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.hlsl>`
+	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.hlsl>`
+
+.. vulkan opengl
+
+	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.glsl>`
+	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.glsl>`
+
+.. opengl_es
+
+	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader_GLES.glsl>`
+	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader_GLES.glsl>`
 
 ************************************
 4.1 Creating Actions and Action Sets

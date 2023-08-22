@@ -1,4 +1,4 @@
-// Simul Software Ltd 2023
+// Copyright Khronos Group 2023
 // OpenXR Tutorial for Khronos Group
 
 #include "DebugOutput.h"
@@ -125,8 +125,8 @@ private:
         OPENXR_CHECK(xrDestroyInstance(m_xrInstance), "Failed to destroy Instance.");
     }
 
+    // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
-    // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
@@ -158,7 +158,6 @@ private:
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
-        XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
         // XR_DOCS_TAG_END_GetSystemID
     }
@@ -342,6 +341,9 @@ private:
 
 private:
     XrInstance m_xrInstance = {};
+
+    XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
+
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};
