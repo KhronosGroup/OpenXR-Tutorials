@@ -135,7 +135,7 @@ The question is: Whether to use a Linear or sRGB color space? OpenXR's composito
 
 If you'd like more information on color spaces and gamma encoding in computer graphics, Guy Davidson from Creative Assembly has a fantastic video presentation from Meeting C++ 2021 on this topic `here <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_.
 
-Copy the code below into the ``CreateSwapchain()`` mehtod:
+Copy the code below into the ``CreateSwapchain()`` method:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -143,7 +143,7 @@ Copy the code below into the ``CreateSwapchain()`` mehtod:
 	:end-before: XR_DOCS_TAG_END_EnumerateSwapchainFormats
 	:dedent: 8
 
-Next, we do some checks to confirm that the views in the view configuration are the same size and thus suitable for stereo rendering. Append the following code to the ``CreateSwapchain()`` mehtod:
+Next, we do some checks to confirm that the views in the view configuration are the same size and thus suitable for stereo rendering. Append the following code to the ``CreateSwapchain()`` method:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -156,20 +156,33 @@ With this check done, we can alias to views together when create our ``XrSwapcha
 3.1.3 xrCreateSwapchain
 =======================
 
+In this tutorial, we will create an ``XrSwapchain`` for each view in the system. First, we will resize our ``std::vector<SwapchainAndDepthImage>`` to match the number of views in the system. Next, we set up a for-each loop to iterate through and create the ``XrSwapachain`` s.
+Append the following this code to the ``CreateSwapchain()`` method:
+
+.. code-block:: cpp
+
+	m_swapchainAndDepthImages.resize(m_viewConfigurationViews.size());
+	for (SwapchainAndDepthImage &swapchainAndDepthImage : m_swapchainAndDepthImages) {
+	}
+
+Inside the for-each loop of the ``CreateSwapchain()`` method, add the following code:
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateSwapchain
 	:end-before: XR_DOCS_TAG_END_CreateSwapchain
 	:dedent: 12
 
-Here, we fill out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members can be assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to 0 as we require no constraints or functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the image are suitable to be read in a shader and to be used as a render output.
+Here, we filled out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members were assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to 0 as we require no constraints or additional functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the images are suitable to be read in a shader and to be used as a render target/color attachment.
+
+Below is a list of all ``XrCompositionLayerFlags`` that could be used; along with an explanation and how they match with your chosen Graphics API.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: // Flag bits for XrSwapchainUsageFlags
 	:end-before: typedef XrFlags64 XrCompositionLayerFlags;
 
-Below is a explanation of XrSwapchainUsageFlagBits match with the Graphics APIs.
+*The above code is an excerpt from openxr/openxr.h*
 
 .. container:: d3d11
 	:name: d3d11-id-1
@@ -260,14 +273,18 @@ Below is a explanation of XrSwapchainUsageFlagBits match with the Graphics APIs.
 	| XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_KHR     | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT         |
 	+-------------------------------------------------+---------------------------------------------+
 
-Next, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we use ``1``, as we have separate swapchain per view/eye, but for a stereo view you could pass ``2`` and have an image 2D array, which is suitable for multiview rendering. ``mipCount`` describes the number of mips levels, useful when using the swapchain image as a sampled image. Finally, we can set the format. Here, we ask our ``GraphicsAPIs`` class to pick a suitable format for the swapachain for the enumerated format we acquired early. Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
+Then, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we used ``1``, as we have separate swapchains per view/eye, but for a stereo view you could pass ``2`` and have an image 2D array, which is suitable for multiview rendering. ``mipCount`` describes the number of mips levels; this is useful when using the swapchain image as a sampled image in a shader. Finally, we set the format. Here, we asked our ``GraphicsAPI_...`` class to pick a suitable format for the swapachain from the enumerated formats we acquired earlier. 
+
+Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
 
 .. literalinclude:: ../Common/GraphicsAPI.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_SelectSwapchainFormat
 	:end-before: XR_DOCS_TAG_END_GraphicsAPI_SelectSwapchainFormat
 
-The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwapchainFormats()``, which each class implements. It returns an array of API-specific format us to use.
+*The above code is an excerpt from Common/GraphicsAPI.cpp*
+
+The function calls a pure virtual method called ``GraphicsAPI::GetSupportedSwapchainFormats()``, which each class implements. It returns an array of API-specific formats for us to use.
 
 .. container:: d3d11
 	:name: d3d11-id-2
@@ -278,6 +295,8 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
+		
+	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
 
 .. container:: d3d12
 	:name: d3d12-id-2
@@ -289,6 +308,8 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetSupportedSwapchainFormats
 
+	*The above code is an excerpt from Common/GraphicsAPI_D3D12.cpp*
+
 .. container:: opengl
 	:name: opengl-id-2
 
@@ -298,6 +319,8 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetSupportedSwapchainFormats
+
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.cpp*
 
 .. container:: opengles
 	:name: opengles-id-2
@@ -309,6 +332,8 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
 
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.cpp*
+
 .. container:: vulkan
 	:name: vulkan-id-2
 
@@ -319,12 +344,16 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
 
-We call ``xrCreateSwapchain()`` to create our ``XrSwapchain``, which, if successful, will return ``XR_SUCCESS`` and the ``XrSwapchain`` will be non-null. We copy our swapchain format to our ``SwapchainAndDepthImage::swapchainFormat`` for later usage.
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.cpp*
+
+Lastly, we called ``xrCreateSwapchain()`` to create our ``XrSwapchain``, which, if successful, returned ``XR_SUCCESS`` and the ``XrSwapchain`` was non-null. We copied our swapchain format to our ``SwapchainAndDepthImage::swapchainFormat`` for later usage.
 
 3.1.4 xrEnumerateSwapchainImages
 ================================
 
 Now that we have created the ``XrSwapchain``, we need to get access to the all images in the swapchain. We first call ``xrEnumerateSwapchainImages()`` to get the count of the images in the ``XrSwapchain``. Next, we set up an array of structures to store the images from the ``XrSwapchain``. In this tutorial, this array of structures, which stores the swapchains images, are stored in the ``GraphicsAPI_...`` class. We do this, because OpenXR will return to the application an array of structures that contain the API-specific handles to the swapchain images. ``GraphicsAPI::AllocateSwapchainImageData()`` is a virtual method implemented by each graphics API, which resizes an API-specific ``std::vector<XrSwapchainImage...KHR>`` and returns a pointer to the first element in that array casting it to a ``XrSwapchainImageBaseHeader *``.
+
+Copy and append the following code in the for-each loop of the ``CreateSwapchain()`` method. The highlighted code in this block refers only the ``GraphicsAPI::AllocateSwapchainImageData()`` method that was discussed above.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -332,6 +361,8 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 	:end-before: XR_DOCS_TAG_END_EnumerateSwapchainImages
 	:dedent: 12
 	:emphasize-lines: 3
+
+Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method and the ``XrSwapchainImage...KHR`` structure relating to your chosen graphics API.
 
 .. container:: d3d11
 	:name: d3d11-id-3
@@ -343,12 +374,16 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_AllocateSwapchainImageData
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11_AllocateSwapchainImageData
 
+	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
+
 	``swapchainImages`` is of type ``std::vector<XrSwapchainImageD3D11KHR>``.
 		
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageD3D11KHR {
 		:end-at: } XrSwapchainImageD3D11KHR;
+
+	*The above code is an excerpt from openxr/openxr_platform.h*
 
 	The structure contains a ``ID3D11Texture2D *`` member that is the handle to one of the images in the swapchain.
 
@@ -361,6 +396,8 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_AllocateSwapchainImageData
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12_AllocateSwapchainImageData
+
+	*The above code is an excerpt from Common/GraphicsAPI_D3D12.cpp*
 	
 	``swapchainImages`` is of type ``std::vector<XrSwapchainImageD3D12KHR>``.
 
@@ -368,6 +405,8 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageD3D12KHR {
 		:end-at: } XrSwapchainImageD3D12KHR;
+
+	*The above code is an excerpt from openxr/openxr_platform.h*
 
 	The structure contains a ``ID3D12Resource *`` member that is the handle to one of the images in the swapchain.
 
@@ -381,12 +420,16 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_AllocateSwapchainImageData
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_AllocateSwapchainImageData
 
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.cpp*
+
 	``swapchainImages`` is of type ``std::vector<XrSwapchainImageOpenGLKHR>``.
 
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageOpenGLKHR {
 		:end-at: } XrSwapchainImageOpenGLKHR;
+
+	*The above code is an excerpt from openxr/openxr_platform.h*
 
 	The structure contains a ``uint32_t`` member that is the handle to one of the images in the swapchain.
 
@@ -402,10 +445,14 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 
 	``swapchainImages`` is of type ``std::vector<XrSwapchainImageOpenGLESKHR>``.
 
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.cpp*
+
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageOpenGLESKHR {
 		:end-at: } XrSwapchainImageOpenGLESKHR;
+
+	*The above code is an excerpt from openxr/openxr_platform.h*
 
 	The structure contains a ``uint32_t`` member that is the handle to one of the images in the swapchain.
 
@@ -419,12 +466,16 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_AllocateSwapchainImageData
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_AllocateSwapchainImageData
 
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.cpp*
+
 	``swapchainImages`` is of type ``std::vector<XrSwapchainImageVulkanKHR>``.
 
 	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageVulkanKHR {
 		:end-at: } XrSwapchainImageVulkanKHR;
+
+	*The above code is an excerpt from openxr/openxr_platform.h*
 
 	The structure contains a ``VkImage`` member that is the handle to one of the images in the swapchain.
 
@@ -433,6 +484,8 @@ Now that we have created the ``XrSwapchain``, we need to get access to the all i
 
 Next, we create a depth image so that we can correctly render 3D perspective graphics to the view. In this tutorial, we have a ``GraphicsAPI::ImageCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImage()`` that creates the API-specific objects. 
 
+Append the following code into the for-each loop of the ``CreateSwapchain()`` method. The highlighted code in this block refers only the ``GraphicsAPI::GetDepthFormat()``, which we will discuss shortly.
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateDepthImage
@@ -440,7 +493,7 @@ Next, we create a depth image so that we can correctly render 3D perspective gra
 	:dedent: 12
 	:emphasize-lines: 9
 
-Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()``, which return a API-specific image format of type ``D32_F``.
+Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``, which return a API-specific image format of type ``D32_F``.
 
 .. container:: d3d11
 	:name: d3d11-id-4
@@ -452,6 +505,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
 
+	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
+
 .. container:: d3d12
 	:name: d3d12-id-4
 
@@ -461,6 +516,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()
 		:language: cpp
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
+
+	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
 
 .. container:: opengl
 	:name: opengl-id-4
@@ -472,6 +529,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
 
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
+
 .. container:: opengles
 	:name: opengles-id-4
 
@@ -482,6 +541,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
 
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
+
 .. container:: vulkan
 	:name: vulkan-id-4
 
@@ -491,10 +552,14 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetDepthFormat()
 		:language: cpp
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
+	
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
 
 We store our newly created depth image in ``SwapchainAndDepthImage::depthImage`` for later usage when rendering. 
 
 Now, we create the image views: one per image in the ``XrSwapchain`` and an additional one for the depth image. Again in this tutorial, we have a ``GraphicsAPI::ImageViewCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImageView()`` that creates the API-specific objects. 
+
+Append the following code into the for-each loop of the ``CreateSwapchain()`` method. We will discuss the highlighted code shortly.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -515,6 +580,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
 
+	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
+
 .. container:: d3d12
 	:name: d3d12-id-5
 
@@ -524,6 +591,10 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:language: cpp
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
+
+	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
+
+	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET``. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
 
 .. container:: opengl
 	:name: opengl-id-5
@@ -535,6 +606,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
 
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
+
 .. container:: opengles
 	:name: opengles-id-5
 
@@ -544,6 +617,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:language: cpp
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
+
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
 
 .. container:: vulkan
 	:name: vulkan-id-5
@@ -555,13 +630,17 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
 
+	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL``. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.
+
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
+
 For the color image views, we use the previously stored color image format, that we used when creating the swapchain, and for the depth image view, we use the previously created depth image and the same depth format from the graphics API.
 We store our newly created color image views for the swapchain in ``SwapchainAndDepthImage::colorImageViews`` and the depth image view in ``SwapchainAndDepthImage::depthImageView`` for later usage when rendering. 
 
 3.1.6 xrDestroySwapchain
 ========================
 
-When the main render loop has finished and the application is shutting down, we need to destroy our created ``XrSwapchain``. This is done by calling ``xrDestroySwapchain()`` with the ``XrSwapchain`` and it will return ``XR_SUCCESS`` if successful. At the same time, we destroy the associated depth image and all of the views that the graphics API created. In this tutorial, we use ``GraphicsAPI::DestroyImage()`` and ``GraphicsAPI::DestroyImageView()`` to destroy those objects.
+When the main render loop has finished and the application is shutting down, we need to destroy our created ``XrSwapchain``. This is done by calling ``xrDestroySwapchain()`` passing the ``XrSwapchain`` as a parameter. It will return ``XR_SUCCESS`` if successful. At the same time, we destroy the associated depth image and all of the image views that the graphics API created. In this tutorial, we use ``GraphicsAPI::DestroyImage()`` and ``GraphicsAPI::DestroyImageView()`` to destroy those objects.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -580,6 +659,7 @@ With the most of the OpenXR objects now set up, we can now turn our attention to
 Then, with those final pieces in place, we can look to the ``RenderFrame()`` and ``RenderLoop()`` code to invoke graphics work on the GPU and present it back to OpenXR and its compositor through the use of composition layers and within the scope of an XR Frame.
 
 .. code-block:: cpp
+	:emphasize-lines: 13, 22, 48-56, 71-75
 
 	class OpenXRTutorial {
 	public:
@@ -593,6 +673,7 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 			GetSystemID();
 	
 			GetViewConfigurationViews();
+			GetEnvironmentBlendModes();
 	
 			CreateSession();
 			CreateSwapchain();
@@ -626,6 +707,9 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 		void DestroySwapchain()
 		{
 			// [...]
+		}
+		void GetEnvironmentBlendModes() 
+		{
 		}
 		void RenderFrame()
 		{
@@ -684,6 +768,8 @@ Environment blend is done at the final stage after the compositor has flatten an
 	:start-at: typedef enum XrEnvironmentBlendMode {
 	:end-at: } XrEnvironmentBlendMode;
 
+*The above code is an excerpt from openxr/openxr.h*
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
@@ -702,6 +788,8 @@ Now that OpenXR know what the user should see, we need to tell OpenXR from where
 	:start-at: typedef enum XrReferenceSpaceType {
 	:end-at: } XrReferenceSpaceType;
 
+*The above code is an excerpt from openxr/openxr.h*
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateReferenceSpace
@@ -714,9 +802,11 @@ When we create the *reference space*, we need to specify an ``XrPosef``, which w
 
 .. code-block:: cpp
 
-	// Example
 	referenceSpaceCreateInfo.poseInReferenceSpace.orientation = {0.0f, 0.0f, 0.0f, 1.0f};
 	referenceSpaceCreateInfo.poseInReferenceSpace.position = {0.0f, 0.0f, 0.0f};
+
+*The above code is an example of an ``XrPosef``.*
+
 
 An ``XrSpace`` is a frame of reference defined not by its instantaneous values, but instead defined semantically by its purpose and relationship to other spaces. The actual, instantaneous position and orientation of an 	``XrSpace`` is called its *pose*.
 
@@ -789,6 +879,8 @@ The primary structure in use here is the ``XrFrameState``, which contains vital 
 	:start-at: typedef struct XrFrameState {
 	:end-at: } XrFrameState;
 
+*The above code is an excerpt from openxr/openxr.h*
+
 ``xrBeginFrame()`` and ``xrEndFrame()`` should 'book-end' all the rendering in the XR frame and thus should be called as a pair. ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign ``XrFrameState::predictedDisplayTime`` to ``XrFrameEndInfo::displayTime``. It should be noted that we can modify this value during the frame. Next, we assign to ``XrFrameEndInfo::environmentBlendMode`` our selected environment blend mode. Last, we assign the size of and a pointer to an ``std::vector<XrCompositionLayerBaseHeader *>``. These Composition Layers are used by the OpenXR compositor to create the final image for the views.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
@@ -796,12 +888,16 @@ The primary structure in use here is the ``XrFrameState``, which contains vital 
 	:start-at: typedef struct XrFrameEndInfo {
 	:end-at: } XrFrameEndInfo;
 
+*The above code is an excerpt from openxr/openxr.h*
+
 ``XrCompositionLayerBaseHeader`` is the base structure from which all other ``XrCompositionLayer...`` types extend. They describe the type of layer to be composited along with the relevant information. If we have rendered any graphics this frame, we cast the memory address our ``XrCompositionLayer...`` structure to a ``XrCompositionLayerBaseHeader *`` and push it back into out ``std::vector<XrCompositionLayerBaseHeader *>``, which is assigned in our ``XrFrameEndInfo`` structure.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XR_MAY_ALIAS XrCompositionLayerBaseHeader {
 	:end-at: } XrCompositionLayerBaseHeader;
+
+*The above code is an excerpt from openxr/openxr.h*
 
 Below is a table of the ``XrCompositionLayer...`` types provided by OpenXR 1.0 Core Specification and ``XR_KHR_composition_layer_...`` extensions.
 
@@ -831,6 +927,8 @@ Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` 
 	:language: cpp
 	:start-at: typedef struct XrSwapchainSubImage {
 	:end-at: } XrCompositionLayerProjection;
+
+*The above code is an excerpt from openxr/openxr.h*
 
 In this tutorial, we use the a single ``XrCompositionLayerProjection``, which describes the ``XrCompositionLayerFlags``, an ``XrSpace`` and a count and pointer to an array of ``XrCompositionLayerProjectionView``.
 

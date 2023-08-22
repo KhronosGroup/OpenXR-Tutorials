@@ -1,4 +1,4 @@
-// Simul Software Ltd 2023
+// Copyright Khronos Group 2023
 // OpenXR Tutorial for Khronos Group
 
 #include "DebugOutput.h"
@@ -139,18 +139,18 @@ private:
     }
 
     void CreateDebugMessenger() {
-    // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
+        // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
-    // XR_DOCS_TAG_END_CreateDebugMessenger
+        // XR_DOCS_TAG_END_CreateDebugMessenger
     }
     void DestroyDebugMessenger() {
-    // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
+        // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);
         }
-    // XR_DOCS_TAG_END_DestroyDebugMessenger
+        // XR_DOCS_TAG_END_DestroyDebugMessenger
     }
 
     void GetInstanceProperties() {
@@ -171,7 +171,6 @@ private:
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
-        XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
         // XR_DOCS_TAG_END_GetSystemID
     }
@@ -355,6 +354,9 @@ private:
 
 private:
     XrInstance m_xrInstance = {};
+
+    XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
+
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};

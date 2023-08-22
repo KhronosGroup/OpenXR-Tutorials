@@ -91,7 +91,7 @@ public:
         CreateSession();
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_4_3
-        // XR_DOCS_TAG_BEGIN_CallCreateActionPoses
+// XR_DOCS_TAG_BEGIN_CallCreateActionPoses
         CreateActionPoses();
         AttachActionSet();
 // XR_DOCS_TAG_END_CallCreateActionPoses
@@ -104,7 +104,9 @@ public:
         CreateSwapchain();
 #endif
 #endif
+// XR_DOCS_TAG_BEGIN_CallCreateResources
         CreateResources();
+// XR_DOCS_TAG_END_CallCreateResources
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
         while (m_applicationRunning) {
@@ -214,16 +216,18 @@ private:
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
+    // XR_DOCS_TAG_END_CreateDebugMessenger
     }
     void DestroyDebugMessenger() {
+    // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);
         }
+    // XR_DOCS_TAG_END_DestroyDebugMessenger
     }
-    // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
-    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
     void GetInstanceProperties() {
+    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
@@ -231,18 +235,18 @@ private:
         std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
-    }
     // XR_DOCS_TAG_END_GetInstanceProperties
+    }
 
-    // XR_DOCS_TAG_BEGIN_GetSystemID
     void GetSystemID() {
+    // XR_DOCS_TAG_BEGIN_GetSystemID
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
-    }
     // XR_DOCS_TAG_END_GetSystemID
+    }
     
     // XR_DOCS_TAG_BEGIN_CreateXrPath
     XrPath CreateXrPath(const char *path_string) {
@@ -402,7 +406,9 @@ void GetEnvironmentBlendModes() {
 
     // XR_DOCS_TAG_BEGIN_CreateDestroySession
     void CreateSession() {
+        // XR_DOCS_TAG_BEGIN_CreateSession1
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
+        // XR_DOCS_TAG_END_CreateSession1
 
         if (m_apiType == D3D11) {
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -428,17 +434,20 @@ void GetEnvironmentBlendModes() {
             std::cout << "ERROR: Unknown Graphics API." << std::endl;
             DEBUG_BREAK;
         }
+        // XR_DOCS_TAG_BEGIN_CreateSession2
         sessionCI.next = m_graphicsAPI->GetGraphicsBinding();
         sessionCI.createFlags = 0;
         sessionCI.systemId = m_systemID;
 
         OPENXR_CHECK(xrCreateSession(m_xrInstance, &sessionCI, &m_session), "Failed to create Session.");
+        // XR_DOCS_TAG_END_CreateSession2
     }
 
     void DestroySession() {
+        // XR_DOCS_TAG_BEGIN_DestroySession
         OPENXR_CHECK(xrDestroySession(m_session), "Failed to destroy Session.");
+        // XR_DOCS_TAG_END_DestroySession
     }
-    // XR_DOCS_TAG_END_CreateDestroySession
     // XR_DOCS_TAG_BEGIN_CreateResources1
     struct CameraConstants {
         XrMatrix4x4f viewProj;
@@ -605,8 +614,8 @@ void GetEnvironmentBlendModes() {
     }
     // XR_DOCS_TAG_END_DestroyResources
 
-// XR_DOCS_TAG_BEGIN_PollEvents
     void PollEvents() {
+// XR_DOCS_TAG_BEGIN_PollEvents
         XrResult result = XR_SUCCESS;
         do {
             XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
@@ -664,9 +673,9 @@ void GetEnvironmentBlendModes() {
             }
 
         } while (result == XR_SUCCESS);
-    }
 // XR_DOCS_TAG_END_PollEvents
-    // XR_DOCS_TAG_BEGIN_PollActions
+    }
+// XR_DOCS_TAG_BEGIN_PollActions
     void PollActions(XrTime predictedTime) {
         // Update our action set with up-to-date input data!
         XrActiveActionSet activeActionSet{};
@@ -778,7 +787,7 @@ void GetEnvironmentBlendModes() {
 
 		}
 	}
-    // XR_DOCS_TAG_END_BlockInteraction
+// XR_DOCS_TAG_END_BlockInteraction
 
     // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
     void CreateReferenceSpace() {
@@ -1018,7 +1027,7 @@ void GetEnvironmentBlendModes() {
             }
             m_graphicsAPI->ClearDepth(m_swapchainAndDepthImages[i].depthImageView, 1.0f);
 
-            // XR_DOCS_TAG_BEGIN_SetupFrameRendering
+// XR_DOCS_TAG_BEGIN_SetupFrameRendering
             m_graphicsAPI->SetRenderAttachments(&m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, m_swapchainAndDepthImages[i].depthImageView, width, height, m_pipeline);
             m_graphicsAPI->SetViewports(&viewport, 1);
             m_graphicsAPI->SetScissors(&scissor, 1);
@@ -1034,8 +1043,8 @@ void GetEnvironmentBlendModes() {
             XrMatrix4x4f_InvertRigidBody(&view, &toView);
             XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
 
-            // XR_DOCS_TAG_END_SetupFrameRendering
-            // XR_DOCS_TAG_BEGIN_CallRenderCuboid
+// XR_DOCS_TAG_END_SetupFrameRendering
+// XR_DOCS_TAG_BEGIN_CallRenderCuboid
             renderCuboidIndex = 0;
             // Draw a floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
             RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f},{0.4f,0.5f,0.5f});
@@ -1055,7 +1064,7 @@ void GetEnvironmentBlendModes() {
 					sc=p.scale*1.05f;
                 RenderCuboid(p.pose,sc,p.colour);
 			}
-            // XR_DOCS_TAG_END_CallRenderCuboid
+// XR_DOCS_TAG_END_CallRenderCuboid
             m_graphicsAPI->EndRendering();
 
             XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
@@ -1068,6 +1077,7 @@ void GetEnvironmentBlendModes() {
 
         return true;
     }
+    // XR_DOCS_TAG_END_RenderLayer
 
 #if defined(__ANDROID__)
     // XR_DOCS_TAG_BEGIN_Android_System_Functionality
@@ -1161,14 +1171,15 @@ private:
     GraphicsAPI_Type m_apiType = UNKNOWN;
     std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
 
-    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-    std::vector<XrViewConfigurationView> m_viewConfigurationViews;
-
     XrSession m_session = {};
     XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
     bool m_applicationRunning = true;
     bool m_sessionRunning = false;
 
+
+    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+// XR_DOCS_TAG_BEGIN_declareSwapchains
+    std::vector<XrViewConfigurationView> m_viewConfigurationViews;
     struct SwapchainAndDepthImage {
         XrSwapchain swapchain = {};
         int64_t swapchainFormat = 0;
@@ -1184,6 +1195,7 @@ private:
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
     XrSpace m_localOrStageSpace = {};
+// XR_DOCS_TAG_ENd_declareSwapchains
     // XR_DOCS_TAG_BEGIN_DeclareResources
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
@@ -1217,7 +1229,7 @@ private:
     // XR_DOCS_TAG_END_Actions
 
 	
-    // XR_DOCS_TAG_BEGIN_Objects
+// XR_DOCS_TAG_BEGIN_Objects
 	struct Block
 	{
 		XrPosef pose;
@@ -1227,7 +1239,7 @@ private:
 	std::vector<Block> blocks;
 	int grabbedBlock[2]={-1,-1};
 	int nearBlock[2]={-1,-1};
-    // XR_DOCS_TAG_END_Objects
+// XR_DOCS_TAG_END_Objects
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {

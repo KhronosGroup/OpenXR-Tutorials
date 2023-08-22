@@ -1,4 +1,4 @@
-// Simul Software Ltd 2023
+// Copyright Khronos Group 2023
 // OpenXR Tutorial for Khronos Group
 
 #include "DebugOutput.h"
@@ -38,12 +38,14 @@ public:
         GetEnvironmentBlendModes();
 #endif
 
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
         CreateSession();
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         CreateReferenceSpace();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
         CreateSwapchain();
+#endif
 #endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
@@ -145,18 +147,18 @@ private:
     }
 
     void CreateDebugMessenger() {
-    // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
+        // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
-    // XR_DOCS_TAG_END_CreateDebugMessenger
+        // XR_DOCS_TAG_END_CreateDebugMessenger
     }
     void DestroyDebugMessenger() {
-    // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
+        // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);
         }
-    // XR_DOCS_TAG_END_DestroyDebugMessenger
+        // XR_DOCS_TAG_END_DestroyDebugMessenger
     }
 
     void GetInstanceProperties() {
@@ -177,7 +179,6 @@ private:
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
-        XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
         // XR_DOCS_TAG_END_GetSystemID
     }
@@ -419,8 +420,8 @@ private:
         }
     }
 
-    // XR_DOCS_TAG_BEGIN_DestroySwapchain
     void DestroySwapchain() {
+        // XR_DOCS_TAG_BEGIN_DestroySwapchain
         for (SwapchainAndDepthImage &swapchainAndDepthImage : m_swapchainAndDepthImages) {
             m_graphicsAPI->DestroyImageView(swapchainAndDepthImage.depthImageView);
             for (void *&colorImageView : swapchainAndDepthImage.colorImageViews) {
@@ -431,44 +432,44 @@ private:
 
             OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");
         }
+        // XR_DOCS_TAG_END_DestroySwapchain
     }
-    // XR_DOCS_TAG_END_DestroySwapchain
 
-    // XR_DOCS_TAG_BEGIN_RenderFrame
     void RenderFrame() {
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
-            XrFrameState frameState{XR_TYPE_FRAME_STATE};
-            XrFrameWaitInfo frameWaitInfo{XR_TYPE_FRAME_WAIT_INFO};
-            OPENXR_CHECK(xrWaitFrame(m_session, &frameWaitInfo, &frameState), "Failed to wait for XR Frame.");
+        // XR_DOCS_TAG_BEGIN_RenderFrame
+        XrFrameState frameState{XR_TYPE_FRAME_STATE};
+        XrFrameWaitInfo frameWaitInfo{XR_TYPE_FRAME_WAIT_INFO};
+        OPENXR_CHECK(xrWaitFrame(m_session, &frameWaitInfo, &frameState), "Failed to wait for XR Frame.");
 
-            XrFrameBeginInfo frameBeginInfo{XR_TYPE_FRAME_BEGIN_INFO};
-            OPENXR_CHECK(xrBeginFrame(m_session, &frameBeginInfo), "Failed to begin the XR Frame.");
+        XrFrameBeginInfo frameBeginInfo{XR_TYPE_FRAME_BEGIN_INFO};
+        OPENXR_CHECK(xrBeginFrame(m_session, &frameBeginInfo), "Failed to begin the XR Frame.");
 
-            bool rendered = false;
-            std::vector<XrCompositionLayerBaseHeader *> layers;
-            XrCompositionLayerProjection layerProjection{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
-            std::vector<XrCompositionLayerProjectionView> layerProjectionViews;
+        bool rendered = false;
+        std::vector<XrCompositionLayerBaseHeader *> layers;
+        XrCompositionLayerProjection layerProjection{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+        std::vector<XrCompositionLayerProjectionView> layerProjectionViews;
 
-            bool sessionActive = (m_sessionState == XR_SESSION_STATE_SYNCHRONIZED || m_sessionState == XR_SESSION_STATE_VISIBLE || m_sessionState == XR_SESSION_STATE_FOCUSED);
-            if (sessionActive && frameState.shouldRender) {
-                rendered = RenderLayer(frameState.predictedDisplayTime, layerProjection, layerProjectionViews);
-                if (rendered) {
-                    layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader *>(&layerProjection));
-                }
+        bool sessionActive = (m_sessionState == XR_SESSION_STATE_SYNCHRONIZED || m_sessionState == XR_SESSION_STATE_VISIBLE || m_sessionState == XR_SESSION_STATE_FOCUSED);
+        if (sessionActive && frameState.shouldRender) {
+            rendered = RenderLayer(frameState.predictedDisplayTime, layerProjection, layerProjectionViews);
+            if (rendered) {
+                layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader *>(&layerProjection));
             }
+        }
 
             XrFrameEndInfo frameEndInfo{XR_TYPE_FRAME_END_INFO};
-            frameEndInfo.displayTime = frameState.predictedDisplayTime;
-            frameEndInfo.environmentBlendMode = m_environmentBlendMode;
-            frameEndInfo.layerCount = static_cast<uint32_t>(layers.size());
-            frameEndInfo.layers = layers.data();
-            OPENXR_CHECK(xrEndFrame(m_session, &frameEndInfo), "Failed to end the XR Frame.");
+        frameEndInfo.displayTime = frameState.predictedDisplayTime;
+        frameEndInfo.environmentBlendMode = m_environmentBlendMode;
+        frameEndInfo.layerCount = static_cast<uint32_t>(layers.size());
+        frameEndInfo.layers = layers.data();
+        OPENXR_CHECK(xrEndFrame(m_session, &frameEndInfo), "Failed to end the XR Frame.");
+        // XR_DOCS_TAG_END_RenderFrame
 #endif
-        }
-    // XR_DOCS_TAG_END_RenderFrame
+    }
 
-    // XR_DOCS_TAG_BEGIN_RenderLayer
     bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews) {
+        // XR_DOCS_TAG_BEGIN_RenderLayer
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
 
         XrViewState viewState{XR_TYPE_VIEW_STATE};
@@ -530,8 +531,8 @@ private:
         layerProjection.views = layerProjectionViews.data();
 
         return true;
+        // XR_DOCS_TAG_END_RenderLayer
     }
-    // XR_DOCS_TAG_END_RenderLayer
 
 #if defined(__ANDROID__)
     // XR_DOCS_TAG_BEGIN_Android_System_Functionality
@@ -609,6 +610,9 @@ private:
 
 private:
     XrInstance m_xrInstance = {};
+
+    XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
+
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};

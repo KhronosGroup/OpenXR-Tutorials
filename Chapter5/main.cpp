@@ -114,7 +114,9 @@ public:
         CreateSwapchain();
 #endif
 #endif
+// XR_DOCS_TAG_BEGIN_CallCreateResources
         CreateResources();
+// XR_DOCS_TAG_END_CallCreateResources
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
         while (m_applicationRunning) {
@@ -233,16 +235,18 @@ private:
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
+    // XR_DOCS_TAG_END_CreateDebugMessenger
     }
     void DestroyDebugMessenger() {
+    // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);
         }
+    // XR_DOCS_TAG_END_DestroyDebugMessenger
     }
-    // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
-    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
     void GetInstanceProperties() {
+    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
@@ -250,11 +254,11 @@ private:
         std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
-    }
     // XR_DOCS_TAG_END_GetInstanceProperties
+    }
 
-    // XR_DOCS_TAG_BEGIN_GetSystemID
     void GetSystemID() {
+    // XR_DOCS_TAG_BEGIN_GetSystemID
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
@@ -262,8 +266,8 @@ private:
 		systemProperties.next=&handTrackingSystemProperties;
 // XR_DOCS_TAG_END_SystemHandTrackingProperties
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
-    }
     // XR_DOCS_TAG_END_GetSystemID
+    }
     
     // XR_DOCS_TAG_BEGIN_CreateXrPath
     XrPath CreateXrPath(const char *path_string) {
@@ -435,7 +439,9 @@ void GetEnvironmentBlendModes() {
 
     // XR_DOCS_TAG_BEGIN_CreateDestroySession
     void CreateSession() {
+        // XR_DOCS_TAG_BEGIN_CreateSession1
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
+        // XR_DOCS_TAG_END_CreateSession1
 
         if (m_apiType == D3D11) {
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -461,11 +467,13 @@ void GetEnvironmentBlendModes() {
             std::cout << "ERROR: Unknown Graphics API." << std::endl;
             DEBUG_BREAK;
         }
+        // XR_DOCS_TAG_BEGIN_CreateSession2
         sessionCI.next = m_graphicsAPI->GetGraphicsBinding();
         sessionCI.createFlags = 0;
         sessionCI.systemId = m_systemID;
 
         OPENXR_CHECK(xrCreateSession(m_xrInstance, &sessionCI, &m_session), "Failed to create Session.");
+        // XR_DOCS_TAG_END_CreateSession2
     }
 
     void DestroySession() {
@@ -475,9 +483,10 @@ void GetEnvironmentBlendModes() {
 			xrDestroyHandTrackerEXT(m_hands[i].m_handTracker);
 		}
 // XR_DOCS_TAG_END_DestroyHandTracker
+// XR_DOCS_TAG_BEGIN_DestroySession
         OPENXR_CHECK(xrDestroySession(m_session), "Failed to destroy Session.");
+        // XR_DOCS_TAG_END_DestroySession
     }
-    // XR_DOCS_TAG_END_CreateDestroySession
     // XR_DOCS_TAG_BEGIN_CreateResources1
     struct CameraConstants {
         XrMatrix4x4f viewProj;
@@ -646,8 +655,8 @@ void GetEnvironmentBlendModes() {
     }
     // XR_DOCS_TAG_END_DestroyResources
 
-// XR_DOCS_TAG_BEGIN_PollEvents
     void PollEvents() {
+// XR_DOCS_TAG_BEGIN_PollEvents
         XrResult result = XR_SUCCESS;
         do {
             XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
@@ -705,8 +714,8 @@ void GetEnvironmentBlendModes() {
             }
 
         } while (result == XR_SUCCESS);
-    }
 // XR_DOCS_TAG_END_PollEvents
+    }
     // XR_DOCS_TAG_BEGIN_PollActions
     void PollActions(XrTime predictedTime) {
         // Update our action set with up-to-date input data!
@@ -801,9 +810,9 @@ void GetEnvironmentBlendModes() {
     // XR_DOCS_TAG_BEGIN_BlockInteraction
     static XrVector3f FixPosition(XrVector3f pos)
     {
-        int x=std::nearbyint(pos.x*10.f);
-        int y=std::nearbyint(pos.y*10.f);
-        int z=std::nearbyint(pos.z*10.f);
+		int x=int(std::nearbyint(pos.x*10.f));
+		int y=int(std::nearbyint(pos.y*10.f));
+		int z=int(std::nearbyint(pos.z*10.f));
         pos.x=float(x)/10.f;
         pos.y=float(y)/10.f;
         pos.z=float(z)/10.f;
@@ -1151,6 +1160,7 @@ void GetEnvironmentBlendModes() {
 
         return true;
     }
+    // XR_DOCS_TAG_END_RenderLayer
 
 #if defined(__ANDROID__)
     // XR_DOCS_TAG_BEGIN_Android_System_Functionality
@@ -1242,14 +1252,16 @@ private:
     GraphicsAPI_Type m_apiType = UNKNOWN;
     std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
 
-    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-    std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
     XrSession m_session = {};
     XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
     bool m_applicationRunning = true;
     bool m_sessionRunning = false;
 
+
+    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+// XR_DOCS_TAG_BEGIN_declareSwapchains
+    std::vector<XrViewConfigurationView> m_viewConfigurationViews;
     struct SwapchainAndDepthImage {
         XrSwapchain swapchain = {};
         int64_t swapchainFormat = 0;
@@ -1265,6 +1277,7 @@ private:
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
     XrSpace m_localOrStageSpace = {};
+// XR_DOCS_TAG_ENd_declareSwapchains
     // XR_DOCS_TAG_BEGIN_DeclareResources
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
