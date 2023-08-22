@@ -4,7 +4,7 @@ find_package(Sphinx REQUIRED)
 set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 set(TUTORIAL_SPHINX_BUILD "${CMAKE_CURRENT_SOURCE_DIR}/../openxr-tutorial" CACHE PATH "Set the location of the HTML build." )
 
-file(GLOB_RECURSE RST_FILES  "*.rst")
+file(GLOB_RECURSE RST_FILES  "*.rst") 
 file(GLOB_RECURSE MD_FILES  "*.md")
 file(GLOB HTM_FILES  "*.html")
 

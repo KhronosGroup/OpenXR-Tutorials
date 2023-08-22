@@ -240,7 +240,6 @@ private:
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
-        XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
     }
     // XR_DOCS_TAG_END_GetSystemID
@@ -445,29 +444,12 @@ void GetEnvironmentBlendModes() {
         XrMatrix4x4f viewProj;
         XrMatrix4x4f modelViewProj;
         XrMatrix4x4f model;
-        XrMatrix4x4f pad;
+        XrVector4f colour;
+        XrVector4f pad1;
+        XrVector4f pad2;
+        XrVector4f pad3;
     };
     CameraConstants cameraConstants;
-    // Six colours for the six faces of a cube. Bright for +, Dark is -
-    // Red for X faces, green for Y, blue for Z.
-    XrVector4f colours[16] = {
-        {1.00f, 0.00f, 0.00f, 1.00f},
-        {0.10f, 0.00f, 0.00f, 1.00f},
-        {0.00f, 0.60f, 0.00f, 1.00f},
-        {0.00f, 0.10f, 0.00f, 1.00f},
-        {0.00f, 0.20f, 1.00f, 1.00f},
-        {0.00f, 0.02f, 0.10f, 1.00f},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-    };
     XrVector4f normals[6] = {
         {1.00f, 0.00f, 0.00f, 0},
         {-1.00f, 0.00f, 0.00f, 0},
@@ -512,11 +494,9 @@ void GetEnvironmentBlendModes() {
 
         m_indexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices), &cubeIndices});
 
-
         size_t numberOfCuboids = 64 + 2 + 2;
         m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants) * numberOfCuboids, nullptr});
         m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
-        m_uniformBuffer_Frag = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colours) * numberOfCuboids, nullptr});
 
         // XR_DOCS_TAG_END_CreateResources1
         // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
@@ -620,7 +600,6 @@ void GetEnvironmentBlendModes() {
         m_graphicsAPI->DestroyShader(m_vertexShader);
         m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Camera);
         m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Normals);
-        m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Frag);
         m_graphicsAPI->DestroyBuffer(m_indexBuffer);
         m_graphicsAPI->DestroyBuffer(m_vertexBuffer);
     }
@@ -755,9 +734,9 @@ void GetEnvironmentBlendModes() {
     // XR_DOCS_TAG_BEGIN_BlockInteraction
 	static XrVector3f FixPosition(XrVector3f pos)
 	{
-		int x=std::nearbyint(pos.x*10.f);
-		int y=std::nearbyint(pos.y*10.f);
-		int z=std::nearbyint(pos.z*10.f);
+		int x=int(std::nearbyint(pos.x*10.f));
+		int y=int(std::nearbyint(pos.y*10.f));
+		int z=int(std::nearbyint(pos.z*10.f));
 		pos.x=float(x)/10.f;
 		pos.y=float(y)/10.f;
 		pos.z=float(z)/10.f;
@@ -929,17 +908,15 @@ void GetEnvironmentBlendModes() {
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
+        cameraConstants.colour={colour.x,colour.y,colour.z,1.0};
         size_t offsetCameraUB = sizeof(CameraConstants) * renderCuboidIndex;
-        size_t offsetColoursUB = sizeof(colours) * renderCuboidIndex;
 
         m_graphicsAPI->SetPipeline(m_pipeline);
 
         m_graphicsAPI->SetBufferData(m_uniformBuffer_Camera, offsetCameraUB, sizeof(CameraConstants), &cameraConstants);
         m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Camera, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false, offsetCameraUB, sizeof(CameraConstants)});
         m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Normals, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false, 0, sizeof(normals)});
-		colours[0]={colour.x,colour.y,colour.z,1.0};
-        m_graphicsAPI->SetBufferData(m_uniformBuffer_Frag, offsetColoursUB, sizeof(colours), (void *)colours);
-        m_graphicsAPI->SetDescriptor({2, m_uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false, offsetColoursUB, sizeof(colours)});
+
         m_graphicsAPI->UpdateDescriptors();
 
         m_graphicsAPI->SetVertexBuffers(&m_vertexBuffer, 1);
@@ -1168,6 +1145,9 @@ private:
 
 private:
     XrInstance m_xrInstance = {};
+
+    XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
+
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};
@@ -1212,7 +1192,6 @@ private:
     void *m_indexBuffer = nullptr;
     void *m_uniformBuffer_Camera = nullptr;
     void *m_uniformBuffer_Normals = nullptr;
-    void *m_uniformBuffer_Frag = nullptr;
 
     void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
     void *m_pipeline = nullptr;
@@ -1292,7 +1271,7 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
-    OpenXRTutorial_Main(OPENGL_ES);
+    OpenXRTutorial_Main(VULKAN);
 }
 // XR_DOCS_TAG_END_android_main___ANDROID__
 #endif

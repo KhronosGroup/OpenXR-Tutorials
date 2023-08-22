@@ -42,7 +42,8 @@ set(HEADERS
     "../Common/GraphicsAPI_Vulkan.h"
     "../Common/HelperFunctions.h"
     "../Common/OpenXRDebugUtils.h"
-    "../Common/OpenXRHelper.h")
+    "../Common/OpenXRHelper.h"
+    )
 
 set(PROJECT_NAME OpenXRTutorialChapter5)
 
@@ -90,8 +91,10 @@ if (ANDROID)
             openxr_loader
             ${vulkan-lib}
             openxr-gfxwrapper)
+    target_compile_options(OpenXRTutorialChapter5 PRIVATE -Wno-cast-calling-convention)
 
     #Shaders
+    find_package(Vulkan)
     #if (Vulkan_FOUND) #TODO: Use NDK, not Vulkan SDK.
         # GLSL Shaders
         set_source_files_properties(../Shaders/VertexShader.glsl PROPERTIES ShaderType "vert")

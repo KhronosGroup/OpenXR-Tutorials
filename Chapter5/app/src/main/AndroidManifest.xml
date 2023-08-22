@@ -23,6 +23,7 @@
         android:required="false" />
     <uses-permission android:name="com.oculus.permission.HAND_TRACKING" />
     <uses-feature android:name="oculus.software.handtracking" android:required="false" />
+    <uses-feature android:name="wave.feature.handtracking" android:required="false" />
     <application
         android:allowBackup="false"
         android:fullBackupContent="false"
