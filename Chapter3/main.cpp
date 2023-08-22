@@ -144,21 +144,23 @@ private:
         OPENXR_CHECK(xrDestroyInstance(m_xrInstance), "Failed to destroy Instance.");
     }
 
-    // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
+    // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
+    // XR_DOCS_TAG_END_CreateDebugMessenger
     }
     void DestroyDebugMessenger() {
+    // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);
         }
+    // XR_DOCS_TAG_END_DestroyDebugMessenger
     }
-    // XR_DOCS_TAG_END_Create_DestroyDebugMessenger
 
-    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
     void GetInstanceProperties() {
+        // XR_DOCS_TAG_BEGIN_GetInstanceProperties
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
@@ -166,19 +168,19 @@ private:
         std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
         std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
+        // XR_DOCS_TAG_END_GetInstanceProperties
     }
-    // XR_DOCS_TAG_END_GetInstanceProperties
 
-    // XR_DOCS_TAG_BEGIN_GetSystemID
     void GetSystemID() {
+        // XR_DOCS_TAG_BEGIN_GetSystemID
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
+        // XR_DOCS_TAG_END_GetSystemID
     }
-    // XR_DOCS_TAG_END_GetSystemID
 
     // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
     void GetEnvironmentBlendModes() {
@@ -207,9 +209,10 @@ private:
     }
     // XR_DOCS_TAG_END_GetViewConfigurationViews
 
-    // XR_DOCS_TAG_BEGIN_CreateDestroySession
     void CreateSession() {
+        // XR_DOCS_TAG_BEGIN_CreateSession1
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
+        // XR_DOCS_TAG_END_CreateSession1
 
         if (m_apiType == D3D11) {
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -235,20 +238,23 @@ private:
             std::cout << "ERROR: Unknown Graphics API." << std::endl;
             DEBUG_BREAK;
         }
+        // XR_DOCS_TAG_BEGIN_CreateSession2
         sessionCI.next = m_graphicsAPI->GetGraphicsBinding();
         sessionCI.createFlags = 0;
         sessionCI.systemId = m_systemID;
 
         OPENXR_CHECK(xrCreateSession(m_xrInstance, &sessionCI, &m_session), "Failed to create Session.");
+        // XR_DOCS_TAG_END_CreateSession2
     }
 
     void DestroySession() {
+        // XR_DOCS_TAG_BEGIN_DestroySession
         OPENXR_CHECK(xrDestroySession(m_session), "Failed to destroy Session.");
+        // XR_DOCS_TAG_END_DestroySession
     }
-    // XR_DOCS_TAG_END_CreateDestroySession
 
-// XR_DOCS_TAG_BEGIN_PollEvents
     void PollEvents() {
+    // XR_DOCS_TAG_BEGIN_PollEvents
         XrResult result = XR_SUCCESS;
         do {
             XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
@@ -303,8 +309,8 @@ private:
             }
 
         } while (result == XR_SUCCESS);
+    // XR_DOCS_TAG_END_PollEvents
     }
-// XR_DOCS_TAG_END_PollEvents
 
     // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
     void CreateReferenceSpace() {
@@ -656,10 +662,10 @@ int main(int argc, char **argv) {
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)
+// XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 android_app *OpenXRTutorial::androidApp = nullptr;
 OpenXRTutorial::AndroidAppState OpenXRTutorial::androidAppState = {};
 
-// XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 void android_main(struct android_app *app) {
     // Allow interaction with JNI and the JVM on this thread.
     // https://developer.android.com/training/articles/perf-jni#threads

@@ -329,8 +329,10 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 				"../Common/HelperFunctions.h"
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
+			
+			set(PROJECT_NAME OpenXRTutorialChapter2)
 
-	All the files listed above with ``../Common/*.*`` are available to download from this tutorial website. In the next section, you will find the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice. 
+	All the files listed above with ``../Common/*.*`` are available to download from this tutorial website. In the next section, you will find the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice. We also set our own CMake variable ``PROJECT_NAME`` to ``OpenXRTutorialChapter2``.
 	
 	At this point, we'll also create our text file called ``main.cpp`` in the ``/Chapter2`` directory. This will be our main source file, which we will use later in this chapter.
 
@@ -339,7 +341,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake
 		:start-after: else() # Windows / Linux
-		:end-at: target_link_libraries(OpenXRTutorialChapter2 openxr_loader)
+		:end-at: target_link_libraries(${PROJECT_NAME} openxr_loader)
 		:dedent: 4
 
 	Now, we have set up the project by adding an executable by using ``add_executable()`` specifying the ``${SOURCES}`` and ``${HEADERS}``. We have optionally set a the ``XR_RUNTIME_JSON`` in the debugger environment. We've added the ``../Common`` folder as an include directory and linked ``openxr_loader`` from ``FetchContent``. We didn't have to add OpenXR as a include directory; as we have specified it to be located in the CMake Build directory under ``openxr/`` when using ``FetchContent``, so we've only included the OpenXR headers from the CMake Build directory.
@@ -469,6 +471,8 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 				"../Common/HelperFunctions.h"
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
+			
+			set(PROJECT_NAME OpenXRTutorialChapter2)
 	
 	.. container:: vulkan
 		:name: vulkan-id-6
@@ -489,7 +493,9 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
 
-	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
+			set(PROJECT_NAME OpenXRTutorialChapter2)
+
+	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice. We also set our own CMake variable ``PROJECT_NAME`` to ``OpenXRTutorialChapter2``.
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake
@@ -512,13 +518,13 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 
 		.. code-block:: cmake
 
-			target_link_libraries(OpenXRTutorialChapter2
+			target_link_libraries(${PROJECT_NAME}
 					android
 					native_app_glue
 					openxr_loader
 					openxr-gfxwrapper)
 	
-		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``openxr-gfxwrapper`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will packaged inside our .apk along with any shared libraries that we have linked.
+		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``openxr-gfxwrapper`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will be packaged inside our .apk along with any shared libraries that we have linked.
 
 	.. container:: vulkan
 		:name: vulkan-id-7
@@ -533,13 +539,13 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 
 		.. code-block:: cmake
 
-			target_link_libraries(OpenXRTutorialChapter2
+			target_link_libraries(${PROJECT_NAME}
 					android
 					native_app_glue
 					openxr_loader
 					${vulkan-lib})
 	
-		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``vulkan`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will packaged inside our .apk along with any shared libraries that we have linked.
+		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``vulkan`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will be packaged inside our .apk along with any shared libraries that we have linked.
 
 	.. rubric:: AndroidManifest.xml
 
