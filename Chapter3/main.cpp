@@ -1,4 +1,4 @@
-// Simul Software Ltd 2023
+// Copyright Khronos Group 2023
 // OpenXR Tutorial for Khronos Group
 
 #include "DebugOutput.h"
@@ -38,12 +38,14 @@ public:
         GetEnvironmentBlendModes();
 #endif
 
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
         CreateSession();
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         CreateReferenceSpace();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
         CreateSwapchain();
+#endif
 #endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
@@ -160,7 +162,7 @@ private:
     }
 
     void GetInstanceProperties() {
-        // XR_DOCS_TAG_BEGIN_GetInstanceProperties
+    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
@@ -172,14 +174,13 @@ private:
     }
 
     void GetSystemID() {
-        // XR_DOCS_TAG_BEGIN_GetSystemID
+    // XR_DOCS_TAG_BEGIN_GetSystemID
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
-        XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
-        // XR_DOCS_TAG_END_GetSystemID
+    // XR_DOCS_TAG_END_GetSystemID
     }
 
     // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
@@ -254,7 +255,7 @@ private:
     }
 
     void PollEvents() {
-    // XR_DOCS_TAG_BEGIN_PollEvents
+// XR_DOCS_TAG_BEGIN_PollEvents
         XrResult result = XR_SUCCESS;
         do {
             XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
@@ -309,7 +310,7 @@ private:
             }
 
         } while (result == XR_SUCCESS);
-    // XR_DOCS_TAG_END_PollEvents
+// XR_DOCS_TAG_END_PollEvents
     }
 
     // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
@@ -609,6 +610,9 @@ private:
 
 private:
     XrInstance m_xrInstance = {};
+
+    XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
+
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};
