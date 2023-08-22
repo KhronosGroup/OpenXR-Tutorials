@@ -419,7 +419,12 @@ void GraphicsAPI_OpenGL::DestroyDesktopSwapchain(void *&swapchain) {}
 void *GraphicsAPI_OpenGL::GetDesktopSwapchainImage(void *swapchain, uint32_t index) { return nullptr; }
 void GraphicsAPI_OpenGL::AcquireDesktopSwapchanImage(void *swapchain, uint32_t &index) {}
 void GraphicsAPI_OpenGL::PresentDesktopSwapchainImage(void *swapchain, uint32_t index) {
+	#ifdef _MSC_VER
     SwapBuffers(window.hDC);
+	#else
+	glXSwapBuffers(window.context.xDisplay, window.context.glxDrawable);
+	#endif
+
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetGraphicsBinding

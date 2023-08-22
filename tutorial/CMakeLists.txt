@@ -36,6 +36,6 @@ add_custom_target(Validator ALL
 					${TUTORIAL_VALIDATOR_EXECUTABLE} --format gnu --asciiquotes --skip-non-html ${ALL_HTML_FILES}
 					WORKING_DIRECTORY ${TUTORIAL_SPHINX_BUILD}
 					COMMENT "Validating documentation nu validator"
-					SOURCES ${ALL_HTML_FILES})
+					)
 	#add_dependencies(Validator Sphinx)
 set_target_properties( Validator PROPERTIES FOLDER Docs)

@@ -94,7 +94,7 @@ protected:
 };
 #else
 #endif
-#ifdef LINUX
+#ifdef __linux__
 #include <iostream>
 class DebugOutput {
 public:
