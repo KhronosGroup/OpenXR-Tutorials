@@ -626,7 +626,6 @@ private:
     bool m_sessionRunning = false;
 
     XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-// XR_DOCS_TAG_BEGIN_declareSwapchains
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
     struct SwapchainAndDepthImage {
@@ -644,7 +643,6 @@ private:
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
     XrSpace m_localOrStageSpace = {};
-// XR_DOCS_TAG_ENd_declareSwapchains
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {

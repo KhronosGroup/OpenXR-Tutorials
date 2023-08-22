@@ -9,7 +9,27 @@ Select your platform, as the instructions are different depending on your select
 
 The goal of this chapter is to build an application that creates and clears color and depth buffers within the scope of OpenXR render loop and to demonstrate its interaction with all the Graphics APIs.
 
-Download :download:`CMakeLists.txt <../Chapter3/CMakeLists.txt>`
+In the *workspace* directory, update the ``CMakeLists.txt`` by adding the following CMake code to the end of the file:
+
+.. literalinclude:: ../CMakeLists.txt
+		:language: cmake
+		:start-at: add_subdirectory(Chapter3
+		:end-at: )
+
+Now, create a ``Chapter3/`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2/``. For the ``CMakeLists.txt``, you can either copy the from ``Chapter2/`` and update this line:
+
+.. literalinclude:: ../Chapter3/CMakeLists.txt
+	:language: cmake
+	:start-at: set(PROJECT_NAME
+	:end-at: OpenXRTutorialChapter3)
+
+Or, you can download the updated ``CMakeLists.txt`` here.
+:download:`Chapter3/CMakeLists.txt <../Chapter3/CMakeLists.txt>`
+
+.. container:: android
+	:name: android-id-1
+
+	For Android, you will also need to copy the ``app/`` and ``gradle`` folders and the ``build.gradle``, ``gradle.properties``, ``gradlew``, ``gradlew.bat``, ``local.properties`` and ``settings.gradle``. Within those file you must change all references to ``OpenXRTutorialChapter2`` to ``OpenXRTutorialChapter3``. Refer to :ref:`Chapter 1.4.1<1.4.1 CMake and Project Files>` for a refresher on the Android build files.
 
 ***********************
 3.1 Creating Swapchains
@@ -30,7 +50,7 @@ Firstly, we will update the class to add the new methods and members.
 
 	class OpenXRTutorial {
 	public:
-		// [...]
+		// [...] Constructor and Destructor from Chapter 2.
 	
 		void Run() {
 			CreateInstance();
@@ -44,10 +64,10 @@ Firstly, we will update the class to add the new methods and members.
 			CreateSession();
 			CreateSwapchain();
 	
-			while (applicationRunning) {
+			while (m_applicationRunning) {
 				PollSystemEvents();
 				PollEvents();
-				if (sessionRunning) {
+				if (m_sessionRunning) {
 					// Draw Frame.
 				}
 			}
@@ -59,22 +79,32 @@ Firstly, we will update the class to add the new methods and members.
 			DestroyInstance();
 		}
 	
-		private:
-		// [...]
+	private:
+		// [...] Methods from Chapter 2.
 		
-		std::vector<XrViewConfigurationView> viewConfigurationViews;
-		// [...]
-		
+		void GetViewConfigurationViews()
+		{
+		}
+		void CreateSwapchain()
+		{
+		}
+		void DestroySwapchain()
+		{
+		}
+	private:
+		// [...] Member from Chapter 2.
+
+		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
+
 		struct SwapchainAndDepthImage {
-			XrSwapchain swapchain{};
+			XrSwapchain swapchain = {};
 			int64_t swapchainFormat = 0;
 			void *depthImage = nullptr;
-	
 			std::vector<void *> colorImageViews;
-			void *depthImageView;
+			void *depthImageView = nullptr;
 		};
-		std::vector<SwapchainAndDepthImage> swapchainAndDepthImages;
-	}
+		std::vector<SwapchainAndDepthImage> m_swapchainAndDepthImages = {};
+	};
 
 3.1.1 XrViewConfigurationView
 =============================
@@ -534,6 +564,81 @@ With the most of the OpenXR objects now set up, we can now turn our attention to
 
 Then, with those final pieces in place, we can look to the ``RenderFrame()`` and ``RenderLoop()`` code to invoke graphics work on the GPU and present it back to OpenXR and its compositor through the use of composition layers and within the scope of an XR Frame.
 
+.. code-block:: cpp
+
+	class OpenXRTutorial {
+	public:
+		// [...] Constructor and Destructor from Chapter 2.
+	
+		void Run() {
+			CreateInstance();
+			CreateDebugMessenger();
+	
+			GetInstanceProperties();
+			GetSystemID();
+	
+			GetViewConfigurationViews();
+	
+			CreateSession();
+			CreateSwapchain();
+	
+			while (m_applicationRunning) {
+				PollSystemEvents();
+				PollEvents();
+				if (m_sessionRunning) {
+					RenderFrame();
+				}
+			}
+	
+			DestroySwapchain();
+			DestroySession();
+	
+			DestroyDebugMessenger();
+			DestroyInstance();
+		}
+	
+	private:
+		// [...] Methods from Chapter 2.
+		
+		void GetViewConfigurationViews()
+		{
+			// [...]
+		}
+		void CreateSwapchain()
+		{
+			// [...]
+		}
+		void DestroySwapchain()
+		{
+			// [...]
+		}
+		void RenderFrame()
+		{
+		}
+		void RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews)
+		{
+		}
+	private:
+		// [...] Member from Chapter 2.
+
+		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
+
+		struct SwapchainAndDepthImage {
+			XrSwapchain swapchain = {};
+			int64_t swapchainFormat = 0;
+			void *depthImage = nullptr;
+			std::vector<void *> colorImageViews;
+			void *depthImageView = nullptr;
+		};
+		std::vector<SwapchainAndDepthImage> m_swapchainAndDepthImages = {};
+
+		std::vector<XrEnvironmentBlendMode> m_applicationEnvironmentBlendModes = {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE};
+		std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
+		XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
+
+		XrSpace m_localOrStageSpace = {};
+	};
+
 3.2.1 xrEnumerateEnvironmentBlendModes
 ======================================
 
@@ -653,34 +758,6 @@ You may wish to call ``xrEnumerateReferenceSpaces()`` to get all ``XrReferenceSp
 
 3.2.3 RenderFrame
 =================
-
-In the ``OpenXRTutorial`` class, add the ``RenderFrame()`` and ``RenderLayer()`` methods.
-
-.. code-block:: cpp
-
-	class OpenXRTutorial {
-	public:
-		// [...]
-	
-		void Run() {
-			// [...]
-	
-			while (applicationRunning) {
-				PollSystemEvents();
-				PollEvents();
-				if (sessionRunning) {
-					RenderFrame();
-				}
-			}
-	
-			// [...]
-		}
-		// [...]
-
-	private:
-		RenderLayer();
-		// [...]
-	}
 
 Below is the code needed for rendering a frame in OpenXR. Each frame, we sequence through the three primary functions ``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()``. These functions wrap around our rendering code and communicate to the OpenXR rumtime that we are rendering and that we need to synchronize with the XR compositor's frame hook.
 
