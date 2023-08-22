@@ -156,6 +156,17 @@ With this check done, we can alias to views together when create our ``XrSwapcha
 3.1.3 xrCreateSwapchain
 =======================
 
+In this tutorial, we will create an ``XrSwapchain`` for each view in the system. First, we will resize our ``std::vector<SwapchainAndDepthImage>`` to match the number of views in the system. Next, we set up a for-each loop to iterate through and create the ``XrSwapachain`` s.
+Append the following this code to the ``CreateSwapchain()`` mehtod:
+
+.. code-block:: cpp
+
+	m_swapchainAndDepthImages.resize(m_viewConfigurationViews.size());
+	for (SwapchainAndDepthImage &swapchainAndDepthImage : m_swapchainAndDepthImages) {
+	}
+
+Inside the for-each loop, add the following code:s
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateSwapchain
