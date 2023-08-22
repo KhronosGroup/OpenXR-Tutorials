@@ -200,14 +200,14 @@ private:
     }
     // XR_DOCS_TAG_END_GetEnvironmentBlendModes
 
-    // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
     void GetViewConfigurationViews() {
+    // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
         uint32_t viewConfigurationViewSize = 0;
         OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, 0, &viewConfigurationViewSize, nullptr), "Failed to enumerate ViewConfiguration Views.");
         m_viewConfigurationViews.resize(viewConfigurationViewSize, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
         OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, viewConfigurationViewSize, &viewConfigurationViewSize, m_viewConfigurationViews.data()), "Failed to enumerate ViewConfiguration Views.");
-    }
     // XR_DOCS_TAG_END_GetViewConfigurationViews
+    }
 
     void CreateSession() {
         // XR_DOCS_TAG_BEGIN_CreateSession1
@@ -335,6 +335,7 @@ private:
         OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
+        // XR_DOCS_TAG_BEGIN_CheckCoherentViewDimensions
         // Check the two views for stereo are the same
         if (m_viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO && m_viewConfigurationViews.size() == 2) {
             bool viewWidthsSame = m_viewConfigurationViews[0].recommendedImageRectWidth == m_viewConfigurationViews[1].recommendedImageRectWidth;
@@ -345,6 +346,7 @@ private:
             }
         }
         const XrViewConfigurationView &viewConfigurationView = m_viewConfigurationViews[0];
+        // XR_DOCS_TAG_END_CheckCoherentViewDimensions
 
         m_swapchainAndDepthImages.resize(m_viewConfigurationViews.size());
         for (SwapchainAndDepthImage &swapchainAndDepthImage : m_swapchainAndDepthImages) {
