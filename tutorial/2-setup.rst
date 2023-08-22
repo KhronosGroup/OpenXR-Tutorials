@@ -1,5 +1,5 @@
 ﻿##########
-Setup
+⚙️ 2 Setup
 ##########
 
 Select your platform, as the instructions are different depending on your selection.
