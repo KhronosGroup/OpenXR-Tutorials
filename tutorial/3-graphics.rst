@@ -594,6 +594,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
 
+	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET``. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
+
 .. container:: opengl
 	:name: opengl-id-5
 
@@ -628,6 +630,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
 
+	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL``. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.
+
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
 
 For the color image views, we use the previously stored color image format, that we used when creating the swapchain, and for the depth image view, we use the previously created depth image and the same depth format from the graphics API.
@@ -655,6 +659,7 @@ With the most of the OpenXR objects now set up, we can now turn our attention to
 Then, with those final pieces in place, we can look to the ``RenderFrame()`` and ``RenderLoop()`` code to invoke graphics work on the GPU and present it back to OpenXR and its compositor through the use of composition layers and within the scope of an XR Frame.
 
 .. code-block:: cpp
+	:emphasize-lines: 13, 22, 48-56, 71-75
 
 	class OpenXRTutorial {
 	public:
@@ -668,6 +673,7 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 			GetSystemID();
 	
 			GetViewConfigurationViews();
+			GetEnvironmentBlendModes();
 	
 			CreateSession();
 			CreateSwapchain();
@@ -701,6 +707,9 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 		void DestroySwapchain()
 		{
 			// [...]
+		}
+		void GetEnvironmentBlendModes() 
+		{
 		}
 		void RenderFrame()
 		{
