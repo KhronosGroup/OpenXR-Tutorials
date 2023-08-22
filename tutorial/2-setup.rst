@@ -1,5 +1,5 @@
 ﻿##########
-Setup
+⚙️ 2 Setup
 ##########
 
 Select your platform, as the instructions are different depending on your selection.
@@ -19,7 +19,7 @@ We will continue to use the ``OpenXRTutorial`` class in ``Chapter2/main.cpp`` th
 Here, we will add the following highlighted text to the ``OpenXRTutorial`` class:
 
 .. code-block:: cpp
-	:emphasize-lines: 10-17 , 20-48
+	:emphasize-lines: 10-17 , 20-50
 	
 	class OpenXRTutorial {
 	public:
@@ -66,6 +66,8 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 		std::vector<const char *> m_activeInstanceExtensions = {};
 		std::vector<std::string> m_apiLayers = {};
 		std::vector<std::string> m_instanceExtensions = {};
+
+		XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
 
 		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId m_systemID = {};
@@ -244,7 +246,7 @@ For now, we are just going to create an ``XrSession``. At this point, you'll nee
 Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Run()`` method and also add in the definitions of the new methods and the members to their separate private sections. All the new code is highlighted code below.
 
 .. code-block:: cpp
-	:emphasize-lines: 4-9, 19-20, 51-56, 68-71
+	:emphasize-lines: 4-9, 19-20, 51-56, 70-73
 
 	class OpenXRTutorial {
 	public:
@@ -309,6 +311,8 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 		std::vector<const char *> m_activeInstanceExtensions = {};
 		std::vector<std::string> m_apiLayers = {};
 		std::vector<std::string> m_instanceExtensions = {};
+
+		XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
 
 		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId m_systemID = {};
@@ -627,7 +631,7 @@ OpenXR uses an event based system to describes changes within the XR system. It'
 Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add the highlighted code below. Also add the highlighted code for the new methods and members in their separate private sections.
 
 .. code-block:: cpp
-	:emphasize-lines: 21-27, 68-73, 89-93
+	:emphasize-lines: 21-27, 68-73, 91-95
 
 	class OpenXRTutorial {
 	public:
@@ -709,6 +713,8 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 		std::vector<const char *> m_activeInstanceExtensions = {};
 		std::vector<std::string> m_apiLayers = {};
 		std::vector<std::string> m_instanceExtensions = {};
+
+		XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
 
 		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId m_systemID = {};

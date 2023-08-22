@@ -146,8 +146,8 @@ private:
         OPENXR_CHECK(xrDestroyInstance(m_xrInstance), "Failed to destroy Instance.");
     }
 
-    // XR_DOCS_TAG_BEGIN_Create_DestroyDebugMessenger
     void CreateDebugMessenger() {
+    // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
@@ -201,16 +201,15 @@ private:
     }
     // XR_DOCS_TAG_END_GetEnvironmentBlendModes
 
-    // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
     void GetViewConfigurationViews() {
+    // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
         uint32_t viewConfigurationViewSize = 0;
         OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, 0, &viewConfigurationViewSize, nullptr), "Failed to enumerate ViewConfiguration Views.");
         m_viewConfigurationViews.resize(viewConfigurationViewSize, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
         OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, viewConfigurationViewSize, &viewConfigurationViewSize, m_viewConfigurationViews.data()), "Failed to enumerate ViewConfiguration Views.");
-    }
     // XR_DOCS_TAG_END_GetViewConfigurationViews
+    }
 
-    // XR_DOCS_TAG_BEGIN_CreateDestroySession
     void CreateSession() {
         // XR_DOCS_TAG_BEGIN_CreateSession1
         XrSessionCreateInfo sessionCI{XR_TYPE_SESSION_CREATE_INFO};
@@ -337,6 +336,7 @@ private:
         OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
+        // XR_DOCS_TAG_BEGIN_CheckCoherentViewDimensions
         // Check the two views for stereo are the same
         if (m_viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO && m_viewConfigurationViews.size() == 2) {
             bool viewWidthsSame = m_viewConfigurationViews[0].recommendedImageRectWidth == m_viewConfigurationViews[1].recommendedImageRectWidth;
@@ -347,6 +347,7 @@ private:
             }
         }
         const XrViewConfigurationView &viewConfigurationView = m_viewConfigurationViews[0];
+        // XR_DOCS_TAG_END_CheckCoherentViewDimensions
 
         m_swapchainAndDepthImages.resize(m_viewConfigurationViews.size());
         for (SwapchainAndDepthImage &swapchainAndDepthImage : m_swapchainAndDepthImages) {
@@ -631,7 +632,6 @@ private:
     bool m_sessionRunning = false;
 
     XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-// XR_DOCS_TAG_BEGIN_declareSwapchains
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
     struct SwapchainAndDepthImage {
@@ -649,7 +649,6 @@ private:
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
     XrSpace m_localOrStageSpace = {};
-// XR_DOCS_TAG_ENd_declareSwapchains
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {

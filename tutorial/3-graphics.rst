@@ -9,28 +9,49 @@ Select your platform, as the instructions are different depending on your select
 
 The goal of this chapter is to build an application that creates and clears color and depth buffers within the scope of OpenXR render loop and to demonstrate its interaction with all the Graphics APIs.
 
-Download :download:`CMakeLists.txt <../Chapter3/CMakeLists.txt>`
+In the *workspace* directory, update the ``CMakeLists.txt`` by adding the following CMake code to the end of the file:
+
+.. literalinclude:: ../CMakeLists.txt
+		:language: cmake
+		:start-at: add_subdirectory(Chapter3
+		:end-at: )
+
+Now, create a ``Chapter3/`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2/``. For the ``CMakeLists.txt``, you can either copy the from ``Chapter2/`` and update this line:
+
+.. literalinclude:: ../Chapter3/CMakeLists.txt
+	:language: cmake
+	:start-at: set(PROJECT_NAME
+	:end-at: OpenXRTutorialChapter3)
+
+Or, you can download the updated ``CMakeLists.txt`` here.
+:download:`Chapter3/CMakeLists.txt <../Chapter3/CMakeLists.txt>`
+
+.. container:: android
+	:name: android-id-1
+
+	For Android, you will also need to copy the ``app/`` and ``gradle`` folders and the ``build.gradle``, ``gradle.properties``, ``gradlew``, ``gradlew.bat``, ``local.properties`` and ``settings.gradle``. Within those file you must change all references to ``OpenXRTutorialChapter2`` to ``OpenXRTutorialChapter3``. Refer to :ref:`Chapter 1.4.1<1.4.1 CMake and Project Files>` for a refresher on the Android build files.
 
 ***********************
 3.1 Creating Swapchains
 ***********************
 
-As with rendering graphics to a 2D display, OpenXR has the concept of swapchains. It's series of images that are used to present the rendered graphics to display/window/view. There are usually 2 or 3 images in the swapchain to allow the platform to present them smoothly to the user in order to create illusion of motion within the image.
+As with rendering graphics to a 2D display, OpenXR has the concept of swapchains. It's a series of images that are used to present the rendered graphics to display/window/view. There are usually 2 or 3 images in the swapchain to allow the platform to present them smoothly to the user in order to create the illusion of motion within the image.
 
-All graphics APIs have this concept of a swapchain with differing levels of transparency to the programmer, but for an OpenXR application we don't use the API-specific swapchain, which can be tied closely the platform's windowing system. Instead, we use OpenXR's swapchain and the OpenXR compositor to present rendered graphics to the views. XR applications are unique in that often, but not always, have multiple views that need to be rendered to create the XR experience. Listed below are a few scenarios with differing view counts:
+All graphics APIs have this concept of a swapchain with differing levels of transparency to the programmer, but for OpenXR applications we don't use the API-specific swapchain, which can be tied closely the platform's windowing system. Instead, we use OpenXR's swapchain and the OpenXR compositor to present rendered graphics to the views. XR applications are unique in that often, but not always, they have multiple views that need to be rendered to create the XR experience. Listed below are a couple scenarios with differing view counts:
 
 	* 1 view  - AR viewer on a mobile device.
 	* 2 views - VR head mounted display.
 
-Orthogonal to multiple views is the layering of multiple rendered images or camera feeds. You could, for a example, have a background that is a video pass-through of your environment, a stereo view of rendering graphics and quad overlay of a HUD or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
+Orthogonal to multiple views is the layering of multiple rendered images or camera feeds. You could, for a example, have a background that is a video pass-through of your environment, a stereo view of rendered graphics and quad overlay of a Head-up display (HUD) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
 
-Firstly, we will update the class to add the new methods and members.
+Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new methods and members. Copy the highlighted code below.
 
 .. code-block:: cpp
+	:emphasize-lines: 12, 15, 25, 35-43, 48-57
 
 	class OpenXRTutorial {
 	public:
-		// [...]
+		// [...] Constructor and Destructor created in previous chapters.
 	
 		void Run() {
 			CreateInstance();
@@ -44,10 +65,10 @@ Firstly, we will update the class to add the new methods and members.
 			CreateSession();
 			CreateSwapchain();
 	
-			while (applicationRunning) {
+			while (m_applicationRunning) {
 				PollSystemEvents();
 				PollEvents();
-				if (sessionRunning) {
+				if (m_sessionRunning) {
 					// Draw Frame.
 				}
 			}
@@ -59,46 +80,62 @@ Firstly, we will update the class to add the new methods and members.
 			DestroyInstance();
 		}
 	
-		private:
-		// [...]
+	private:
+		// [...] Methods created in previous chapters.
 		
-		std::vector<XrViewConfigurationView> viewConfigurationViews;
-		// [...]
-		
+		void GetViewConfigurationViews()
+		{
+		}
+		void CreateSwapchain()
+		{
+		}
+		void DestroySwapchain()
+		{
+		}
+
+	private:
+		// [...] Member created in previous chapters.
+
+		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
+
 		struct SwapchainAndDepthImage {
-			XrSwapchain swapchain{};
+			XrSwapchain swapchain = {};
 			int64_t swapchainFormat = 0;
 			void *depthImage = nullptr;
-	
 			std::vector<void *> colorImageViews;
-			void *depthImageView;
+			void *depthImageView = nullptr;
 		};
-		std::vector<SwapchainAndDepthImage> swapchainAndDepthImages;
-	}
+		std::vector<SwapchainAndDepthImage> m_swapchainAndDepthImages = {};
+	};
+
+We will explore the added methods in the sub chapters below.
 
 3.1.1 XrViewConfigurationView
 =============================
 
 The first thing we need to do is get all of the views available to our view configuration. It is worth just parsing the name of this type: ``XrViewConfigurationView``. I break the typename up as follow "XrViewConfiguration" - "View", where it relates to one view in the view configuration, which may contain multiple views. We call ``xrEnumerateViewConfigurationViews()`` twice, first to get the count of the views in the view configuration, and second to fill in the data to the ``std::vector<XrViewConfigurationView>``.
 
+Add the following code to the ``GetViewConfigurationViews()`` method:
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
 	:end-before: XR_DOCS_TAG_END_GetViewConfigurationViews
-	:dedent: 4
+	:dedent: 8
 
 3.1.2 xrEnumerateSwapchainFormats
 =================================
 
-Due to way that OpenXR and its composite operate, there are certain preferred image formats that should be used by the swapchain. When calling ``xrEnumerateSwapchainFormats()``, the ``XrSession`` and alongwith the Graphics API will return an array of API-specific formats ordered in preference. ``xrEnumerateSwapchainFormats()`` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
+Due to way that OpenXR and its compositor operate, there are certain preferred image formats that should be used by the swapchain. When calling ``xrEnumerateSwapchainFormats()``, the ``XrSession`` and alongwith the Graphics API will return an array of API-specific formats ordered in preference. ``xrEnumerateSwapchainFormats()`` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
 
-Linear or sRGB color space? OpenXR's compositor performs all blend operations in a linear color space (i.e. the values have not been gamma encoded). Most gamma-encoding operations are algebraically non-linear, so you can't composite the values with simple addition or multiplication operations. If you wish to use an sRGB color format, you must use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB``. The OpenXR runtime will automatically do sRGB-to-linear color space conversions when reading the image. There are two issues with this: 
+The question is: Whether to use a Linear or sRGB color space? OpenXR's compositor performs all blend operations in a linear color space (i.e. the values have not been gamma encoded). Most gamma-encoding operations are algebraically non-linear, so you can't composite the values with simple addition or multiplication operations. If you wish to use an sRGB color format, you must use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB``. The OpenXR runtime will automatically do sRGB-to-linear color space conversions when reading the image. There are two issues with this: 
 
 1. Runtime conversion of image data could be too slow and affect performance and comfort.
-2. The conversion process may not use the same style of gamma encoding/decoding and there could be a loss in color accuracy.
+2. The conversion process may not use the same style of gamma encoding/decoding and therefore may result in a loss in color accuracy.
 
-If you'd like more information on color spaces and gamma in computer graphics, Guy Davidson from Creative Assembly has a fantastic video presentation from Meeting C++ 2021 on this topic `here <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_.
+If you'd like more information on color spaces and gamma encoding in computer graphics, Guy Davidson from Creative Assembly has a fantastic video presentation from Meeting C++ 2021 on this topic `here <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_.
 
+Copy the code below into the ``CreateSwapchain()`` mehtod:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -106,7 +143,15 @@ If you'd like more information on color spaces and gamma in computer graphics, G
 	:end-before: XR_DOCS_TAG_END_EnumerateSwapchainFormats
 	:dedent: 8
 
-Next, we do some checks to confirm that the views in the view configuration are the same size and thus suitable for stereo rendering. With this check done, we can alias to views together when create our ``XrSwapchain``. We resize our ``SwapchainAndDepthImage`` structure and enter a for each loop to create all required resources.
+Next, we do some checks to confirm that the views in the view configuration are the same size and thus suitable for stereo rendering. Append the following code to the ``CreateSwapchain()`` mehtod:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CheckCoherentViewDimensions
+	:end-before: XR_DOCS_TAG_END_CheckCoherentViewDimensions
+	:dedent: 8
+
+With this check done, we can alias to views together when create our ``XrSwapchain``. We resize our ``SwapchainAndDepthImage`` structure and enter a for each loop to create all required resources.
 
 3.1.3 xrCreateSwapchain
 =======================
@@ -534,6 +579,81 @@ With the most of the OpenXR objects now set up, we can now turn our attention to
 
 Then, with those final pieces in place, we can look to the ``RenderFrame()`` and ``RenderLoop()`` code to invoke graphics work on the GPU and present it back to OpenXR and its compositor through the use of composition layers and within the scope of an XR Frame.
 
+.. code-block:: cpp
+
+	class OpenXRTutorial {
+	public:
+		// [...] Constructor and Destructor from Chapter 2.
+	
+		void Run() {
+			CreateInstance();
+			CreateDebugMessenger();
+	
+			GetInstanceProperties();
+			GetSystemID();
+	
+			GetViewConfigurationViews();
+	
+			CreateSession();
+			CreateSwapchain();
+	
+			while (m_applicationRunning) {
+				PollSystemEvents();
+				PollEvents();
+				if (m_sessionRunning) {
+					RenderFrame();
+				}
+			}
+	
+			DestroySwapchain();
+			DestroySession();
+	
+			DestroyDebugMessenger();
+			DestroyInstance();
+		}
+	
+	private:
+		// [...] Methods from Chapter 2.
+		
+		void GetViewConfigurationViews()
+		{
+			// [...]
+		}
+		void CreateSwapchain()
+		{
+			// [...]
+		}
+		void DestroySwapchain()
+		{
+			// [...]
+		}
+		void RenderFrame()
+		{
+		}
+		void RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews)
+		{
+		}
+	private:
+		// [...] Member from Chapter 2.
+
+		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
+
+		struct SwapchainAndDepthImage {
+			XrSwapchain swapchain = {};
+			int64_t swapchainFormat = 0;
+			void *depthImage = nullptr;
+			std::vector<void *> colorImageViews;
+			void *depthImageView = nullptr;
+		};
+		std::vector<SwapchainAndDepthImage> m_swapchainAndDepthImages = {};
+
+		std::vector<XrEnvironmentBlendMode> m_applicationEnvironmentBlendModes = {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE};
+		std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
+		XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
+
+		XrSpace m_localOrStageSpace = {};
+	};
+
 3.2.1 xrEnumerateEnvironmentBlendModes
 ======================================
 
@@ -653,34 +773,6 @@ You may wish to call ``xrEnumerateReferenceSpaces()`` to get all ``XrReferenceSp
 
 3.2.3 RenderFrame
 =================
-
-In the ``OpenXRTutorial`` class, add the ``RenderFrame()`` and ``RenderLayer()`` methods.
-
-.. code-block:: cpp
-
-	class OpenXRTutorial {
-	public:
-		// [...]
-	
-		void Run() {
-			// [...]
-	
-			while (applicationRunning) {
-				PollSystemEvents();
-				PollEvents();
-				if (sessionRunning) {
-					RenderFrame();
-				}
-			}
-	
-			// [...]
-		}
-		// [...]
-
-	private:
-		RenderLayer();
-		// [...]
-	}
 
 Below is the code needed for rendering a frame in OpenXR. Each frame, we sequence through the three primary functions ``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()``. These functions wrap around our rendering code and communicate to the OpenXR rumtime that we are rendering and that we need to synchronize with the XR compositor's frame hook.
 
