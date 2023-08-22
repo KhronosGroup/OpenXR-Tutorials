@@ -147,22 +147,22 @@ private:
     }
 
     void CreateDebugMessenger() {
-    // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
+        // XR_DOCS_TAG_BEGIN_CreateDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             m_debugUtilsMessenger = CreateOpenXRDebugUtilsMessenger(m_xrInstance);
         }
-    // XR_DOCS_TAG_END_CreateDebugMessenger
+        // XR_DOCS_TAG_END_CreateDebugMessenger
     }
     void DestroyDebugMessenger() {
-    // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
+        // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);
         }
-    // XR_DOCS_TAG_END_DestroyDebugMessenger
+        // XR_DOCS_TAG_END_DestroyDebugMessenger
     }
 
     void GetInstanceProperties() {
-    // XR_DOCS_TAG_BEGIN_GetInstanceProperties
+        // XR_DOCS_TAG_BEGIN_GetInstanceProperties
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
@@ -174,13 +174,13 @@ private:
     }
 
     void GetSystemID() {
-    // XR_DOCS_TAG_BEGIN_GetSystemID
+        // XR_DOCS_TAG_BEGIN_GetSystemID
         XrSystemGetInfo systemGI{XR_TYPE_SYSTEM_GET_INFO};
         systemGI.formFactor = m_formFactor;
         OPENXR_CHECK(xrGetSystem(m_xrInstance, &systemGI, &m_systemID), "Failed to get SystemID.");
 
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &systemProperties), "Failed to get SystemProperties.");
-    // XR_DOCS_TAG_END_GetSystemID
+        // XR_DOCS_TAG_END_GetSystemID
     }
 
     // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
@@ -255,7 +255,7 @@ private:
     }
 
     void PollEvents() {
-// XR_DOCS_TAG_BEGIN_PollEvents
+    // XR_DOCS_TAG_BEGIN_PollEvents
         XrResult result = XR_SUCCESS;
         do {
             XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
@@ -310,7 +310,7 @@ private:
             }
 
         } while (result == XR_SUCCESS);
-// XR_DOCS_TAG_END_PollEvents
+    // XR_DOCS_TAG_END_PollEvents
     }
 
     // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
