@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project("OpenXRTutorialChapter5") # Needed for Android
+project("${PROJECT_NAME}") # Needed for Android
 
 # For FetchContent_Declare() and FetchContent_MakeAvailable()
 include(FetchContent)
@@ -44,6 +44,8 @@ set(HEADERS
     "../Common/OpenXRDebugUtils.h"
     "../Common/OpenXRHelper.h")
 
+set(PROJECT_NAME OpenXRTutorialChapter5)
+
 set(HLSL_SHADERS
     "../Shaders/VertexShader.hlsl"
     "../Shaders/PixelShader.hlsl")
@@ -54,14 +56,12 @@ set(ES_GLSL_SHADERS
     "../Shaders/VertexShader_GLES.glsl"
     "../Shaders/PixelShader_GLES.glsl")
 
-
-
 if (ANDROID)
-	set(SHADERS ${GLSL_SHADERS} ${ES_GLSL_SHADERS} )
-	SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS "OPENG_ES VULKAN")
+    set(SHADERS ${GLSL_SHADERS} ${ES_GLSL_SHADERS} )
+    SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS "OPENG_ES VULKAN")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
-    add_library(OpenXRTutorialChapter5 SHARED ${SOURCES} ${HEADERS})
-    target_include_directories(OpenXRTutorialChapter5 PUBLIC "../Common/")
+    add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+    target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
 
     # native_app_glue
     include(AndroidNdkModules)
@@ -69,7 +69,7 @@ if (ANDROID)
 
     # vulkan - Found in the NDK
     find_library(vulkan-lib vulkan)
-    target_include_directories(OpenXRTutorialChapter5 PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
 
     # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
     add_library(openxr-gfxwrapper STATIC ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.c ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.h)
@@ -79,12 +79,12 @@ if (ANDROID)
     target_link_libraries(openxr-gfxwrapper PUBLIC ${GLES3-lib})
     target_link_libraries(openxr-gfxwrapper PUBLIC ${EGL-lib})
 
-    target_include_directories(OpenXRTutorialChapter5 PUBLIC ${openxr_SOURCE_DIR}/src/common)
-    target_include_directories(OpenXRTutorialChapter5 PUBLIC ${openxr_SOURCE_DIR}/external/include)
-    target_include_directories(OpenXRTutorialChapter5 PUBLIC ../third_party)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/external/include)
+    target_include_directories(${PROJECT_NAME} PUBLIC ../third_party)
 
     # Final link
-    target_link_libraries(OpenXRTutorialChapter5
+    target_link_libraries(${PROJECT_NAME}
             android
             native_app_glue
             openxr_loader
@@ -101,7 +101,7 @@ if (ANDROID)
         foreach(FILE ${GLSL_SHADERS})
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
-            add_custom_command(TARGET OpenXRTutorialChapter5
+            add_custom_command(TARGET ${PROJECT_NAME}
                                COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} $<IF:$<CONFIG:DEBUG>,-Od,> -g -o ${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders/${FILE_WE}.spv
                                MAIN_DEPENDENCY ${FILE}
                                COMMENT "GLSL ${FILE}"
@@ -113,7 +113,7 @@ if (ANDROID)
     #OpenGL ES
     foreach(FILE ${ES_GLSL_SHADERS})
         get_filename_component(FILE_WE ${FILE} NAME_WE)
-        add_custom_command(TARGET OpenXRTutorialChapter5 
+        add_custom_command(TARGET ${PROJECT_NAME} 
                            COMMAND ${CMAKE_COMMAND} -E copy 
                            ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} 
                            ${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders/${FILE_WE}.glsl
@@ -125,33 +125,33 @@ if (ANDROID)
 
 else()
 	set(SHADERS ${GLSL_SHADERS})
-    add_executable(OpenXRTutorialChapter5 ${SOURCES} ${HEADERS} ${SHADERS})
+    add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${SHADERS})
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
-        set_target_properties( OpenXRTutorialChapter5 PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
+        set_target_properties( ${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
     endif()
-    target_include_directories(OpenXRTutorialChapter5 PUBLIC "../Common/")
-    target_link_libraries(OpenXRTutorialChapter5 openxr_loader)
+    target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
+    target_link_libraries(${PROJECT_NAME} openxr_loader)
 
     if (WIN32)
 		SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS VULKAN OPENGL D3D11 D3D12 ) 
-        target_link_libraries(OpenXRTutorialChapter5 "d3d11.lib") 
-        target_link_libraries(OpenXRTutorialChapter5 "d3d12.lib") 
-        target_link_libraries(OpenXRTutorialChapter5 "dxgi.lib") 
-		target_compile_definitions(OpenXRTutorialChapter5 PUBLIC NOMINMAX OPENXR_GRAPHICS_API_TYPE=${OPENXR_GRAPHICS_API_TYPE})
+        target_link_libraries(${PROJECT_NAME} "d3d11.lib") 
+        target_link_libraries(${PROJECT_NAME} "d3d12.lib") 
+        target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
+		target_compile_definitions(${PROJECT_NAME} PUBLIC NOMINMAX OPENXR_GRAPHICS_API_TYPE=${OPENXR_GRAPHICS_API_TYPE})
 	else()
 		SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS "VULKAN OPENGL" ) 
     endif()
 
     find_package(Vulkan)
     if (Vulkan_FOUND)
-        target_include_directories(OpenXRTutorialChapter5 PUBLIC ${Vulkan_INCLUDE_DIRS})
-        target_link_libraries(OpenXRTutorialChapter5 ${Vulkan_LIBRARIES})
+        target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+        target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
     endif()
 
     # Fix redirection to a different project's build folder
-    target_include_directories(OpenXRTutorialChapter5 PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
-    target_link_libraries(OpenXRTutorialChapter5 openxr-gfxwrapper)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
+    target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
 
     set_source_files_properties(../Shaders/VertexShader.hlsl PROPERTIES ShaderType "vs")
     set_source_files_properties(../Shaders/PixelShader.hlsl PROPERTIES ShaderType "ps")
@@ -169,7 +169,7 @@ else()
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
             get_source_file_property(shadermodel ${FILE} ShaderModel)
-            add_custom_command(TARGET OpenXRTutorialChapter5
+            add_custom_command(TARGET ${PROJECT_NAME}
                                COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso /Fd ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb ${FILE}
                                MAIN_DEPENDENCY ${FILE}
                                COMMENT "HLSL ${FILE}"
@@ -182,7 +182,7 @@ else()
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
             get_source_file_property(shadermodel ${FILE} ShaderModel)
-            add_custom_command(TARGET OpenXRTutorialChapter5
+            add_custom_command(TARGET ${PROJECT_NAME}
                                COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso /Fd ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb ${FILE}
                                MAIN_DEPENDENCY ${FILE}
                                COMMENT "HLSL ${FILE}"
@@ -201,7 +201,7 @@ else()
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
 			message ("${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} $<$<CONFIG:Debug>:-Od> -g -o ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv")
-            add_custom_command(TARGET OpenXRTutorialChapter5
+            add_custom_command(TARGET ${PROJECT_NAME}
                                COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} -Od -g -o ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv
                                MAIN_DEPENDENCY ${FILE}
                                COMMENT "GLSL ${FILE}"
@@ -213,7 +213,7 @@ else()
     #OpenGL
     foreach(FILE ${GLSL_SHADERS})
         get_filename_component(FILE_WE ${FILE} NAME_WE)
-        add_custom_command(TARGET OpenXRTutorialChapter5 
+        add_custom_command(TARGET ${PROJECT_NAME} 
                            COMMAND ${CMAKE_COMMAND} -E copy 
                            ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} 
                            ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.glsl
