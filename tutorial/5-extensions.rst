@@ -73,7 +73,7 @@ At the end of your OpenXRTutorial application class, declare the following:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CallCreateHandTracker
 	:end-before: XR_DOCS_TAG_END_CallCreateHandTracker
-	:dedent: 2
+	:dedent: 1
 
 Add this function after the definition of AttachActionSet(). For each of two hands, we'll call xrCreateHandTrackerEXT() and fill in the m_handTracker object.
 
@@ -116,5 +116,3 @@ Now in RenderLayer(), just before the call to `m_graphicsAPI->EndRendering()`, a
 	:dedent: 3
 
 Run the app: you'll now see both hands, rendered as blocks.
-
-The next thing is to 
