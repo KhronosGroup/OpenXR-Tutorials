@@ -165,7 +165,7 @@ Append the following this code to the ``CreateSwapchain()`` mehtod:
 	for (SwapchainAndDepthImage &swapchainAndDepthImage : m_swapchainAndDepthImages) {
 	}
 
-Inside the for-each loop, add the following code:s
+Inside the for-each loop of the ``CreateSwapchain()`` mehtod, add the following code:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -173,14 +173,16 @@ Inside the for-each loop, add the following code:s
 	:end-before: XR_DOCS_TAG_END_CreateSwapchain
 	:dedent: 12
 
-Here, we fill out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members can be assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to 0 as we require no constraints or functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the image are suitable to be read in a shader and to be used as a render output.
+Here, we filled out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members were assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to 0 as we require no constraints or additional functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the images are suitable to be read in a shader and to be used as a render target/color attachment.
+
+Below is a list of all ``XrCompositionLayerFlags`` that could be used; along with an explanation and how they match with your chosen Graphics API.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
 	:start-at: // Flag bits for XrSwapchainUsageFlags
 	:end-before: typedef XrFlags64 XrCompositionLayerFlags;
 
-Below is a explanation of XrSwapchainUsageFlagBits match with the Graphics APIs.
+*The above code is an excerpt from openxr/openxr.h*
 
 .. container:: d3d11
 	:name: d3d11-id-1
