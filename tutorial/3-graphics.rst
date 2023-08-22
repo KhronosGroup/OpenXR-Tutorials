@@ -273,14 +273,18 @@ Below is a list of all ``XrCompositionLayerFlags`` that could be used; along wit
 	| XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_KHR     | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT         |
 	+-------------------------------------------------+---------------------------------------------+
 
-Next, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we use ``1``, as we have separate swapchain per view/eye, but for a stereo view you could pass ``2`` and have an image 2D array, which is suitable for multiview rendering. ``mipCount`` describes the number of mips levels, useful when using the swapchain image as a sampled image. Finally, we can set the format. Here, we ask our ``GraphicsAPIs`` class to pick a suitable format for the swapachain for the enumerated format we acquired early. Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
+Then, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we used ``1``, as we have separate swapchains per view/eye, but for a stereo view you could pass ``2`` and have an image 2D array, which is suitable for multiview rendering. ``mipCount`` describes the number of mips levels; this is useful when using the swapchain image as a sampled image in a shader. Finally, we set the format. Here, we asked our ``GraphicsAPI_...`` class to pick a suitable format for the swapachain from the enumerated formats we acquired earlier. 
+
+Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
 
 .. literalinclude:: ../Common/GraphicsAPI.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_SelectSwapchainFormat
 	:end-before: XR_DOCS_TAG_END_GraphicsAPI_SelectSwapchainFormat
 
-The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwapchainFormats()``, which each class implements. It returns an array of API-specific format us to use.
+*The above code is an excerpt from Common/GraphicsAPI.cpp*
+
+The function calls a pure virtual mehtod called ``GraphicsAPI::GetSupportedSwapchainFormats()``, which each class implements. It returns an array of API-specific formats for us to use.
 
 .. container:: d3d11
 	:name: d3d11-id-2
@@ -291,6 +295,8 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
+		
+	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
 
 .. container:: d3d12
 	:name: d3d12-id-2
@@ -302,6 +308,8 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetSupportedSwapchainFormats
 
+	*The above code is an excerpt from Common/GraphicsAPI_D3D12.cpp*
+
 .. container:: opengl
 	:name: opengl-id-2
 
@@ -311,6 +319,8 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetSupportedSwapchainFormats
+
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.cpp*
 
 .. container:: opengles
 	:name: opengles-id-2
@@ -322,6 +332,8 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
 
+	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.cpp*
+
 .. container:: vulkan
 	:name: vulkan-id-2
 
@@ -332,7 +344,9 @@ The function calls a pure virtual function called ``GraphicsAPI::GetSupportedSwa
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
 
-We call ``xrCreateSwapchain()`` to create our ``XrSwapchain``, which, if successful, will return ``XR_SUCCESS`` and the ``XrSwapchain`` will be non-null. We copy our swapchain format to our ``SwapchainAndDepthImage::swapchainFormat`` for later usage.
+	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.cpp*
+
+Lastly, we called ``xrCreateSwapchain()`` to create our ``XrSwapchain``, which, if successful, returned ``XR_SUCCESS`` and the ``XrSwapchain`` was non-null. We copied our swapchain format to our ``SwapchainAndDepthImage::swapchainFormat`` for later usage.
 
 3.1.4 xrEnumerateSwapchainImages
 ================================
