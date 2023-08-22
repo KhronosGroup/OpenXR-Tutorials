@@ -35,23 +35,23 @@ Or, you can download the updated ``CMakeLists.txt`` here.
 3.1 Creating Swapchains
 ***********************
 
-As with rendering graphics to a 2D display, OpenXR has the concept of swapchains. It's series of images that are used to present the rendered graphics to display/window/view. There are usually 2 or 3 images in the swapchain to allow the platform to present them smoothly to the user in order to create illusion of motion within the image.
+As with rendering graphics to a 2D display, OpenXR has the concept of swapchains. It's a series of images that are used to present the rendered graphics to display/window/view. There are usually 2 or 3 images in the swapchain to allow the platform to present them smoothly to the user in order to create the illusion of motion within the image.
 
-All graphics APIs have this concept of a swapchain with differing levels of transparency to the programmer, but for an OpenXR application we don't use the API-specific swapchain, which can be tied closely the platform's windowing system. Instead, we use OpenXR's swapchain and the OpenXR compositor to present rendered graphics to the views. XR applications are unique in that often, but not always, have multiple views that need to be rendered to create the XR experience. Listed below are a couple scenarios with differing view counts:
+All graphics APIs have this concept of a swapchain with differing levels of transparency to the programmer, but for OpenXR applications we don't use the API-specific swapchain, which can be tied closely the platform's windowing system. Instead, we use OpenXR's swapchain and the OpenXR compositor to present rendered graphics to the views. XR applications are unique in that often, but not always, they have multiple views that need to be rendered to create the XR experience. Listed below are a couple scenarios with differing view counts:
 
 	* 1 view  - AR viewer on a mobile device.
 	* 2 views - VR head mounted display.
 
-Orthogonal to multiple views is the layering of multiple rendered images or camera feeds. You could, for a example, have a background that is a video pass-through of your environment, a stereo view of rendering graphics and quad overlay of a HUD or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
+Orthogonal to multiple views is the layering of multiple rendered images or camera feeds. You could, for a example, have a background that is a video pass-through of your environment, a stereo view of rendered graphics and quad overlay of a Head-up display (HUD) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
 
-Firstly, we will update the class to add the new methods and members. Copy the highlighted code.
+Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new methods and members. Copy the highlighted code below.
 
 .. code-block:: cpp
-	:emphasize-lines: 12, 15, 25, 35-43, 67-76
+	:emphasize-lines: 12, 15, 25, 35-43, 48-57
 
 	class OpenXRTutorial {
 	public:
-		// [...] Constructor and Destructor from Chapter 2.
+		// [...] Constructor and Destructor created in previous chapters.
 	
 		void Run() {
 			CreateInstance();
@@ -81,7 +81,7 @@ Firstly, we will update the class to add the new methods and members. Copy the h
 		}
 	
 	private:
-		// [...] Methods from Chapter 2.
+		// [...] Methods created in previous chapters.
 		
 		void GetViewConfigurationViews()
 		{
@@ -92,8 +92,9 @@ Firstly, we will update the class to add the new methods and members. Copy the h
 		void DestroySwapchain()
 		{
 		}
+
 	private:
-		// [...] Member from Chapter 2.
+		// [...] Member created in previous chapters.
 
 		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
