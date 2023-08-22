@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project("${PROJECT_NAME}") # Needed for Android
+project("OpenXRTutorialChapter2") # Needed for Android
 
 # For FetchContent_Declare() and FetchContent_MakeAvailable()
 include(FetchContent)
