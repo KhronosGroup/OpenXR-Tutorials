@@ -38,7 +38,7 @@ author = 'Simul Software Ltd'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["myst_parser",'sphinx.ext.autosectionlabel',"sphinxcontrib.mermaid","sphinxcontrib.jquery"]
+extensions = ["myst_parser","sphinx.ext.autosectionlabel","sphinxcontrib.mermaid","sphinxcontrib.jquery","sphinx_copybutton"]
 mermaid_output_format='png'
 source_suffix = {'.rst': 'restructuredtext'}
 # Add any paths that contain templates here, relative to this directory.
