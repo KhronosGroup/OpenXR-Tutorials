@@ -824,7 +824,7 @@ Copy the following code into the ``CreateReferenceSpace()`` method:
 	:end-before: XR_DOCS_TAG_END_CreateReferenceSpace
 	:dedent: 8
 
-First, we fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``.
+Firstly, we fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``, which we will discuss shortly. 
 
 When we create the *reference space*, we need to specify an ``XrPosef``, which we will be the origin transform of the space. For our tutorial, we will set ``XrReferenceSpaceCreateInfo::poseInReferenceSpace`` to an identity, where we use an identity quaternion for the orientation and a position at the origin. If we had specified a different pose, the origin of the reference space would have been offset from the runtime's default.
 
@@ -833,19 +833,11 @@ When we create the *reference space*, we need to specify an ``XrPosef``, which w
 	referenceSpaceCreateInfo.poseInReferenceSpace.orientation = {0.0f, 0.0f, 0.0f, 1.0f};
 	referenceSpaceCreateInfo.poseInReferenceSpace.position = {0.0f, 0.0f, 0.0f};
 
-*The above code is an example of an* ``XrPosef``
+*The above code is an example of an* ``XrPosef`` *, which shows assigning values to the orientation (a quaternion) and to the position (a vector3).*
 
-At the end of the appplication, we should destroy the ``XrSpace`` by calling ``xrDestroySpace()`` and passing that ``XrSpace``. If successful, the function will return ``XR_SUCCESS``. Copy the following code into the ``DestroyReferenceSpace()`` method:
+An ``XrSpace`` is a frame of reference defined not by its instantaneous values, but instead defined semantically by its purpose and relationship to other spaces. The actual, instantaneous position and orientation of an ``XrSpace`` is called its *pose*.
 
-.. literalinclude:: ../Chapter3/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
-	:end-before: XR_DOCS_TAG_END_DestroyReferenceSpace
-	:dedent: 8
-
-An ``XrSpace`` is a frame of reference defined not by its instantaneous values, but instead defined semantically by its purpose and relationship to other spaces. The actual, instantaneous position and orientation of an 	``XrSpace`` is called its *pose*.
-
-One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``). View space is oriented with the user's head, and is useful for user-interface and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
+One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``). View space is oriented with the user's head, and is useful for user-interfaces and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
 
 By using a local space (``XR_REFERENCE_SPACE_TYPE_LOCAL``), we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
 
@@ -885,7 +877,7 @@ See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.
 			:align: center
 	  - The Stage Reference Space defines a rectangular area that is flat and devoid of obstructions. The origin is define to be on the floor and at the center of the rectangular area. +Y is up, +X is to the right, and -Z is forward. The origin is also axis aligned to the XZ plane. It is most often used for rendering standing-scale experiences (no bounds) or room-scale experiences (with bounds) where a physical floor is required. When the user is redefining the origin or bounds of the area, the runtime will queue ``XrEventDataReferenceSpaceChangePending`` structure for the application to respond to.
 
-`7.1. Reference Spaces <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#reference-spaces>`_.
+For more information on reference see the OpenXR 1.0 Specification here: `7.1. Reference Spaces <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#reference-spaces>`_.
 
 .. figure:: OpenXR-Coordinate-System.png
 	:alt: OpenXR Default Coordinate System
@@ -894,11 +886,19 @@ See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.
 
 The default coordinate system in OpenXR is right-handed with +Y up, +X to the right, and -Z forward.
 
-Many system and game engines support the XR_EXT_local_floor extension. This extension in general bridge the use of case of application wanting seated-scale experiences, but with a physical floor. Neither ``XR_REFERENCE_SPACE_TYPE_LOCAL`` nor ``XR_REFERENCE_SPACE_TYPE_STAGE`` truely fits this requirement.
+Many system and game engines support the XR_EXT_local_floor extension. This extension in general bridges the use-case of an applications wanting to use a seated-scale experience, but also with a physical floor. Neither ``XR_REFERENCE_SPACE_TYPE_LOCAL`` nor ``XR_REFERENCE_SPACE_TYPE_STAGE`` truely fits this requirement.
 
 The Local Floor Reference Space establishes a world-locked, gravity aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is the same as ``XR_REFERENCE_SPACE_TYPE_LOCAL`` in the X and Z coordinates, but not the Y coordinate. See more here: `12.34. XR_EXT_local_floor <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_local_floor>`_.
 
 You may wish to call ``xrEnumerateReferenceSpaces()`` to get all ``XrReferenceSpaceType`` s available to the system, before choosing one that is suitable for your application and the user's environment.
+
+At the end of the appplication, we should destroy the ``XrSpace`` by calling ``xrDestroySpace()``. If successful, the function will return ``XR_SUCCESS``. Copy the following code into the ``DestroyReferenceSpace()`` method:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
+	:end-before: XR_DOCS_TAG_END_DestroyReferenceSpace
+	:dedent: 8
 
 3.2.3 RenderFrame
 =================
