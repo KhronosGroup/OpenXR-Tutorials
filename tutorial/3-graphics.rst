@@ -42,7 +42,7 @@ All graphics APIs have this concept of a swapchain with differing levels of tran
 	* 1 view  - AR viewer on a mobile device.
 	* 2 views - VR head mounted display.
 
-Orthogonal to multiple views is the layering of multiple rendered images or camera feeds. You could, for a example, have a background that is a video pass-through of your environment, a stereo view of rendered graphics and quad overlay of a Head-up display (HUD) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
+Orthogonal to multiple views is the layering of multiple rendered images or camera feeds. You could, for a example, have a background that is a video pass-through of your environment, a stereo view of rendered graphics and quad overlay of a HUD (Head-up display) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
 
 Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new methods and members. Copy the highlighted code below.
 
@@ -504,6 +504,7 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 		:language: cpp
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
+		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
 
@@ -516,6 +517,7 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 		:language: cpp
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
+		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
 
@@ -528,6 +530,7 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 		:language: cpp
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
+		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
 
@@ -540,6 +543,7 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 		:language: cpp
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
+		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
 
@@ -552,6 +556,7 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 		:language: cpp
 		:start-at: virtual int64_t GetDepthFormat() override
 		:end-at: }
+		:dedent: 4
 	
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
 
@@ -579,6 +584,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:language: cpp
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
+		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
 
@@ -591,6 +597,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:language: cpp
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
+		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
 
@@ -605,6 +612,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:language: cpp
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
+		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
 
@@ -617,6 +625,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:language: cpp
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
+		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
 
@@ -629,6 +638,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:language: cpp
 		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
 		:end-at: }
+		:dedent: 4
 
 	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL``. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.
 
@@ -646,7 +656,7 @@ When the main render loop has finished and the application is shutting down, we 
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_DestroySwapchain
 	:end-before: XR_DOCS_TAG_END_DestroySwapchain
-	:dedent: 4
+	:dedent: 8
 
 We now have ``XrSwapchain`` s and a depth images, ready for rendering. Next, we setup the render loop for OpenXR!
 
@@ -661,7 +671,7 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 Update the methods and members in the class. Copy the highlighted code:
 
 .. code-block:: cpp
-	:emphasize-lines: 13, 16, 23, 49-60, 75-79
+	:emphasize-lines: 13, 16, 23, 28, 50-64, 79-83
 
 	class OpenXRTutorial {
 	public:
@@ -690,6 +700,7 @@ Update the methods and members in the class. Copy the highlighted code:
 			}
 	
 			DestroySwapchain();
+			DestroyReferenceSpace();
 			DestroySession();
 	
 			DestroyDebugMessenger();
@@ -715,6 +726,9 @@ Update the methods and members in the class. Copy the highlighted code:
 		{
 		}
 		void CreateReferenceSpace()
+		{
+		}
+		void DestroyReferenceSpace() 
 		{
 		}
 		void RenderFrame()
@@ -786,7 +800,7 @@ Copy the following code into the ``GetEnvironmentBlendModes()`` method:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
 	:end-before: XR_DOCS_TAG_END_GetEnvironmentBlendModes
-	:dedent: 4
+	:dedent: 8
 
 We enumerated the environment blend modes as shown above. This function took a pointer to the first element in an array of ``XrEnvironmentBlendMode`` s as multiple environment blend modes could be available to the system. The runtime returned an array ordered by its preference for the system. After we enumerated all the ``XrEnvironmentBlendMode`` s, we picked the first one as an absolute default, then we looped through all of our ``m_applicationEnvironmentBlendModes`` to try and find our ``m_environmentBlendModes``.
 
@@ -802,11 +816,13 @@ Now that OpenXR know what the user should see, we need to tell OpenXR from where
 
 *The above code is an excerpt from openxr/openxr.h*
 
+Copy the following code into the ``CreateReferenceSpace()`` method:
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateReferenceSpace
 	:end-before: XR_DOCS_TAG_END_CreateReferenceSpace
-	:dedent: 4
+	:dedent: 8
 
 First, we fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``.
 
@@ -817,8 +833,15 @@ When we create the *reference space*, we need to specify an ``XrPosef``, which w
 	referenceSpaceCreateInfo.poseInReferenceSpace.orientation = {0.0f, 0.0f, 0.0f, 1.0f};
 	referenceSpaceCreateInfo.poseInReferenceSpace.position = {0.0f, 0.0f, 0.0f};
 
-*The above code is an example of an ``XrPosef``.*
+*The above code is an example of an* ``XrPosef``
 
+At the end of the appplication, we should destroy the ``XrSpace`` by calling ``xrDestroySpace()`` and passing that ``XrSpace``. If successful, the function will return ``XR_SUCCESS``. Copy the following code into the ``DestroyReferenceSpace()`` method:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
+	:end-before: XR_DOCS_TAG_END_DestroyReferenceSpace
+	:dedent: 8
 
 An ``XrSpace`` is a frame of reference defined not by its instantaneous values, but instead defined semantically by its purpose and relationship to other spaces. The actual, instantaneous position and orientation of an 	``XrSpace`` is called its *pose*.
 
@@ -837,26 +860,26 @@ See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.
 	Reference Spaces in OpenXR
 
 .. list-table:: OpenXR Reference Spaces
-	:widths: 1 3 1
+	:widths: 1 1 1
 	:class: longtable
 	:header-rows: 1
 
 	* - XrReferenceSpaceType
 	  - Diagram
 	  - Description
-	* - XR_REFERENCE_SPACE_TYPE_VIEW
+	* - ``XR_REFERENCE_SPACE_TYPE_VIEW``
 	  - .. figure:: OpenXR-ReferenceSpace-View.png
 			:alt: OpenXR Reference Space View
 			:align: center
-	  - The View Reference Space uses the view origin (or the centroid of the views in the case of stereo) as the origin of the sapce. +Y is up, +X is to the right, and -Z is forward. The space is aligned in front of the viewer and it is not gravity aligned. It is most often used for rendering small head-locked content like a HUD.
+	  - The View Reference Space uses the view origin (or the centroid of the views in the case of stereo) as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The space is aligned in front of the viewer and it is not gravity aligned. It is most often used for rendering small head-locked content like a HUD (Head-up display).
 
-	* -	XR_REFERENCE_SPACE_TYPE_LOCAL
+	* -	``XR_REFERENCE_SPACE_TYPE_LOCAL``
 	  - .. figure:: OpenXR-ReferenceSpace-Local.png
 			:alt: OpenXR Reference Space Local
 			:align: center
-	  - The Local Reference Space uses an initial location to establish a world-locked, gravity aligned point as the origin of the sapce. +Y is up, +X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at application start up or from a calibreated origin point. It is most often used for rendering seated-scale experiences such as car racing or aircraft cockpits, where a physical floor is not required. When recentering, the runtime will queue ``XrEventDataReferenceSpaceChangePending`` structure for the application to respond to.
+	  - The Local Reference Space uses an initial location to establish a world-locked, gravity aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at application start up or from a calibreated origin point. It is most often used for rendering seated-scale experiences such as car racing or aircraft cockpits, where a physical floor is not required. When recentering, the runtime will queue ``XrEventDataReferenceSpaceChangePending`` structure for the application to respond to.
 
-	* - XR_REFERENCE_SPACE_TYPE_STAGE
+	* - ``XR_REFERENCE_SPACE_TYPE_STAGE``
 	  - .. figure:: OpenXR-ReferenceSpace-Stage.png
 			:alt: OpenXR Reference Space Stage
 			:align: center
@@ -869,7 +892,13 @@ The default coordinate system in OpenXR is right-handed with +Y up, +X to the ri
 .. figure:: OpenXR-Coordinate-System.png
 	:alt: OpenXR Default Coordinate System
 	:align: center
-	:width: 50%
+	:width: 25%
+
+Many system and game engines support the XR_EXT_local_floor extension. This extension in general bridge the use of case of application wanting seated-scale experiences, but with a physical floor. Neither ``XR_REFERENCE_SPACE_TYPE_LOCAL`` nor ``XR_REFERENCE_SPACE_TYPE_STAGE`` truely fits this requirement.
+
+The Local Floor Reference Space establishes a world-locked, gravity aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is the same as ``XR_REFERENCE_SPACE_TYPE_LOCAL`` in the X and Z coordinates, but not the Y coordinate.
+
+`12.34. XR_EXT_local_floor <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_local_floor>`_.
 
 You may wish to call ``xrEnumerateReferenceSpaces()`` to get all ``XrReferenceSpaceType`` s available to the system, before choosing one that is suitable for your application and the user's environment.
 
