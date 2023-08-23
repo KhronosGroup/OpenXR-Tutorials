@@ -183,8 +183,8 @@ private:
         // XR_DOCS_TAG_END_GetSystemID
     }
 
-    // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
     void GetEnvironmentBlendModes() {
+        // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
         m_environmentBlendModes.resize(environmentBlendModeSize);
@@ -198,16 +198,16 @@ private:
                 break;
             }
         }
+        // XR_DOCS_TAG_END_GetEnvironmentBlendModes
     }
-    // XR_DOCS_TAG_END_GetEnvironmentBlendModes
 
     void GetViewConfigurationViews() {
-    // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
+        // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
         uint32_t viewConfigurationViewSize = 0;
         OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, 0, &viewConfigurationViewSize, nullptr), "Failed to enumerate ViewConfiguration Views.");
         m_viewConfigurationViews.resize(viewConfigurationViewSize, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
         OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, viewConfigurationViewSize, &viewConfigurationViewSize, m_viewConfigurationViews.data()), "Failed to enumerate ViewConfiguration Views.");
-    // XR_DOCS_TAG_END_GetViewConfigurationViews
+        // XR_DOCS_TAG_END_GetViewConfigurationViews
     }
 
     void CreateSession() {
@@ -458,7 +458,7 @@ private:
             }
         }
 
-            XrFrameEndInfo frameEndInfo{XR_TYPE_FRAME_END_INFO};
+        XrFrameEndInfo frameEndInfo{XR_TYPE_FRAME_END_INFO};
         frameEndInfo.displayTime = frameState.predictedDisplayTime;
         frameEndInfo.environmentBlendMode = m_environmentBlendMode;
         frameEndInfo.layerCount = static_cast<uint32_t>(layers.size());

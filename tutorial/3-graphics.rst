@@ -654,16 +654,18 @@ We now have ``XrSwapchain`` s and a depth images, ready for rendering. Next, we 
 3.2 Building a RenderLoop
 *************************
 
-With the most of the OpenXR objects now set up, we can now turn our attention to rendering graphics. You will likely have your own rendering solution in place with things hooked up to OpenXR and ready to get going. There are two further OpenXR object that need to render; pertaining to where the user is and what the user sees of the external environment around them. Namely, these are the 'environment blend mode' and the 'reference space'.
+With most of the OpenXR objects now set up, we can now turn our attention to rendering graphics. You will likely have your own rendering solution in place with things hooked up to OpenXR and ready to get going. There are two further OpenXR object that are needed to render; pertaining to where the user is and what the user sees of the external environment around them. Namely, these are the 'reference space' and the 'environment blend mode' respectively.
 
-Then, with those final pieces in place, we can look to the ``RenderFrame()`` and ``RenderLoop()`` code to invoke graphics work on the GPU and present it back to OpenXR and its compositor through the use of composition layers and within the scope of an XR Frame.
+Then, with those final pieces in place, we can look to the ``RenderFrame()`` and ``RenderLayer()`` code to invoke graphics work on the GPU and present it back to OpenXR and its compositor through the use of the composition layers and within the scope of an XR Frame.
+
+Update the methods and members in the class. Copy the highlighted code:
 
 .. code-block:: cpp
-	:emphasize-lines: 13, 22, 48-56, 71-75
+	:emphasize-lines: 13, 16, 23, 49-60, 75-79
 
 	class OpenXRTutorial {
 	public:
-		// [...] Constructor and Destructor from Chapter 2.
+		// [...] Constructor and Destructor created in previous chapters.
 	
 		void Run() {
 			CreateInstance();
@@ -676,6 +678,7 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 			GetEnvironmentBlendModes();
 	
 			CreateSession();
+			CreateReferenceSpace();
 			CreateSwapchain();
 	
 			while (m_applicationRunning) {
@@ -694,7 +697,7 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 		}
 	
 	private:
-		// [...] Methods from Chapter 2.
+		// [...] Methods created in previous chapters.
 		
 		void GetViewConfigurationViews()
 		{
@@ -711,6 +714,9 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 		void GetEnvironmentBlendModes() 
 		{
 		}
+		void CreateReferenceSpace()
+		{
+		}
 		void RenderFrame()
 		{
 		}
@@ -718,7 +724,7 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 		{
 		}
 	private:
-		// [...] Member from Chapter 2.
+		// [...] Member created in previous chapters.
 
 		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
@@ -741,10 +747,14 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 3.2.1 xrEnumerateEnvironmentBlendModes
 ======================================
 
-Environment blend is done at the final stage after the compositor has flatten and blended all the compositing layer passed to OpenXR at the ``xrEndFrame()``. The enum describes how OpenXR should blend the rendering view with the external environment behind the screen(s). The most common usages are as follows:
+Some XR experiences rely on blending the environment and the rendered graphics together. The environment could be compoisited to a screen or passed through optically via lenses and/or mirrors. Choosing the correct environment blend mode is vital for creating immersion in both virtual and augmentated realities.
 
-	* VR: ``XR_ENVIRONMENT_BLEND_MODE_OPAQUE`` is the most common as not all VR HMD have pass through functional either through cameras or optics. VR HMD that do have pass through can suppt other blend modes.
-	* AR: ``XR_ENVIRONMENT_BLEND_MODE_ADDITIVE`` or ``XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND`` are most common to composite rendering rendered image with external environment.
+Environment blending is done at the final stage after the compositor has flattened and blended all the compositing layers passed to OpenXR at the end of the XR frame. 
+
+The enum describes how OpenXR should blend the rendered view(s) with the external environment behind the screen(s). The most common usages are as follows:
+
+	* VR: ``XR_ENVIRONMENT_BLEND_MODE_OPAQUE`` is the most common as not all VR HMD have pass-through functionality either through cameras or optics. VR HMD that do have pass-through can support other blend modes.
+	* AR: ``XR_ENVIRONMENT_BLEND_MODE_ADDITIVE`` or ``XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND`` are the most common to composite rendered images with the external environment.
 
 +---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
 | XrEnvironmentBlendMode                | Description                                                                                                                   |
@@ -770,13 +780,15 @@ Environment blend is done at the final stage after the compositor has flatten an
 
 *The above code is an excerpt from openxr/openxr.h*
 
+Copy the following code into the ``GetEnvironmentBlendModes()`` method:
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
 	:end-before: XR_DOCS_TAG_END_GetEnvironmentBlendModes
 	:dedent: 4
 
-We enumerate the environment blend modes as shown above. This function take a pointer to the first element in an array of ``XrEnvironmentBlendMode`` s as multiple environment blend modes could be available to the system. The runtime will return the array ordered by its preference for the system. After we enumerate all the ``XrEnvironmentBlendMode`` s, we pick the first one as an absolute default, then we loop through all our ``m_environmentBlendModes`` to try and find it in ``m_environmentBlendModes``, which was just filled by OpenXR.
+We enumerated the environment blend modes as shown above. This function took a pointer to the first element in an array of ``XrEnvironmentBlendMode`` s as multiple environment blend modes could be available to the system. The runtime returned an array ordered by its preference for the system. After we enumerated all the ``XrEnvironmentBlendMode`` s, we picked the first one as an absolute default, then we looped through all of our ``m_applicationEnvironmentBlendModes`` to try and find our ``m_environmentBlendModes``.
 
 3.2.2 xrCreateReferenceSpace
 ============================
