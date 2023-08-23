@@ -734,7 +734,7 @@ Update the methods and members in the class. Copy the highlighted code:
 		void RenderFrame()
 		{
 		}
-		void RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews)
+		bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews)
 		{
 		}
 	private:
@@ -992,7 +992,7 @@ Before we call ``RenderLayer()``, we check that the ``XrSession`` is active, as 
 3.2.4 RenderLayer
 =================
 
-From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate the views within the reference space, render to our swapachain images and fill out the ``XrCompositionLayerProjection`` and ``std::vector<XrCompositionLayerProjectionView>`` parameters.
+From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate the views within the reference space, render to our swapachain images and fill out the ``XrCompositionLayerProjection`` and ``std::vector<XrCompositionLayerProjectionView>`` parameters. Copy the following code into the ``RenderLayer()`` method:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1000,20 +1000,24 @@ From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate t
 	:end-before: XR_DOCS_TAG_END_RenderLayer
 	:dedent: 4
 
-Our first call is to ``xrLocateViews()``, which takes a ``XrViewLocateInfo`` structure and return a ``XrViewState`` structure and an array of ``XrView`` s. This functions tells us where the views are in relation to the reference space, as an ``XrPosef``, as well as the field of view, as an ``XrFovf``, for each view; this information is stored the ``std::vector<XrView>``. The returned ``XrViewState`` contains a member of type ``XrViewStateFlags``, which descibes whether the position and/or orientation is valid and/or tracked.
+Our first call is to ``xrLocateViews()``, which takes a ``XrViewLocateInfo`` structure and return a ``XrViewState`` structure and an array of ``XrView`` s. This functions tells us where the views are in relation to the reference space, as an ``XrPosef``, as well as the field of view, as an ``XrFovf``, for each view; this information is stored in the ``std::vector<XrView>``. The returned ``XrViewState`` contains a member of type ``XrViewStateFlags``, which descibes whether the position and/or orientation is valid and/or tracked.
 
-The ``XrViewLocateInfo`` structure take a reference space and a display time, from which the view poses are calculated, and  takes the view configuration type to locate the correct number of view for the system. If we can't locate the views, we return ``false`` from this function.
+The ``XrViewLocateInfo`` structure takes a reference space and a display time, from which the view poses are calculated, and also takes our ``XrViewConfigurationType`` to locate the correct number of views for the system. If we can't locate the views, we return ``false`` from this method.
 
-We resize our ``std::vector<XrCompositionLayerProjectionView>`` parameter, and for each view we render our graphics based on the acquired ``XrView``. The following section is repeated for each view.
+We resize our ``std::vector<XrCompositionLayerProjectionView>`` parameter, and for each view we render our graphics based on the acquired ``XrView``. 
 
-We now acquire an image from the swapchain to render to by calling ``xrAcquireSwapchainImage()``. This returns to us an index, with which we can use to index into an array of swapchain images, or in the case of this tutorial the array of structures containing our swapachain images. Next, we call ``xrWaitSwapchainImage()``, we do this avoid writing to an image that the OpenXR compositor in still reading from. The call will block the CPU thread until the swapachain image is available to use. Skipping a little bit forward to the end of the rendering of the view, we call ``xrReleaseSwapchainImage()``. This call hands the swapchain image back to OpenXR for the compositor to use in create the image for the view. Like with ``xrBeginFrame()`` and ``xrEndFrame()``, the ``xr...SwapchainImage()`` functions need to be called in sequence for correct API usage.
+The following sections are repeated for each view whilst we are in the loop, which iterates over the views.
 
-After we have waited for the swapachain image, before releasing it, we fill out the ``XrCompositionLayerProjectionView`` associated with the view and render our graphics. First, we quickly get the ``width`` and ``height`` of the view from the ``XrViewConfigurationView``. We used the ``recommendedImageRectWidth`` and ``recommendedImageRectHeight`` values when creating the swapachains.
+We now acquire an image from the swapchain to render to by calling ``xrAcquireSwapchainImage()``. This returns via a parameter an index, with which we can use to index into an array of swapchain images, or in the case of this tutorial the array of structures containing our swapachain images. Next, we call ``xrWaitSwapchainImage()``, we do this to avoid writing to an image that the OpenXR compositor in still reading from. The call will block the CPU thread until the swapachain image is available to use. Skipping slightly forward to the end of the rendering for this view, we call ``xrReleaseSwapchainImage()``. This call hands the swapchain image back to OpenXR for the compositor to use in creating the image for the view. Like with ``xrBeginFrame()`` and ``xrEndFrame()``, the ``xr...SwapchainImage()`` functions need to be called in sequence for correct API usage.
 
-We can now fill out the ``XrCompositionLayerProjectionView`` using the ``pose`` and ``fov`` from the associated ``XrView``. For the ``XrSwapchainSubImage`` member, we assign the ``swapachain`` used, the ``offset`` and ``extent`` of the render area and ``imageArrayIndex``. If you are using multiview rendering and your single swapachain is comprised of 2D Array images, where each subresource layer in the image relates to a view, you can use ``imageArrayIndex`` to specifies the subresource layer of the image used in the rendering of this view.
+After we have waited for the swapachain image, before releasing it, we fill out the ``XrCompositionLayerProjectionView`` associated with the view and render our graphics. First, we quickly get the ``width`` and ``height`` of the view from the ``XrViewConfigurationView``. We use the ``recommendedImageRectWidth`` and ``recommendedImageRectHeight`` values when creating the swapachains.
 
-After filling out the ``XrCompositionLayerProjectionView`` structure, we can use this tutorial's ``GraphicsAPI`` to clear the images as a very simple test. We first call ``GraphicsAPI::BeginRendering()`` to setup any API-specific objects needed for rendering. Next, we call ``GraphicsAPI::ClearColor()`` taking the created color image view for the swapachain image; note here that we use different clear colors depending on whether our environment blend mode is opaque or otherwise. We also clear our depth image view with ``GraphicsAPI::ClearDepth()``. Finally, we call ``GraphicsAPI::EndRendering()`` to finish the rendering then this function will submit the GPU work and wait for it to be completed.
+We can now fill out the ``XrCompositionLayerProjectionView`` using the ``pose`` and ``fov`` from the associated ``XrView``. For the ``XrSwapchainSubImage`` member, we assign the ``swapachain`` used, the ``offset`` and ``extent`` of the render area and ``imageArrayIndex``. If you are using multiview rendering and your single swapachain is comprised of 2D Array images, where each subresource layer in the image relates to a view, you can use ``imageArrayIndex`` to specify the subresource layer of the image used in the rendering of this view.
 
-Now that we have rendered both view, we fill out the ``XrCompositionLayerProjection`` structure, we assign our compositing flags of ``XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT`` and assign our reference space. We assign to the member ``viewCount`` the size of the ``std::vector<XrCompositionLayerProjectionView>`` and to the member ``views`` a pointer to the first element in the ``std::vector<XrCompositionLayerProjectionView>``. Finally, we return ``true`` from the function to state that we have successfully completed our rendering.
+After filling out the ``XrCompositionLayerProjectionView`` structure, we can use this tutorial's ``GraphicsAPI`` to clear the images as a very simple test. We first call ``GraphicsAPI::BeginRendering()`` to setup any API-specific objects needed for rendering. Next, we call ``GraphicsAPI::ClearColor()`` taking the created color image view for the swapachain image; note here that we use different clear colors depending on whether our environment blend mode is opaque or otherwise. We also clear our depth image view with ``GraphicsAPI::ClearDepth()``. Finally, we call ``GraphicsAPI::EndRendering()`` to finish the rendering. This function will submit the work to the GPU and wait for it to be completed.
+
+Now, we have rendered both views and exited the loop.
+
+We fill out the ``XrCompositionLayerProjection`` structure, we assign our compositing flags of ``XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT`` and assign our reference space. We assign to the member ``viewCount`` the size of the ``std::vector<XrCompositionLayerProjectionView>`` and to the member ``views`` a pointer to the first element in the ``std::vector<XrCompositionLayerProjectionView>``. Finally, we return ``true`` from the function to state that we have successfully completed our rendering.
 
 We should now have clear colors rendered to each view in your XR system. From here, you can easily expand the graphical complexity of the scene. In the next chapter, we will discuss how to use OpenXR to interact with your XR application enabling new experiences in spatial computing.
