@@ -7642,7 +7642,14 @@ button.select-graphics-api-inline:disabled > img
 button.selected-graphics-api > img
 {
 }
-button.select-graphics-api-inline
+
+.select-graphics-api-container-inline
+{
+	align-content:center;
+	width:100%;
+	max-width:800px;
+}
+.select-graphics-api-inline
 {
 	display: inline-block;
 	*display: inline;
@@ -7675,6 +7682,11 @@ button.select-graphics-api-inline
 #selectopengl-inline
 {
 	background:#5586a4;
+}
+
+#selectopengles-inline
+{
+	background:#ba2a8d;
 }
 
 #selectvulkan-inline
