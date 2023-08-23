@@ -887,18 +887,16 @@ See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.
 
 `7.1. Reference Spaces <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#reference-spaces>`_.
 
-The default coordinate system in OpenXR is right-handed with +Y up, +X to the right, and -Z forward.
-
 .. figure:: OpenXR-Coordinate-System.png
 	:alt: OpenXR Default Coordinate System
-	:align: center
-	:width: 25%
+	:align: left
+	:width: 100%
+
+The default coordinate system in OpenXR is right-handed with +Y up, +X to the right, and -Z forward.
 
 Many system and game engines support the XR_EXT_local_floor extension. This extension in general bridge the use of case of application wanting seated-scale experiences, but with a physical floor. Neither ``XR_REFERENCE_SPACE_TYPE_LOCAL`` nor ``XR_REFERENCE_SPACE_TYPE_STAGE`` truely fits this requirement.
 
-The Local Floor Reference Space establishes a world-locked, gravity aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is the same as ``XR_REFERENCE_SPACE_TYPE_LOCAL`` in the X and Z coordinates, but not the Y coordinate.
-
-`12.34. XR_EXT_local_floor <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_local_floor>`_.
+The Local Floor Reference Space establishes a world-locked, gravity aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is the same as ``XR_REFERENCE_SPACE_TYPE_LOCAL`` in the X and Z coordinates, but not the Y coordinate. See more here: `12.34. XR_EXT_local_floor <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_local_floor>`_.
 
 You may wish to call ``xrEnumerateReferenceSpaces()`` to get all ``XrReferenceSpaceType`` s available to the system, before choosing one that is suitable for your application and the user's environment.
 
