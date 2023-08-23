@@ -1336,7 +1336,7 @@ private:
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {
     DebugOutput debugOutput;
-    std::cout << "OpenXR Tutorial Chapter 4." << std::endl;
+    std::cout << "OpenXR Tutorial Chapter 5." << std::endl;
 
     OpenXRTutorial app(api);
     app.Run();
@@ -1345,7 +1345,7 @@ void OpenXRTutorial_Main(GraphicsAPI_Type api) {
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
 // XR_DOCS_TAG_BEGIN_main_WIN32___linux__
 int main(int argc, char **argv) {
-    OpenXRTutorial_Main(D3D11);
+    OpenXRTutorial_Main(VULKAN);
 }
 // XR_DOCS_TAG_END_main_WIN32___linux__
 #elif (__ANDROID__)

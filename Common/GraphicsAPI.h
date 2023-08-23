@@ -14,10 +14,8 @@
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
 
-#if defined(__LINIX__)
+#if defined(__linux__)
 #define XR_USE_PLATFORM_XLIB
-#define XR_USE_PLATFORM_XCB
-#define XR_USE_PLATFORM_WAYLAND
 
 #define XR_USE_GRAPHICS_API_OPENGL
 #define XR_USE_GRAPHICS_API_VULKAN
@@ -42,11 +40,14 @@
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
+#include <X11/Xlib.h>
+#include <GL/glx.h>
 // gfxwrapper will redefine these macros
 #undef XR_USE_PLATFORM_WIN32
 #undef XR_USE_PLATFORM_XLIB
 #undef XR_USE_PLATFORM_XCB
 #undef XR_USE_PLATFORM_WAYLAND
+#define OS_LINUX_XLIB 1
 #include "gfxwrapper_opengl.h"
 #endif
 

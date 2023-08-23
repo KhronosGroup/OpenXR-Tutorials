@@ -57,7 +57,6 @@ html_theme_options = {
 }
 
 html_favicon = 'favicon.ico'
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -65,6 +64,9 @@ html_favicon = 'favicon.ico'
 #
 html_theme = 'tutorial_sphinx_theme_1'
 html_theme_path = ["."]
+html_theme_options = {
+  "show_nav_level": 4
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
