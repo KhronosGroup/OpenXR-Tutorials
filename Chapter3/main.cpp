@@ -313,20 +313,20 @@ private:
     // XR_DOCS_TAG_END_PollEvents
     }
 
-    // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
     void CreateReferenceSpace() {
+        // XR_DOCS_TAG_BEGIN_CreateReferenceSpace
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
         OPENXR_CHECK(xrCreateReferenceSpace(m_session, &referenceSpaceCI, &m_localOrStageSpace), "Failed to create ReferenceSpace.");
+        // XR_DOCS_TAG_END_CreateReferenceSpace
     }
-    // XR_DOCS_TAG_END_CreateReferenceSpace
 
-    // XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
     void DestroyReferenceSpace() {
+        // XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
         OPENXR_CHECK(xrDestroySpace(m_localOrStageSpace), "Failed to destroy Space.")
+        // XR_DOCS_TAG_END_DestroyReferenceSpace
     }
-    // XR_DOCS_TAG_END_DestroyReferenceSpace
 
     void CreateSwapchain() {
         // XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats

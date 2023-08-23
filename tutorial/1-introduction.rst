@@ -389,13 +389,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	.. container:: linux
 		:name: linux-id-3
 
-		.. literalinclude:: ../Chapter2/CMakeLists.txt
-				:language: cmake
-				:start-after: else() # Linux
-				:end-before: endif()
-				:dedent: 8
-
-		For Linux, we've added some compiler pre-processor directives.
+		For Linux, there are no libraries to link against currently.
 
 	.. container:: opengl
 		:name: opengl-id-4
@@ -752,7 +746,7 @@ The code below is an example of how you might implement the inclusion and defini
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
-			:start-at: #if defined(__LINIX__)
+			:start-at: #if defined(__linux__)
 			:end-at: #endif
 			:emphasize-lines: 2-4, 6
 
@@ -761,7 +755,7 @@ The code below is an example of how you might implement the inclusion and defini
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
-			:start-at: #if defined(__LINIX__)
+			:start-at: #if defined(__linux__)
 			:end-at: #endif
 			:emphasize-lines: 2-4, 7
 
