@@ -54,7 +54,10 @@ if (ANDROID) # Android
 
     # VulkanNDK
     find_library(vulkan-lib vulkan)
-    target_include_directories(${PROJECT_NAME} PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
+    if (vulkan-lib)
+        target_include_directories(${PROJECT_NAME} PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
+    endif()
 
     # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
     add_library(openxr-gfxwrapper STATIC ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.c ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.h)
@@ -63,6 +66,7 @@ if (ANDROID) # Android
     find_library(EGL-lib EGL)
     target_link_libraries(openxr-gfxwrapper PUBLIC ${GLES3-lib})
     target_link_libraries(openxr-gfxwrapper PUBLIC ${EGL-lib})
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL_ES)
 
     target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common)
     target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/external/include)
@@ -91,8 +95,10 @@ else() # Windows / Linux
         target_link_libraries(${PROJECT_NAME} "d3d12.lib") 
         # D3D11 / D3D12
         target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D11)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
     else() # Linux
-        target_compile_definitions(${PROJECT_NAME} PUBLIC OS_LINUX_WAYLAND=1 XR_USE_PLATFORM_WAYLAND=1 XR_USE_GRAPHICS_API_OPENGL=1 LINUX=1)#XR_USE_GRAPHICS_API_VULKAN=1 
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_LINUX_XLIB)
     endif()
 
     # VulkanSDK
@@ -100,10 +106,15 @@ else() # Windows / Linux
     if (Vulkan_FOUND)
         target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
         target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
     endif()
 
     # OpenGL
-    # Fix redirection to a different project's build folder
-    target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
-    target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
+    find_library(openxr-gfxwrapper-lib openxr-gfxwrapper)
+    if (openxr-gfxwrapper-lib)
+        # Fix redirection to a different project's build folder
+        target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
+        target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
+    endif()
 endif() # EOF
