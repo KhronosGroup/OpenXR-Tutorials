@@ -13,22 +13,6 @@
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
 
-std::string GetEnv(const std::string &var) {
-    const char *val = std::getenv(var.c_str());
-    if (val == nullptr) {  // invalid to assign nullptr to std::string
-        return "";
-    } else {
-        return val;
-    }
-}
-void SetEnv(const std::string &var, const std::string &val) {
-#if defined(_MSC_VER)
-    _putenv_s(var.c_str(), val.c_str());
-#else
-    setenv(var.c_str(), val.c_str(), 1);
-#endif
-}
-
 class OpenXRTutorial {
 public:
     OpenXRTutorial(GraphicsAPI_Type api)
