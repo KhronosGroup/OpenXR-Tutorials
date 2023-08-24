@@ -1,5 +1,6 @@
 #pragma once
 #ifdef _MSC_VER
+#define NOMINMAX
 #include <windows.h>
 #include <direct.h>
 #ifndef _MAX_PATH

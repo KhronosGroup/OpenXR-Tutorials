@@ -37,6 +37,8 @@ set(HEADERS
     "../Common/GraphicsAPI_Vulkan.h"
     "../Common/HelperFunctions.h")
 
+set(PROJECT_NAME GraphicsAPI_Test)
+
 set(HLSL_SHADERS
     "../Shaders/VertexShader.hlsl"
     "../Shaders/PixelShader.hlsl")
@@ -48,25 +50,32 @@ set(ES_GLSL_SHADERS
     "../Shaders/PixelShader_GLES.glsl")
 
  # Windows
-add_executable(GraphicsAPI_Test ${SOURCES} ${HEADERS})
-target_include_directories(GraphicsAPI_Test PUBLIC "../Common/")
-target_link_libraries(GraphicsAPI_Test openxr_loader)
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
+target_link_libraries(${PROJECT_NAME} openxr_loader)
 
 if (WIN32)
-    target_link_libraries(GraphicsAPI_Test "d3d11.lib") 
-    target_link_libraries(GraphicsAPI_Test "d3d12.lib") 
-    target_link_libraries(GraphicsAPI_Test "dxgi.lib") 
+    target_link_libraries(${PROJECT_NAME} "d3d11.lib") 
+    target_link_libraries(${PROJECT_NAME} "d3d12.lib") 
+    target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D11)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
 endif()
 
 find_package(Vulkan)
 if (Vulkan_FOUND)
-    target_include_directories(GraphicsAPI_Test PUBLIC ${Vulkan_INCLUDE_DIRS})
-    target_link_libraries(GraphicsAPI_Test ${Vulkan_LIBRARIES})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
 endif()
 
-# Fix redirection to a different project's build folder
-target_include_directories(GraphicsAPI_Test PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
-target_link_libraries(GraphicsAPI_Test openxr-gfxwrapper)
+find_library(openxr-gfxwrapper-lib openxr-gfxwrapper)
+if (openxr-gfxwrapper-lib)
+    # Fix redirection to a different project's build folder
+    target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
+    target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
+endif()
 
 #Shaders
 if (WIN32)
@@ -80,7 +89,7 @@ if (WIN32)
         get_filename_component(FILE_WE ${FILE} NAME_WE)
         get_source_file_property(shadertype ${FILE} ShaderType)
         get_source_file_property(shadermodel ${FILE} ShaderModel)
-        add_custom_command(TARGET GraphicsAPI_Test
+        add_custom_command(TARGET ${PROJECT_NAME}
                            COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso /Fd ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb ${FILE}
                            MAIN_DEPENDENCY ${FILE}
                            COMMENT "HLSL ${FILE}"
@@ -93,7 +102,7 @@ if (WIN32)
         get_filename_component(FILE_WE ${FILE} NAME_WE)
         get_source_file_property(shadertype ${FILE} ShaderType)
         get_source_file_property(shadermodel ${FILE} ShaderModel)
-        add_custom_command(TARGET GraphicsAPI_Test
+        add_custom_command(TARGET ${PROJECT_NAME}
                            COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso /Fd ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb ${FILE}
                            MAIN_DEPENDENCY ${FILE}
                            COMMENT "HLSL ${FILE}"
@@ -111,7 +120,7 @@ if (Vulkan_FOUND)
     foreach(FILE ${GLSL_SHADERS})
         get_filename_component(FILE_WE ${FILE} NAME_WE)
         get_source_file_property(shadertype ${FILE} ShaderType)
-        add_custom_command(TARGET GraphicsAPI_Test
+        add_custom_command(TARGET ${PROJECT_NAME}
                            COMMAND glslangValidator.exe -V ${FILE} -e main -S ${shadertype} $<IF:$<CONFIG:DEBUG>,-Od,> -g -o ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv
                            MAIN_DEPENDENCY ${FILE}
                            COMMENT "GLSL ${FILE}"
@@ -123,7 +132,7 @@ endif()
 #OpenGL
 foreach(FILE ${GLSL_SHADERS})
     get_filename_component(FILE_WE ${FILE} NAME_WE)
-    add_custom_command(TARGET GraphicsAPI_Test 
+    add_custom_command(TARGET ${PROJECT_NAME} 
                        COMMAND ${CMAKE_COMMAND} -E copy 
                        ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} 
                        ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.glsl
