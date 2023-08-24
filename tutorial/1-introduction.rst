@@ -379,17 +379,23 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 		.. container:: d3d11
 			:name: d3d11-id-2-1
 			
-			For Microsoft Windows, we've linked ``d3d11.lib`` and ``dxgi.lib``, so that we can use Direct3D 11 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project.
+			For Microsoft Windows, we've linked ``d3d11.lib`` and ``dxgi.lib``, so that we can use Direct3D 11 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project. We've added the ``XR_TUTORIAL_USE_D3D11`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h.``.
 
 		.. container:: d3d12
 			:name: d3d12-id-2-1
 
-			For Microsoft Windows, we've linked ``d3d12.lib`` and ``dxgi.lib``, so that we can use Direct3D 12 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project.
+			For Microsoft Windows, we've linked ``d3d12.lib`` and ``dxgi.lib``, so that we can use Direct3D 12 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project. We've added the ``XR_TUTORIAL_USE_D3D12`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h.``.
 
 	.. container:: linux
 		:name: linux-id-3
 
-		For Linux, there are no libraries to link against currently.
+		.. literalinclude:: ../Chapter2/CMakeLists.txt
+				:language: cmake
+				:start-after: else() # Linux
+				:end-before: endif()
+				:dedent: 8
+
+		For Linux, there are no headers to include or libraries to link against. We've added the ``XR_TUTORIAL_USE_LINUX_XLIB`` compiler definition to specify which Linux Windowing System should be supported and have their headers included in ``GraphicsAPI.h.``. Other options are ``XR_TUTORIAL_USE_LINUX_XCB`` and ``XR_TUTORIAL_USE_LINUX_WAYLAND``. Wayland uses *EGL* for its *OpenGL ES* context and not *GLX* with *OpenGL*.
 
 	.. container:: opengl
 		:name: opengl-id-4
@@ -400,7 +406,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:end-before: endif() # EOF
 			:dedent: 4
 		
-		This CMake code will add gfxwrapper for OpenGL. We've added the include directories and linked the gfxwrapper libraries from the OpenXR-SDK.
+		This CMake code will add gfxwrapper for OpenGL. We've added the include directories and linked the gfxwrapper libraries from the OpenXR-SDK. We've added the ``XR_TUTORIAL_USE_OPENGL`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h.``.
 
 	.. container:: vulkan
 		:name: vulkan-id-5
@@ -411,7 +417,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:end-at: endif()
 			:dedent: 4
 		
-		If you have the Vulkan SDK installed, this CMake code will try to find that package, add the include directories and link the Vulkan libraries.
+		If you have the Vulkan SDK installed, this CMake code will try to find that package, add the include directories and link the Vulkan libraries. We've added the ``XR_TUTORIAL_USE_VULKAN`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h.``.
 
 	That's all the CMake code that we require for this project. 
 
@@ -508,7 +514,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:end-before: # Final link
 			:dedent: 4
 	
-		We now add a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL ES. We compile the library the C and header file in ``${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.*`` and add this ``${openxr_SOURCE_DIR}/external/include`` as an include directory. Next, we find the ``GLESv3`` and ``EGL`` libraries and link them to ``openxr-gfxwrapper``. We add the ``${openxr_SOURCE_DIR}/src/common`` and ``${openxr_SOURCE_DIR}/external/include`` folder as include directories to ``OpenXRTutorialChapter2`` as well.
+		We now add a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL ES. We compile the library the C and header file in ``${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.*`` and add this ``${openxr_SOURCE_DIR}/external/include`` as an include directory. Next, we find the ``GLESv3`` and ``EGL`` libraries and link them to ``openxr-gfxwrapper``. We add the ``${openxr_SOURCE_DIR}/src/common`` and ``${openxr_SOURCE_DIR}/external/include`` folder as include directories to ``OpenXRTutorialChapter2`` as well. We've added the ``XR_TUTORIAL_USE_OPENGL_ES`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h.``.
 
 		.. code-block:: cmake
 
@@ -529,7 +535,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 			:end-before: # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
 			:dedent: 4
 
-		Next, we find the Vulkan library in the NDK and include the directory to the Android Vulkan headers. 
+		Next, we find the Vulkan library in the NDK and include the directory to the Android Vulkan headers. We've added the ``XR_TUTORIAL_USE_VULKAN`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h.``.
 
 		.. code-block:: cmake
 
@@ -690,7 +696,7 @@ GraphicsAPI
 
 	:download:`GraphicsAPI_Vulkan.cpp <../Common/GraphicsAPI_Vulkan.cpp>`
 
-This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The derived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and graphics API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. This tutorial demonstrates all five graphics APIs, you will only need to select one ``XR_USE_PLATFORM_...`` macro and one ``XR_USE_GRAPHICS_API_...`` macro.
+This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The derived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and graphics API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. In the first code block, there's also reference to ``XR_TUTORIAL_USE_...`` which we set up the ``CMakeLists.txt`` . This tutorial demonstrates all five graphics APIs, you will only need to select one ``XR_USE_PLATFORM_...`` macro and one ``XR_USE_GRAPHICS_API_...`` macro.
 
 The code below is an example of how you might implement the inclusion and definition the relevant graphics API header along with the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros. This will already be set up in the ``GraphicsAPI.h`` file.
 
@@ -708,8 +714,8 @@ The code below is an example of how you might implement the inclusion and defini
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
 			:start-at: #if defined(_WIN32)
-			:end-at: #endif
-			:emphasize-lines: 5, 7
+			:end-at: #endif // _WIN32
+			:emphasize-lines: 6, 8-10
 
 	.. container:: d3d12
 		:name: d3d12-id-4
@@ -717,8 +723,8 @@ The code below is an example of how you might implement the inclusion and defini
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
 			:start-at: #if defined(_WIN32)
-			:end-at: #endif
-			:emphasize-lines: 5, 8
+			:end-at: #endif // _WIN32
+			:emphasize-lines: 6, 11-13
 
 	.. container:: opengl
 		:name: opengl-id-6
@@ -726,8 +732,8 @@ The code below is an example of how you might implement the inclusion and defini
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
 			:start-at: #if defined(_WIN32)
-			:end-at: #endif
-			:emphasize-lines: 5, 9
+			:end-at: #endif // _WIN32
+			:emphasize-lines: 6, 14-16
 
 	.. container:: vulkan
 		:name: vulkan-id-9
@@ -735,8 +741,8 @@ The code below is an example of how you might implement the inclusion and defini
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
 			:start-at: #if defined(_WIN32)
-			:end-at: #endif
-			:emphasize-lines: 5, 10
+			:end-at: #endif // _WIN32
+			:emphasize-lines: 6, 17-19
 
 .. container:: linux
 	:name: linux-id-4
@@ -747,8 +753,8 @@ The code below is an example of how you might implement the inclusion and defini
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
 			:start-at: #if defined(__linux__)
-			:end-at: #endif
-			:emphasize-lines: 2-4, 6
+			:end-at: #endif // __linux__
+			:emphasize-lines: 2-14, 16-18
 
 	.. container:: vulkan
 		:name: vulkan-id-10
@@ -756,8 +762,8 @@ The code below is an example of how you might implement the inclusion and defini
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
 			:start-at: #if defined(__linux__)
-			:end-at: #endif
-			:emphasize-lines: 2-4, 7
+			:end-at: #endif // __linux__
+			:emphasize-lines: 2-14, 19-21
 
 .. container:: android
 	:name: android-id-4
@@ -768,8 +774,8 @@ The code below is an example of how you might implement the inclusion and defini
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
 			:start-at: #if defined(__ANDROID__)
-			:end-at: #endif
-			:emphasize-lines: 3, 5
+			:end-at: endif // __ANDROID__
+			:emphasize-lines: 3, 5-7
 
 	.. container:: vulkan
 		:name: vulkan-id-11
@@ -777,8 +783,8 @@ The code below is an example of how you might implement the inclusion and defini
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
 			:start-at: #if defined(__ANDROID__)
-			:end-at: #endif
-			:emphasize-lines: 3, 6
+			:end-at: endif // __ANDROID__
+			:emphasize-lines: 3, 8-10
 
 .. container:: d3d11
 	:name: d3d11-id-5

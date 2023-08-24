@@ -255,7 +255,7 @@ private:
     }
 
     void PollEvents() {
-    // XR_DOCS_TAG_BEGIN_PollEvents
+        // XR_DOCS_TAG_BEGIN_PollEvents
         XrResult result = XR_SUCCESS;
         do {
             XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
@@ -310,7 +310,7 @@ private:
             }
 
         } while (result == XR_SUCCESS);
-    // XR_DOCS_TAG_END_PollEvents
+        // XR_DOCS_TAG_END_PollEvents
     }
 
     void CreateReferenceSpace() {

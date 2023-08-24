@@ -56,10 +56,10 @@ target_link_libraries(${PROJECT_NAME} openxr_loader)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} "d3d11.lib") 
-    target_link_libraries(${PROJECT_NAME} "d3d12.lib") 
-    target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D11)
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
+    target_link_libraries(${PROJECT_NAME} "d3d12.lib") 
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
+    target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
 endif()
 
 find_package(Vulkan)
