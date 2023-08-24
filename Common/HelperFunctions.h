@@ -40,13 +40,13 @@ T Align(T value, T alignment) {
     return (value + (alignment - 1)) & ~(alignment - 1);
 };
 
-std::string GetEnv(const std::string &variable) {
+inline std::string GetEnv(const std::string &variable) {
     const char *value = std::getenv(variable.c_str());
     // It's invalid to assign nullptr to std::string
     return value != nullptr ? std::string(value) : std::string("");
 }
 
-void SetEnv(const std::string &variable, const std::string &value) {
+inline void SetEnv(const std::string &variable, const std::string &value) {
 #if defined(_MSC_VER)
     _putenv_s(variable.c_str(), value.c_str());
 #else
