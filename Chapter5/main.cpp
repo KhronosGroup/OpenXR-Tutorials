@@ -37,28 +37,7 @@ static std::uniform_real_distribution<float> pseudorandom_distribution(0,1.f);
 static std::mt19937 pseudo_random_generator;
 // XR_DOCS_TAG_END_include_linear_algebra
 
-#if defined(__ANDROID__)
-// XR_DOCS_TAG_BEGIN_ReadFiles_Android
-#include "android/asset_manager.h"
-std::string ReadTextFile(const std::string &filepath, AAssetManager *assetManager) {
-    AAsset *file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
-    size_t fileLength = AAsset_getLength(file);
-    std::string text;
-    text.resize(fileLength);
-    AAsset_read(file, (void *)text.data(), fileLength);
-    AAsset_close(file);
-    return text;
-}
-std::vector<char> ReadBinaryFile(const std::string &filepath, AAssetManager *assetManager) {
-    AAsset *file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
-    size_t fileLength = AAsset_getLength(file);
-    std::vector<char> binary(fileLength);
-    AAsset_read(file, (void *)binary.data(), fileLength);
-    AAsset_close(file);
-    return binary;
-}
-// XR_DOCS_TAG_END_ReadFiles_Android
-#endif
+
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_5
 
 class OpenXRTutorial {

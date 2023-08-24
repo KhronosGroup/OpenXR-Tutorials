@@ -24,5 +24,4 @@ inline const char* GetXRErrorString(XrInstance xrInstance, XrResult result) {
             OpenXRDebugBreak();                                                                                                                             \
         }                                                                                                                                                   \
     }
-
 // XR_DOCS_TAG_END_Helper_Functions0
