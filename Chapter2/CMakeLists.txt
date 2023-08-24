@@ -110,11 +110,8 @@ else() # Windows / Linux
     endif()
 
     # OpenGL
-    find_library(openxr-gfxwrapper-lib openxr-gfxwrapper)
-    if (openxr-gfxwrapper-lib)
-        # Fix redirection to a different project's build folder
-        target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
-        target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
-    endif()
+    # Fix redirection to a different project's build folder
+    target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
+    target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
 endif() # EOF
