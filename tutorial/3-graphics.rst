@@ -16,15 +16,12 @@ In the *workspace* directory, update the ``CMakeLists.txt`` by adding the follow
 		:start-at: add_subdirectory(Chapter3
 		:end-at: )
 
-Now, create a ``Chapter3/`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2/``. For the ``CMakeLists.txt``, you can either copy the from ``Chapter2/`` and update this line:
+Now, create a ``Chapter3/`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2/``. For the ``CMakeLists.txt``, copy the from ``Chapter2/`` and update this line:
 
 .. literalinclude:: ../Chapter3/CMakeLists.txt
 	:language: cmake
 	:start-at: set(PROJECT_NAME
 	:end-at: OpenXRTutorialChapter3)
-
-Or, you can download the updated ``CMakeLists.txt`` here.
-:download:`Chapter3/CMakeLists.txt <../Chapter3/CMakeLists.txt>`
 
 .. container:: android
 	:name: android-id-1
