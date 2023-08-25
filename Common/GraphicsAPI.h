@@ -23,7 +23,7 @@
 #endif
 #endif // _WIN32
 
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__ANDROID__)
 #if defined(XR_TUTORIAL_USE_LINUX_XLIB)
 #include <X11/Xlib.h>
 #define XR_USE_PLATFORM_XLIB

@@ -95,7 +95,7 @@ protected:
 };
 #else
 #endif
-#ifdef __linux__
+#if defined(__linux__) && !defined(__ANDROID__)
 #include <iostream>
 class DebugOutput {
 public:
