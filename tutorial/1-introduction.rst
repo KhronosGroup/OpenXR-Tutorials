@@ -245,14 +245,14 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake
 		:start-at: cmake_minimum_required
-		:end-at: )
+		:end-before: project("${PROJECT_NAME}")
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake
 		:start-at: # For FetchContent_Declare() and FetchContent_MakeAvailable()
 		:end-before: # Files
 
-	After setting our CMake version, we include ``FetchContent`` and use it to get the OpenXR-SDK from Khronos's GitHub page. Now, we will add to our ``CMakeLists.txt`` to specify the source and header files by adding the following code. Here, we are including all the files needed for our project. 
+	After setting our CMake version and our own CMake variable ``PROJECT_NAME`` to ``OpenXRTutorialChapter2``, we include ``FetchContent`` and use it to get the OpenXR-SDK from Khronos's GitHub page. Now, we will add to our ``CMakeLists.txt`` to specify the source and header files by adding the following code. Here, we are including all the files needed for our project.  
 
 	.. container:: d3d11
 		:name: d3d11-id-1
@@ -329,10 +329,8 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 				"../Common/HelperFunctions.h"
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
-			
-			set(PROJECT_NAME OpenXRTutorialChapter2)
 
-	All the files listed above with ``../Common/*.*`` are available to download from this tutorial website. In the next section, you will find the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice. We also set our own CMake variable ``PROJECT_NAME`` to ``OpenXRTutorialChapter2``.
+	All the files listed above with ``../Common/*.*`` are available to download from this tutorial website. In the next section, you will find the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
 	
 	At this point, we'll also create our text file called ``main.cpp`` in the ``/Chapter2`` directory. This will be our main source file, which we will use later in this chapter.
 
@@ -451,7 +449,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 		:start-at: # For FetchContent_Declare() and FetchContent_MakeAvailable()
 		:end-before: # Files
 
-	After setting our CMake version to 3.22.1 and the project's name, we include ``FetchContent`` and use it to get the OpenXR-SDK from Khronos's GitHub page.
+	After setting our CMake version, our own CMake variable ``PROJECT_NAME`` to ``OpenXRTutorialChapter2`` and with that variable setting the project's name, we include ``FetchContent`` and use it to get the OpenXR-SDK from Khronos's GitHub page.
 
 	.. container:: opengles
 		:name: opengles-id-2
@@ -472,8 +470,6 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
 			
-			set(PROJECT_NAME OpenXRTutorialChapter2)
-	
 	.. container:: vulkan
 		:name: vulkan-id-6
 
@@ -493,9 +489,7 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
 
-			set(PROJECT_NAME OpenXRTutorialChapter2)
-
-	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice. We also set our own CMake variable ``PROJECT_NAME`` to ``OpenXRTutorialChapter2``.
+	Here, we include all the files needed for our project. First, we'll create our source file called ``main.cpp`` in the ``/Chapter2`` directory. All files with ``../Common/*.*`` are available to download from this tutorial website. Below are the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake
@@ -696,9 +690,12 @@ GraphicsAPI
 
 	:download:`GraphicsAPI_Vulkan.cpp <../Common/GraphicsAPI_Vulkan.cpp>`
 
+Note: ``GraphicsAPI`` is by no means production-ready code or reflective of good practice with specific-APIs. It is there solely to have working samples in this tutorial, demonstrate some basic rendering and interaction with OpenXR.
+
 This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The derived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and graphics API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. In the first code block, there's also reference to ``XR_TUTORIAL_USE_...`` which we set up the ``CMakeLists.txt`` . This tutorial demonstrates all five graphics APIs, you will only need to select one ``XR_USE_PLATFORM_...`` macro and one ``XR_USE_GRAPHICS_API_...`` macro.
 
 The code below is an example of how you might implement the inclusion and definition the relevant graphics API header along with the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros. This will already be set up in the ``GraphicsAPI.h`` file.
+
 
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp
