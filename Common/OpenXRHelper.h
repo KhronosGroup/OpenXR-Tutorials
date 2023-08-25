@@ -1,9 +1,4 @@
 #pragma once
-
-#ifdef __linux__
-#include <X11/Xlib.h>
-#include <GL/glx.h>
-#endif
 // Define any XR_USE_PLATFORM_... / XR_USE_GRAPHICS_API_... before this header file.
 
 // OpenXR Headers
@@ -29,5 +24,4 @@ inline const char* GetXRErrorString(XrInstance xrInstance, XrResult result) {
             OpenXRDebugBreak();                                                                                                                             \
         }                                                                                                                                                   \
     }
-
 // XR_DOCS_TAG_END_Helper_Functions0

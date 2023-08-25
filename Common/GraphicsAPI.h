@@ -4,30 +4,59 @@
 // Platform headers
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include "Windows.h"
 #include "unknwn.h"
 #define XR_USE_PLATFORM_WIN32
 
+#if defined(XR_TUTORIAL_USE_D3D11)
 #define XR_USE_GRAPHICS_API_D3D11
+#endif
+#if defined(XR_TUTORIAL_USE_D3D12)
 #define XR_USE_GRAPHICS_API_D3D12
+#endif
+#if defined(XR_TUTORIAL_USE_OPENGL)
 #define XR_USE_GRAPHICS_API_OPENGL
+#endif
+#if defined(XR_TUTORIAL_USE_VULKAN)
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
+#endif // _WIN32
 
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(XR_TUTORIAL_USE_LINUX_XLIB)
+#include <X11/Xlib.h>
 #define XR_USE_PLATFORM_XLIB
+#endif
+#if defined(XR_TUTORIAL_USE_LINUX_XCB)
+#include <xcb/xcb.h>
+#include <X11/Xlib.h>
+#define XR_USE_PLATFORM_XCB
+#endif
+#if defined(XR_TUTORIAL_USE_LINUX_WAYLAND)
+#include <wayland-client.h>
+#define XR_USE_PLATFORM_WAYLAND
+#endif
 
+#if defined(XR_TUTORIAL_USE_OPENGL)
 #define XR_USE_GRAPHICS_API_OPENGL
+#endif
+#if defined(XR_TUTORIAL_USE_VULKAN)
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
+#endif // __linux__
 
 #if defined(__ANDROID__)
 #include "android_native_app_glue.h"
 #define XR_USE_PLATFORM_ANDROID
 
+#if defined(XR_TUTORIAL_USE_OPENGL_ES)
 #define XR_USE_GRAPHICS_API_OPENGL_ES
+#endif
+#if defined(XR_TUTORIAL_USE_VULKAN)
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
+#endif // __ANDROID__
 
 // Graphic APIs headers
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -40,14 +69,21 @@
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
-#include <X11/Xlib.h>
-#include <GL/glx.h>
+#if defined(XR_USE_PLATFORM_XLIB)
+#define OS_LINUX_XLIB 1
+#endif
+#if defined(XR_USE_PLATFORM_XCB)
+#define OS_LINUX_XCB 1
+#endif
+#if defined(XR_USE_PLATFORM_WAYLAND)
+#define OS_LINUX_WAYLAND 1
+#endif
+
 // gfxwrapper will redefine these macros
 #undef XR_USE_PLATFORM_WIN32
 #undef XR_USE_PLATFORM_XLIB
 #undef XR_USE_PLATFORM_XCB
 #undef XR_USE_PLATFORM_WAYLAND
-#define OS_LINUX_XLIB 1
 #include "gfxwrapper_opengl.h"
 #endif
 

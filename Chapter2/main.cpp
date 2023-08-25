@@ -12,18 +12,7 @@
 #include "OpenXRDebugUtils.h"
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
-std::string GetEnv( const std::string & var ) {
-     const char * val = std::getenv( var.c_str() );
-     if ( val == nullptr ) { // invalid to assign nullptr to std::string
-         return "";
-     }
-     else {
-         return val;
-     }
-}
-void SetEnv( const std::string & var,const std::string & val) {
-     setenv( var.c_str(),val.c_str(),1);
-}
+
 class OpenXRTutorial {
 public:
     OpenXRTutorial(GraphicsAPI_Type api)
@@ -78,9 +67,11 @@ private:
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
             // XR_DOCS_TAG_END_instanceExtensions
         }
-		SetEnv("XR_RUNTIME_JSON","/home/roderick/monado/build/openxr_monado-dev.json");
-		std::string XR_RUNTIME_JSON=GetEnv("XR_RUNTIME_JSON");
-		std::cout<<"XR_RUNTIME_JSON"<<XR_RUNTIME_JSON<<"\n";
+
+        SetEnv("XR_RUNTIME_JSON", "/home/roderick/monado/build/openxr_monado-dev.json");
+        std::string XR_RUNTIME_JSON = GetEnv("XR_RUNTIME_JSON");
+        std::cout << "XR_RUNTIME_JSON" << XR_RUNTIME_JSON << "\n";
+
         // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
         uint32_t apiLayerCount = 0;
         std::vector<XrApiLayerProperties> apiLayerProperties;
@@ -220,7 +211,7 @@ private:
     }
 
     void PollEvents() {
-    // XR_DOCS_TAG_BEGIN_PollEvents
+        // XR_DOCS_TAG_BEGIN_PollEvents
         XrResult result = XR_SUCCESS;
         do {
             XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
@@ -275,7 +266,7 @@ private:
             }
 
         } while (result == XR_SUCCESS);
-    // XR_DOCS_TAG_END_PollEvents
+        // XR_DOCS_TAG_END_PollEvents
     }
 
 #if defined(__ANDROID__)
@@ -374,7 +365,7 @@ private:
     XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
     bool m_applicationRunning = true;
     bool m_sessionRunning = false;
-    
+
     XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 };
 

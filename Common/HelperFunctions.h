@@ -40,6 +40,20 @@ T Align(T value, T alignment) {
     return (value + (alignment - 1)) & ~(alignment - 1);
 };
 
+inline std::string GetEnv(const std::string &variable) {
+    const char *value = std::getenv(variable.c_str());
+    // It's invalid to assign nullptr to std::string
+    return value != nullptr ? std::string(value) : std::string("");
+}
+
+inline void SetEnv(const std::string &variable, const std::string &value) {
+#if defined(_MSC_VER)
+    _putenv_s(variable.c_str(), value.c_str());
+#else
+    setenv(variable.c_str(), value.c_str(), 1);
+#endif
+}
+
 inline std::string ReadTextFile(const std::string &filepath) {
     std::ifstream stream(filepath, std::fstream::in);
     std::string output;
@@ -69,6 +83,30 @@ inline std::vector<char> ReadBinaryFile(const std::string &filepath) {
     stream.close();
     return output;
 }
+
+#if defined(__ANDROID__)
+// XR_DOCS_TAG_BEGIN_ReadFiles_Android
+#include "android/asset_manager.h"
+inline std::string ReadTextFile(const std::string &filepath, AAssetManager *assetManager) {
+    AAsset *file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
+    size_t fileLength = AAsset_getLength(file);
+    std::string text;
+    text.resize(fileLength);
+    AAsset_read(file, (void *)text.data(), fileLength);
+    AAsset_close(file);
+    return text;
+}
+
+inline std::vector<char> ReadBinaryFile(const std::string &filepath, AAssetManager *assetManager) {
+    AAsset *file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
+    size_t fileLength = AAsset_getLength(file);
+    std::vector<char> binary(fileLength);
+    AAsset_read(file, (void *)binary.data(), fileLength);
+    AAsset_close(file);
+    return binary;
+}
+// XR_DOCS_TAG_END_ReadFiles_Android
+#endif
 
 #ifdef _MSC_VER
 #define strncpy(dst, src, count) strcpy_s(dst, count, src);
