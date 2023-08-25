@@ -145,12 +145,13 @@ else()
 		SET_PROPERTY(CACHE OPENXR_GRAPHICS_API_TYPE PROPERTY STRINGS "VULKAN OPENGL" ) 
     endif()
 
-    find_package(Vulkan)
+    # VulkanSDK
     if (Vulkan_FOUND)
         target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
         target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
     endif()
 
+    # OpenGL
     # Fix redirection to a different project's build folder
     target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
     target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)

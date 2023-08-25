@@ -76,6 +76,7 @@ if (ANDROID) # Android
             openxr-gfxwrapper)
 
 else() # Windows / Linux
+    find_package(Vulkan)
     add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
@@ -92,10 +93,10 @@ else() # Windows / Linux
         # D3D11 / D3D12
         target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
     else() # Linux
+        target_compile_definitions(${PROJECT_NAME} PUBLIC OS_LINUX_WAYLAND=1 XR_USE_PLATFORM_WAYLAND=1 XR_USE_GRAPHICS_API_OPENGL=1 LINUX=1)#XR_USE_GRAPHICS_API_VULKAN=1 
     endif()
 
     # VulkanSDK
-    find_package(Vulkan)
     if (Vulkan_FOUND)
         target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
         target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
@@ -105,4 +106,4 @@ else() # Windows / Linux
     # Fix redirection to a different project's build folder
     target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
     target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
-endif() # EOF
+endif()

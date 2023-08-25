@@ -1,5 +1,5 @@
 ﻿#################
-🕹 4 Interactions
+4 Interactions
 #################
 
 An OpenXR application has interactions with the user which can be user input to the application, or haptic output back to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: spaces, actions, and bindings.

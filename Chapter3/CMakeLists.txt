@@ -76,6 +76,7 @@ if (ANDROID) # Android
             openxr-gfxwrapper)
 
 else() # Windows / Linux
+    find_package(Vulkan)
     add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
@@ -96,7 +97,6 @@ else() # Windows / Linux
     endif()
 
     # VulkanSDK
-    find_package(Vulkan)
     if (Vulkan_FOUND)
         target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
         target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
@@ -106,4 +106,4 @@ else() # Windows / Linux
     # Fix redirection to a different project's build folder
     target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
     target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
-endif() # EOF
+endif()

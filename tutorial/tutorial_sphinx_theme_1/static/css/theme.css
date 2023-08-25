@@ -2,7 +2,8 @@
 
 html
 {
-    box-sizing: border-box
+    box-sizing: border-box;
+		overflow:hidden ;
 }
 
 p, figure
@@ -6257,7 +6258,8 @@ html
 {
     margin-left: 300px;
     background: #fcfcfc;
-    min-height: 100%
+    min-height: 100%;
+	height:100%
 }
 
 .wy-nav-content
@@ -6602,6 +6604,11 @@ footer p
     {
         display: block
     }
+}
+
+.wy-nav-content
+{
+        overflow:       auto;
 }
 
 .rst-content .toctree-wrapper > p.caption, .rst-content h1, .rst-content h2, .rst-content h3, .rst-content h4, .rst-content h5, .rst-content h6
@@ -7589,7 +7596,7 @@ span[id*=MathJax-Span]
 
 .wy-nav-content
 {
-	margin: 20px 20px 20px 40px;
+	margin: 2px 20px 20px 40px;
 }
 
 .d3d11, .d3d12, .opengl, .opengles, .vulkan
@@ -7680,4 +7687,19 @@ button.select-graphics-api-inline
 #selectvulkan-inline
 {
 	background:#ad0e28;
+}
+#interactions > h1{
+    padding-left:32px;
+}
+#interactions > h1:before{
+	content: '';
+    background: url(icons/HandsetIcon.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 30px;
+    height: 22px;
+    margin-left: -20px;
+    padding-top: 12px;
+    padding: 1px;
+    display: inline-block;
 }
