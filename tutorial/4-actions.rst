@@ -2,9 +2,28 @@
 4 Interactions
 #################
 
+*********************************
+4.1 The OpenXR Interaction System
+*********************************
+OpenXR interactions are defined in a two-way system with inputs such as motion-based poses, button presses, analogue controls, and outputs such as haptic controller vibrations. Collectively in OpenXR terminology, these are called Actions. An *Action* is a semantic object, not necessarily associated with a specific hardware control: for example, you would define a "Select" action, not an action for "press button A". You would define an action "walk", not "left analogue stick position". The specific device input/output that an Action is associated with is the realm of *Bindings*, which are defined by *Interaction Profiles* (see below).
+
+Actions are contextual. They are grouped in *Action Sets*, which are again semantic and app-specific. For example, you might have an Action Set for "gameplay" and a different Action Set for "pause menu". In more complex apps, you would create an Action Set for different situations - "driving car" and "walking" could be different Action Sets.
+
+In this chapter, you'll learn how to create an Action Set containing multiple Actions of different types. You'll create a binding for your Actions with a simple controller profile, and optionally, with a profile specific to the device/s you are testing.
+
+************************************
+4.2 Creating Actions and Action Sets
+************************************
+
 An OpenXR application has interactions with the user which can be user input to the application, or haptic output back to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: spaces, actions, and bindings.
 
-Download :download:`CMakeLists.txt <../Chapter4/CMakeLists.txt>` for this chapter. This adds shader compilation to the project. Create a "Shaders" folder next to your project folder, and put these files in it:
+Download :download:`CMakeLists.txt <../Chapter4/CMakeLists.txt>` for this chapter, and place it in a new folder called "Chapter4". In your root CMakeLists.txt, add the line:
+
+		.. code-block:: cmake
+
+			add_subdirectory(Chapter4)
+
+The new subproject adds shader compilation so we can render some 3D objects. Create a "Shaders" folder next to your project folder, and put these files in it:
 
 .. d3d11 d3d12
 
@@ -21,10 +40,6 @@ Download :download:`CMakeLists.txt <../Chapter4/CMakeLists.txt>` for this chapte
 	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader_GLES.glsl>`
 	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader_GLES.glsl>`
 
-************************************
-4.1 Creating Actions and Action Sets
-************************************
-
 At the end of your application class, add this code:
 
 .. literalinclude:: ../Chapter4/main.cpp
@@ -35,12 +50,12 @@ At the end of your application class, add this code:
 
 Here, we have defined an Action Set: a group of related actions that are created together. The individual actions, such as selectAction and triggerAction, will belong to this set. For a pose action, we need an XrSpace, so leftGripPoseSpace has been declared. And we'll keep a copy of the pose itself, leftGripPose, which will change per-frame.
 
-ActionSets are created before the session is initialized, so in Run(), after the call to GetSystemID(), add this line:
+Action Sets are created before the session is initialized, so in Run(), after the call to GetSystemID(), add this line:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallCreateActionSet
-	:end-before: XR_DOCS_TAG_END_CallCreateActionSet
+	:start-after: XR_DOCS_TAG_BEGIN_CallCreateAction Set
+	:end-before: XR_DOCS_TAG_END_CallCreateAction Set
 	:dedent: 2
 
 After the definition of GetSystemID(), we'll add these helper functions that convert a string into an XrPath, and vice-versa. Add:
@@ -55,13 +70,12 @@ Now we will define the `CreateActionSet` function:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateActionSet
-	:end-before: XR_DOCS_TAG_END_CreateActionSet
+	:start-after: XR_DOCS_TAG_BEGIN_CreateAction Set
+	:end-before: XR_DOCS_TAG_END_CreateAction Set
 	:dedent: 0
 
-An ActionSet is a group of actions that apply in a specific context. You might have an ActionSet for when your XR game is showing a pause menu or control panel, and a different ActionSet for in-game. There might even be different
-ActionSets for different situations in an XR application: rowing in a boat, climbing a cliff, and so on.
-So you can create multiple ActionSets, but we only need one for this example. The ActionSet is created with a name, and a localized string for its description. Now add:
+An Action Set is a group of actions that apply in a specific context. You might have an Action Set for when your XR game is showing a pause menu or control panel, and a different Action Set for in-game. There might be different Action Sets for different situations in an XR application: rowing in a boat, climbing a cliff, and so on.
+So you can create multiple Action Sets, but we only need one for this example. The Action Set is created with a name, and a localized string for its description. Now add:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -71,10 +85,10 @@ So you can create multiple ActionSets, but we only need one for this example. Th
 
 Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is. It also, optionally, has a list of sub-action paths. A sub-action is, essentially the same action on a different control device: left- or right-hand controllers for example.
 
-Each Action and ActionSet has both a name, for internal use, and a localized description to show to the end-user. This is because the user may want to re-map actions from the default controls, so there must be a human-readable name to show them.
+Each Action and Action Set has both a name, for internal use, and a localized description to show to the end-user. This is because the user may want to re-map actions from the default controls, so there must be a human-readable name to show them.
 
 *************************************
-4.2 Interaction Profiles and Bindings
+4.3 Interaction Profiles and Bindings
 *************************************
 
 As OpenXR is an API for many different devices, it needs to provide a way for you as a developer to refer to the various buttons, joysticks, inputs and outputs that a device may have, without needing to know in advance which device or devices the user will have.
@@ -94,7 +108,7 @@ Binding Interactions
 We will set up bindings for the actions. A binding is a *suggested* correspondence between an action (which is app-defined), and the input/output on the
 user's devices. 
 
-XrPath is a 64-bit number that hopefully uniquely identifies any given forward-slash-delimited path string, allowing us to refer to paths without putting cumbersome string-handling in our runtime code. After the call to CreateActionSet() in Run(), add the line:
+XrPath is a 64-bit number that hopefully uniquely identifies any given forward-slash-delimited path string, allowing us to refer to paths without putting cumbersome string-handling in our runtime code. After the call to CreateAction Set() in Run(), add the line:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -102,7 +116,7 @@ XrPath is a 64-bit number that hopefully uniquely identifies any given forward-s
 	:end-before: XR_DOCS_TAG_END_CallSuggestBindings1
 	:dedent: 0
 
-After the definition of CreateActionSet(), add:
+After the definition of CreateAction Set(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -121,6 +135,24 @@ By means of a lambda function `SuggestBindings`, we call into OpenXR with a give
 Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile ( and "/interaction_profiles/khr/simple_controller" should *always* be supported in an OpenXR runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
 The suggested bindings are not guaranteed to be used: that's up to the runtime. Some runtimes allow users to override the default bindings, and OpenXR expects this.
 
+The next part depends on what hardware you will be testing on. It's optional: the Khronos Simple Controller should work on any OpenXR runtime/device combination. But it has limitations - not least that there are no floating-point controls. If you have an Oculus Quest, whether building natively or running on PC VR via a streaming system, the native profile is called "/interaction_profiles/oculus/touch_controller", and you can insert the following:
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
+	:end-before: XR_DOCS_TAG_END_SuggestTouchNativeBindings
+	:dedent: 0
+
+The main apparent difference is that the grab action is now analogue ("squeeze/value" rather than "select/click"). But you should never assume that the same path means exactly the same behaviour on different profiles. So again, only implement profiles that you can test with their associated hardware, and test every profile that you implement.
+
+We now close out the function, and add RecordCurrentBindings() to report how the runtime has *actually* bound your actions to your devices.
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_SuggestBindings3
+	:end-before: XR_DOCS_TAG_END_SuggestBindings3
+	:dedent: 0
+
 Theory and Best Practices for Interaction Profiles
 --------------------------------------------------
 
@@ -137,10 +169,10 @@ See also `semantic-path-interaction-profiles <https://registry.khronos.org/OpenX
 
 
 ****************************
-4.3 Using Actions in the app
+4.4 Using Actions in the app
 ****************************
 
-ActionSets and Suggested Bindings are created before the session is initialized. There is session-specific setup to be done for our actions also. After the call to CreateResources(), add:
+Action Sets and Suggested Bindings are created before the session is initialized. There is session-specific setup to be done for our actions also. After the call to CreateResources(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -166,15 +198,15 @@ For OpenXR hand controllers, we distinguish between a "grip pose", representing 
 
 	Standard Grip and Aim poses for OpenXR Controllers.
 
-Finally as far as action setup goes, we will attach the ActionSet to the session. Add this function:
+Finally as far as action setup goes, we will attach the Action Set to the session. Add this function:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_AttachActionSet
-	:end-before: XR_DOCS_TAG_END_AttachActionSet
+	:start-after: XR_DOCS_TAG_BEGIN_AttachAction Set
+	:end-before: XR_DOCS_TAG_END_AttachAction Set
 	:dedent: 0
 
-As you can see, it's possible here to attach multiple Action Sets. But `xrAttachSessionActionSets` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the app is ready to proceed.
+As you can see, it's possible here to attach multiple Action Sets. But `xrAttachSessionAction Sets` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the app is ready to proceed.
 
 Now, we must poll the actions, once per-frame. Add this call in RenderFrame() just before the call to RenderLayer():
 
@@ -212,7 +244,7 @@ If, and only if the action is active, we use `xrLocateSpace` to obtain the curre
 controller's position.
 
 *************************************
-4.4 Rendering the Controller position
+4.5 Rendering the Controller position
 *************************************
 
 We will now draw some geometry to represent the controller pose we've obtained as `leftGripPose`. Add this function after the definition of RenderLayer():
@@ -333,7 +365,7 @@ Let's implement RenderCuboid(). After the definition of DestroySwapchain(), add:
 From the passed-in pose and scale, we create the _model_ matrix, and multiply that with cameraConstants.viewProj to obtain cameraConstants.modelViewProj, the matrix that transforms from vertices in our unit cube into positions in projection-space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing our six face colours for the cuboid pixel shader. We assign our vertex and index buffers and draw 36 indices.
 
 **************************************
-4.5 Checking for Connected Controllers
+4.6 Checking for Connected Controllers
 **************************************
 
 Look again now at the function PollActions().
