@@ -19,7 +19,7 @@ We will continue to use the ``OpenXRTutorial`` class in ``Chapter2/main.cpp`` th
 Here, we will add the following highlighted text to the ``OpenXRTutorial`` class:
 
 .. code-block:: cpp
-	:emphasize-lines: 10-17 , 20-50
+	:emphasize-lines: 10-17 , 20-51
 	
 	class OpenXRTutorial {
 	public:
@@ -71,6 +71,7 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 
 		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId m_systemID = {};
+		XrSystemProperties m_systemProperties = {XR_TYPE_SYSTEM_PROPERTIES};
 	};
 
 First, we updated ``OpenXRTutorial::Run()`` to call the new methods ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()``and ``DestroyInstance()`` in that order. Finally, we added those methods and the following members to the class within thier separate private sections.
@@ -126,8 +127,8 @@ At the end of the application, we should destroy the ``XrInstance``. This is sim
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
-	:start-after: void DestroyInstance()
-	:end-before: }
+	:start-after: XR_DOCS_TAG_BEGIN_XrInstanceDestroy
+	:end-before: XR_DOCS_TAG_END_XrInstanceDestroy
 	:dedent: 8
 
 Whilst we have an ``XrInstance``, let's check its properties. Add the following code to the ``GetInstanceProperties()`` method:
@@ -246,7 +247,7 @@ For now, we are just going to create an ``XrSession``. At this point, you'll nee
 Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Run()`` method and also add in the definitions of the new methods and the members to their separate private sections. All the new code is highlighted code below.
 
 .. code-block:: cpp
-	:emphasize-lines: 4-9, 19-20, 51-56, 70-73
+	:emphasize-lines: 4-9, 19-20, 51-56, 71-74
 
 	class OpenXRTutorial {
 	public:
@@ -316,6 +317,7 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 
 		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId m_systemID = {};
+		XrSystemProperties m_systemProperties = {XR_TYPE_SYSTEM_PROPERTIES};
 
 		GraphicsAPI_Type m_apiType = UNKNOWN;
 		std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
@@ -631,7 +633,7 @@ OpenXR uses an event based system to describes changes within the XR system. It'
 Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add the highlighted code below. Also add the highlighted code for the new methods and members in their separate private sections.
 
 .. code-block:: cpp
-	:emphasize-lines: 21-27, 68-73, 91-95
+	:emphasize-lines: 21-27, 68-73, 92-96
 
 	class OpenXRTutorial {
 	public:
@@ -718,6 +720,7 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 
 		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId m_systemID = {};
+		XrSystemProperties m_systemProperties = {XR_TYPE_SYSTEM_PROPERTIES};
 
 		GraphicsAPI_Type m_apiType = UNKNOWN;
 		std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
