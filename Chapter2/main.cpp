@@ -72,9 +72,11 @@ private:
             // XR_DOCS_TAG_END_instanceExtensions
         }
 
+#if defined(__linux__) && !defined(__ANDROID__)
         SetEnv("XR_RUNTIME_JSON", "/home/roderick/monado/build/openxr_monado-dev.json");
         std::string XR_RUNTIME_JSON = GetEnv("XR_RUNTIME_JSON");
         std::cout << "XR_RUNTIME_JSON" << XR_RUNTIME_JSON << "\n";
+#endif
 
         // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
         // Get all the API Layers from the OpenXR runtime.

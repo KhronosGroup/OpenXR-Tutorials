@@ -146,6 +146,7 @@ else()
     endif()
 
     # VulkanSDK
+    find_package(Vulkan)
     if (Vulkan_FOUND)
         target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
         target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})

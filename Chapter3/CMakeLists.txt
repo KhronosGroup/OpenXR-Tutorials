@@ -76,7 +76,6 @@ if (ANDROID) # Android
             openxr-gfxwrapper)
 
 else() # Windows / Linux
-    find_package(Vulkan)
     add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
@@ -99,6 +98,7 @@ else() # Windows / Linux
     endif()
 
     # VulkanSDK
+    find_package(Vulkan)
     if (Vulkan_FOUND)
         target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
         target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
