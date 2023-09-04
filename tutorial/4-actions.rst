@@ -153,6 +153,16 @@ We now close out the function, and add RecordCurrentBindings() to report how the
 	:end-before: XR_DOCS_TAG_END_SuggestBindings3
 	:dedent: 0
 
+In PollEvents(), in the switch case for `XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`, before the `break;` directive, insert this:
+
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CallRecordCurrentBindings
+	:end-before: XR_DOCS_TAG_END_CallRecordCurrentBindings
+	:dedent: 3
+
+Now, on startup and if the interaction profile changes for any reason, the active binding will be reported.
+
 Theory and Best Practices for Interaction Profiles
 --------------------------------------------------
 
