@@ -11,20 +11,23 @@ XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messa
             separator = true;
         }
         if (BitwiseCheck(messageSeverity, XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)) {
-            if (separator)
+            if (separator) {
                 msgFlags += ",";
+            }
             msgFlags += "INFO";
             separator = true;
         }
         if (BitwiseCheck(messageSeverity, XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)) {
-            if (separator)
+            if (separator) {
                 msgFlags += ",";
+            }
             msgFlags += "WARN";
             separator = true;
         }
         if (BitwiseCheck(messageSeverity, XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)) {
-            if (separator)
+            if (separator) {
                 msgFlags += ",";
+            }
             msgFlags += "ERROR";
         }
         return msgFlags;
@@ -39,14 +42,16 @@ XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messa
             separator = true;
         }
         if (BitwiseCheck(messageType, XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)) {
-            if (separator)
+            if (separator) {
                 msgFlags += ",";
+            }
             msgFlags += "SPEC";
             separator = true;
         }
         if (BitwiseCheck(messageType, XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)) {
-            if (separator)
+            if (separator) {
                 msgFlags += ",";
+            }
             msgFlags += "PERF";
         }
         return msgFlags;
