@@ -138,20 +138,20 @@ In this phase, all text should be finalized based on the feedback of the working
 The 2nd draft will be presented to the Working Group by 14th August.
 
 
-2K Internal Testing: 18th July – 14th August, 2023
+2K Internal Testing: 1st August - 15th September, 2023
 --------------------------------------------------
 
 The site will be tested internally. We will test each supported combination of operating system, target system and graphics API by following the tutorial through and ensuring that there are no missing or unclear steps, and that a final, functional app is produced at all stages.
 
 
-2L External testing: 15th August – 14th September, 2023
+2L External testing: 15th September – 14th October, 2023
 -------------------------------------------------------
 
 In this phase, the site will be tested externally. A cohort of programmers of various levels of experience will be asked to work through the tutorial, and their feedback will be used to finalize the website.
 The complete site will be presented to the working group by August 31st.
 
 
-2M Final Feedback: 15th September 14th October, 2023
+2M Final Feedback: 30th September-31st October, 2023
 ----------------------------------------------------
 
 At this point, the site should be essentially complete. However, any final modifications or corrections required by the working group will be executed, and the site presented to the group as soon as these are complete, in the month of October.
