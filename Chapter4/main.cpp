@@ -1254,6 +1254,17 @@ private:
     void *m_pipeline = nullptr;
     // XR_DOCS_TAG_END_DeclareResources
 
+    // XR_DOCS_TAG_BEGIN_Objects
+    struct Block {
+        XrPosef pose;
+        XrVector3f scale;
+        XrVector3f colour;
+    };
+    std::vector<Block> blocks;
+    int grabbedBlock[2] = {-1, -1};
+    int nearBlock[2] = {-1, -1};
+    // XR_DOCS_TAG_END_Objects
+
     // XR_DOCS_TAG_BEGIN_Actions
     XrActionSet m_actionSet;
     // An action for grabbing blocks.
@@ -1272,17 +1283,6 @@ private:
     // The current poses obtained from the XrSpace.
     XrPosef m_handPose[2];
     // XR_DOCS_TAG_END_Actions
-
-    // XR_DOCS_TAG_BEGIN_Objects
-    struct Block {
-        XrPosef pose;
-        XrVector3f scale;
-        XrVector3f colour;
-    };
-    std::vector<Block> blocks;
-    int grabbedBlock[2] = {-1, -1};
-    int nearBlock[2] = {-1, -1};
-    // XR_DOCS_TAG_END_Objects
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {

@@ -433,6 +433,14 @@ After your declaration of ``m_localOrStageSpace`` and before ``XrActionSet m_act
     :end-before: XR_DOCS_TAG_END_DeclareResources
     :dedent: 0
 
+And we will declare some interactable blocks. Add:
+
+.. literalinclude:: ../Chapter4/main.cpp
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_Objects
+    :end-before: XR_DOCS_TAG_END_Objects
+    :dedent: 0
+    
 Now in ``Run()`` insert the following after the call to ``CreateSwapchain()``:
 
 .. literalinclude:: ../Chapter4/main.cpp
