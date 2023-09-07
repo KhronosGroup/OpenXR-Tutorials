@@ -148,10 +148,10 @@ The site will be tested internally. We will test each supported combination of o
 -------------------------------------------------------
 
 In this phase, the site will be tested externally. A cohort of programmers of various levels of experience will be asked to work through the tutorial, and their feedback will be used to finalize the website.
-The complete site will be presented to the working group by August 31st.
+The complete site will be presented to the working group by October 14th.
 
 
-2M Final Feedback: 30th September-31st October, 2023
+2M Final Feedback: 9th-31st October, 2023
 ----------------------------------------------------
 
 At this point, the site should be essentially complete. However, any final modifications or corrections required by the working group will be executed, and the site presented to the group as soon as these are complete, in the month of October.
