@@ -232,9 +232,9 @@ The component paths are:
 
 Putting the three parts together, we might identify the select button on the left hand controller as:
 
-`profile + user + component`
+``profile + user + component``
 
-`"/interaction_profiles/khr/simple_controller" + "/user/hand/left" + "/input/select/click"`
+``"/interaction_profiles/khr/simple_controller" + "/user/hand/left" + "/input/select/click"``
 
 ``"/interaction_profiles/khr/simple_controller/user/hand/left/input/select/click"``
 
@@ -251,7 +251,7 @@ An XrPath is a 64-bit number that hopefully uniquely identifies any given forwar
     :language: cpp
     :start-after: XR_DOCS_TAG_BEGIN_CallSuggestBindings
     :end-before: XR_DOCS_TAG_END_CallSuggestBindings
-    :dedent: 0
+    :dedent: 2
 
 After the definition of CreateActionSet(), add:
 
@@ -259,44 +259,53 @@ After the definition of CreateActionSet(), add:
     :language: cpp
     :start-after: XR_DOCS_TAG_BEGIN_SuggestBindings1
     :end-before: XR_DOCS_TAG_END_SuggestBindings1
-    :dedent: 0
+    :dedent: 1
 
-By means of a lambda function `SuggestBindings`, we call into OpenXR with a given list of suggestions. Let's try this:
+By means of a lambda function ``SuggestBindings``, we call into OpenXR with a given list of suggestions. Let's try this:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
     :start-after: XR_DOCS_TAG_BEGIN_SuggestBindings2
     :end-before: XR_DOCS_TAG_END_SuggestBindings2
-    :dedent: 0
+    :dedent: 1
 
-Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile ( and "/interaction_profiles/khr/simple_controller" should *always* be supported in an OpenXR runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
+Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call ``xrSuggestInteractionProfileBindings()``. If the user's device supports the given profile ( and ``"/interaction_profiles/khr/simple_controller"`` should usually be supported in any OpenXR runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
 The suggested bindings are not guaranteed to be used: that's up to the runtime. Some runtimes allow users to override the default bindings, and OpenXR expects this.
 
-The next part depends on what hardware you will be testing on. It's optional: the Khronos Simple Controller should work on any OpenXR runtime/device combination. But it has limitations - not least that there are no floating-point controls. If you have an Oculus Quest, whether building natively or running on PC VR via a streaming system, the native profile is called "/interaction_profiles/oculus/touch_controller", and you can insert the following:
+
+For OpenXR hand controllers, we distinguish between a "grip pose", representing the orientation of the handle of the device, and an "aim pose" - which is oriented where the device "points". The relative orientations of these will vary between different controller configurations, so again, it's important to test with the devices you have. Let the runtime worry about adaptating to different devices that you haven't tested.
+
+.. figure:: images/standard-poses.png
+    :alt: OpenXR Standard Controller Poses
+    :align: left
+
+    Standard Grip and Aim poses for OpenXR Controllers.
+
+The next part depends on what hardware you will be testing on. It's optional: the Khronos Simple Controller should work on any OpenXR runtime/device combination. But it has limitations - not least that there are no floating-point controls. If you have an Oculus Quest, whether building natively or running on PC VR via a streaming system, the native profile is called ``"/interaction_profiles/oculus/touch_controller"``, and you can insert the following:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
     :start-after: XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
     :end-before: XR_DOCS_TAG_END_SuggestTouchNativeBindings
-    :dedent: 0
+    :dedent: 1
 
-The main apparent difference is that the grab action is now analogue ("squeeze/value" rather than "select/click"). But you should never assume that the same path means exactly the same behaviour on different profiles. So again, only implement profiles that you can test with their associated hardware, and test every profile that you implement.
+The main apparent difference is that the grab action is now analogue (``"squeeze/value"`` rather than ``"select/click"``). But you should never assume that the same path means exactly the same behaviour on different profiles. So again, only implement profiles that you can test with their associated hardware, and test every profile that you implement.
 
-We now close out the function, and add RecordCurrentBindings() to report how the runtime has *actually* bound your actions to your devices.
+We now close out the function, and add ``RecordCurrentBindings()`` to report how the runtime has *actually* bound your actions to your devices.
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
     :start-after: XR_DOCS_TAG_BEGIN_SuggestBindings3
     :end-before: XR_DOCS_TAG_END_SuggestBindings3
-    :dedent: 0
+    :dedent: 1
 
-In PollEvents(), in the switch case for `XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`, before the `break;` directive, insert this:
+In PollEvents(), in the switch case for ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED``, before the ``break;`` directive, insert this:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
     :start-after: XR_DOCS_TAG_BEGIN_CallRecordCurrentBindings
     :end-before: XR_DOCS_TAG_END_CallRecordCurrentBindings
-    :dedent: 3
+    :dedent: 4
 
 Now, on startup and if the interaction profile changes for any reason, the active binding will be reported.
 
@@ -308,9 +317,13 @@ To get the best results from your app on the end-user's device, it is important 
 * An app written for OpenXR should work without modification on device/runtime combination, even those created after the app has been written.
 * An OpenXR device and runtime should work with any OpenXR application, even those not tested with that device.
 
-The way this is achieved is as follows: usually, each device will have its own "native" profile, and should also support "khr/simple_controller". As a developer, *you should test the devices and runtimes you have*, and you should *specify profile bindings for each device you have tested*. You should *not* implement profiles you have not tested. It is the *runtime's responsibility* to support non-native profiles where possible, either automatically, or with the aid of user-specified rebinding.
+The way this is achieved is as follows: usually, each device will have its own "native" profile, and should also support ``"khr/simple_controller"``. As a developer:
 
-A device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_adding_input_sources_via_extensions).
+* You should *test the devices and runtimes you have*.
+* You should *specify profile bindings for each device you have tested*.
+* You should *not* implement profiles you have not tested.
+
+It is the *runtime's responsibility* to support non-native profiles where possible, either automatically, or with the aid of user-specified rebinding. A device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_adding_input_sources_via_extensions).
 
 See also `semantic-path-interaction-profiles <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles>`_.
 
@@ -319,7 +332,7 @@ See also `semantic-path-interaction-profiles <https://registry.khronos.org/OpenX
 4.4 Using Actions in the app
 ****************************
 
-Action Sets and Suggested Bindings are created before the session is initialized. There is session-specific setup to be done for our actions also. After the call to CreateResources(), add:
+Action Sets and Suggested Bindings are created before the session is initialized. There is session-specific setup to be done for our actions also. After the call to CreateSession(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
@@ -335,15 +348,7 @@ Now after the definition of SuggestBindings(), add:
     :end-before: XR_DOCS_TAG_END_CreateActionPoses
     :dedent: 0
 
-For one pose, this didn't need to be a lambda, but it will make it easier to add more poses later. Here, we're creating the XrSpace that represents the left grip pose action. As with the reference space, we use an identity XrPosef to indicate that we'll take the pose as-is, without offsets.
-
-For OpenXR hand controllers, we distinguish between a "grip pose", representing the orientation of the handle of the device, and an "aim pose" - which is oriented where the device "points". The relative orientations of these will vary between different controller configurations, so again, it's important to test with the devices you have. Let the runtime worry about adaptating to different devices that you haven't tested.
-
-.. figure:: images/standard-poses.png
-    :alt: OpenXR Standard Controller Poses
-    :align: left
-
-    Standard Grip and Aim poses for OpenXR Controllers.
+Here, we're creating the XrSpace that represents the hand pose actions. As with the reference space, we use an identity ``XrPosef`` to indicate that we'll take the pose as-is, without offsets.
 
 Finally as far as action setup goes, we will attach the Action Set to the session. Add this function:
 
@@ -353,7 +358,7 @@ Finally as far as action setup goes, we will attach the Action Set to the sessio
     :end-before: XR_DOCS_TAG_END_AttachActionSet
     :dedent: 0
 
-As you can see, it's possible here to attach multiple Action Sets. But `xrAttachSessionAction Sets` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the app is ready to proceed.
+As you can see, it's possible here to attach multiple Action Sets. But ``xrAttachSessionActionSets`` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the app is ready to proceed.
 
 Now, we must poll the actions, once per-frame. Add this call in RenderFrame() just before the call to RenderLayer():
 
@@ -379,12 +384,20 @@ Here we enable the Action Set we're interested in (in our case we have only one)
     :end-before: XR_DOCS_TAG_END_PollActions2
     :dedent: 0
 
-Finally in this function, we'll poll the left Grip Pose:
+Next, we'll add the haptic buzz behaviour, which has variable amplitude.
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
     :start-after: XR_DOCS_TAG_BEGIN_PollActions3
     :end-before: XR_DOCS_TAG_END_PollActions3
+    :dedent: 0
+
+Finally in this function, we'll poll the hand Poses:
+
+.. literalinclude:: ../Chapter4/main.cpp
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_PollActions4
+    :end-before: XR_DOCS_TAG_END_PollActions4
     :dedent: 0
 
 If, and only if the action is active, we use `xrLocateSpace` to obtain the current pose of the controller. We specify that we want this relative to our reference space `localOrStageSpace`, because this is the global space we're using for rendering. We'll use `leftGripPose` in the next section to render the

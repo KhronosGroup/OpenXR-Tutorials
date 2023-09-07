@@ -322,6 +322,7 @@ private:
         // XR_DOCS_TAG_END_SuggestBindings1
         // XR_DOCS_TAG_BEGIN_SuggestBindings2
         bool any_ok = false;
+        // Each Action here has two paths, one for each SubAction path.
         any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller", {{m_grabAction, CreateXrPath("/user/hand/left/input/select/click")},
                                                                                   {m_grabAction, CreateXrPath("/user/hand/right/input/select/click")},
                                                                                   {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
@@ -330,6 +331,7 @@ private:
                                                                                   {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
         // XR_DOCS_TAG_END_SuggestBindings2
         // XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
+        // Each Action here has two paths, one for each SubAction path.
         any_ok |= SuggestBindings("/interaction_profiles/oculus/touch_controller", {{m_grabAction, CreateXrPath("/user/hand/left/input/squeeze/value")},
                                                                                     {m_grabAction, CreateXrPath("/user/hand/right/input/squeeze/value")},
                                                                                     {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
@@ -702,19 +704,21 @@ private:
     }
     // XR_DOCS_TAG_BEGIN_PollActions
     void PollActions(XrTime predictedTime) {
-        // Update our action set with up-to-date input data!
+        // Update our action set with up-to-date input data.
+        // First, we specify the actionSet we are polling.
         XrActiveActionSet activeActionSet{};
         activeActionSet.actionSet = m_actionSet;
         activeActionSet.subactionPath = XR_NULL_PATH;
-
+        // Now we sync the Actions to make sure they have current data.
         XrActionsSyncInfo actionsSyncInfo{XR_TYPE_ACTIONS_SYNC_INFO};
         actionsSyncInfo.countActiveActionSets = 1;
         actionsSyncInfo.activeActionSets = &activeActionSet;
         OPENXR_CHECK(xrSyncActions(m_session, &actionsSyncInfo), "Failed to sync Actions.");
-        // XR_DOCS_TAG_END_PollActions
-        // XR_DOCS_TAG_BEGIN_PollActions2
+// XR_DOCS_TAG_END_PollActions
+// XR_DOCS_TAG_BEGIN_PollActions2
         XrActionStateGetInfo actionStateGetInfo{XR_TYPE_ACTION_STATE_GET_INFO};
         actionStateGetInfo.action = m_palmPoseAction;
+        // For each hand, get the pose state if possible.
         for (int i = 0; i < 2; i++) {
             actionStateGetInfo.subactionPath = m_handPaths[i];
             OPENXR_CHECK(xrGetActionStatePose(m_session, &actionStateGetInfo, &m_handPoseState[i]), "Failed to get Pose State.");
@@ -728,8 +732,8 @@ private:
                 }
             }
         }
-        // XR_DOCS_TAG_END_PollActions2
-        // XR_DOCS_TAG_BEGIN_PollActions3
+// XR_DOCS_TAG_END_PollActions2
+// XR_DOCS_TAG_BEGIN_PollActions3
         for (int i = 0; i < 2; i++) {
             actionStateGetInfo.action = m_grabAction;
             actionStateGetInfo.subactionPath = m_handPaths[i];
@@ -991,9 +995,10 @@ private:
         bool sessionActive = (m_sessionState == XR_SESSION_STATE_SYNCHRONIZED || m_sessionState == XR_SESSION_STATE_VISIBLE || m_sessionState == XR_SESSION_STATE_FOCUSED);
         if (sessionActive && frameState.shouldRender) {
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_4_2
-            // XR_DOCS_TAG_BEGIN_CallPollActions
-            // poll actions here because they require a predicted display time
+// XR_DOCS_TAG_BEGIN_CallPollActions
+            // poll actions here because they require a predicted display time, which we've only just obtained.
             PollActions(frameState.predictedDisplayTime);
+            // Handle the interaction between the user and the 3D blocks.
             BlockInteraction();
 // XR_DOCS_TAG_END_CallPollActions
 #endif
