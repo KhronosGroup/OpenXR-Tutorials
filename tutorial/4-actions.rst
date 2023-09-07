@@ -360,7 +360,7 @@ Finally as far as action setup goes, we will attach the Action Set to the sessio
 
 As you can see, it's possible here to attach multiple Action Sets. But ``xrAttachSessionActionSets`` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the app is ready to proceed.
 
-Now, we must poll the actions, once per-frame. Add this call in RenderFrame() just before the call to RenderLayer():
+Now, we must poll the actions, once per-frame. Add these two calls in RenderFrame() just before the call to RenderLayer():
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
@@ -403,7 +403,13 @@ Finally in this function, we'll add the haptic buzz behaviour, which has variabl
     :end-before: XR_DOCS_TAG_END_PollActions4
     :dedent: 0
 
+Now we've completed polling all the actions in the application. We will add two more functions to enable some interaction between the user and the 3D blocks:    
 
+.. literalinclude:: ../Chapter4/main.cpp
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_BlockInteraction
+    :end-before: XR_DOCS_TAG_END_BlockInteraction
+    :dedent: 1
 
 *************************************
 4.5 Rendering the Controller position
@@ -433,7 +439,7 @@ After your declaration of ``m_localOrStageSpace`` and before ``XrActionSet m_act
     :end-before: XR_DOCS_TAG_END_DeclareResources
     :dedent: 0
 
-And we will declare some interactable blocks. Add:
+And we will declare some interactable 3D blocks. Add:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
@@ -553,7 +559,7 @@ We've attached the target colour and depth images, and set the viewport and scis
     :end-before: XR_DOCS_TAG_END_CallRenderCuboid
     :dedent: 3
 
-We draw two cuboids. The first is offset by our (arbitrary) view height, so as to represent a "floor". We scale it by 2 metres in the horizontal directions and 0.1m in the vertical, so it's flat. Then, if the left grip pose has been obtained, we draw a cuboid at this pose.
+We draw two cuboids. The first is offset by our (arbitrary) view height, so as to represent a "floor". We scale it by 2 metres in the horizontal directions and 0.1m in the vertical, so it's flat. Then, if the hand poses have been obtained, we draw grey cuboids to represent them.
 
 Let's implement RenderCuboid(). After the definition of DestroySwapchain(), add:
 
@@ -563,7 +569,11 @@ Let's implement RenderCuboid(). After the definition of DestroySwapchain(), add:
     :end-before: XR_DOCS_TAG_END_RenderCuboid
     :dedent: 0
 
-From the passed-in pose and scale, we create the _model_ matrix, and multiply that with cameraConstants.viewProj to obtain cameraConstants.modelViewProj, the matrix that transforms from vertices in our unit cube into positions in projection-space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing our six face colours for the cuboid pixel shader. We assign our vertex and index buffers and draw 36 indices.
+From the passed-in pose and scale, we create the ``model`` matrix, and multiply that with cameraConstants.viewProj to obtain cameraConstants.modelViewProj, the matrix that transforms from vertices in our unit cube into projection space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing the normals for the cuboid. We assign our vertex and index buffers and draw 36 indices.
+
+Now build and run your app. You should see something like this:
+
+
 
 **************************************
 4.6 Checking for Connected Controllers
