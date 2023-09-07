@@ -19,108 +19,108 @@ An OpenXR application has interactions with the user which can be user input to 
 
 Copy your CMakeLists.txt from the "Chapter3" folder into a new folder beside that one called "Chapter4". In your root CMakeLists.txt, add the line:
 
-		.. code-block:: cmake
+        .. code-block:: cmake
 
-			add_subdirectory(Chapter4)
+            add_subdirectory(Chapter4)
 
 Now replace the set(PROJECT_NAME) line at the top of your new Chapter4/CMakeLists.txt with:
 
 .. literalinclude:: ../Chapter4/CMakeLists.txt
-	:language: cmake
-	:start-after: XR_DOCS_TAG_BEGIN_OpenXRTutorialChapter4
-	:end-before: XR_DOCS_TAG_END_OpenXRTutorialChapter4
-	:dedent: 0
+    :language: cmake
+    :start-after: XR_DOCS_TAG_BEGIN_OpenXRTutorialChapter4
+    :end-before: XR_DOCS_TAG_END_OpenXRTutorialChapter4
+    :dedent: 0
 
 Below the set(HEADERS) command, add:
 
 .. container:: d3d11 d3d12
 
-	.. literalinclude:: ../Chapter4/CMakeLists.txt
-		:language: cmake
-		:start-after: XR_DOCS_TAG_BEGIN_HLSLShaders
-		:end-before: XR_DOCS_TAG_END_HLSLShaders
-		:dedent: 0
+    .. literalinclude:: ../Chapter4/CMakeLists.txt
+        :language: cmake
+        :start-after: XR_DOCS_TAG_BEGIN_HLSLShaders
+        :end-before: XR_DOCS_TAG_END_HLSLShaders
+        :dedent: 0
 
 .. container:: vulkan opengl
 
-	.. literalinclude:: ../Chapter4/CMakeLists.txt
-		:language: cmake
-		:start-after: XR_DOCS_TAG_BEGIN_GLSLShaders
-		:end-before: XR_DOCS_TAG_END_GLSLShaders
-		:dedent: 0
+    .. literalinclude:: ../Chapter4/CMakeLists.txt
+        :language: cmake
+        :start-after: XR_DOCS_TAG_BEGIN_GLSLShaders
+        :end-before: XR_DOCS_TAG_END_GLSLShaders
+        :dedent: 0
 
 .. container:: opengles
 
-	.. literalinclude:: ../Chapter4/CMakeLists.txt
-		:language: cmake
-		:start-after: XR_DOCS_TAG_BEGIN_GLESShaders
-		:end-before: XR_DOCS_TAG_END_GLESShaders
-		:dedent: 0
+    .. literalinclude:: ../Chapter4/CMakeLists.txt
+        :language: cmake
+        :start-after: XR_DOCS_TAG_BEGIN_GLESShaders
+        :end-before: XR_DOCS_TAG_END_GLESShaders
+        :dedent: 0
 
 .. container:: android
 
-	Now above `set(CMAKE_SHARED_LINKER_FLAGS)` add:
-		
-	.. container:: vulkan
-		
-		.. literalinclude:: ../Chapter4/CMakeLists.txt
-			:language: cmake
-			:start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLSLShaders
-			:end-before: XR_DOCS_TAG_END_CompileAndroidGLSLShaders
-			:dedent: 0
-			
-	.. container:: opengles
+    Now above `set(CMAKE_SHARED_LINKER_FLAGS)` add:
+        
+    .. container:: vulkan
+        
+        .. literalinclude:: ../Chapter4/CMakeLists.txt
+            :language: cmake
+            :start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLSLShaders
+            :end-before: XR_DOCS_TAG_END_CompileAndroidGLSLShaders
+            :dedent: 0
+            
+    .. container:: opengles
 
-		.. literalinclude:: ../Chapter4/CMakeLists.txt
-			:language: cmake
-			:start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLESShaders
-			:end-before: XR_DOCS_TAG_END_CompileAndroidGLESShaders
-			:dedent: 0
+        .. literalinclude:: ../Chapter4/CMakeLists.txt
+            :language: cmake
+            :start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLESShaders
+            :end-before: XR_DOCS_TAG_END_CompileAndroidGLESShaders
+            :dedent: 0
 
 .. container:: windows linux
 
-	Before the line ``if(NOT "${XR_RUNTIME_JSON...)`` add:
+    Before the line ``if(NOT "${XR_RUNTIME_JSON...)`` add:
 
-	.. literalinclude:: ../Chapter4/CMakeLists.txt
-		:language: cmake
-		:start-after: XR_DOCS_TAG_BEGIN_AddExecutableWindowsLinux
-		:end-before: XR_DOCS_TAG_END_AddExecutableWindowsLinux
-		:dedent: 0
-		
+    .. literalinclude:: ../Chapter4/CMakeLists.txt
+        :language: cmake
+        :start-after: XR_DOCS_TAG_BEGIN_AddExecutableWindowsLinux
+        :end-before: XR_DOCS_TAG_END_AddExecutableWindowsLinux
+        :dedent: 0
+        
 
 .. container:: windows
 
-	.. container:: d3d11 d3d12
+    .. container:: d3d11 d3d12
 
-		And before ``endif() # EOF`` at the end of the file add:
+        At the end of the file add:
 
-		.. literalinclude:: ../Chapter4/CMakeLists.txt
-			:language: cmake
-			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersWindows
-			:end-before: XR_DOCS_TAG_END_BuildShadersWindows
-			:dedent: 0
+        .. literalinclude:: ../Chapter4/CMakeLists.txt
+            :language: cmake
+            :start-after: XR_DOCS_TAG_BEGIN_BuildShadersWindows
+            :end-before: XR_DOCS_TAG_END_BuildShadersWindows
+            :dedent: 0
 
 .. container:: windows linux
 
-	.. container:: vulkan
-	
-		Before ``endif() # EOF`` at the end of the file add:
+    .. container:: vulkan
+    
+       At the end of the file add:
 
-		.. literalinclude:: ../Chapter4/CMakeLists.txt
-			:language: cmake
-			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersVulkanWindowsLinux
-			:end-before: XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
-			:dedent: 0
+        .. literalinclude:: ../Chapter4/CMakeLists.txt
+            :language: cmake
+            :start-after: XR_DOCS_TAG_BEGIN_BuildShadersVulkanWindowsLinux
+            :end-before: XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
+            :dedent: 0
 
-	.. container:: opengl
-	
-		Before `endif() # EOF` at the end of the file add:
+    .. container:: opengl
+    
+        At the end of the file add:
 
-		.. literalinclude:: ../Chapter4/CMakeLists.txt
-			:language: cmake
-			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersOpenGLWindowsLinux
-			:end-before: XR_DOCS_TAG_END_BuildShadersOpenGLWindowsLinux
-			:dedent: 0
+        .. literalinclude:: ../Chapter4/CMakeLists.txt
+            :language: cmake
+            :start-after: XR_DOCS_TAG_BEGIN_BuildShadersOpenGLWindowsLinux
+            :end-before: XR_DOCS_TAG_END_BuildShadersOpenGLWindowsLinux
+            :dedent: 0
 
 
 Now copy your main.cpp from the "Chapter3" folder into "Chapter4".
@@ -129,61 +129,61 @@ The new subproject adds shader compilation so we can render some 3D objects. Cre
 
 .. container:: d3d11 d3d12
 
-	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.hlsl>`
-	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.hlsl>`
+    :download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.hlsl>`
+    :download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.hlsl>`
 
 .. container:: vulkan opengl
 
-	:download:`Shaders/VertexShader.glsl <../Shaders/VertexShader.glsl>`
-	:download:`Shaders/PixelShader.glsl <../Shaders/PixelShader.glsl>`
+    :download:`Shaders/VertexShader.glsl <../Shaders/VertexShader.glsl>`
+    :download:`Shaders/PixelShader.glsl <../Shaders/PixelShader.glsl>`
 
 .. container:: opengles
 
-	:download:`Shaders/VertexShader_GLES.glsl <../Shaders/VertexShader_GLES.glsl>`
-	:download:`Shaders/PixelShader_GLES.glsl <../Shaders/PixelShader_GLES.glsl>`
+    :download:`Shaders/VertexShader_GLES.glsl <../Shaders/VertexShader_GLES.glsl>`
+    :download:`Shaders/PixelShader_GLES.glsl <../Shaders/PixelShader_GLES.glsl>`
 
 At the end of your application class, add this code:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_Actions
-	:end-before: XR_DOCS_TAG_END_Actions
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_Actions
+    :end-before: XR_DOCS_TAG_END_Actions
+    :dedent: 0
 
 Here, we have defined an Action Set: a group of related actions that are created together. The individual actions, such as `m_grabAction` and `m_palmPoseAction`, will belong to this set. For a pose action, we need an XrSpace, so `m_handPoseSpace[]` has been declared. And we'll keep a copy of the pose itself for each hand, which will change per-frame.
 
 Action Sets are created before the session is initialized, so in Run(), after the call to GetSystemID(), add this line:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallCreateActionSet
-	:end-before: XR_DOCS_TAG_END_CallCreateActionSet
-	:dedent: 2
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CallCreateActionSet
+    :end-before: XR_DOCS_TAG_END_CallCreateActionSet
+    :dedent: 2
 
 After the definition of GetSystemID(), we'll add these helper functions that convert a string into an XrPath, and vice-versa. Add:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateXrPath
-	:end-before: XR_DOCS_TAG_END_CreateXrPath
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CreateXrPath
+    :end-before: XR_DOCS_TAG_END_CreateXrPath
+    :dedent: 0
 
 Now we will define the `CreateActionSet` function:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateActionSet
-	:end-before: XR_DOCS_TAG_END_CreateActionSet
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CreateActionSet
+    :end-before: XR_DOCS_TAG_END_CreateActionSet
+    :dedent: 0
 
 An Action Set is a group of actions that apply in a specific context. You might have an Action Set for when your XR game is showing a pause menu or control panel, and a different Action Set for in-game. There might be different Action Sets for different situations in an XR application: rowing in a boat, climbing a cliff, and so on.
 So you can create multiple Action Sets, but we only need one for this example. The Action Set is created with a name, and a localized string for its description. Now add:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateActions
-	:end-before: XR_DOCS_TAG_END_CreateActions
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CreateActions
+    :end-before: XR_DOCS_TAG_END_CreateActions
+    :dedent: 0
 
 Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is. It also, optionally, has a list of sub-action paths. A sub-action is, essentially the same action on a different control device: left- or right-hand controllers for example.
 
@@ -213,26 +213,26 @@ user's devices.
 XrPath is a 64-bit number that hopefully uniquely identifies any given forward-slash-delimited path string, allowing us to refer to paths without putting cumbersome string-handling in our runtime code. After the call to CreateAction Set() in Run(), add the line:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallSuggestBindings
-	:end-before: XR_DOCS_TAG_END_CallSuggestBindings
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CallSuggestBindings
+    :end-before: XR_DOCS_TAG_END_CallSuggestBindings
+    :dedent: 0
 
 After the definition of CreateAction Set(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_SuggestBindings1
-	:end-before: XR_DOCS_TAG_END_SuggestBindings1
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_SuggestBindings1
+    :end-before: XR_DOCS_TAG_END_SuggestBindings1
+    :dedent: 0
 
 By means of a lambda function `SuggestBindings`, we call into OpenXR with a given list of suggestions. Let's try this:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_SuggestBindings2
-	:end-before: XR_DOCS_TAG_END_SuggestBindings2
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_SuggestBindings2
+    :end-before: XR_DOCS_TAG_END_SuggestBindings2
+    :dedent: 0
 
 Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call `xrSuggestInteractionProfileBindings()`. If the user's device supports the given profile ( and "/interaction_profiles/khr/simple_controller" should *always* be supported in an OpenXR runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
 The suggested bindings are not guaranteed to be used: that's up to the runtime. Some runtimes allow users to override the default bindings, and OpenXR expects this.
@@ -240,28 +240,28 @@ The suggested bindings are not guaranteed to be used: that's up to the runtime. 
 The next part depends on what hardware you will be testing on. It's optional: the Khronos Simple Controller should work on any OpenXR runtime/device combination. But it has limitations - not least that there are no floating-point controls. If you have an Oculus Quest, whether building natively or running on PC VR via a streaming system, the native profile is called "/interaction_profiles/oculus/touch_controller", and you can insert the following:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
-	:end-before: XR_DOCS_TAG_END_SuggestTouchNativeBindings
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
+    :end-before: XR_DOCS_TAG_END_SuggestTouchNativeBindings
+    :dedent: 0
 
 The main apparent difference is that the grab action is now analogue ("squeeze/value" rather than "select/click"). But you should never assume that the same path means exactly the same behaviour on different profiles. So again, only implement profiles that you can test with their associated hardware, and test every profile that you implement.
 
 We now close out the function, and add RecordCurrentBindings() to report how the runtime has *actually* bound your actions to your devices.
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_SuggestBindings3
-	:end-before: XR_DOCS_TAG_END_SuggestBindings3
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_SuggestBindings3
+    :end-before: XR_DOCS_TAG_END_SuggestBindings3
+    :dedent: 0
 
 In PollEvents(), in the switch case for `XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`, before the `break;` directive, insert this:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallRecordCurrentBindings
-	:end-before: XR_DOCS_TAG_END_CallRecordCurrentBindings
-	:dedent: 3
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CallRecordCurrentBindings
+    :end-before: XR_DOCS_TAG_END_CallRecordCurrentBindings
+    :dedent: 3
 
 Now, on startup and if the interaction profile changes for any reason, the active binding will be reported.
 
@@ -287,70 +287,70 @@ See also `semantic-path-interaction-profiles <https://registry.khronos.org/OpenX
 Action Sets and Suggested Bindings are created before the session is initialized. There is session-specific setup to be done for our actions also. After the call to CreateResources(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallCreateActionPoses
-	:end-before: XR_DOCS_TAG_END_CallCreateActionPoses
-	:dedent: 2
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CallCreateActionPoses
+    :end-before: XR_DOCS_TAG_END_CallCreateActionPoses
+    :dedent: 2
 
 Now after the definition of SuggestBindings(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateActionPoses
-	:end-before: XR_DOCS_TAG_END_CreateActionPoses
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CreateActionPoses
+    :end-before: XR_DOCS_TAG_END_CreateActionPoses
+    :dedent: 0
 
 For one pose, this didn't need to be a lambda, but it will make it easier to add more poses later. Here, we're creating the XrSpace that represents the left grip pose action. As with the reference space, we use an identity XrPosef to indicate that we'll take the pose as-is, without offsets.
 
 For OpenXR hand controllers, we distinguish between a "grip pose", representing the orientation of the handle of the device, and an "aim pose" - which is oriented where the device "points". The relative orientations of these will vary between different controller configurations, so again, it's important to test with the devices you have. Let the runtime worry about adaptating to different devices that you haven't tested.
 
 .. figure:: images/standard-poses.png
-	:alt: OpenXR Standard Controller Poses
-	:align: left
+    :alt: OpenXR Standard Controller Poses
+    :align: left
 
-	Standard Grip and Aim poses for OpenXR Controllers.
+    Standard Grip and Aim poses for OpenXR Controllers.
 
 Finally as far as action setup goes, we will attach the Action Set to the session. Add this function:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_AttachActionSet
-	:end-before: XR_DOCS_TAG_END_AttachActionSet
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_AttachActionSet
+    :end-before: XR_DOCS_TAG_END_AttachActionSet
+    :dedent: 0
 
 As you can see, it's possible here to attach multiple Action Sets. But `xrAttachSessionAction Sets` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the app is ready to proceed.
 
 Now, we must poll the actions, once per-frame. Add this call in RenderFrame() just before the call to RenderLayer():
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallPollActions
-	:end-before: XR_DOCS_TAG_END_CallPollActions
-	:dedent: 3
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CallPollActions
+    :end-before: XR_DOCS_TAG_END_CallPollActions
+    :dedent: 3
 
 And add this function after the definition of PollEvents():
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_PollActions
-	:end-before: XR_DOCS_TAG_END_PollActions
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_PollActions
+    :end-before: XR_DOCS_TAG_END_PollActions
+    :dedent: 0
 
 Here we enable the Action Set we're interested in (in our case we have only one), and tell OpenXR to prepare the actions' per-frame data with xrSyncActions().
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_PollActions2
-	:end-before: XR_DOCS_TAG_END_PollActions2
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_PollActions2
+    :end-before: XR_DOCS_TAG_END_PollActions2
+    :dedent: 0
 
 Finally in this function, we'll poll the left Grip Pose:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_PollActions3
-	:end-before: XR_DOCS_TAG_END_PollActions3
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_PollActions3
+    :end-before: XR_DOCS_TAG_END_PollActions3
+    :dedent: 0
 
 If, and only if the action is active, we use `xrLocateSpace` to obtain the current pose of the controller. We specify that we want this relative to our reference space `localOrStageSpace`, because this is the global space we're using for rendering. We'll use `leftGripPose` in the next section to render the
 controller's position.
@@ -362,117 +362,117 @@ controller's position.
 We will now draw some geometry to represent the controller pose we've obtained as `leftGripPose`. Add this function after the definition of RenderLayer():
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_include_linear_algebra
-	:end-before: XR_DOCS_TAG_END_include_linear_algebra
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_include_linear_algebra
+    :end-before: XR_DOCS_TAG_END_include_linear_algebra
+    :dedent: 0
 
 This provides a simple matrix and vector library for our render code.
 Now insert 
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallCreateResources
-	:end-before: XR_DOCS_TAG_END_CallCreateResources
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CallCreateResources
+    :end-before: XR_DOCS_TAG_END_CallCreateResources
+    :dedent: 0
 
 Now, after the code for DestroySession(), add the following:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateResources1
-	:end-before: XR_DOCS_TAG_END_CreateResources1
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CreateResources1
+    :end-before: XR_DOCS_TAG_END_CreateResources1
+    :dedent: 0
 
 We've created a struct to represent a small uniform buffer (constant buffer), CameraConstants, and defined an instance to store its values globally. We've defined the start of the function CreateResources(), with the vertices and indices for a cube, and we've created the corresponding buffers with our choice of graphics API.
 
 We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
-	
+    
 .. container:: opengl
 
-	For OpenGL, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders, and to create a shader program:
-	
+    For OpenGL, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders, and to create a shader program:
+    
 .. container:: vulkan 
 
-	For Vulkan, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders:
-	
+    For Vulkan, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders:
+    
 .. container:: opengl vulkan
 
-	.. literalinclude:: ../Chapter4/main.cpp
-		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
-		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL_Vulkan
-		:dedent: 0
-		
+    .. literalinclude:: ../Chapter4/main.cpp
+        :language: cpp
+        :start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
+        :end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL_Vulkan
+        :dedent: 0
+        
 .. container:: opengles
 
-	For OpenGL ES, we will use GLSL version 3.1: add this code to define our vertex and pixel shaders:
+    For OpenGL ES, we will use GLSL version 3.1: add this code to define our vertex and pixel shaders:
 
-	.. literalinclude:: ../Chapter4/main.cpp
-		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
-		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGLES
-		:dedent: 0
-		
+    .. literalinclude:: ../Chapter4/main.cpp
+        :language: cpp
+        :start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
+        :end-before: XR_DOCS_TAG_END_CreateResources2_OpenGLES
+        :dedent: 0
+        
 .. container:: d3d11 d3d12
 
-	For Direct 3D, add this code to define our vertex and pixel shaders:
+    For Direct 3D, add this code to define our vertex and pixel shaders:
 
-	.. literalinclude:: ../Chapter4/main.cpp
-		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_D3D
-		:end-before: XR_DOCS_TAG_END_CreateResources2_D3D
-		:dedent: 0
+    .. literalinclude:: ../Chapter4/main.cpp
+        :language: cpp
+        :start-after: XR_DOCS_TAG_BEGIN_CreateResources2_D3D
+        :end-before: XR_DOCS_TAG_END_CreateResources2_D3D
+        :dedent: 0
 
-Now we'll combine the shaders, the vertex input layout, and the rendering state for drawing a solid cube, into a pipeline object. Add:		
+Now we'll combine the shaders, the vertex input layout, and the rendering state for drawing a solid cube, into a pipeline object. Add:        
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateResources3
-	:end-before: XR_DOCS_TAG_END_CreateResources3
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CreateResources3
+    :end-before: XR_DOCS_TAG_END_CreateResources3
+    :dedent: 0
 
 To destroy the resources when a session is ended, add:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_DestroyResources
-	:end-before: XR_DOCS_TAG_END_DestroyResources
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_DestroyResources
+    :end-before: XR_DOCS_TAG_END_DestroyResources
+    :dedent: 0
 
 We'll call this before the call to DestroySession() in the function Run(). So after this, add:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallDestroyResources
-	:end-before: XR_DOCS_TAG_END_CallDestroyResources
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CallDestroyResources
+    :end-before: XR_DOCS_TAG_END_CallDestroyResources
+    :dedent: 0
 
 Recall that we've already inserted a call to PollActions() in the function RenderFrame(), so we're ready to render the controller position and input values. In RenderLayer, after the call to ClearDepth(), let's set up the rendering state:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_SetupFrameRendering
-	:end-before: XR_DOCS_TAG_END_SetupFrameRendering
-	:dedent: 3
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_SetupFrameRendering
+    :end-before: XR_DOCS_TAG_END_SetupFrameRendering
+    :dedent: 3
 
 We've attached the target colour and depth images, and set the viewport and scissors to be the whole renderable area. We've created a projection matrix and a view matrix. And we've combined these as the matrix viewProj within cameraConstants.
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallRenderCuboid
-	:end-before: XR_DOCS_TAG_END_CallRenderCuboid
-	:dedent: 3
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CallRenderCuboid
+    :end-before: XR_DOCS_TAG_END_CallRenderCuboid
+    :dedent: 3
 
 We draw two cuboids. The first is offset by our (arbitrary) view height, so as to represent a "floor". We scale it by 2 metres in the horizontal directions and 0.1m in the vertical, so it's flat. Then, if the left grip pose has been obtained, we draw a cuboid at this pose.
 
 Let's implement RenderCuboid(). After the definition of DestroySwapchain(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_RenderCuboid
-	:end-before: XR_DOCS_TAG_END_RenderCuboid
-	:dedent: 0
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_RenderCuboid
+    :end-before: XR_DOCS_TAG_END_RenderCuboid
+    :dedent: 0
 
 From the passed-in pose and scale, we create the _model_ matrix, and multiply that with cameraConstants.viewProj to obtain cameraConstants.modelViewProj, the matrix that transforms from vertices in our unit cube into positions in projection-space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing our six face colours for the cuboid pixel shader. We assign our vertex and index buffers and draw 36 indices.
 
