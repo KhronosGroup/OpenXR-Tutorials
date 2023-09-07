@@ -753,7 +753,7 @@ private:
             OPENXR_CHECK(xrApplyHapticFeedback(m_session, &hapticActionInfo, (XrHapticBaseHeader *)&vibration), "Failed to apply haptic feedback.");
         }
     }
-/ XR_DOCS_TAG_END_PollActions4
+// XR_DOCS_TAG_END_PollActions4
 // XR_DOCS_TAG_BEGIN_BlockInteraction
     static XrVector3f FixPosition(XrVector3f pos) {
         int x = int(std::nearbyint(pos.x * 10.f));
