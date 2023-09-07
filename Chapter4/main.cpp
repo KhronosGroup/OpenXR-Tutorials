@@ -270,9 +270,11 @@ private:
         // Localized names are required so there is a human-readable action name to show the user if they are rebinding Actions in an options screen.
         strncpy(actionSetCI.localizedActionSetName, "OpenXR Tutorial ActionSet", XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE);
         OPENXR_CHECK(xrCreateActionSet(m_xrInstance, &actionSetCI, &m_actionSet), "Failed to create ActionSet.");
-        // XR_DOCS_TAG_END_CreateActionSet
+        // Set a priority: this comes into play when we have multiple Action Sets, and determines which Action takes priority in binding to a specific input.
+        actionSetCI.priority=0;
+ // XR_DOCS_TAG_END_CreateActionSet
 
-        // XR_DOCS_TAG_BEGIN_CreateActions
+// XR_DOCS_TAG_BEGIN_CreateActionLambda
         auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType, std::vector<const char *> subaction_paths = {}) -> void {
             XrActionCreateInfo actionCI{XR_TYPE_ACTION_CREATE_INFO};
             // The type of action: float input, pose, haptic output etc.
@@ -290,6 +292,8 @@ private:
             strncpy(actionCI.localizedActionName, name, XR_MAX_LOCALIZED_ACTION_NAME_SIZE);
             OPENXR_CHECK(xrCreateAction(m_actionSet, &actionCI, &xrAction), "Failed to create Action.");
         };
+// XR_DOCS_TAG_END_CreateActionLambda
+// XR_DOCS_TAG_BEGIN_CreateActions
         // An Action for grabbing cubes.
         CreateAction(m_grabAction, "grab", XR_ACTION_TYPE_FLOAT_INPUT, {"/user/hand/left", "/user/hand/right"});
         // An Action for the position of the palm of the user's hand - appropriate for the location of a grabbing Actions.
@@ -300,9 +304,9 @@ private:
         m_handPaths[0] = CreateXrPath("/user/hand/left");
         m_handPaths[1] = CreateXrPath("/user/hand/right");
     }
-    // XR_DOCS_TAG_END_CreateActions
+// XR_DOCS_TAG_END_CreateActions
 
-    // XR_DOCS_TAG_BEGIN_SuggestBindings1
+// XR_DOCS_TAG_BEGIN_SuggestBindings1
     void SuggestBindings() {
         auto SuggestBindings = [this](const char *profile_path, std::vector<XrActionSuggestedBinding> bindings) -> bool {
             // The application can call xrSuggestInteractionProfileBindings once per interaction profile that it supports.

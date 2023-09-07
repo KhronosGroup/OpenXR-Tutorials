@@ -142,6 +142,8 @@ The new subproject adds shader compilation so we can render some 3D objects. Cre
     :download:`Shaders/VertexShader_GLES.glsl <../Shaders/VertexShader_GLES.glsl>`
     :download:`Shaders/PixelShader_GLES.glsl <../Shaders/PixelShader_GLES.glsl>`
 
+Now build your project, you can run it to check that it behaves the same as your Chapter 3 code so far.
+
 At the end of your application class, add this code:
 
 .. literalinclude:: ../Chapter4/main.cpp
@@ -168,7 +170,7 @@ After the definition of GetSystemID(), we'll add these helper functions that con
     :end-before: XR_DOCS_TAG_END_CreateXrPath
     :dedent: 0
 
-Now we will define the `CreateActionSet` function:
+Now we will define the `CreateActionSet` function. Add the first part of this function after ``FromXrPath()``:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
@@ -178,6 +180,12 @@ Now we will define the `CreateActionSet` function:
 
 An Action Set is a group of actions that apply in a specific context. You might have an Action Set for when your XR game is showing a pause menu or control panel, and a different Action Set for in-game. There might be different Action Sets for different situations in an XR application: rowing in a boat, climbing a cliff, and so on.
 So you can create multiple Action Sets, but we only need one for this example. The Action Set is created with a name, and a localized string for its description. Now add:
+
+.. literalinclude:: ../Chapter4/main.cpp
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_CreateActionLambda
+    :end-before: XR_DOCS_TAG_END_CreateActionLambda
+    :dedent: 0
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
@@ -193,24 +201,51 @@ Each Action and Action Set has both a name, for internal use, and a localized de
 4.3 Interaction Profiles and Bindings
 *************************************
 
+4.3.1 Bindings and Profiles
+---------------------------
+
 As OpenXR is an API for many different devices, it needs to provide a way for you as a developer to refer to the various buttons, joysticks, inputs and outputs that a device may have, without needing to know in advance which device or devices the user will have.
 
 To do this, OpenXR defines the concept of *interaction profiles*. An interaction profile is a collection of interactions supported by a given device and runtime, and defined by means of textual paths.
 
-The first element of the interaction profile is the Profile Path, of the form "/interaction_profiles/<vendor_name>/<type_name>". Then, each interaction is defined by a
-path with three elements: the Profile Path, the User Path, and the Component Path. The User Path is a string identifying the controller device, e.g. "/user/hand/left", or "/user/gamepad". The Component Path is a string identifying the specific input or output, e.g. "/input/select/click" or "/output/haptic_left_trigger".
+Each interaction is defined by a path with three components: the Profile Path, the User Path, and the Component Path. The Profile Path has the form ``"/interaction_profiles/<vendor_name>/<type_name>"``. The User Path is a string identifying the controller device, e.g. ``"/user/hand/left"``, or ``"/user/gamepad"``. The Component Path is a string identifying the specific input or output, e.g. ``"/input/select/click"`` or ``"/output/haptic_left_trigger"``.
 
-For example, the Khronos Simple Controller Profile has the path "/interaction_profiles/khr/simple_controller", and user paths "/user/hand/left" and "/user/hand/right". The component paths are "/input/select/click", "/input/menu/click", "/input/grip/pose", "/input/aim/pose", "/output/haptic". Putting the three parts together, we might identify the select button on the left hand controller as "/interaction_profiles/khr/simple_controller/user/hand/left/input/select/click".
+For example, the Khronos Simple Controller Profile has the path:
 
-We will now show how to suggest a these profiles are used in practice.
+``"/interaction_profiles/khr/simple_controller"``
 
-Binding Interactions
---------------------
+It has user paths
 
-We will set up bindings for the actions. A binding is a *suggested* correspondence between an action (which is app-defined), and the input/output on the
-user's devices. 
+``"/user/hand/left"``
 
-XrPath is a 64-bit number that hopefully uniquely identifies any given forward-slash-delimited path string, allowing us to refer to paths without putting cumbersome string-handling in our runtime code. After the call to CreateAction Set() in Run(), add the line:
+and
+
+``"/user/hand/right"``.
+
+The component paths are:
+
+* ``"/input/select/click"``
+* ``"/input/menu/click"``
+* ``"/input/grip/pose"``
+* ``"/input/aim/pose"``
+* ``"/output/haptic"``
+
+Putting the three parts together, we might identify the select button on the left hand controller as:
+
+`profile + user + component`
+
+`"/interaction_profiles/khr/simple_controller" + "/user/hand/left" + "/input/select/click"`
+
+``"/interaction_profiles/khr/simple_controller/user/hand/left/input/select/click"``
+
+We will now show how to use these profiles in practice to suggest bindings between Actions and inputs or outputs.
+
+4.3.2 Binding Interactions
+--------------------------
+
+We will set up bindings for the actions. A binding is a *suggested* correspondence between an action (which is app-defined), and the input/output on the user's devices. 
+
+An XrPath is a 64-bit number that hopefully uniquely identifies any given forward-slash-delimited path string, allowing us to refer to paths without putting cumbersome string-handling in our runtime code. After the call to ``CreateActionSet()`` in ``Run()``, add the line:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
@@ -218,7 +253,7 @@ XrPath is a 64-bit number that hopefully uniquely identifies any given forward-s
     :end-before: XR_DOCS_TAG_END_CallSuggestBindings
     :dedent: 0
 
-After the definition of CreateAction Set(), add:
+After the definition of CreateActionSet(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
