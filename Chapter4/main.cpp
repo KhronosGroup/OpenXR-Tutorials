@@ -525,7 +525,7 @@ private:
         m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
 
         // XR_DOCS_TAG_END_CreateResources1
-        // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
+        // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL
         if (m_apiType == OPENGL) {
             std::string vertexSource = ReadTextFile("VertexShader.glsl");
             m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
@@ -533,39 +533,34 @@ private:
             std::string fragmentSource = ReadTextFile("PixelShader.glsl");
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         }
+        // XR_DOCS_TAG_END_CreateResources2_OpenGL
+        // XR_DOCS_TAG_BEGIN_CreateResources2_VulkanWindowsLinux
         if (m_apiType == VULKAN) {
-#if defined(__ANDROID__)
-            std::vector<char> vertexSource = ReadBinaryFile("shaders/VertexShader.spv", androidApp->activity->assetManager);
-#else
             std::vector<char> vertexSource = ReadBinaryFile("VertexShader.spv");
-#endif
             m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
 
-#if defined(__ANDROID__)
-            std::vector<char> fragmentSource = ReadBinaryFile("shaders/PixelShader.spv", androidApp->activity->assetManager);
-#else
             std::vector<char> fragmentSource = ReadBinaryFile("PixelShader.spv");
-#endif
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         }
-        // XR_DOCS_TAG_END_CreateResources2_OpenGL_Vulkan
+        // XR_DOCS_TAG_END_CreateResources2_VulkanWindowsLinux
+#if defined(__ANDROID__)
+        // XR_DOCS_TAG_BEGIN_CreateResources2_VulkanAndroid
+        if (m_apiType == VULKAN) {
+            std::vector<char> vertexSource = ReadBinaryFile("shaders/VertexShader.spv", androidApp->activity->assetManager);
+            m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+            std::vector<char> fragmentSource = ReadBinaryFile("shaders/PixelShader.spv", androidApp->activity->assetManager);
+            m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        }
+        // XR_DOCS_TAG_END_CreateResources2_VulkanAndroid
         // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
         if (m_apiType == OPENGL_ES) {
-#if defined(__ANDROID__)
             std::string vertexSource = ReadTextFile("shaders/VertexShader_GLES.glsl", androidApp->activity->assetManager);
-#else
-            std::string vertexSource = ReadTextFile("VertexShader_GLES.glsl");
-#endif
             m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
-
-#if defined(__ANDROID__)
             std::string fragmentSource = ReadTextFile("shaders/PixelShader_GLES.glsl", androidApp->activity->assetManager);
-#else
-            std::string fragmentSource = ReadTextFile("PixelShader_GLES.glsl");
-#endif
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         }
         // XR_DOCS_TAG_END_CreateResources2_OpenGLES
+#endif
         // XR_DOCS_TAG_BEGIN_CreateResources2_D3D
         if (m_apiType == D3D11) {
             std::vector<char> vertexSource = ReadBinaryFile("VertexShader_5_0.cso");
@@ -717,9 +712,11 @@ private:
 // XR_DOCS_TAG_END_PollActions
 // XR_DOCS_TAG_BEGIN_PollActions2
         XrActionStateGetInfo actionStateGetInfo{XR_TYPE_ACTION_STATE_GET_INFO};
+        // We pose a single Action, twice - once for each subAction Path.
         actionStateGetInfo.action = m_palmPoseAction;
         // For each hand, get the pose state if possible.
         for (int i = 0; i < 2; i++) {
+            // Specify the subAction Path.
             actionStateGetInfo.subactionPath = m_handPaths[i];
             OPENXR_CHECK(xrGetActionStatePose(m_session, &actionStateGetInfo, &m_handPoseState[i]), "Failed to get Pose State.");
             if (m_handPoseState[i].isActive) {
@@ -738,6 +735,10 @@ private:
             actionStateGetInfo.action = m_grabAction;
             actionStateGetInfo.subactionPath = m_handPaths[i];
             OPENXR_CHECK(xrGetActionStateFloat(m_session, &actionStateGetInfo, &m_grabState[i]), "Failed to get Float State.");
+        }
+// XR_DOCS_TAG_END_PollActions3
+// XR_DOCS_TAG_BEGIN_PollActions4
+        for (int i = 0; i < 2; i++) {
             buzz[i] *= 0.5f;
             if (buzz[i] < 0.01f)
                 buzz[i] = 0.0f;
@@ -751,25 +752,9 @@ private:
             hapticActionInfo.subactionPath = m_handPaths[i];
             OPENXR_CHECK(xrApplyHapticFeedback(m_session, &hapticActionInfo, (XrHapticBaseHeader *)&vibration), "Failed to apply haptic feedback.");
         }
-        // XR_DOCS_TAG_END_PollActions3
-        // XR_DOCS_TAG_BEGIN_PollActions4
-        actionStateGetInfo.action = m_palmPoseAction;
-        for (int i = 0; i < 2; i++) {
-            actionStateGetInfo.subactionPath = m_handPaths[i];
-            OPENXR_CHECK(xrGetActionStatePose(m_session, &actionStateGetInfo, &m_handPoseState[i]), "Failed to get Pose State.");
-            if (m_handPoseState[i].isActive) {
-                XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-                XrResult res = xrLocateSpace(m_handPoseSpace[i], m_localOrStageSpace, predictedTime, &spaceLocation);
-                if (XR_UNQUALIFIED_SUCCESS(res) &&
-                    (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
-                    (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0) {
-                    m_handPose[i] = spaceLocation.pose;
-                }
-            }
-        }
     }
-    // XR_DOCS_TAG_END_PollActions4
-    // XR_DOCS_TAG_BEGIN_BlockInteraction
+/ XR_DOCS_TAG_END_PollActions4
+// XR_DOCS_TAG_BEGIN_BlockInteraction
     static XrVector3f FixPosition(XrVector3f pos) {
         int x = int(std::nearbyint(pos.x * 10.f));
         int y = int(std::nearbyint(pos.y * 10.f));

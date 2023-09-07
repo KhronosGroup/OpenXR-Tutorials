@@ -384,15 +384,18 @@ Here we enable the Action Set we're interested in (in our case we have only one)
     :end-before: XR_DOCS_TAG_END_PollActions2
     :dedent: 0
 
-Next, we'll add the haptic buzz behaviour, which has variable amplitude.
+If, and only if the action is active, we use `xrLocateSpace` to obtain the current pose of the controller. We specify that we want this relative to our reference space `localOrStageSpace`, because this is the global space we're using for rendering. We'll use `leftGripPose` in the next section to render the
+controller's position.
+
+We'll add the grabbing Action.
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
     :start-after: XR_DOCS_TAG_BEGIN_PollActions3
     :end-before: XR_DOCS_TAG_END_PollActions3
     :dedent: 0
-
-Finally in this function, we'll poll the hand Poses:
+    
+Finally in this function, we'll add the haptic buzz behaviour, which has variable amplitude.
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
@@ -400,14 +403,19 @@ Finally in this function, we'll poll the hand Poses:
     :end-before: XR_DOCS_TAG_END_PollActions4
     :dedent: 0
 
-If, and only if the action is active, we use `xrLocateSpace` to obtain the current pose of the controller. We specify that we want this relative to our reference space `localOrStageSpace`, because this is the global space we're using for rendering. We'll use `leftGripPose` in the next section to render the
-controller's position.
+
 
 *************************************
 4.5 Rendering the Controller position
 *************************************
 
-We will now draw some geometry to represent the controller pose we've obtained as `leftGripPose`. Add this function after the definition of RenderLayer():
+We will now draw some geometry to represent the controller poses. Download:
+
+    :download:`Common/xr_linear_algebra.h <../Common/xr_linear_algebra.h>`
+
+Put it in the "Common/" folder. It provides a simple matrix and vector library for our render code.
+
+Add this after ``#include "OpenXRDebugUtils.h"``:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
@@ -415,8 +423,7 @@ We will now draw some geometry to represent the controller pose we've obtained a
     :end-before: XR_DOCS_TAG_END_include_linear_algebra
     :dedent: 0
 
-This provides a simple matrix and vector library for our render code.
-Now insert 
+So we've included the new header and defined some useful functionality for vectors and pseudo-random numbers. Now in ``Run()`` insert the following after the call to ``CreateSwapchain()``:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
@@ -439,18 +446,34 @@ We've also created a Uniform Buffer object, API-dependent, for CameraConstants.
 .. container:: opengl
 
     For OpenGL, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders, and to create a shader program:
-    
-.. container:: vulkan 
-
-    For Vulkan, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders:
-    
-.. container:: opengl vulkan
 
     .. literalinclude:: ../Chapter4/main.cpp
         :language: cpp
-        :start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL_Vulkan
-        :end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL_Vulkan
+        :start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL
+        :end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL
         :dedent: 0
+    
+.. container:: vulkan 
+
+    .. container:: windows linux 
+    
+        For Vulkan, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders:
+    
+        .. literalinclude:: ../Chapter4/main.cpp
+            :language: cpp
+            :start-after: XR_DOCS_TAG_BEGIN_CreateResources2_VulkanWindowsLinux
+            :end-before: XR_DOCS_TAG_END_CreateResources2_VulkanWindowsLinux
+            :dedent: 0
+
+    .. container:: android 
+    
+        For Vulkan, we will use GLSL version 4.5: add this code to define our vertex and pixel shaders:
+    
+        .. literalinclude:: ../Chapter4/main.cpp
+            :language: cpp
+            :start-after: XR_DOCS_TAG_BEGIN_CreateResources2_VulkanAndroid
+            :end-before: XR_DOCS_TAG_END_CreateResources2_VulkanAndroid
+            :dedent: 0
         
 .. container:: opengles
 
