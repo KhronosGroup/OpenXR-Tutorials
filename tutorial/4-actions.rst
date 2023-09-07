@@ -574,20 +574,24 @@ From the passed-in pose and scale, we create the ``model`` matrix, and multiply 
 Now build and run your app. You should see something like this:
 
 
-
 **************************************
 4.6 Checking for Connected Controllers
 **************************************
 
 Look again now at the function PollActions().
 
-We specify which action to look at with the XrActionStateGetInfo struct. Then we use a type-specific call. For our boolean Grab Action, we call `xrGetActionStateBoolean()` to retrieve an XrActionStateBoolean struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the select button on the controller.
-However, the struct `XrActionStateBoolean` also has a member called `isActive`, which is true if the state of the action is actually being read. If it's false, the value of `currentState` is irrelevant - the polling failed. 
+We specify which action to look at with the ``XrActionStateGetInfo`` struct. Then we use a type-specific call. For our boolean Grab Action, we call ``xrGetActionStateBoolean()`` to retrieve an ``XrActionStateBoolean`` struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the specified button on the controller.
+However, the struct ``XrActionStateBoolean`` also has a member called ``isActive``, which is true if the state of the action is actually being read. If it's false, the value of ``currentState`` is irrelevant - the polling failed. 
 
-Similarly, `XrActionStateFloat` has a floating-point `currentState` value, which is valid if `isActive` is true, it has `lastChangeTime` and `changedSinceLastSync`, and it has `isActive` and `lastChangeTime` and `changedSinceLastSync`.
-
-The struct has `changedSinceLastSync`, which is true if the value changed between the previous and current calls to xrSync(). And it has `lastChangeTime`, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
+Similarly, ``XrActionStateFloat`` has a floating-point ``currentState`` value, which is valid if ``isActive`` is true. The struct has ``changedSinceLastSync``, which is true if the value changed between the previous and current calls to xrSync(). And it has ``lastChangeTime``, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
 
 Careful use of this polling metadata will help you to create apps that are responsive and intuitive to use. Bear in mind as well that multiple physical controls could be bound to the same action, and the user could be using more than one controller at once. See the OpenXR spec for more details:
 
 https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#multiple_inputs
+
+***********
+4.7 Summary
+***********
+
+In this chapter, you have learned about Actions, Controller Profiles, Bindings.
+

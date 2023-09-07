@@ -755,6 +755,7 @@ private:
     }
 // XR_DOCS_TAG_END_PollActions4
 // XR_DOCS_TAG_BEGIN_BlockInteraction
+// Helper function to snap a 3D position to the nearest 10cm
     static XrVector3f FixPosition(XrVector3f pos) {
         int x = int(std::nearbyint(pos.x * 10.f));
         int y = int(std::nearbyint(pos.y * 10.f));
@@ -764,14 +765,20 @@ private:
         pos.z = float(z) / 10.f;
         return pos;
     }
+// Handle the interaction between the user's hands, the grab action, and the 3D blocks.
     void BlockInteraction() {
+        // For each hand:
         for (int i = 0; i < 2; i++) {
             float nearest = 1.0f;
+            // If not currently holding a block:
             if (grabbedBlock[i] == -1) {
                 nearBlock[i] = -1;
+                // Only if the pose was detected this frame:
                 if (m_handPoseState[i].isActive) {
+                    // For each block:
                     for (int j = 0; j < blocks.size(); j++) {
                         auto block = blocks[j];
+                        // How far is it from the hand to this block?
                         XrVector3f diff = block.pose.position - m_handPose[i].position;
                         float distance = std::max(fabs(diff.x), std::max(fabs(diff.y), fabs(diff.z)));
                         if (distance < 0.1f && distance < nearest) {
