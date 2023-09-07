@@ -5,17 +5,17 @@
 *********************************
 4.1 The OpenXR Interaction System
 *********************************
-OpenXR interactions are defined in a two-way system with inputs such as motion-based poses, button presses, analogue controls, and outputs such as haptic controller vibrations. Collectively in OpenXR terminology, these are called Actions. An *Action* is a semantic object, not necessarily associated with a specific hardware control: for example, you would define a "Select" action, not an action for "press button A". You would define an action "walk", not "left analogue stick position". The specific device input/output that an Action is associated with is the realm of *Bindings*, which are defined by *Interaction Profiles* (see below).
+OpenXR interactions are defined in a two-way system with inputs such as motion-based poses, button presses, analogue controls, and outputs such as haptic controller vibrations. Collectively in OpenXR terminology, these are called Actions. An *Action* is a semantic object, not necessarily associated with a specific hardware control: for example, you would define a "Select" action, not an action for "press button A". You would define an action "walk", not "left analogue stick position". The specific device input or output that an Action is associated with, is in the realm of *Bindings*, which are defined by *Interaction Profiles* (see below).
 
-Actions are contextual. They are grouped in *Action Sets*, which are again semantic and app-specific. For example, you might have an Action Set for "gameplay" and a different Action Set for "pause menu". In more complex apps, you would create an Action Set for different situations - "driving car" and "walking" could be different Action Sets.
+Actions are contextual. They are grouped within *Action Sets*, which are again semantic and app-specific. For example, you might have an Action Set for "gameplay" and a different Action Set for "pause menu". In more complex apps, you would create Action Sets for different situations - "driving car" and "walking" could be different Action Sets.
 
-In this chapter, you'll learn how to create an Action Set containing multiple Actions of different types. You'll create a binding for your Actions with a simple controller profile, and optionally, with a profile specific to the device/s you are testing.
+In this chapter, you'll learn how to create an Action Set containing multiple Actions of different types. You'll create a binding for your Actions with a simple controller profile, and optionally, with a profile specific to the device or devices you are testing.
 
 ************************************
 4.2 Creating Actions and Action Sets
 ************************************
 
-An OpenXR application has interactions with the user which can be user input to the application, or haptic output back to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: spaces, actions, and bindings.
+An OpenXR application has interactions with the user which can be user input to the application, or haptic output to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: Spaces, Actions, and Bindings.
 
 Download :download:`CMakeLists.txt <../Chapter4/CMakeLists.txt>` for this chapter, and place it in a new folder called "Chapter4". In your root CMakeLists.txt, add the line:
 
@@ -23,22 +23,24 @@ Download :download:`CMakeLists.txt <../Chapter4/CMakeLists.txt>` for this chapte
 
 			add_subdirectory(Chapter4)
 
+Now copy your main.cpp from the "Chapter3" folder into "Chapter4".
+
 The new subproject adds shader compilation so we can render some 3D objects. Create a "Shaders" folder next to your project folder, and put these files in it:
 
-.. d3d11 d3d12
+.. container:: d3d11 d3d12
 
 	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.hlsl>`
 	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.hlsl>`
 
-.. vulkan opengl
+.. container:: vulkan opengl
 
 	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.glsl>`
 	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.glsl>`
 
-.. opengl_es
+.. container:: opengles
 
-	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader_GLES.glsl>`
-	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader_GLES.glsl>`
+	:download:`Shaders/VertexShader_GLES.hlsl <../Shaders/VertexShader_GLES.glsl>`
+	:download:`Shaders/PixelShader_GLES.hlsl <../Shaders/PixelShader_GLES.glsl>`
 
 At the end of your application class, add this code:
 
@@ -54,8 +56,8 @@ Action Sets are created before the session is initialized, so in Run(), after th
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallCreateAction Set
-	:end-before: XR_DOCS_TAG_END_CallCreateAction Set
+	:start-after: XR_DOCS_TAG_BEGIN_CallCreateActionSet
+	:end-before: XR_DOCS_TAG_END_CallCreateActionSet
 	:dedent: 2
 
 After the definition of GetSystemID(), we'll add these helper functions that convert a string into an XrPath, and vice-versa. Add:
@@ -70,8 +72,8 @@ Now we will define the `CreateActionSet` function:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateAction Set
-	:end-before: XR_DOCS_TAG_END_CreateAction Set
+	:start-after: XR_DOCS_TAG_BEGIN_CreateActionSet
+	:end-before: XR_DOCS_TAG_END_CreateActionSet
 	:dedent: 0
 
 An Action Set is a group of actions that apply in a specific context. You might have an Action Set for when your XR game is showing a pause menu or control panel, and a different Action Set for in-game. There might be different Action Sets for different situations in an XR application: rowing in a boat, climbing a cliff, and so on.
@@ -112,8 +114,8 @@ XrPath is a 64-bit number that hopefully uniquely identifies any given forward-s
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CallSuggestBindings1
-	:end-before: XR_DOCS_TAG_END_CallSuggestBindings1
+	:start-after: XR_DOCS_TAG_BEGIN_CallSuggestBindings
+	:end-before: XR_DOCS_TAG_END_CallSuggestBindings
 	:dedent: 0
 
 After the definition of CreateAction Set(), add:
@@ -212,8 +214,8 @@ Finally as far as action setup goes, we will attach the Action Set to the sessio
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_AttachAction Set
-	:end-before: XR_DOCS_TAG_END_AttachAction Set
+	:start-after: XR_DOCS_TAG_BEGIN_AttachActionSet
+	:end-before: XR_DOCS_TAG_END_AttachActionSet
 	:dedent: 0
 
 As you can see, it's possible here to attach multiple Action Sets. But `xrAttachSessionAction Sets` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the app is ready to proceed.

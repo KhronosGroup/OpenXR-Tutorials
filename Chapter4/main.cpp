@@ -50,10 +50,10 @@ public:
         GetInstanceProperties();
         GetSystemID();
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_4_1
-        // XR_DOCS_TAG_BEGIN_CallCreateActionSet
+// XR_DOCS_TAG_BEGIN_CallCreateActionSet
         CreateActionSet();
-        // XR_DOCS_TAG_END_CallCreateActionSet
-        // XR_DOCS_TAG_BEGIN_CallSuggestBindings
+// XR_DOCS_TAG_END_CallCreateActionSet
+// XR_DOCS_TAG_BEGIN_CallSuggestBindings
         SuggestBindings();
 // XR_DOCS_TAG_END_CallSuggestBindings
 #endif
@@ -332,7 +332,7 @@ private:
                                                                                     {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
                                                                                     {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
                                                                                     {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
-        // XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
+        // XR_DOCS_TAG_END_SuggestTouchNativeBindings
         // XR_DOCS_TAG_BEGIN_SuggestBindings3
         if (!any_ok) {
             DEBUG_BREAK;
