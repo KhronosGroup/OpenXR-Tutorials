@@ -1240,7 +1240,7 @@ private:
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
     XrSpace m_localOrStageSpace = {};
-    // XR_DOCS_TAG_ENd_declareSwapchains
+    // XR_DOCS_TAG_END_declareSwapchains
     // XR_DOCS_TAG_BEGIN_DeclareResources
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;

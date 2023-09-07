@@ -423,7 +423,17 @@ Add this after ``#include "OpenXRDebugUtils.h"``:
     :end-before: XR_DOCS_TAG_END_include_linear_algebra
     :dedent: 0
 
-So we've included the new header and defined some useful functionality for vectors and pseudo-random numbers. Now in ``Run()`` insert the following after the call to ``CreateSwapchain()``:
+So we've included the new header and defined some useful functionality for vectors and pseudo-random numbers.
+
+After your declaration of ``m_localOrStageSpace`` and before ``XrActionSet m_actionSet``, insert these declarations for our API resources:
+
+.. literalinclude:: ../Chapter4/main.cpp
+    :language: cpp
+    :start-after: XR_DOCS_TAG_BEGIN_DeclareResources
+    :end-before: XR_DOCS_TAG_END_DeclareResources
+    :dedent: 0
+
+Now in ``Run()`` insert the following after the call to ``CreateSwapchain()``:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp
