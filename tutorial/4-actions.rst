@@ -34,13 +34,13 @@ The new subproject adds shader compilation so we can render some 3D objects. Cre
 
 .. container:: vulkan opengl
 
-	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.glsl>`
-	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.glsl>`
+	:download:`Shaders/VertexShader.glsl <../Shaders/VertexShader.glsl>`
+	:download:`Shaders/PixelShader.glsl <../Shaders/PixelShader.glsl>`
 
 .. container:: opengles
 
-	:download:`Shaders/VertexShader_GLES.hlsl <../Shaders/VertexShader_GLES.glsl>`
-	:download:`Shaders/PixelShader_GLES.hlsl <../Shaders/PixelShader_GLES.glsl>`
+	:download:`Shaders/VertexShader_GLES.glsl <../Shaders/VertexShader_GLES.glsl>`
+	:download:`Shaders/PixelShader_GLES.glsl <../Shaders/PixelShader_GLES.glsl>`
 
 At the end of your application class, add this code:
 
