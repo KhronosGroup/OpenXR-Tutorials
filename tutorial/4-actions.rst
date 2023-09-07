@@ -17,11 +17,111 @@ In this chapter, you'll learn how to create an Action Set containing multiple Ac
 
 An OpenXR application has interactions with the user which can be user input to the application, or haptic output to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: Spaces, Actions, and Bindings.
 
-Download :download:`CMakeLists.txt <../Chapter4/CMakeLists.txt>` for this chapter, and place it in a new folder called "Chapter4". In your root CMakeLists.txt, add the line:
+Copy your CMakeLists.txt from the "Chapter3" folder into a new folder beside that one called "Chapter4". In your root CMakeLists.txt, add the line:
 
 		.. code-block:: cmake
 
 			add_subdirectory(Chapter4)
+
+Now replace the set(PROJECT_NAME) line at the top of your new Chapter4/CMakeLists.txt with:
+
+.. literalinclude:: ../Chapter4/CMakeLists.txt
+	:language: cmake
+	:start-after: XR_DOCS_TAG_BEGIN_OpenXRTutorialChapter4
+	:end-before: XR_DOCS_TAG_END_OpenXRTutorialChapter4
+	:dedent: 0
+
+Below the set(HEADERS) command, add:
+
+.. container:: d3d11 d3d12
+
+	.. literalinclude:: ../Chapter4/CMakeLists.txt
+		:language: cmake
+		:start-after: XR_DOCS_TAG_BEGIN_HLSLShaders
+		:end-before: XR_DOCS_TAG_END_HLSLShaders
+		:dedent: 0
+
+.. container:: vulkan opengl
+
+	.. literalinclude:: ../Chapter4/CMakeLists.txt
+		:language: cmake
+		:start-after: XR_DOCS_TAG_BEGIN_GLSLShaders
+		:end-before: XR_DOCS_TAG_END_GLSLShaders
+		:dedent: 0
+
+.. container:: opengles
+
+	.. literalinclude:: ../Chapter4/CMakeLists.txt
+		:language: cmake
+		:start-after: XR_DOCS_TAG_BEGIN_GLESShaders
+		:end-before: XR_DOCS_TAG_END_GLESShaders
+		:dedent: 0
+
+.. container:: android
+
+	Now above `set(CMAKE_SHARED_LINKER_FLAGS)` add:
+		
+	.. container:: vulkan
+		
+		.. literalinclude:: ../Chapter4/CMakeLists.txt
+			:language: cmake
+			:start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLSLShaders
+			:end-before: XR_DOCS_TAG_END_CompileAndroidGLSLShaders
+			:dedent: 0
+			
+	.. container:: opengles
+
+		.. literalinclude:: ../Chapter4/CMakeLists.txt
+			:language: cmake
+			:start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLESShaders
+			:end-before: XR_DOCS_TAG_END_CompileAndroidGLESShaders
+			:dedent: 0
+
+.. container:: windows linux
+
+	Before the line ``if(NOT "${XR_RUNTIME_JSON...)`` add:
+
+	.. literalinclude:: ../Chapter4/CMakeLists.txt
+		:language: cmake
+		:start-after: XR_DOCS_TAG_BEGIN_AddExecutableWindowsLinux
+		:end-before: XR_DOCS_TAG_END_AddExecutableWindowsLinux
+		:dedent: 0
+		
+
+.. container:: windows
+
+	.. container:: d3d11 d3d12
+
+		And before ``endif() # EOF`` at the end of the file add:
+
+		.. literalinclude:: ../Chapter4/CMakeLists.txt
+			:language: cmake
+			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersWindows
+			:end-before: XR_DOCS_TAG_END_BuildShadersWindows
+			:dedent: 0
+
+.. container:: windows linux
+
+	.. container:: vulkan
+	
+		Before ``endif() # EOF`` at the end of the file add:
+
+		.. literalinclude:: ../Chapter4/CMakeLists.txt
+			:language: cmake
+			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersVulkanWindowsLinux
+			:end-before: XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
+			:dedent: 0
+
+	.. container:: opengl
+	
+		Before `endif() # EOF` at the end of the file add:
+
+		.. literalinclude:: ../Chapter4/CMakeLists.txt
+			:language: cmake
+			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersOpenGLWindowsLinux
+			:end-before: XR_DOCS_TAG_END_BuildShadersOpenGLWindowsLinux
+			:dedent: 0
+
 
 Now copy your main.cpp from the "Chapter3" folder into "Chapter4".
 
