@@ -50,7 +50,7 @@ At the end of your application class, add this code:
 	:end-before: XR_DOCS_TAG_END_Actions
 	:dedent: 0
 
-Here, we have defined an Action Set: a group of related actions that are created together. The individual actions, such as selectAction and triggerAction, will belong to this set. For a pose action, we need an XrSpace, so leftGripPoseSpace has been declared. And we'll keep a copy of the pose itself, leftGripPose, which will change per-frame.
+Here, we have defined an Action Set: a group of related actions that are created together. The individual actions, such as `m_grabAction` and `m_palmPoseAction`, will belong to this set. For a pose action, we need an XrSpace, so `m_handPoseSpace[]` has been declared. And we'll keep a copy of the pose itself for each hand, which will change per-frame.
 
 Action Sets are created before the session is initialized, so in Run(), after the call to GetSystemID(), add this line:
 
@@ -382,7 +382,7 @@ From the passed-in pose and scale, we create the _model_ matrix, and multiply th
 
 Look again now at the function PollActions().
 
-We specify which action to look at with the XrActionStateGetInfo struct. Then we use a type-specific call. For our boolean `selectAction`, we call `xrGetActionStateBoolean()` to retrieve an XrActionStateBoolean struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the select button on the controller.
+We specify which action to look at with the XrActionStateGetInfo struct. Then we use a type-specific call. For our boolean Grab Action, we call `xrGetActionStateBoolean()` to retrieve an XrActionStateBoolean struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the select button on the controller.
 However, the struct `XrActionStateBoolean` also has a member called `isActive`, which is true if the state of the action is actually being read. If it's false, the value of `currentState` is irrelevant - the polling failed. 
 
 Similarly, `XrActionStateFloat` has a floating-point `currentState` value, which is valid if `isActive` is true, it has `lastChangeTime` and `changedSinceLastSync`, and it has `isActive` and `lastChangeTime` and `changedSinceLastSync`.

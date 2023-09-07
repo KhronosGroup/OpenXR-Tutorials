@@ -1268,14 +1268,14 @@ private:
     // The action haptic vibration of the right controller.
     XrAction m_buzzAction;
     float buzz[2] = {0, 0};
-    // The action for getting the left grip pose.
+    // The action for getting the hand or controller position and orientation.
     XrAction m_palmPoseAction;
-    // The XrPaths for left and right hand controllers.
+    // The XrPaths for left and right hand hands or controllers.
     XrPath m_handPaths[2] = {0, 0};
-    // The space that represents the left grip pose.
+    // The space that represents the two hand poses.
     XrSpace m_handPoseSpace[2];
     XrActionStatePose m_handPoseState[2] = {{XR_TYPE_ACTION_STATE_POSE}, {XR_TYPE_ACTION_STATE_POSE}};
-    // The current left grip pose obtained from the XrSpace.
+    // The current poses obtained from the XrSpace.
     XrPosef m_handPose[2];
     // XR_DOCS_TAG_END_Actions
 
