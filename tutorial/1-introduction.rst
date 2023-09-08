@@ -517,8 +517,9 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 					native_app_glue
 					openxr_loader
 					openxr-gfxwrapper)
+			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-cast-calling-convention)
 	
-		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``openxr-gfxwrapper`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will be packaged inside our .apk along with any shared libraries that we have linked.
+		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``openxr-gfxwrapper`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will be packaged inside our .apk along with any shared libraries that we have linked. We also add ``-Wno-cast-calling-convention`` to the compiler option to allow the casting of calling conversions for function pointers.
 
 	.. container:: vulkan
 		:name: vulkan-id-7
@@ -538,8 +539,9 @@ This sub-chapter explains how to setup your project ready for :ref:`Chapter 2<2.
 					native_app_glue
 					openxr_loader
 					${vulkan-lib})
+			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-cast-calling-convention)
 	
-		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``vulkan`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will be packaged inside our .apk along with any shared libraries that we have linked.
+		Finally we link the ``android``, ``native_app_glue``, ``openxr_loader`` and ``vulkan`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will be packaged inside our .apk along with any shared libraries that we have linked.  We also add ``-Wno-cast-calling-convention`` to the compiler option to allow the casting of calling conversions for function pointers.
 
 	.. rubric:: AndroidManifest.xml
 

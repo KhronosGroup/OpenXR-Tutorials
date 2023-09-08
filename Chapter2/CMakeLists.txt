@@ -74,6 +74,7 @@ if (ANDROID) # Android
             openxr_loader
             ${vulkan-lib}
             openxr-gfxwrapper)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wno-cast-calling-convention)
 
 else() # Windows / Linux
     add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
