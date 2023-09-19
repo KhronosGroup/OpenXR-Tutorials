@@ -7703,9 +7703,26 @@ button.selected-graphics-api > img
 #interactions > h1{
     padding-left:32px;
 }
+
 #interactions > h1:before{
 	content: '';
     background: url(icons/HandsetIcon.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 30px;
+    height: 22px;
+    margin-left: -20px;
+    padding-top: 12px;
+    padding: 1px;
+    display: inline-block;
+}
+
+#introduction> h1{
+    padding-left:32px;
+}
+#introduction > h1:before{
+	content: '';
+    background: url(icons/Trumpet.svg);
     background-size: contain;
     background-repeat: no-repeat;
     width: 30px;
