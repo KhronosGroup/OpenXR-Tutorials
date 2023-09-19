@@ -86,13 +86,8 @@ OpenXR recognised that there is vast and ever changing array of hardware and con
 1.3 Setting Up
 **************
 
-This section will help you set up your development environment. Here your choice of platform really makes a difference. After that, things will be much more consistent.
-
-You can change platform at any time by clicking the tabs at the top of the page. Select the platform you want to develop for
-by clicking a tab, or one of the buttons below.
-
-.. raw:: html
-	:file: platforms.html
+This section will help you set up your development environment. Here your choice of platform really makes a difference. After that, things will be much more consistent. You can change platform at any time by clicking the tabs at the top of the page. Select the platform you want to develop for
+by clicking a tab above.
 
 .. container:: windows
 	:name: windows-id-1
@@ -118,33 +113,39 @@ by clicking a tab, or one of the buttons below.
 	.. container:: vulkan
 		:name: vulkan-id-1
 
-		If you'll be using Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_. Vulkan also supports rendering to both eye views with multiview. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
+		If you're using Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_. Vulkan supports rendering to both eye views with multiview. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
 
 	.. container:: opengl
 		:name: opengl-id-1
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. It was originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ specification.
-		If you want to use OpenGL stand-alone, you will need to use WGL to create a valid OpenGL Context for Microsoft Windows - `Creating an OpenGL Context WGL <https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_. OpenGL also supports rendering to both eye views with multiview - `OpenGL Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
+		If you want to use OpenGL stand-alone, you will need to use WGL to create a valid OpenGL Context for Microsoft Windows - `Creating an OpenGL Context WGL <https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_. OpenGL supports rendering to both eye views with multiview - `OpenGL Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
 
 .. container:: linux
 	:name: linux-id-1
 
-	.. rubric:: Visual Studio Code for Linux
+	.. rubric:: Install Visual Studio Code
 
 	To install Visual Studio Code, go to `https://code.visualstudio.com/ <https://code.visualstudio.com/>`_ and click the "Download for Linux" button.
 
+	.. rubric:: Install CMake
+
 	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake with Visual Studio Code to build the project.
+
+	Now choose which graphics API you want to use, on the second row of tabs at the top of the page. For Linux you can either use OpenGL or Vulkan.
 
 	.. container:: vulkan
 		:name: vulkan-id-2
+		
+		.. rubric:: Install the Vulkan SDK
 
-		If you'll be using Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_. Vulkan also supports rendering to both eye views with multiview, which simplifies the rendering code. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
+		If you want to use Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_.
 
 	.. container:: opengl
 		:name: opengl-id-2
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. It was originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ specification.
-		If you want to use OpenGL stand-alone, you will need to use GLX to create a valid OpenGL Context for Linux - `Tutorial: OpenGL 3.0 Context Creation (GLX) <Tutorial:_OpenGL_3.0_Context_Creation_(GLX)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_. OpenGL also supports rendering to both eye views with multiview, which simplifies the rendering code. `OpenGL Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
+		If you want to use OpenGL stand-alone, you will need to use GLX to create a valid OpenGL Context for Linux - `Tutorial: OpenGL 3.0 Context Creation (GLX) <Tutorial:_OpenGL_3.0_Context_Creation_(GLX)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_.
 	
 .. container:: android
 	:name: android-id-1

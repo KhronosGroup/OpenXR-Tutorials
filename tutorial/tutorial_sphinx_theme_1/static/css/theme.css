@@ -5552,7 +5552,7 @@ hr
     max-width: 100%;
     background: #fff;
     border: 1px solid #e1e4e5;
-    font-size: 75%;
+    font-size: 90%;
     padding: 0 5px;
     font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
     color: #e74c3c;
@@ -7403,9 +7403,9 @@ html.writer-html4 .rst-content dl:not(.docutils) .descclassname, html.writer-htm
 .rst-content p.rubric
 {
     margin-bottom: 8px;
-	font-size:11px;
+	font-size:13px;
     font-weight: 700;
-	color: #444;
+	color: black;
 }
 
 .rst-content code.download, .rst-content tt.download
