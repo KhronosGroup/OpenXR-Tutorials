@@ -2,14 +2,24 @@
 // OpenXR Tutorial for Khronos Group
 
 #include <DebugOutput.h>
-// XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D11
 #include <GraphicsAPI_D3D11.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_D3D11
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D12
 #include <GraphicsAPI_D3D12.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_D3D12
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL
 #include <GraphicsAPI_OpenGL.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL_ES
 #include <GraphicsAPI_OpenGL_ES.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL_ES
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_Vulkan
 #include <GraphicsAPI_Vulkan.h>
-// XR_DOCS_TAG_END_include_GraphicsAPIs
+// XR_DOCS_TAG_END_include_GraphicsAPI_Vulkan
+// XR_DOCS_TAG_BEGIN_include_OpenXRDebugUtils
 #include <OpenXRDebugUtils.h>
+// XR_DOCS_TAG_END_include_OpenXRDebugUtils
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
 

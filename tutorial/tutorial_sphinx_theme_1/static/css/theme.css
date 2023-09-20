@@ -5552,7 +5552,7 @@ hr
     max-width: 100%;
     background: #fff;
     border: 1px solid #e1e4e5;
-    font-size: 75%;
+    font-size: 90%;
     padding: 0 5px;
     font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
     color: #e74c3c;
@@ -7403,9 +7403,9 @@ html.writer-html4 .rst-content dl:not(.docutils) .descclassname, html.writer-htm
 .rst-content p.rubric
 {
     margin-bottom: 8px;
-	font-size:11px;
+	font-size:13px;
     font-weight: 700;
-	color: #444;
+	color: black;
 }
 
 .rst-content code.download, .rst-content tt.download
@@ -7703,9 +7703,26 @@ button.selected-graphics-api > img
 #interactions > h1{
     padding-left:32px;
 }
+
 #interactions > h1:before{
 	content: '';
     background: url(icons/HandsetIcon.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 30px;
+    height: 22px;
+    margin-left: -20px;
+    padding-top: 12px;
+    padding: 1px;
+    display: inline-block;
+}
+
+#introduction> h1{
+    padding-left:32px;
+}
+#introduction > h1:before{
+	content: '';
+    background: url(icons/Trumpet.svg);
     background-size: contain;
     background-repeat: no-repeat;
     width: 30px;
