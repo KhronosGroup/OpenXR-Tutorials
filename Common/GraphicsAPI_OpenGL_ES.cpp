@@ -1,4 +1,4 @@
-#include "GraphicsAPI_OpenGL_ES.h"
+#include <GraphicsAPI_OpenGL_ES.h>
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
 

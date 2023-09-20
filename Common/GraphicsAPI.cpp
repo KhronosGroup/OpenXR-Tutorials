@@ -1,4 +1,4 @@
-#include "GraphicsAPI.h"
+#include <GraphicsAPI.h>
 
 bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type) {
 #if defined(XR_USE_PLATFORM_WIN32)

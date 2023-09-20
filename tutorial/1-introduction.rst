@@ -632,7 +632,7 @@ A header for including all the needed header files and helper functions.
 .. literalinclude:: ../Common/OpenXRHelper.h
 	:language: cpp
 	:start-at: // Define any
-	:end-at: #include "openxr/openxr_platform.h"
+	:end-at: #include <openxr/openxr_platform.h>
 	:emphasize-lines: 5
 
 Here, we include the main OpenXR header file ``openxr.h`` and the OpenXR platform header file ``openxr_platform.h``.
@@ -701,8 +701,8 @@ The code below is an example of how you might implement the inclusion and defini
 
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp
-	:start-at: #include "HelperFunctions
-	:end-at: .h"
+	:start-at: #include <HelperFunctions
+	:end-at: .h>
 
 .. container:: windows
 	:name: windows-id-4
@@ -828,7 +828,7 @@ The code below is an example of how you might implement the inclusion and defini
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp
 	:start-at: // OpenXR
-	:end-at: #include "OpenXRHelper.h"
+	:end-at: #include <OpenXRHelper.h>
 
 1.4.3 OpenXRTutorial and Main
 =============================
@@ -839,8 +839,8 @@ First, we add ``DebugOutput.h``:
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
-	:start-at: #include "DebugOutput
-	:end-at: .h"
+	:start-at: #include <DebugOutput
+	:end-at: .h>
 
 Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code of your chosen graphics API. This will in turn include ``GraphicsAPI.h``, ``HelperFunctions.h``  and ``OpenXRHelper.h``.
 
@@ -849,47 +849,47 @@ Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code o
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: #include "GraphicsAPI_D3D11
-		:end-before: .h"
+		:start-after: #include <GraphicsAPI_D3D11
+		:end-before: .h>
 
 .. container:: d3d12
 	:name: d3d12-id-6
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: #include "GraphicsAPI_D3D12
-		:end-before: .h"
+		:start-after: #include <GraphicsAPI_D3D12
+		:end-before: .h>
 
 .. container:: opengl
 	:name: opengl-id-9
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: #include "GraphicsAPI_OpenGL
-		:end-before: .h"
+		:start-after: #include <GraphicsAPI_OpenGL
+		:end-before: .h>
 
 .. container:: opengles
 	:name: opengles-id-7
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: #include "GraphicsAPI_OpenGL_ES
-		:end-before: .h"
+		:start-after: #include <GraphicsAPI_OpenGL_ES
+		:end-before: .h>
 
 .. container:: vulkan
 	:name: vulkan-id-13
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: #include "GraphicsAPI_Vulkan
-		:end-before: .h"
+		:start-after: #include <GraphicsAPI_Vulkan
+		:end-before: .h>
 
 You can also include ``OpenXRDebugUtils.h`` to help with set up of ``XrDebugUtilsMessengerEXT``.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
-	:start-at: #include "OpenXRDebugUtils
-	:end-at: .h"
+	:start-at: #include <OpenXRDebugUtils
+	:end-at: .h>
 
 Now we will define the main class ``OpenXRTutorial`` of the application. It's just a stub for now, with an empty ``Run()`` method:
 

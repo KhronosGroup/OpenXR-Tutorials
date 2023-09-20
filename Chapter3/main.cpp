@@ -1,15 +1,15 @@
 // Copyright Khronos Group 2023
 // OpenXR Tutorial for Khronos Group
 
-#include "DebugOutput.h"
+#include <DebugOutput.h>
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
-#include "GraphicsAPI_D3D11.h"
-#include "GraphicsAPI_D3D12.h"
-#include "GraphicsAPI_OpenGL.h"
-#include "GraphicsAPI_OpenGL_ES.h"
-#include "GraphicsAPI_Vulkan.h"
+#include <GraphicsAPI_D3D11.h>
+#include <GraphicsAPI_D3D12.h>
+#include <GraphicsAPI_OpenGL.h>
+#include <GraphicsAPI_OpenGL_ES.h>
+#include <GraphicsAPI_Vulkan.h>
 // XR_DOCS_TAG_END_include_GraphicsAPIs
-#include "OpenXRDebugUtils.h"
+#include <OpenXRDebugUtils.h>
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_3_2
 

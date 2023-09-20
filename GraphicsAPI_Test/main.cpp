@@ -1,10 +1,10 @@
 // Simul Software Ltd 2023
 // OpenXR Tutorial for Khronos Group
 
-#include "GraphicsAPI_D3D11.h"
-#include "GraphicsAPI_D3D12.h"
-#include "GraphicsAPI_Vulkan.h"
-#include "xr_linear_algebra.h"
+#include <GraphicsAPI_D3D11.h>
+#include <GraphicsAPI_D3D12.h>
+#include <GraphicsAPI_Vulkan.h>
+#include <xr_linear_algebra.h>
 
 static HWND window;
 static bool g_WindowQuit = false;

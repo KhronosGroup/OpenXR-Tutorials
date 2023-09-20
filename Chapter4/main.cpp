@@ -1,19 +1,19 @@
 // Copyright Khronos Group 2023
 // OpenXR Tutorial for Khronos Group
 
-#include "DebugOutput.h"
+#include <DebugOutput.h>
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
-#include "GraphicsAPI_D3D11.h"
-#include "GraphicsAPI_D3D12.h"
-#include "GraphicsAPI_OpenGL.h"
-#include "GraphicsAPI_OpenGL_ES.h"
-#include "GraphicsAPI_Vulkan.h"
+#include <GraphicsAPI_D3D11.h>
+#include <GraphicsAPI_D3D12.h>
+#include <GraphicsAPI_OpenGL.h>
+#include <GraphicsAPI_OpenGL_ES.h>
+#include <GraphicsAPI_Vulkan.h>
 // XR_DOCS_TAG_END_include_GraphicsAPIs
-#include "OpenXRDebugUtils.h"
+#include <OpenXRDebugUtils.h>
 
 // XR_DOCS_TAG_BEGIN_include_linear_algebra
 // include xr linear algebra for XrVector and XrMatrix classes.
-#include "xr_linear_algebra.h"
+#include <xr_linear_algebra.h>
 // Declare some useful operators for vectors:
 XrVector3f operator-(XrVector3f a, XrVector3f b) {
     return {a.x - b.x, a.y - b.y, a.z - b.z};

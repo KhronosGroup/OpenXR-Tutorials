@@ -1,5 +1,5 @@
 #pragma once
-#include "GraphicsAPI.h"
+#include <GraphicsAPI.h>
 
 #if defined(XR_USE_GRAPHICS_API_D3D12)
 class GraphicsAPI_D3D12 : public GraphicsAPI {

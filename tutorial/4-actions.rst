@@ -421,7 +421,7 @@ We will now draw some geometry to represent the controller poses. Download:
 
 Put it in the "Common/" folder. It provides a simple matrix and vector library for our render code.
 
-Add this after ``#include "OpenXRDebugUtils.h"``:
+Add this after ``#include <OpenXRDebugUtils.h>``:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp

@@ -2,8 +2,8 @@
 // Define any XR_USE_PLATFORM_... / XR_USE_GRAPHICS_API_... before this header file.
 
 // OpenXR Headers
-#include "openxr/openxr.h"
-#include "openxr/openxr_platform.h"
+#include <openxr/openxr.h>
+#include <openxr/openxr_platform.h>
 
 // XR_DOCS_TAG_BEGIN_Helper_Functions0
 inline void OpenXRDebugBreak() {

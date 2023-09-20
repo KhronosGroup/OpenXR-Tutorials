@@ -86,7 +86,7 @@ inline std::vector<char> ReadBinaryFile(const std::string &filepath) {
 
 #if defined(__ANDROID__)
 // XR_DOCS_TAG_BEGIN_ReadFiles_Android
-#include "android/asset_manager.h"
+#include <android/asset_manager.h>
 inline std::string ReadTextFile(const std::string &filepath, AAssetManager *assetManager) {
     AAsset *file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
     size_t fileLength = AAsset_getLength(file);

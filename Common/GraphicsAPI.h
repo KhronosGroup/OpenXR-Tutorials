@@ -1,12 +1,12 @@
 #pragma once
-#include "HelperFunctions.h"
+#include <HelperFunctions.h>
 
 // Platform headers
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#include "Windows.h"
-#include "unknwn.h"
+#include <Windows.h>
+#include <unknwn.h>
 #define XR_USE_PLATFORM_WIN32
 
 #if defined(XR_TUTORIAL_USE_D3D11)
@@ -47,7 +47,7 @@
 #endif // __linux__
 
 #if defined(__ANDROID__)
-#include "android_native_app_glue.h"
+#include <android_native_app_glue.h>
 #define XR_USE_PLATFORM_ANDROID
 
 #if defined(XR_TUTORIAL_USE_OPENGL_ES)
@@ -85,19 +85,19 @@
 #undef XR_USE_PLATFORM_XLIB
 #undef XR_USE_PLATFORM_XCB
 #undef XR_USE_PLATFORM_WAYLAND
-#include "gfxwrapper_opengl.h"
+#include <gfxwrapper_opengl.h>
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-#include "gfxwrapper_opengl.h"
+#include <gfxwrapper_opengl.h>
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
-#include "vulkan/vulkan.h"
+#include <vulkan/vulkan.h>
 #endif
 
 // OpenXR
-#include "OpenXRHelper.h"
+#include <OpenXRHelper.h>
 
 enum GraphicsAPI_Type : uint8_t {
     UNKNOWN,
