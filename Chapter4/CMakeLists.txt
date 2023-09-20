@@ -70,7 +70,7 @@ if (ANDROID) # Android
     # VulkanNDK
     find_library(vulkan-lib vulkan)
     if (vulkan-lib)
-    target_include_directories(${PROJECT_NAME} PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
+        target_include_directories(${PROJECT_NAME} PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
     endif()
 
@@ -95,27 +95,25 @@ if (ANDROID) # Android
             openxr-gfxwrapper)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-cast-calling-convention)
 
-#XR_DOCS_TAG_BEGIN_CompileAndroidGLSLShaders
     #Shaders
-    find_package(Vulkan)
-    #if (Vulkan_FOUND) #TODO: Use NDK, not Vulkan SDK.
-        # GLSL Shaders
-        set_source_files_properties(../Shaders/VertexShader.glsl PROPERTIES ShaderType "vert")
-        set_source_files_properties(../Shaders/PixelShader.glsl PROPERTIES ShaderType "frag")
-    
-        #Vulkan
-        foreach(FILE ${GLSL_SHADERS})
-            get_filename_component(FILE_WE ${FILE} NAME_WE)
-            get_source_file_property(shadertype ${FILE} ShaderType)
-            add_custom_command(TARGET ${PROJECT_NAME}
-                               COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} -g -o ${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders/${FILE_WE}.spv
-                               MAIN_DEPENDENCY ${FILE}
-                               COMMENT "GLSL ${FILE}"
-                               WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                               VERBATIM)
-        endforeach(FILE)
-    #endif()
+#XR_DOCS_TAG_BEGIN_CompileAndroidGLSLShaders
+    # GLSL Shaders
+    set_source_files_properties(../Shaders/VertexShader.glsl PROPERTIES ShaderType "vertex")
+    set_source_files_properties(../Shaders/PixelShader.glsl PROPERTIES ShaderType "fragment")
 
+    #Vulkan
+    file(GLOB glslc-folders ${ANDROID_NDK}/shader-tools/*)
+    find_program(GLSLC glslc HINTS ${glslc-folders})
+    foreach(FILE ${GLSL_SHADERS})
+        get_filename_component(FILE_WE ${FILE} NAME_WE)
+        get_source_file_property(shadertype ${FILE} ShaderType)
+        add_custom_command(TARGET ${PROJECT_NAME}
+                           COMMAND ${GLSLC} -fentry-point=main -fshader-stage=${shadertype} -g -o ${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders/${FILE_WE}.spv ${FILE}
+                           MAIN_DEPENDENCY ${FILE}
+                           COMMENT "GLSL ${FILE}"
+                           WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                           VERBATIM)
+    endforeach(FILE)
 #XR_DOCS_TAG_END_CompileAndroidGLSLShaders
 #XR_DOCS_TAG_BEGIN_CompileAndroidGLESShaders
     #OpenGL ES
@@ -134,7 +132,7 @@ if (ANDROID) # Android
 
 else() # Windows / Linux
 #XR_DOCS_TAG_BEGIN_AddExecutableWindowsLinux
-	set(SHADERS ${GLSL_SHADERS})
+    set(SHADERS ${GLSL_SHADERS})
     add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${SHADERS})
 #XR_DOCS_TAG_END_AddExecutableWindowsLinux
 
@@ -174,9 +172,9 @@ else() # Windows / Linux
 #XR_DOCS_TAG_BEGIN_BuildShadersWindows
     #Shaders
     if (WIN32)
-	    set_source_files_properties(../Shaders/VertexShader.hlsl PROPERTIES ShaderType "vs")
-	    set_source_files_properties(../Shaders/PixelShader.hlsl PROPERTIES ShaderType "ps")
-	    set_source_files_properties(${HLSL_SHADERS} PROPERTIES ShaderModel "4_0")
+        set_source_files_properties(../Shaders/VertexShader.hlsl PROPERTIES ShaderType "vs")
+        set_source_files_properties(../Shaders/PixelShader.hlsl PROPERTIES ShaderType "ps")
+        set_source_files_properties(${HLSL_SHADERS} PROPERTIES ShaderModel "4_0")
 
         # HLSL Shaders
         set_source_files_properties(../Shaders/VertexShader.hlsl PROPERTIES ShaderType "vs")
@@ -220,7 +218,7 @@ else() # Windows / Linux
         foreach(FILE ${GLSL_SHADERS})
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
-			message ("${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} $<$<CONFIG:Debug>:-Od> -g -o ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv")
+            message ("${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} $<$<CONFIG:Debug>:-Od> -g -o ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv")
             add_custom_command(TARGET ${PROJECT_NAME}
                                COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} -Od -g -o ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv
                                MAIN_DEPENDENCY ${FILE}
