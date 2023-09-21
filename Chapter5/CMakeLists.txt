@@ -111,51 +111,34 @@ endif()
 if(WIN32)
 
     # HLSL Shaders
-    set_source_files_properties(
-        ../Shaders/VertexShader.hlsl PROPERTIES ShaderType "vs"
-    )
-    set_source_files_properties(
-        ../Shaders/PixelShader.hlsl PROPERTIES ShaderType "ps"
-    )
-
+    include(fxc_shader)
     # D3D11: using shader model 5.0
-    set(shadermodel 5_0)
-    foreach(FILE ${HLSL_SHADERS})
-        get_filename_component(FILE_WE ${FILE} NAME_WE)
-        get_source_file_property(shadertype ${FILE} ShaderType)
-        # TODO this should be a custom command that creates a source file linked
-        # into the executable, the current command is not quite valid
-        add_custom_command(
-            TARGET ${PROJECT_NAME}
-            COMMAND
-                fxc.exe /nologo /Emain /T${shadertype}_${shadermodel}
-                $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo
-                "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso" /Fd
-                "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb"
-                ${FILE}
-            COMMENT "HLSL ${FILE}"
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            VERBATIM
-        )
-    endforeach()
     # D3D12: using shader model 5.1
-    set(shadermodel "5_1")
-    foreach(FILE ${HLSL_SHADERS})
-        get_filename_component(FILE_WE ${FILE} NAME_WE)
-        get_source_file_property(shadertype ${FILE} ShaderType)
-        # TODO this should be a custom command that creates a source file linked
-        # into the executable, the current command is not quite valid
-        add_custom_command(
-            TARGET ${PROJECT_NAME}
-            COMMAND
-                fxc.exe /nologo /Emain /T${shadertype}_${shadermodel}
-                $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo
-                "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso" /Fd
-                "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb"
-                ${FILE}
-            COMMENT "HLSL ${FILE}"
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            VERBATIM
+    # TODO why does d3d12 need sm5.1?
+    foreach(shadermodel 5_0 5_1)
+        fxc_shader(
+            INPUT
+            "${CMAKE_CURRENT_SOURCE_DIR}/../Shaders/PixelShader.hlsl"
+            OUTPUT
+            "${CMAKE_CURRENT_BINARY_DIR}/PixelShader_${shadermodel}.cso"
+            PROFILE
+            ps_${shadermodel}
+        )
+        fxc_shader(
+            INPUT
+            "${CMAKE_CURRENT_SOURCE_DIR}/../Shaders/VertexShader.hlsl"
+            OUTPUT
+            "${CMAKE_CURRENT_BINARY_DIR}/VertexShader_${shadermodel}.cso"
+            PROFILE
+            vs_${shadermodel}
+        )
+
+        # Make our project depend on these files
+        target_sources(
+            ${PROJECT_NAME}
+            PRIVATE
+                "${CMAKE_CURRENT_BINARY_DIR}/PixelShader_${shadermodel}.cso"
+                "${CMAKE_CURRENT_BINARY_DIR}/VertexShader_${shadermodel}.cso"
         )
     endforeach()
 endif()
