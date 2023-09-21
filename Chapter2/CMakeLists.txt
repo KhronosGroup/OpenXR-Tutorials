@@ -132,9 +132,3 @@ if(Vulkan_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Vulkan)
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
 endif()
-
-# Fix redirection to a different project's build folder TODO why is this needed?
-target_include_directories(
-    ${PROJECT_NAME}
-    PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common
-)
