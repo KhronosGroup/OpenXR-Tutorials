@@ -161,100 +161,63 @@ if(WIN32)
 endif()
 #XR_DOCS_TAG_END_BuildShadersWindows
 
-# TODO these should not need to be separate between android and not! If they had to be this separate it would be easier to have totally different build systems
-if(NOT ANDROID)
-    #XR_DOCS_TAG_BEGIN_BuildShadersVulkanWindowsLinux
-    if(Vulkan_FOUND)
-        # GLSL Shaders
-        set_source_files_properties(
-            ../Shaders/VertexShader.glsl PROPERTIES ShaderType vert
-        )
-        set_source_files_properties(
-            ../Shaders/PixelShader.glsl PROPERTIES ShaderType frag
-        )
-
-        # Vulkan
-        foreach(FILE ${GLSL_SHADERS})
-            get_filename_component(FILE_WE ${FILE} NAME_WE)
-            get_source_file_property(shadertype ${FILE} ShaderType)
-            message(
-                "${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${FILE} -e main -S ${shadertype} $<$<CONFIG:Debug>:-Od> -g -o ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv"
-            )
-            # TODO this should be a custom command that creates a source file linked
-            # into the executable, the current command is not quite valid
-            add_custom_command(
-                TARGET ${PROJECT_NAME}
-                COMMAND
-                    "${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE}" -V ${FILE} -e main
-                    -S ${shadertype} -Od -g -o
-                    "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.spv"
-                COMMENT "GLSL ${FILE}"
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                VERBATIM
-            )
-        endforeach()
-    endif()
-    #XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
-    #XR_DOCS_TAG_BEGIN_BuildShadersOpenGLWindowsLinux
-    # OpenGL
-    foreach(FILE ${GLSL_SHADERS})
-        get_filename_component(FILE_WE ${FILE} NAME_WE)
-        add_custom_command(
-            TARGET ${PROJECT_NAME}
-            COMMAND
-                ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
-                "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.glsl"
-            COMMENT "GLSL ${FILE}"
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            VERBATIM
-        )
-    endforeach()
-    #XR_DOCS_TAG_END_BuildShadersOpenGLWindowsLinux
+include(glsl_shader)
+if(ANDROID)
+    set(SHADER_DEST "${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders")
 else()
-    #XR_DOCS_TAG_BEGIN_CompileAndroidGLSLShaders
-    # GLSL Shaders
-    set_source_files_properties(
-        ../Shaders/VertexShader.glsl PROPERTIES ShaderType "vertex"
-    )
-    set_source_files_properties(
-        ../Shaders/PixelShader.glsl PROPERTIES ShaderType "fragment"
-    )
-
-    #Vulkan
-    file(GLOB glslc-folders ${ANDROID_NDK}/shader-tools/*)
-    find_program(GLSLC glslc HINTS ${glslc-folders})
-    foreach(FILE ${GLSL_SHADERS})
-        get_filename_component(FILE_WE ${FILE} NAME_WE)
-        get_source_file_property(shadertype ${FILE} ShaderType)
-        add_custom_command(
-            TARGET ${PROJECT_NAME}
-            COMMAND
-                ${GLSLC} -fentry-point=main -fshader-stage=${shadertype} -g -o
-                ${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders/${FILE_WE}.spv
-                ${FILE} MAIN_DEPENDENCY ${FILE}
-            COMMENT "GLSL ${FILE}"
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            VERBATIM
-        )
-    endforeach()
-    #XR_DOCS_TAG_END_CompileAndroidGLSLShaders
-    #XR_DOCS_TAG_BEGIN_CompileAndroidGLESShaders
-    # OpenGL ES
-    foreach(FILE ${ES_GLSL_SHADERS})
-        get_filename_component(FILE_WE ${FILE} NAME_WE)
-        add_custom_command(
-            TARGET ${PROJECT_NAME}
-            COMMAND
-                ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${FILE}
-                ${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders/${FILE_WE}.glsl
-                MAIN_DEPENDENCY ${FILE}
-            COMMENT "GLSL ${FILE}"
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            VERBATIM
-        )
-    endforeach(FILE)
-    #XR_DOCS_TAG_END_CompileAndroidGLESShaders
+    set(SHADER_DEST "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
+#XR_DOCS_TAG_BEGIN_BuildShadersVulkan
+if(Vulkan_FOUND)
+    glsl_spv_shader(
+        INPUT
+        "${CMAKE_CURRENT_SOURCE_DIR}/../Shaders/VertexShader.glsl"
+        OUTPUT
+        "${SHADER_DEST}/VertexShader.spv"
+        STAGE
+        vert
+        TARGET_ENV
+        vulkan1.0
+    )
+    glsl_spv_shader(
+        INPUT
+        "${CMAKE_CURRENT_SOURCE_DIR}/../Shaders/PixelShader.glsl"
+        OUTPUT
+        "${SHADER_DEST}/PixelShader.spv"
+        STAGE
+        frag
+        TARGET_ENV
+        vulkan1.0
+    )
+    # Make our project depend on these files
+    target_sources(
+        ${PROJECT_NAME} PRIVATE "${SHADER_DEST}/VertexShader.spv"
+                                "${SHADER_DEST}/PixelShader.spv"
+    )
+endif()
+#XR_DOCS_TAG_END_BuildShadersVulkan
+#XR_DOCS_TAG_BEGIN_BuildShadersOpenGL
+
+# OpenGL
+foreach(FILE ${GLSL_SHADERS})
+    # For OpenGL we just copy the shader source to load at runtime
+    get_filename_component(FILE_WE ${FILE} NAME_WE)
+    add_custom_command(
+        OUTPUT "${SHADER_DEST}/${FILE_WE}.glsl"
+        COMMAND
+            ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+            "${SHADER_DEST}/${FILE_WE}.glsl"
+        COMMENT "GLSL ${FILE}"
+        MAIN_DEPENDENCY "${FILE}"
+        DEPENDS "${FILE}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        VERBATIM
+    )
+    # Make our project depend on these files
+    target_sources(${PROJECT_NAME} PRIVATE "${SHADER_DEST}/${FILE_WE}.glsl")
+endforeach()
+#XR_DOCS_TAG_END_BuildShadersOpenGL
+
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
