@@ -9,20 +9,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 include(FetchContent)
 
 # openxr_loader - From github.com/KhronosGroup
-set(BUILD_ALL_EXTENSIONS
-    ON
-    CACHE INTERNAL "Build loader and layers with all extensions"
-)
 set(BUILD_TESTS
     OFF
     CACHE INTERNAL "Build tests"
 )
-set(BUILD_CONFORMANCE_TESTS
-    OFF
-    CACHE INTERNAL "Build conformance tests"
-)
 set(BUILD_API_LAYERS
-    ON
+    OFF
     CACHE INTERNAL "Use OpenXR layers"
 )
 
