@@ -38,7 +38,8 @@
 build
 sphinx
 
-
+# Android build config files
+local.properties
 
 # Android Shader output sources/binaries
 Chapter5/app/src/main/assets/shaders/*.spv
