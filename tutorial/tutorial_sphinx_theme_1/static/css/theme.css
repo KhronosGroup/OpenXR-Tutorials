@@ -6286,7 +6286,8 @@ html
 
 footer
 {
-    color: #000
+    color: #000;
+    margin-bottom: 140px;
 }
 
 footer p

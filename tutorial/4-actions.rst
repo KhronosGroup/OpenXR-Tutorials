@@ -245,7 +245,7 @@ We will now show how to use these profiles in practice to suggest bindings betwe
 
 We will set up bindings for the actions. A binding is a *suggested* correspondence between an action (which is app-defined), and the input/output on the user's devices. 
 
-An XrPath is a 64-bit number that hopefully uniquely identifies any given forward-slash-delimited path string, allowing us to refer to paths without putting cumbersome string-handling in our runtime code. After the call to ``CreateActionSet()`` in ``Run()``, add the line:
+An XrPath is a 64-bit number that uniquely identifies any given forward-slash-delimited path string, allowing us to refer to paths without putting cumbersome string-handling in our runtime code. After the call to ``CreateActionSet()`` in ``Run()``, add the line:
 
 .. literalinclude:: ../Chapter4/main.cpp
     :language: cpp

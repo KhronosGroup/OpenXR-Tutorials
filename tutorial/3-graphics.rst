@@ -1,5 +1,5 @@
 ﻿#############
-👾 3 Graphics
+3 Graphics
 #############
 
 Select your platform, as the instructions are different depending on your selection.

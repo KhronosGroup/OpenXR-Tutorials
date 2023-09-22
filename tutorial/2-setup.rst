@@ -234,7 +234,7 @@ With the above code, we have also got the system's properties. We partially fill
 
 *The above code is an excerpt from openxr/openxr.h*
 
-You can now run the application to check that you have a valid ``XrInstnace`` and ``XrSystemId``.
+You can now run the application to check that you have a valid ``XrInstance`` and ``XrSystemId``.
 
 *************************
 2.2 Creating an XrSession
