@@ -27,7 +27,7 @@
 #if defined(XR_TUTORIAL_USE_VULKAN)
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
-#endif // _WIN32
+#endif  // _WIN32
 
 #if defined(__linux__) && !defined(__ANDROID__)
 #if defined(XR_TUTORIAL_USE_LINUX_XLIB)
@@ -36,7 +36,6 @@
 #endif
 #if defined(XR_TUTORIAL_USE_LINUX_XCB)
 #include <xcb/xcb.h>
-#include <X11/Xlib.h>
 #define XR_USE_PLATFORM_XCB
 #endif
 #if defined(XR_TUTORIAL_USE_LINUX_WAYLAND)
@@ -50,7 +49,7 @@
 #if defined(XR_TUTORIAL_USE_VULKAN)
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
-#endif // __linux__
+#endif  // __linux__
 
 #if defined(__ANDROID__)
 #include <android_native_app_glue.h>
@@ -62,7 +61,7 @@
 #if defined(XR_TUTORIAL_USE_VULKAN)
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
-#endif // __ANDROID__
+#endif  // __ANDROID__
 
 // Graphic APIs headers
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -416,7 +415,8 @@ public:
         enum class Filter : uint8_t {
             NEAREST,
             LINEAR
-        } magFilter, minFilter;
+        } magFilter,
+            minFilter;
         enum class MipmapMode : uint8_t {
             NEAREST,
             LINEAR,
@@ -428,7 +428,8 @@ public:
             CLAMP_TO_EDGE,
             CLAMP_TO_BORDER,
             MIRROR_CLAMP_TO_EDGE
-        } addressModeS, addressModeT, addressModeR;
+        } addressModeS,
+            addressModeT, addressModeR;
         float mipLodBias;
         bool compareEnable;
         CompareOp compareOp;
@@ -516,5 +517,5 @@ public:
 
 protected:
     virtual const std::vector<int64_t> GetSupportedSwapchainFormats() = 0;
-	bool debugAPI=false;
+    bool debugAPI = false;
 };

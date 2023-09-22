@@ -221,12 +221,11 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
     OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetD3D12GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D12GraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
     XrGraphicsRequirementsD3D12KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR};
     OPENXR_CHECK(xrGetD3D12GraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for D3D12.");
-	if(debugAPI)
-	{
-		D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
-		debug->EnableDebugLayer();
-		reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);
-	}
+    if (debugAPI) {
+        D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
+        debug->EnableDebugLayer();
+        reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);
+    }
     D3D12_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
 
     UINT i = 0;
@@ -379,14 +378,16 @@ void *GraphicsAPI_D3D12::CreateImage(const ImageCreateInfo &imageCI) {
 
     D3D12_CLEAR_VALUE clear = {};
     bool useClear = false;
-    if (useClear = BitwiseCheck(desc.Flags, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)) {
+    if (BitwiseCheck(desc.Flags, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)) {
+        useClear = true;
         clear.Format = desc.Format;
         clear.Color[0] = 0.0f;
         clear.Color[1] = 0.0f;
         clear.Color[2] = 0.0f;
         clear.Color[3] = 0.0f;
     }
-    if (useClear = BitwiseCheck(desc.Flags, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) {
+    if (BitwiseCheck(desc.Flags, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) {
+        useClear = true;
         clear.Format = desc.Format;
         clear.DepthStencil = {0.0f, 0};
     }

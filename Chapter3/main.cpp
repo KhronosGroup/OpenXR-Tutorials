@@ -14,6 +14,8 @@
 // XR_DOCS_TAG_END_include_GraphicsAPIs
 #include <OpenXRDebugUtils.h>
 
+#include <memory>
+
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_3_2
 
 class OpenXRTutorial {
