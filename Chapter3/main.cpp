@@ -1,15 +1,18 @@
-// Copyright Khronos Group 2023
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
 // OpenXR Tutorial for Khronos Group
 
-#include "DebugOutput.h"
+#include <DebugOutput.h>
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
-#include "GraphicsAPI_D3D11.h"
-#include "GraphicsAPI_D3D12.h"
-#include "GraphicsAPI_OpenGL.h"
-#include "GraphicsAPI_OpenGL_ES.h"
-#include "GraphicsAPI_Vulkan.h"
+#include <GraphicsAPI_D3D11.h>
+#include <GraphicsAPI_D3D12.h>
+#include <GraphicsAPI_OpenGL.h>
+#include <GraphicsAPI_OpenGL_ES.h>
+#include <GraphicsAPI_Vulkan.h>
 // XR_DOCS_TAG_END_include_GraphicsAPIs
-#include "OpenXRDebugUtils.h"
+#include <OpenXRDebugUtils.h>
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_3_2
 
@@ -333,6 +336,12 @@ private:
                 }
                 if (sessionStateChanged->state == XR_SESSION_STATE_EXITING) {
                     // SessionState is exiting. Exit the application.
+                    m_sessionRunning = false;
+                    m_applicationRunning = false;
+                }
+                if (sessionStateChanged->state == XR_SESSION_STATE_LOSS_PENDING) {
+                    // SessionState is loss pending. Exit the application.
+                    // It's possible to try a reestablish an XrInstance and XrSession, but we will simply exit here.
                     m_sessionRunning = false;
                     m_applicationRunning = false;
                 }

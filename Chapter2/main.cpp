@@ -1,24 +1,27 @@
-// Copyright Khronos Group 2023
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
 // OpenXR Tutorial for Khronos Group
 
-#include "DebugOutput.h"
+#include <DebugOutput.h>
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D11
-#include "GraphicsAPI_D3D11.h"
+#include <GraphicsAPI_D3D11.h>
 // XR_DOCS_TAG_END_include_GraphicsAPI_D3D11
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D12
-#include "GraphicsAPI_D3D12.h"
+#include <GraphicsAPI_D3D12.h>
 // XR_DOCS_TAG_END_include_GraphicsAPI_D3D12
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL
-#include "GraphicsAPI_OpenGL.h"
+#include <GraphicsAPI_OpenGL.h>
 // XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL_ES
-#include "GraphicsAPI_OpenGL_ES.h"
+#include <GraphicsAPI_OpenGL_ES.h>
 // XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL_ES
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPI_Vulkan
-#include "GraphicsAPI_Vulkan.h"
+#include <GraphicsAPI_Vulkan.h>
 // XR_DOCS_TAG_END_include_GraphicsAPI_Vulkan
 // XR_DOCS_TAG_BEGIN_include_OpenXRDebugUtils
-#include "OpenXRDebugUtils.h"
+#include <OpenXRDebugUtils.h>
 // XR_DOCS_TAG_END_include_OpenXRDebugUtils
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
@@ -298,6 +301,12 @@ private:
                 }
                 if (sessionStateChanged->state == XR_SESSION_STATE_EXITING) {
                     // SessionState is exiting. Exit the application.
+                    m_sessionRunning = false;
+                    m_applicationRunning = false;
+                }
+                if (sessionStateChanged->state == XR_SESSION_STATE_LOSS_PENDING) {
+                    // SessionState is loss pending. Exit the application.
+                    // It's possible to try a reestablish an XrInstance and XrSession, but we will simply exit here.
                     m_sessionRunning = false;
                     m_applicationRunning = false;
                 }

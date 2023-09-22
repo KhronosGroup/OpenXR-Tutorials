@@ -1,4 +1,7 @@
-// Copyright Khronos Group 2023
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
 // OpenXR Tutorial for Khronos Group
 
 #include <DebugOutput.h>
@@ -682,6 +685,12 @@ private:
                 }
                 if (sessionStateChanged->state == XR_SESSION_STATE_EXITING) {
                     // SessionState is exiting. Exit the application.
+                    m_sessionRunning = false;
+                    m_applicationRunning = false;
+                }
+                if (sessionStateChanged->state == XR_SESSION_STATE_LOSS_PENDING) {
+                    // SessionState is loss pending. Exit the application.
+                    // It's possible to try a reestablish an XrInstance and XrSession, but we will simply exit here.
                     m_sessionRunning = false;
                     m_applicationRunning = false;
                 }

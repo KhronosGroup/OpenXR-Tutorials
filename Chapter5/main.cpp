@@ -1,15 +1,18 @@
-// Copyright Khronos Group 2023
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
 // OpenXR Tutorial for Khronos Group
 
-#include "DebugOutput.h"
+#include <DebugOutput.h>
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
-#include "GraphicsAPI_D3D11.h"
-#include "GraphicsAPI_D3D12.h"
-#include "GraphicsAPI_OpenGL.h"
-#include "GraphicsAPI_OpenGL_ES.h"
-#include "GraphicsAPI_Vulkan.h"
+#include <GraphicsAPI_D3D11.h>
+#include <GraphicsAPI_D3D12.h>
+#include <GraphicsAPI_OpenGL.h>
+#include <GraphicsAPI_OpenGL_ES.h>
+#include <GraphicsAPI_Vulkan.h>
 // XR_DOCS_TAG_END_include_GraphicsAPIs
-#include "OpenXRDebugUtils.h"
+#include <OpenXRDebugUtils.h>
 
 // XR_DOCS_TAG_BEGIN_DeclareExtensionFunctions
 PFN_xrCreateHandTrackerEXT xrCreateHandTrackerEXT = nullptr;
@@ -19,7 +22,7 @@ PFN_xrLocateHandJointsEXT xrLocateHandJointsEXT = nullptr;
 
 // XR_DOCS_TAG_BEGIN_include_linear_algebra
 // include xr linear algebra for XrVector and XrMatrix classes.
-#include "xr_linear_algebra.h"
+#include <xr_linear_algebra.h>
 // Declare some useful operators for vectors:
 XrVector3f operator-(XrVector3f a, XrVector3f b) {
     return {a.x - b.x, a.y - b.y, a.z - b.z};
@@ -713,6 +716,12 @@ private:
                 }
                 if (sessionStateChanged->state == XR_SESSION_STATE_EXITING) {
                     // SessionState is exiting. Exit the application.
+                    m_sessionRunning = false;
+                    m_applicationRunning = false;
+                }
+                if (sessionStateChanged->state == XR_SESSION_STATE_LOSS_PENDING) {
+                    // SessionState is loss pending. Exit the application.
+                    // It's possible to try a reestablish an XrInstance and XrSession, but we will simply exit here.
                     m_sessionRunning = false;
                     m_applicationRunning = false;
                 }

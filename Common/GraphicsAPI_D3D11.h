@@ -1,5 +1,11 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
+// OpenXR Tutorial for Khronos Group
+
 #pragma once
-#include "GraphicsAPI.h"
+#include <GraphicsAPI.h>
 
 #if defined(XR_USE_GRAPHICS_API_D3D11)
 class GraphicsAPI_D3D11 : public GraphicsAPI {

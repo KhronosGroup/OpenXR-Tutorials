@@ -1,4 +1,10 @@
-#include "GraphicsAPI_OpenGL.h"
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
+// OpenXR Tutorial for Khronos Group
+
+#include <GraphicsAPI_OpenGL.h>
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
 

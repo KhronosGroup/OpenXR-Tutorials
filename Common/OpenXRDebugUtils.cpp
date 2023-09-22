@@ -1,4 +1,11 @@
-#include "OpenXRDebugUtils.h"
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
+// OpenXR Tutorial for Khronos Group
+
+#include <OpenXRDebugUtils.h>
+
 // XR_DOCS_TAG_BEGIN_OpenXRMessageCallbackFunction
 XrBool32 OpenXRMessageCallbackFunction(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData) {
     // Lambda to covert an XrDebugUtilsMessageSeverityFlagsEXT to std::string. Bitwise check to concatenate multiple severities to the output string.

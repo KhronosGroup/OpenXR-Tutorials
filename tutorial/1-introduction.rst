@@ -81,9 +81,9 @@ OpenXR supports multiple graphics APIs via its extension functionality. Like in 
 	
 OpenXR recognised that there is vast and ever changing array of hardware and configurations in the XR space. With new headsets and controllers coming to the market, an abstraction of the input system was needed so that same application can target difference and newer hardware. The abstraction is done via the concept of an ``XrAction``, which acts as handle to interactive elements of the application. Instead of directly querying the state of any one button, joysticks, trigger, touch pad etc., you create an ``XrAction`` for a specific action such as a "menu_click". You provide a suggested binding along with an interaction profile so that OpenXR can link that action with the available input hardware at runtime.
 
-**************
+*********************
 1.3 Environment Setup
-**************
+*********************
 
 This section will help you set up your development environment. Here your choice of platform really makes a difference. After that, things will be much more consistent. You can change platform at any time by clicking the tabs at the top of the page. Select the platform you want to develop for
 by clicking a tab above.
@@ -135,7 +135,7 @@ by clicking a tab above.
 
 	.. container:: vulkan
 		:name: vulkan-id-2
-		
+
 		.. rubric:: Install the Vulkan SDK
 
 		If you want to use Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_.
@@ -316,7 +316,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 				"../Common/OpenXRHelper.h")
 
 	All the files listed above with ``../Common/*.*`` are available to download from this tutorial website. In the next section, you will find the links and discussion of their usage within this tutorial and with OpenXR. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files pertaining to your graphics API choice.
-
+	
 	Now add the following code:
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
@@ -634,7 +634,7 @@ A header for including all the needed header files and helper functions. Looking
 .. literalinclude:: ../Common/OpenXRHelper.h
 	:language: cpp
 	:start-at: // Define any
-	:end-at: #include "openxr/openxr_platform.h"
+	:end-at: #include <openxr/openxr_platform.h>
 	:emphasize-lines: 5
 
 Here, we include the main OpenXR header file ``openxr.h`` and the OpenXR platform header file ``openxr_platform.h``.
@@ -653,8 +653,8 @@ The code below is an example of how you might implement the inclusion and defini
 
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp
-	:start-at: #include "HelperFunctions
-	:end-at: .h"
+	:start-at: #include <HelperFunctions
+	:end-at: .h>
 
 .. container:: windows
 	:name: windows-id-4
@@ -780,7 +780,7 @@ The code below is an example of how you might implement the inclusion and defini
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp
 	:start-at: // OpenXR
-	:end-at: #include "OpenXRHelper.h"
+	:end-at: #include <OpenXRHelper.h>
 
 1.4.3 The main.cpp file and the OpenXRTutorial class
 ====================================================
@@ -789,8 +789,8 @@ Now, create a text file called ``main.cpp`` in the ``Chapter2`` folder. Open ``m
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
-	:start-at: #include "DebugOutput
-	:end-at: .h"
+	:start-at: #include <DebugOutput
+	:end-at: .h>
 
 Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code of your chosen graphics API. This will in turn include ``GraphicsAPI.h``, ``HelperFunctions.h``  and ``OpenXRHelper.h``.
 
@@ -804,7 +804,7 @@ Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code o
 
 .. container:: d3d12
 	:name: d3d12-id-6
-
+	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D12
@@ -820,7 +820,7 @@ Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code o
 
 .. container:: opengles
 	:name: opengles-id-7
-
+	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL_ES
@@ -828,7 +828,7 @@ Next, we add the ``GraphicsAPI_....h`` header to include the Graphics API code o
 
 .. container:: vulkan
 	:name: vulkan-id-13
-
+	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_Vulkan
