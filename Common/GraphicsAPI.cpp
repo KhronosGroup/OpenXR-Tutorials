@@ -9,11 +9,9 @@
 bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type) {
 #if defined(XR_USE_PLATFORM_WIN32)
     return (type == D3D11) || (type == D3D12) || (type == OPENGL) || (type == VULKAN);
-#endif
-#if defined(XR_USE_PLATFORM_XLIB) || defined(XR_USE_PLATFORM_XCB) || defined(XR_USE_PLATFORM_WAYLAND)
+#elif defined(XR_USE_PLATFORM_XLIB) || defined(XR_USE_PLATFORM_XCB) || defined(XR_USE_PLATFORM_WAYLAND)
     return (type == OPENGL) || (type == VULKAN);
-#endif
-#if defined(XR_USE_PLATFORM_ANDROID) || defined(XR_USE_PLATFORM_XCB) || defined(XR_USE_PLATFORM_WAYLAND)
+#elif defined(XR_USE_PLATFORM_ANDROID) || defined(XR_USE_PLATFORM_XCB) || defined(XR_USE_PLATFORM_WAYLAND)
     return (type == OPENGL_ES) || (type == VULKAN);
 #endif
     return false;

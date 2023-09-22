@@ -7,14 +7,14 @@
 #pragma once
 
 // C/C++ Headers
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
 #include <algorithm>
 #include <cstring>
-#include <unordered_map>
+#include <fstream>
+#include <iostream>
 #include <memory>
+#include <sstream>
+#include <unordered_map>
+#include <vector>
 
 // Debugbreak
 #if defined(_MSC_VER)

@@ -1,114 +1,126 @@
-cmake_minimum_required(VERSION 3.22.1)
-set(PROJECT_NAME OpenXRTutorialChapter2)
-project("${PROJECT_NAME}") # Needed for Android
+cmake_minimum_required(VERSION 3.16)
+project(OpenXRTutorialChapter2)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 
 # For FetchContent_Declare() and FetchContent_MakeAvailable()
 include(FetchContent)
 
 # openxr_loader - From github.com/KhronosGroup
-set(BUILD_ALL_EXTENSIONS ON CACHE INTERNAL "Build loader and layers with all extensions")
-set(BUILD_TESTS OFF CACHE INTERNAL "Build tests")
-set(BUILD_CONFORMANCE_TESTS OFF CACHE INTERNAL "Build conformance tests")
-set(BUILD_API_LAYERS ON CACHE INTERNAL "Use OpenXR layers")
+set(BUILD_TESTS
+    OFF
+    CACHE INTERNAL "Build tests"
+)
+set(BUILD_API_LAYERS
+    OFF
+    CACHE INTERNAL "Use OpenXR layers"
+)
 FetchContent_Declare(
-        OpenXR
-        URL_HASH MD5=81930f0ccecdca852906e1a22aee4a45
-        URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.28.zip
-        SOURCE_DIR openxr)
+    OpenXR
+    URL_HASH MD5=81930f0ccecdca852906e1a22aee4a45
+    URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.28.zip
+        SOURCE_DIR
+        openxr
+)
 FetchContent_MakeAvailable(OpenXR)
 
 # Files
-set(SOURCES 
-    "main.cpp"
-    "../Common/GraphicsAPI.cpp"
-    "../Common/GraphicsAPI_D3D11.cpp"
-    "../Common/GraphicsAPI_D3D12.cpp"
-    "../Common/GraphicsAPI_OpenGL.cpp"
-    "../Common/GraphicsAPI_OpenGL_ES.cpp"
-    "../Common/GraphicsAPI_Vulkan.cpp"
-    "../Common/OpenXRDebugUtils.cpp")
-set(HEADERS 
-    "../Common/DebugOutput.h"
-    "../Common/GraphicsAPI.h"
-    "../Common/GraphicsAPI_D3D11.h"
-    "../Common/GraphicsAPI_D3D12.h"
-    "../Common/GraphicsAPI_OpenGL.h"
-    "../Common/GraphicsAPI_OpenGL_ES.h"
-    "../Common/GraphicsAPI_Vulkan.h"
-    "../Common/HelperFunctions.h"
-    "../Common/OpenXRDebugUtils.h"
-    "../Common/OpenXRHelper.h")
+set(SOURCES
+    main.cpp
+    ../Common/DebugOutput.h
+    ../Common/GraphicsAPI.cpp
+    ../Common/GraphicsAPI.h
+    ../Common/GraphicsAPI_D3D11.cpp
+    ../Common/GraphicsAPI_D3D11.h
+    ../Common/GraphicsAPI_D3D12.cpp
+    ../Common/GraphicsAPI_D3D12.h
+    ../Common/GraphicsAPI_OpenGL.cpp
+    ../Common/GraphicsAPI_OpenGL.h
+    ../Common/GraphicsAPI_OpenGL_ES.cpp
+    ../Common/GraphicsAPI_OpenGL_ES.h
+    ../Common/GraphicsAPI_Vulkan.cpp
+    ../Common/GraphicsAPI_Vulkan.h
+    ../Common/HelperFunctions.h
+    ../Common/OpenXRDebugUtils.cpp
+    ../Common/OpenXRDebugUtils.h
+    ../Common/OpenXRHelper.h
+)
 
-if (ANDROID) # Android
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
-    add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
-    target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
+find_package(Vulkan)
 
+# A nested build of a helper library found in the OpenXR source
+include(../cmake/gfxwrapper.cmake)
+
+if(ANDROID)
     # native_app_glue
     include(AndroidNdkModules)
     android_ndk_import_module_native_app_glue()
 
-    # VulkanNDK
-    find_library(vulkan-lib vulkan)
-    if (vulkan-lib)
-        target_include_directories(${PROJECT_NAME} PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
-    endif()
+    # On Android the native code must be a shared library instead of an
+    # executable
+    add_library(${PROJECT_NAME} MODULE ${SOURCES})
 
-    # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
-    add_library(openxr-gfxwrapper STATIC ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.c ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.h)
-    target_include_directories(openxr-gfxwrapper PUBLIC ${openxr_SOURCE_DIR}/external/include)
-    find_library(GLES3-lib GLESv3)
-    find_library(EGL-lib EGL)
-    target_link_libraries(openxr-gfxwrapper PUBLIC ${GLES3-lib})
-    target_link_libraries(openxr-gfxwrapper PUBLIC ${EGL-lib})
-    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL_ES)
+    # export ANativeActivity_onCreate for java to call.
+    set_property(
+        TARGET ${PROJECT_NAME}
+        APPEND_STRING
+        PROPERTY LINK_FLAGS " -u ANativeActivity_onCreate"
+    )
 
-    target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common)
-    target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/external/include)
+    target_link_libraries(${PROJECT_NAME} PRIVATE android native_app_glue)
 
-    # Final link
-    target_link_libraries(${PROJECT_NAME}
-            android
-            native_app_glue
-            openxr_loader
-            ${vulkan-lib}
-            openxr-gfxwrapper)
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wno-cast-calling-convention)
-
-else() # Windows / Linux
-    add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+else()
+    # Windows / Linux
+    add_executable(${PROJECT_NAME} ${SOURCES})
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
-        set_target_properties( ${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
+        set_target_properties(
+            ${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT
+                                       "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}"
+        )
     endif()
-    target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
-    target_link_libraries(${PROJECT_NAME} openxr_loader)
+endif()
 
-    if (WIN32) # Windows 
-        # D3D11
-        target_link_libraries(${PROJECT_NAME} "d3d11.lib") 
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D11)
-        # D3D12
-        target_link_libraries(${PROJECT_NAME} "d3d12.lib") 
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
-        # D3D11 / D3D12
-        target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
-    else() # Linux
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_LINUX_XLIB)
+target_include_directories(
+    ${PROJECT_NAME}
+    PRIVATE
+        # In this repo
+        ../Common
+        ../third_party
+        # From OpenXR repo
+        "${openxr_SOURCE_DIR}/src/common"
+        "${openxr_SOURCE_DIR}/external/include"
+)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenXR::openxr_loader)
+
+if(TARGET openxr-gfxwrapper)
+    target_link_libraries(${PROJECT_NAME} PRIVATE openxr-gfxwrapper)
+    if(ANDROID)
+
+        target_compile_definitions(
+            ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL_ES
+        )
+    else()
+        target_compile_definitions(
+            ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL
+        )
+
     endif()
-
-    # VulkanSDK
-    find_package(Vulkan)
-    if (Vulkan_FOUND)
-        target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
-        target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
+    if(NOT WIN32 AND NOT ANDROID)
+        # Linux
+        target_compile_definitions(
+            ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_LINUX_XLIB
+        )
     endif()
+endif()
 
-    # OpenGL
-    # Fix redirection to a different project's build folder
-    target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
-    target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
-endif() # EOF
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE d3d11 d3d12 dxgi)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D11)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
+endif()
+
+if(Vulkan_FOUND)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Vulkan)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
+endif()

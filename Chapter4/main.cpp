@@ -13,6 +13,7 @@
 #include <GraphicsAPI_Vulkan.h>
 // XR_DOCS_TAG_END_include_GraphicsAPIs
 #include <OpenXRDebugUtils.h>
+#include <memory>
 
 // XR_DOCS_TAG_BEGIN_include_linear_algebra
 // include xr linear algebra for XrVector and XrMatrix classes.
