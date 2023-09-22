@@ -1,3 +1,9 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
+// OpenXR Tutorial for Khronos Group
+
 #include <OpenXRDebugUtils.h>
 
 // XR_DOCS_TAG_BEGIN_OpenXRMessageCallbackFunction

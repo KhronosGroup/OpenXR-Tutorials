@@ -1,3 +1,9 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
+// OpenXR Tutorial for Khronos Group
+
 #include <GraphicsAPI_D3D12.h>
 
 #if defined(XR_USE_GRAPHICS_API_D3D12)

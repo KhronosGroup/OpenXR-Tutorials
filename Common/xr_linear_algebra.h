@@ -16,7 +16,13 @@
 // limitations under the License.
 //
 // Author: J.M.P. van Waveren
+
+// ----------------------------------------------------------------------
+// 2023 The Khronos Group Inc.
 //
+// Changes made for: OpenXR Tutorial for Khronos Group.
+// - Removed GraphicsAPI_Type due to naming conflict.
+// - Updated relevant functions to use the GraphicsAPI_Type from the OpenXR Tutorial.
 
 #ifndef XR_LINEAR_H_
 #define XR_LINEAR_H_

@@ -1,3 +1,9 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
+// OpenXR Tutorial for Khronos Group
+
 #include <GraphicsAPI.h>
 
 bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type) {

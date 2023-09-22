@@ -1,4 +1,7 @@
-// Copyright Khronos Group 2023
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
 // OpenXR Tutorial for Khronos Group
 
 #include <DebugOutput.h>
