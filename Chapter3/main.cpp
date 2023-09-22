@@ -339,6 +339,12 @@ private:
                     m_sessionRunning = false;
                     m_applicationRunning = false;
                 }
+                if (sessionStateChanged->state == XR_SESSION_STATE_LOSS_PENDING) {
+                    // SessionState is loss pending. Exit the application.
+                    // It's possible to try a reestablish an XrInstance and XrSession, but we will simply exit here.
+                    m_sessionRunning = false;
+                    m_applicationRunning = false;
+                }
                 // Store state for reference across the appplication.
                 m_sessionState = sessionStateChanged->state;
                 break;
