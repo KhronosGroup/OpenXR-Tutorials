@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(openxr-tutorial)
 
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
+
 option(BUILD_TUTORIAL "Build the tutorial docs?" OFF)
 
 # Optional override runtime

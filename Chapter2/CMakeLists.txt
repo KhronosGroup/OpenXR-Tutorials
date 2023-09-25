@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.16)
-project(OpenXRTutorialChapter2)
+cmake_minimum_required(VERSION 3.22.1)
+set(PROJECT_NAME OpenXRTutorialChapter2)
+project("${PROJECT_NAME}") # Needed for Android
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 
@@ -7,10 +8,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 include(FetchContent)
 
 # openxr_loader - From github.com/KhronosGroup
+set(BUILD_ALL_EXTENSIONS ON CACHE INTERNAL "Build loader and layers with all extensions")
 set(BUILD_TESTS
     OFF
     CACHE INTERNAL "Build tests"
 )
+set(BUILD_CONFORMANCE_TESTS OFF CACHE INTERNAL "Build conformance tests")
 set(BUILD_API_LAYERS
     OFF
     CACHE INTERNAL "Use OpenXR layers"

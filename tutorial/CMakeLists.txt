@@ -27,8 +27,7 @@ add_custom_target(
         "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS
-        # Other docs files you want to track should go here (or in some
-        # variable)
+        # Other docs files you want to track should go here (or in some variable)
         index.rst
         ${DOXYGEN_INDEX_FILE}
         conf.py
@@ -56,7 +55,7 @@ if(TUTORIAL_VALIDATOR_EXECUTABLE)
     add_custom_target(
         Validator ALL
         COMMAND
-            ${TUTORIAL_VALIDATOR_EXECUTABLE} --format gnu --asciiquotes
+            ${TUTORIAL_VALIDATOR_EXECUTABLE} --format gnu --asciiquotes 
             --skip-non-html ${TUTORIAL_SPHINX_BUILD}
         WORKING_DIRECTORY ${TUTORIAL_SPHINX_BUILD}
         COMMENT "Validating documentation nu validator"

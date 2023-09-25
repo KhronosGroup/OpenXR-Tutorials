@@ -5,20 +5,18 @@
 // OpenXR Tutorial for Khronos Group
 
 #pragma once
-#ifdef __WIN32
+#ifdef _MSC_VER
 #define NOMINMAX
-#include <direct.h>
 #include <windows.h>
+#include <direct.h>
 #ifndef _MAX_PATH
 #define _MAX_PATH 500
 #endif
-
-#include <time.h>
-
-#include <cerrno>
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <time.h>
+#include <cerrno>
 
 #ifndef _MSC_VER
 #define __stdcall

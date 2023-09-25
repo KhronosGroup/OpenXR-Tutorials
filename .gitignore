@@ -38,6 +38,12 @@
 build
 sphinx
 
+#Visual Code folders
+.vscode
+
+# Android build folders
+.idea
+
 # Android build config files
 local.properties
 
