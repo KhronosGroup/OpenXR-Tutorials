@@ -320,7 +320,6 @@ private:
 
 #if defined(__ANDROID__)
     // XR_DOCS_TAG_BEGIN_Android_System_Functionality
-public:
     // Stored pointer to the android_app structure from android_main().
     static android_app *androidApp;
 

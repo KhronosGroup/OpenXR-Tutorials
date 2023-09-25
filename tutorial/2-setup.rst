@@ -1,11 +1,6 @@
 ﻿##########
-⚙️ 2 Setup
+2 OpenXR Setup
 ##########
-
-Select your platform, as the instructions are different depending on your selection.
-
-.. raw:: html
-	:file: platforms.html
 
 With your project setup and your application building and running, we can start to use OpenXR to create our application.
 The goal of this chapter is to create an ``XrInstance`` and an ``XrSession``, and setup the OpenXR event loop. This OpenXR code is needed to setup the core functionality of an OpenXR application to have that application interact with the OpenXR runtime and your graphics API correctly.

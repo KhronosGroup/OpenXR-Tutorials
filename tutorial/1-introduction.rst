@@ -416,14 +416,14 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 	.. rubric:: CMake
 
 	With the Android Studio project now set up, we need to modify some of the files and folders so as to set up the project to support the C++ Native Activity.
+
+	Then switch to the "Project" view in the "Project" tab (on the top right of the default Android Studio layout).
 	Under the ``app`` folder in ``Chapter2``, you can delete the ``libs`` folder, and under the ``app/src`` you can also delete the ``androidTest`` and ``test`` folders. Finally under ``app/src/main``, delete the ``java`` folder. Under the ``app/src/main/res``, delete the ``layout``, ``values-night`` and ``xml`` folders. Under the ``values`` folder, delete ``colors.xml`` and ``themes.xml``
 
 	Now sync the project by selecting "File > Sync Project with Gradle" on the menu.
 
 	.. figure:: images/GradleSync.png
 		:alt: Gradle Sync
-
-	Then switch to the "Project" view in the "Project" tab (on the top right of the default Android Studio layout).
 
 	Create a text file called ``CMakeLists.txt`` in the ``Chapter2`` directory. We will use this file to specific how our Native C++ code will be built. This ``CMakeLists.txt`` file will be invoked by Android Studio's Gradle build system and we will point Gradle to this CMake file. 
 
@@ -859,7 +859,7 @@ Now we will define the main class ``OpenXRTutorial`` of the application. It's ju
 		bool m_sessionRunning = false;
 	};
 
-Finally, let's add the main function for the application. It will look slightly different, depending on your
+We'll add the main function for the application. It will look slightly different, depending on your
 chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial`` class, taking a ``GraphicsAPI_Type`` parameter, and call the ``Run()`` method. ``GraphicsAPI_Type`` can be changed to suit the graphics API that you have chosen.
 
 .. literalinclude:: ../Chapter2/main.cpp

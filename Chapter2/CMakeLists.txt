@@ -51,12 +51,14 @@ set(SOURCES
 
 if (ANDROID) # Android
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
-    add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
-    target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
 
-    # native_app_glue
+    # Add Android native_app_glue.
     include(AndroidNdkModules)
     android_ndk_import_module_native_app_glue()
+
+    # Create the library containing our native code.
+    add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+    target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
 
     # VulkanNDK
     find_library(vulkan-lib vulkan)
