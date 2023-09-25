@@ -97,7 +97,8 @@ private:
         // Check the requested API layers against the ones from the OpenXR. If found add it to the Active API Layers.
         for (auto &requestLayer : m_apiLayers) {
             for (auto &layerProperty : apiLayerProperties) {
-                if (strcmp(requestLayer.c_str(), layerProperty.layerName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestLayer.c_str(), layerProperty.layerName)!=0) {
                     continue;
                 } else {
                     m_activeAPILayers.push_back(requestLayer.c_str());
@@ -113,21 +114,23 @@ private:
         extensionProperties.resize(extensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
 
-        // Check the requested Instance Extensions against the ones from the OpenXR. If found add it to Active Instance Extensions.
+        // Check the requested Instance Extensions against the ones from the OpenXR runtime.
+        // If an extension is found add it to Active Instance Extensions.
         // Log error if the Instance Extension is not found.
-        for (auto &requestExtension : m_instanceExtensions) {
+        for (auto &requestedInstanceExtension : m_instanceExtensions) {
             bool found = false;
             for (auto &extensionProperty : extensionProperties) {
-                if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestedInstanceExtension.c_str(), extensionProperty.extensionName)!=0) {
                     continue;
                 } else {
-                    m_activeInstanceExtensions.push_back(requestExtension.c_str());
+                    m_activeInstanceExtensions.push_back(requestedInstanceExtension.c_str());
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                std::cerr << "Failed to find OpenXR instance extension: " << requestExtension << "\n";
+                std::cerr << "Failed to find OpenXR instance extension: " << requestedInstanceExtension << "\n";
             }
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension

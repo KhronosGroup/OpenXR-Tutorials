@@ -18,13 +18,11 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 	
 	class OpenXRTutorial {
 	public:
-		OpenXRTutorial(GraphicsAPI_Type apiType) 
-		{
+		OpenXRTutorial(GraphicsAPI_Type apiType) {
 		}
 		~OpenXRTutorial() = default;
 	
-		void Run()
-		{
+		void Run() {
 			CreateInstance();
 			CreateDebugMessenger();
 
@@ -36,23 +34,17 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 		}
 
 	private:
-		void CreateInstance() 
-		{
+		void CreateInstance() {
 		}
-		void DestroyInstance()
-		{
+		void DestroyInstance() {
 		}
-		void CreateDebugMessenger()
-		{
+		void CreateDebugMessenger() {
 		}
-		void DestroyDebugMessenger()
-		{
+		void DestroyDebugMessenger() {
 		}
-		void GetInstanceProperties()
-		{
+		void GetInstanceProperties() {
 		}
-		void GetSystemID()
-		{
+		void GetSystemID() {
 		}
 	
 	private:
@@ -69,7 +61,7 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 		XrSystemProperties m_systemProperties = {XR_TYPE_SYSTEM_PROPERTIES};
 	};
 
-First, we updated ``OpenXRTutorial::Run()`` to call the new methods ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()``and ``DestroyInstance()`` in that order. Finally, we added those methods and the following members to the class within thier separate private sections.
+First, we updated ``OpenXRTutorial::Run()`` to call the new methods ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()`` and ``DestroyInstance()`` in that order. Finally, we added those methods and the following members to the class within thier separate private sections.
 
 2.1.1 XrInstance
 ================
@@ -94,7 +86,7 @@ Similar to Vulkan, OpenXR allows applications to extend functionality past what 
 	:end-before: XR_DOCS_TAG_END_instanceExtensions
 	:dedent: 12
 
-Here, we store in a ``std::vector<std::string>`` the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro that you have defined, this code will add the relevant extension.
+Here, we store in a vector of strings the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro that you have defined, this code will add the relevant extension.
 
 Not all API layers and extensions are available to use, so we much check which ones can use. We will use ``xrEnumerateApiLayerProperties()`` and ``xrEnumerateInstanceExtensionProperties()`` to check which ones the runtime can provide. We will do this by adding the following code to the ``CreateInstance()`` method.
 
@@ -104,7 +96,7 @@ Not all API layers and extensions are available to use, so we much check which o
 	:end-before: XR_DOCS_TAG_END_find_apiLayer_extension
 	:dedent: 8
 
-These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures. Before the second call, we need set ``XrApiLayerProperties::type`` or ``XrExtensionProperties::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layers and extensions, we use a nested loop to check to see whether an API layers or extensions is available and add it to the ``m_activeAPILayers`` and/or ``m_activeInstanceExtensions`` respectively. 
+These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures - this is called the "two-call idiom". Before the second call, we need set ``XrApiLayerProperties::type`` or ``XrExtensionProperties::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layers and extensions, we use a nested loop to check to see whether an API layers or extensions is available and add it to the ``m_activeAPILayers`` and/or ``m_activeInstanceExtensions`` respectively. 
 
 Note the ``m_activeAPILayers`` and ``m_activeInstanceExtensions`` are of type ``std::vector<const char *>``. This will help us when fill out the next structure ``XrInstanceCreateInfo``.
 
