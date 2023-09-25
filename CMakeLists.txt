@@ -4,7 +4,7 @@ project(openxr-tutorial)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
-option(BUILD_TUTORIAL "Build the tutorial docs?" OFF)
+option(TUTORIAL_BUILD_TUTORIAL "Build the tutorial docs?" ON)
 
 # Optional override runtime
 set(XR_RUNTIME_JSON
@@ -13,7 +13,7 @@ set(XR_RUNTIME_JSON
           "Optional location of a specific OpenXR runtime configuration file."
 )
 
-if(BUILD_TUTORIAL)
+if(TUTORIAL_BUILD_TUTORIAL)
     add_subdirectory(tutorial)
 endif()
 add_subdirectory(Chapter2)
