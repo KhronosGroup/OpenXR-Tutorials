@@ -166,7 +166,7 @@ private:
     void DestroyDebugMessenger() {
         // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         // Check that "XR_EXT_debug_utils" is in the active Instance Extensions before destroying the XrDebugUtilsMessengerEXT.
-        if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+        if (m_debugUtilsMessenger != XR_NULL_HANDLE) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);  // From OpenXRDebugUtils.h.
         }
         // XR_DOCS_TAG_END_DestroyDebugMessenger
@@ -381,7 +381,7 @@ private:
             // Poll and process the Android OS system events.
             struct android_poll_source *source = nullptr;
             int events = 0;
-            // The timeout is depended on whether that applicaion is active.
+            // The timeout depends on whether the application is active.
             const int timeoutMilliseconds = (!androidAppState.resumed && !m_sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
             if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
                 if (source != nullptr) {
@@ -450,7 +450,6 @@ void android_main(struct android_app *app) {
 
     // https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_loader_init
     // Load xrInitializeLoaderKHR() function pointer. On Android, the loader must be initialised with variables from android_app *.
-    // Without this, there's is no loader and thus our function calls to OpenXR would fail.
     XrInstance m_xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR = nullptr;
     OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");

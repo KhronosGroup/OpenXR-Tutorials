@@ -7718,6 +7718,23 @@ button.selected-graphics-api > img
     display: inline-block;
 }
 
+#toc_interactions> a{
+    padding-left:40px;
+}
+#toc_interactions>a:before{
+	content: '';
+    background: url(icons/HandsetIcon.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 36px;
+    height: 28px;
+    margin-left: -28px;
+    padding: 1px;
+    padding-top: 24px;
+    display: inline-block;
+    vertical-align: -50%;
+}
+
 #introduction> h1{
     padding-left:32px;
 }
@@ -7732,4 +7749,39 @@ button.selected-graphics-api > img
     padding-top: 12px;
     padding: 1px;
     display: inline-block;
+    vertical-align: -50%;
+}
+#extensions > h1{
+    padding-left:40px;
+}
+
+#extensions > h1:before{
+	content: '';
+    background: url(icons/JigsawPiece.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 36px;
+    height: 28px;
+    margin-left: -28px;
+    padding: 1px;
+    padding-top: 24px;
+    display: inline-block;
+    vertical-align: -50%;
+}
+
+#toc_extensions> a{
+    padding-left:40px;
+}
+#toc_extensions>a:before{
+	content: '';
+    background: url(icons/JigsawPiece.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 36px;
+    height: 28px;
+    margin-left: -28px;
+    padding: 1px;
+    padding-top: 24px;
+    display: inline-block;
+    vertical-align: -50%;
 }

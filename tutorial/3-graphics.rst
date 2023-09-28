@@ -1,22 +1,24 @@
-﻿#############
+﻿##########
 3 Graphics
-#############
+##########
 
-Select your platform, as the instructions are different depending on your selection.
+The goal of this chapter is to build an application that creates and clears color and depth buffers within the scope of OpenXR render loop and to demonstrate its interaction with the Graphics APIs.
 
-.. raw:: html
-	:file: platforms.html
+.. container:: windows linux
 
-The goal of this chapter is to build an application that creates and clears color and depth buffers within the scope of OpenXR render loop and to demonstrate its interaction with all the Graphics APIs.
+	In the *workspace* directory, update the ``CMakeLists.txt`` by adding the following CMake code to the end of the file:
 
-In the *workspace* directory, update the ``CMakeLists.txt`` by adding the following CMake code to the end of the file:
+	.. literalinclude:: ../CMakeLists.txt
+			:language: cmake
+			:start-at: add_subdirectory(Chapter3
+			:end-at: )
 
-.. literalinclude:: ../CMakeLists.txt
-		:language: cmake
-		:start-at: add_subdirectory(Chapter3
-		:end-at: )
+	Now, create a ``Chapter3`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2/``. For the ``CMakeLists.txt``, copy the from ``Chapter2/`` and update this line:
 
-Now, create a ``Chapter3/`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2/``. For the ``CMakeLists.txt``, copy the from ``Chapter2/`` and update this line:
+
+.. container:: android
+
+	a `Chapter3` folder in the *workspace* directory and into that folder copy the whole contents of `Chapter2` to it. In CMakeLists.txt, update this line:
 
 .. literalinclude:: ../Chapter3/CMakeLists.txt
 	:language: cmake
@@ -26,13 +28,15 @@ Now, create a ``Chapter3/`` folder in the *workspace* directory and into that fo
 .. container:: android
 	:name: android-id-1
 
-	For Android, you will also need to copy the ``app/`` and ``gradle`` folders and the ``build.gradle``, ``gradle.properties``, ``gradlew``, ``gradlew.bat``, ``local.properties`` and ``settings.gradle``. Within those file you must change all references to ``OpenXRTutorialChapter2`` to ``OpenXRTutorialChapter3``. Refer to :ref:`Chapter 1.4.1<1.4.1 CMake and Project Files>` for a refresher on the Android build files.
+	For Android, you will also need to change all references to ``OpenXRTutorialChapter2`` to ``OpenXRTutorialChapter3`` in app/build.gradle, settings.gradle and app/src/main/AndroidManifest.xml. Refer to :ref:`Chapter 1.4.1<1.4.1 CMake and Project Files>` for a refresher on the Android build files.
+
+	Load your new project in Android Studio.
 
 ***********************
 3.1 Creating Swapchains
 ***********************
 
-As with rendering graphics to a 2D display, OpenXR has the concept of swapchains. It's a series of images that are used to present the rendered graphics to display/window/view. There are usually 2 or 3 images in the swapchain to allow the platform to present them smoothly to the user in order to create the illusion of motion within the image.
+As with rendering graphics to a 2D display, OpenXR uses the concept of swapchains. It's a series of images that are used to present the rendered graphics to display/window/view. There are usually 2 or 3 images in the swapchain to allow the platform to present them smoothly to the user in order to create the illusion of motion within the image.
 
 All graphics APIs have this concept of a swapchain with differing levels of transparency to the programmer, but for OpenXR applications we don't use the API-specific swapchain, which can be tied closely the platform's windowing system. Instead, we use OpenXR's swapchain and the OpenXR compositor to present rendered graphics to the views. XR applications are unique in that often, but not always, they have multiple views that need to be rendered to create the XR experience. Listed below are a couple scenarios with differing view counts:
 

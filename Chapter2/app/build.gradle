@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace 'com.simul.OpenXRTutorialChapter2'
+    namespace 'org.khronos.OpenXRTutorialChapter2'
     compileSdk 29
     ndkVersion '23.1.7779620'
 
     defaultConfig {
-        applicationId "com.simul.OpenXRTutorialChapter2"
+        applicationId "org.khronos.OpenXRTutorialChapter2"
         minSdk 24
         targetSdk 29
         versionCode 1
