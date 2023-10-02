@@ -22,6 +22,10 @@ article, aside, details, figcaption, figure, footer, header, hgroup, nav, sectio
     display: block
 }
 
+section{
+  scroll-margin-top: 200px;
+}
+
 .sidebartitle
 {
 	font-size: 36px;
@@ -413,6 +417,7 @@ big, small
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale
 }
+
 
 .fa-lg
 {
@@ -5403,6 +5408,7 @@ body
     font-weight: 400;
     color: #101010;
     min-height: 100%;
+    height: 100%;
     background: #edf0f2
 }
 
@@ -6116,9 +6122,10 @@ html
 	position: sticky;
     background-color: #782B90;
 	color:white;
-  width: 100%;
-  top: 0px;
-  padding:10px 20px 0px 20px;
+    width: 100%;
+    top: 0px;
+    padding:10px 20px 0px 20px;
+    z-index:1;
 }
 .wy-nav .wy-menu-vertical header
 {
@@ -6171,12 +6178,12 @@ html
 .wy-body-for-nav
 {
     background: #fcfcfc;
+    min-height: 100%;
+    height: 100%;
 }
 
 .wy-grid-for-nav
 {
-    position: absolute;
-    width: 100%;
     height: 100%
 }
 
@@ -6257,7 +6264,6 @@ html
 .wy-nav-content-wrap
 {
     margin-left: 300px;
-    background: #fcfcfc;
     min-height: 100%;
 	height:100%
 }
@@ -6266,7 +6272,11 @@ html
 {
     padding: 0 0 1.618em 0;
     height: 100%;
-    margin: auto
+    margin: 2 40 20 20;
+    z-index:-1;
+    
+    top:140px;
+    left:140px;
 }
 
 .wy-body-mask
@@ -7740,7 +7750,23 @@ button.selected-graphics-api > img
 }
 #introduction > h1:before{
 	content: '';
-    background: url(icons/Trumpet.svg);
+    background: url(icons/Fanfare.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 40px;
+    height: 32px;
+    margin-left: -20px;
+    padding-top: 12px;
+    padding: 1px;
+    display: inline-block;
+}
+
+#setup> h1{
+    padding-left:32px;
+}
+#setup > h1:before{
+	content: '';
+    background: url(icons/Cog.svg);
     background-size: contain;
     background-repeat: no-repeat;
     width: 30px;
@@ -7748,6 +7774,23 @@ button.selected-graphics-api > img
     margin-left: -20px;
     padding-top: 12px;
     padding: 1px;
+    display: inline-block;
+    vertical-align: -50%;
+}
+
+#toc_setup> a{
+    padding-left:40px;
+}
+#toc_setup>a:before{
+	content: '';
+    background: url(icons/Cog.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 36px;
+    height: 28px;
+    margin-left: -28px;
+    padding: 1px;
+    padding-top: 24px;
     display: inline-block;
     vertical-align: -50%;
 }
