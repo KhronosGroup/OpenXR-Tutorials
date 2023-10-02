@@ -38,12 +38,12 @@ The goal of this chapter is to build an application that creates and clears colo
 
 As with rendering graphics to a 2D display, OpenXR uses the concept of swapchains. It's a series of images that are used to present the rendered graphics to display/window/view. There are usually 2 or 3 images in the swapchain to allow the platform to present them smoothly to the user in order to create the illusion of motion within the image.
 
-All graphics APIs have this concept of a swapchain with differing levels of transparency to the programmer, but for OpenXR applications we don't use the API-specific swapchain, which can be tied closely the platform's windowing system. Instead, we use OpenXR's swapchain and the OpenXR compositor to present rendered graphics to the views. XR applications are unique in that often, but not always, they have multiple views that need to be rendered to create the XR experience. Listed below are a couple scenarios with differing view counts:
+All graphics APIs have the concept of a swapchain with varying levels of exposure in the API. For OpenXR development, you will not create the API-specific swapchain. Instead, we use OpenXR to create swapchains and the OpenXR compositor to present rendered graphics to the views. XR applications are unique in that often have multiple views that need to be rendered to create the XR experience. Listed below are a couple scenarios with differing view counts:
 
-	* 1 view  - AR viewer on a mobile device.
-	* 2 views - VR head mounted display.
+	* 1 view  - Viewer on a phone, tablet or monitor.
+	* 2 views - Stereoscopic headset.
 
-Orthogonal to multiple views is the layering of multiple rendered images or camera feeds. You could, for a example, have a background that is a video pass-through of your environment, a stereo view of rendered graphics and quad overlay of a HUD (Head-up display) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
+Orthogonal to multiple views is the layering of multiple images. You could, for a example, have a background that is a pass-through of your environment, a stereoscopic view of rendered graphics and a quadrilateral overlay of a HUD (Head-up display) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
 
 Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new methods and members. Copy the highlighted code below.
 
@@ -100,7 +100,7 @@ Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new me
 		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
 		struct SwapchainAndDepthImage {
-			XrSwapchain swapchain = {};
+			XrSwapchain swapchain = XR_NULL_HANDLE;
 			int64_t swapchainFormat = 0;
 			void *depthImage = nullptr;
 			std::vector<void *> colorImageViews;
@@ -114,7 +114,7 @@ We will explore the added methods in the sub chapters below.
 3.1.1 XrViewConfigurationView
 =============================
 
-The first thing we need to do is get all of the views available to our view configuration. It is worth just parsing the name of this type: ``XrViewConfigurationView``. I break the typename up as follow "XrViewConfiguration" - "View", where it relates to one view in the view configuration, which may contain multiple views. We call ``xrEnumerateViewConfigurationViews()`` twice, first to get the count of the views in the view configuration, and second to fill in the data to the ``std::vector<XrViewConfigurationView>``.
+The first thing we need to do is get all of the views available to our view configuration. It is worth just parsing the name of this type: ``XrViewConfigurationView``. We can break the typename up as follow "XrViewConfiguration" - "View", where it relates to one view in the view configuration, which may contain multiple views. We call ``xrEnumerateViewConfigurationViews()`` twice, first to get the count of the views in the view configuration, and second to fill in the data to the ``std::vector<XrViewConfigurationView>``.
 
 Add the following code to the ``GetViewConfigurationViews()`` method:
 
@@ -129,12 +129,12 @@ Add the following code to the ``GetViewConfigurationViews()`` method:
 
 Due to way that OpenXR and its compositor operate, there are certain preferred image formats that should be used by the swapchain. When calling ``xrEnumerateSwapchainFormats()``, the ``XrSession`` and alongwith the Graphics API will return an array of API-specific formats ordered in preference. ``xrEnumerateSwapchainFormats()`` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
 
-The question is: Whether to use a Linear or sRGB color space? OpenXR's compositor performs all blend operations in a linear color space (i.e. the values have not been gamma encoded). Most gamma-encoding operations are algebraically non-linear, so you can't composite the values with simple addition or multiplication operations. If you wish to use an sRGB color format, you must use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB``. The OpenXR runtime will automatically do sRGB-to-linear color space conversions when reading the image. There are two issues with this: 
+The question is: Whether to use a Linear or sRGB color space? OpenXR's compositor performs all blend operations in a linear color space (i.e. the values have not been gamma encoded). Most gamma-encoding operations are algebraically non-linear, so you can't composite the values with simple addition or multiplication operations. If you wish to use an sRGB color format, it's best to use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB``. The OpenXR runtime will automatically do sRGB-to-linear color space conversions when reading the image. There are two issues with this: 
 
 1. Runtime conversion of image data could be too slow and affect performance and comfort.
 2. The conversion process may not use the same style of gamma encoding/decoding and therefore may result in a loss in color accuracy.
 
-If you'd like more information on color spaces and gamma encoding in computer graphics, Guy Davidson from Creative Assembly has a fantastic video presentation from Meeting C++ 2021 on this topic `here <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_.
+For more information on color spaces and gamma encoding, see Guy Davidson's video presentation `here <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_.
 
 Copy the code below into the ``CreateSwapchain()`` method:
 
@@ -144,20 +144,18 @@ Copy the code below into the ``CreateSwapchain()`` method:
 	:end-before: XR_DOCS_TAG_END_EnumerateSwapchainFormats
 	:dedent: 8
 
-Next, we do some checks to confirm that the views in the view configuration are the same size and thus suitable for stereo rendering. Append the following code to the ``CreateSwapchain()`` method:
-
-.. literalinclude:: ../Chapter3/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CheckCoherentViewDimensions
-	:end-before: XR_DOCS_TAG_END_CheckCoherentViewDimensions
-	:dedent: 8
-
-With this check done, we can alias to views together when create our ``XrSwapchain``. We resize our ``SwapchainAndDepthImage`` structure and enter a for each loop to create all required resources.
-
 3.1.3 xrCreateSwapchain
 =======================
 
-In this tutorial, we will create an ``XrSwapchain`` for each view in the system. First, we will resize our ``std::vector<SwapchainAndDepthImage>`` to match the number of views in the system. Next, we set up a for-each loop to iterate through and create the ``XrSwapachain`` s.
+Append the following code to the ``CreateSwapchain()`` method:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateViewConfigurationView
+	:end-before: XR_DOCS_TAG_END_CreateViewConfigurationView
+	:dedent: 8
+
+We will create an ``XrSwapchain`` for each view in the system. First, we will resize our ``std::vector<SwapchainAndDepthImage>`` to match the number of views in the system. Next, we set up a loop to iterate through and create the swapchains.
 Append the following this code to the ``CreateSwapchain()`` method:
 
 .. code-block:: cpp
@@ -166,7 +164,7 @@ Append the following this code to the ``CreateSwapchain()`` method:
 	for (SwapchainAndDepthImage &swapchainAndDepthImage : m_swapchainAndDepthImages) {
 	}
 
-Inside the for-each loop of the ``CreateSwapchain()`` method, add the following code:
+Inside the ranged for loop of the ``CreateSwapchain()`` method, add the following code:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -175,15 +173,6 @@ Inside the for-each loop of the ``CreateSwapchain()`` method, add the following 
 	:dedent: 12
 
 Here, we filled out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members were assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to 0 as we require no constraints or additional functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the images are suitable to be read in a shader and to be used as a render target/color attachment.
-
-Below is a list of all ``XrCompositionLayerFlags`` that could be used; along with an explanation and how they match with your chosen Graphics API.
-
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
-	:language: cpp
-	:start-at: // Flag bits for XrSwapchainUsageFlags
-	:end-before: typedef XrFlags64 XrCompositionLayerFlags;
-
-*The above code is an excerpt from openxr/openxr.h*
 
 .. container:: d3d11
 	:name: d3d11-id-1
@@ -274,7 +263,7 @@ Below is a list of all ``XrCompositionLayerFlags`` that could be used; along wit
 	| XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_KHR     | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT         |
 	+-------------------------------------------------+---------------------------------------------+
 
-Then, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we used ``1``, as we have separate swapchains per view/eye, but for a stereo view you could pass ``2`` and have an image 2D array, which is suitable for multiview rendering. ``mipCount`` describes the number of mips levels; this is useful when using the swapchain image as a sampled image in a shader. Finally, we set the format. Here, we asked our ``GraphicsAPI_...`` class to pick a suitable format for the swapachain from the enumerated formats we acquired earlier. 
+Then, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we used ``1``, as we have separate swapchains per view/eye, but for a stereo view you could pass ``2`` and have an image 2D array, which is suitable for multiview rendering. ``mipCount`` describes the number of mips levels; this is useful when using the swapchain image as a sampled image in a shader. Finally, we set the format. Here, we asked our ``GraphicsAPI_...`` class to pick a suitable format for the swapchain from the enumerated formats we acquired earlier. 
 
 Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
 
@@ -285,7 +274,7 @@ Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
 
 *The above code is an excerpt from Common/GraphicsAPI.cpp*
 
-The function calls a pure virtual method called ``GraphicsAPI::GetSupportedSwapchainFormats()``, which each class implements. It returns an array of API-specific formats for us to use.
+The function calls a pure virtual method called ``GraphicsAPI::GetSupportedSwapchainFormats()``, which each class implements. It returns an array of API-specific formats that the GraphicsAPI library supports.
 
 .. container:: d3d11
 	:name: d3d11-id-2
@@ -352,16 +341,15 @@ Lastly, we called ``xrCreateSwapchain()`` to create our ``XrSwapchain``, which, 
 3.1.4 xrEnumerateSwapchainImages
 ================================
 
-Now that we have created the ``XrSwapchain``, we need to get access to the all images in the swapchain. We first call ``xrEnumerateSwapchainImages()`` to get the count of the images in the ``XrSwapchain``. Next, we set up an array of structures to store the images from the ``XrSwapchain``. In this tutorial, this array of structures, which stores the swapchains images, are stored in the ``GraphicsAPI_...`` class. We do this, because OpenXR will return to the application an array of structures that contain the API-specific handles to the swapchain images. ``GraphicsAPI::AllocateSwapchainImageData()`` is a virtual method implemented by each graphics API, which resizes an API-specific ``std::vector<XrSwapchainImage...KHR>`` and returns a pointer to the first element in that array casting it to a ``XrSwapchainImageBaseHeader *``.
+Now that we have created the swapchain, we need to get access to its images. We first call ``xrEnumerateSwapchainImages()`` to get the count of the images in the swapchain. Next, we set up an array of structures to store the images from the ``XrSwapchain``. In this tutorial, this array of structures, which stores the swapchains images, are stored in the ``GraphicsAPI_...`` class. We do this, because OpenXR will return to the application an array of structures that contain the API-specific handles to the swapchain images. ``GraphicsAPI::AllocateSwapchainImageData()`` is a virtual method implemented by each graphics API, which resizes an API-specific ``std::vector<XrSwapchainImage...KHR>`` and returns a pointer to the first element in that array casting it to a ``XrSwapchainImageBaseHeader *``.
 
-Copy and append the following code in the for-each loop of the ``CreateSwapchain()`` method. The highlighted code in this block refers only the ``GraphicsAPI::AllocateSwapchainImageData()`` method that was discussed above.
+Copy and append the following code in the ranged for loop of the ``CreateSwapchain()`` method.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
 	:end-before: XR_DOCS_TAG_END_EnumerateSwapchainImages
 	:dedent: 12
-	:emphasize-lines: 3
 
 Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method and the ``XrSwapchainImage...KHR`` structure relating to your chosen graphics API.
 
@@ -485,14 +473,13 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 Next, we create a depth image so that we can correctly render 3D perspective graphics to the view. In this tutorial, we have a ``GraphicsAPI::ImageCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImage()`` that creates the API-specific objects. 
 
-Append the following code into the for-each loop of the ``CreateSwapchain()`` method. The highlighted code in this block refers only the ``GraphicsAPI::GetDepthFormat()``, which we will discuss shortly.
+Append the following code into the ranged for loop of the ``CreateSwapchain()`` method.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateDepthImage
 	:end-before: XR_DOCS_TAG_END_CreateDepthImage
 	:dedent: 12
-	:emphasize-lines: 9
 
 Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``, which return a API-specific image format of type ``D32_F``.
 
@@ -565,14 +552,13 @@ We store our newly created depth image in ``SwapchainAndDepthImage::depthImage``
 
 Now, we create the image views: one per image in the ``XrSwapchain`` and an additional one for the depth image. Again in this tutorial, we have a ``GraphicsAPI::ImageViewCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImageView()`` that creates the API-specific objects. 
 
-Append the following code into the for-each loop of the ``CreateSwapchain()`` method. We will discuss the highlighted code shortly.
+Append the following code into the ranged for loop of the ``CreateSwapchain()`` method.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateImageViews
 	:end-before: XR_DOCS_TAG_END_CreateImageViews
 	:dedent: 12
-	:emphasize-lines: 3, 6, 16, 19
 
 Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImage()``, which return a API-specific handle to the image, which is cast to a ``void *``.
 
@@ -659,13 +645,13 @@ When the main render loop has finished and the application is shutting down, we 
 	:end-before: XR_DOCS_TAG_END_DestroySwapchain
 	:dedent: 8
 
-We now have ``XrSwapchain`` s and a depth images, ready for rendering. Next, we setup the render loop for OpenXR!
+We now have swapchains and a depth images, ready for rendering. Next, we setup the render loop for OpenXR!
 
 *************************
 3.2 Building a RenderLoop
 *************************
 
-With most of the OpenXR objects now set up, we can now turn our attention to rendering graphics. You will likely have your own rendering solution in place with things hooked up to OpenXR and ready to get going. There are two further OpenXR object that are needed to render; pertaining to where the user is and what the user sees of the external environment around them. Namely, these are the 'reference space' and the 'environment blend mode' respectively.
+With most of the OpenXR objects now set up, we can now turn our attention to rendering graphics. There are two further OpenXR objects that are needed to render; pertaining to where the user is and what the user sees of the external environment around them. Namely, these are the 'reference space' and the 'environment blend mode' respectively.
 
 Then, with those final pieces in place, we can look to the ``RenderFrame()`` and ``RenderLayer()`` code to invoke graphics work on the GPU and present it back to OpenXR and its compositor through the use of the composition layers and within the scope of an XR Frame.
 
@@ -739,12 +725,12 @@ Update the methods and members in the class. Copy the highlighted code:
 		{
 		}
 	private:
-		// [...] Member created in previous chapters.
+		// [...] Members created in previous chapters.
 
 		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
 		struct SwapchainAndDepthImage {
-			XrSwapchain swapchain = {};
+			XrSwapchain swapchain = XR_NULL_HANDLE;
 			int64_t swapchainFormat = 0;
 			void *depthImage = nullptr;
 			std::vector<void *> colorImageViews;
@@ -762,14 +748,14 @@ Update the methods and members in the class. Copy the highlighted code:
 3.2.1 xrEnumerateEnvironmentBlendModes
 ======================================
 
-Some XR experiences rely on blending the environment and the rendered graphics together. The environment could be compoisited to a screen or passed through optically via lenses and/or mirrors. Choosing the correct environment blend mode is vital for creating immersion in both virtual and augmentated realities.
+Some XR experiences rely on blending the real world and rendered graphics together. Choosing the correct environment blend mode is vital for creating immersion in both virtual and augmented realities.
 
-Environment blending is done at the final stage after the compositor has flattened and blended all the compositing layers passed to OpenXR at the end of the XR frame. 
+This blending is done at the final stage after the compositor has flattened and blended all the compositing layers passed to OpenXR at the end of the XR frame. 
 
-The enum describes how OpenXR should blend the rendered view(s) with the external environment behind the screen(s). The most common usages are as follows:
+The enum `XrEnvironmentBlendMode` describes how OpenXR should blend the rendered view(s) with the external environment behind the screen(s). The values are:
 
-	* VR: ``XR_ENVIRONMENT_BLEND_MODE_OPAQUE`` is the most common as not all VR HMD have pass-through functionality either through cameras or optics. VR HMD that do have pass-through can support other blend modes.
-	* AR: ``XR_ENVIRONMENT_BLEND_MODE_ADDITIVE`` or ``XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND`` are the most common to composite rendered images with the external environment.
+	* VR: ``XR_ENVIRONMENT_BLEND_MODE_OPAQUE`` is the virtual reality case, where the real world is obscured.
+	* AR: ``XR_ENVIRONMENT_BLEND_MODE_ADDITIVE`` or ``XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND`` are used to composite rendered images with the external environment.
 
 +---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
 | XrEnvironmentBlendMode                | Description                                                                                                                   |
@@ -808,16 +794,7 @@ We enumerated the environment blend modes as shown above. This function took a p
 3.2.2 xrCreateReferenceSpace
 ============================
 
-Now that OpenXR know what the user should see, we need to tell OpenXR from where should the user by seeing. This is where the reference space comes in.
-
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
-	:language: cpp
-	:start-at: typedef enum XrReferenceSpaceType {
-	:end-at: } XrReferenceSpaceType;
-
-*The above code is an excerpt from openxr/openxr.h*
-
-Copy the following code into the ``CreateReferenceSpace()`` method:
+Now that OpenXR know what the user should see, we need to tell OpenXR about the user's viewpoint. This is where the reference space comes in. Copy the following code into the ``CreateReferenceSpace()`` method:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -825,24 +802,18 @@ Copy the following code into the ``CreateReferenceSpace()`` method:
 	:end-before: XR_DOCS_TAG_END_CreateReferenceSpace
 	:dedent: 8
 
-Firstly, we fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``, which we will discuss shortly. 
+We fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``, which we will discuss shortly. 
 
-When we create the *reference space*, we need to specify an ``XrPosef``, which we will be the origin transform of the space. For our tutorial, we will set ``XrReferenceSpaceCreateInfo::poseInReferenceSpace`` to an identity, where we use an identity quaternion for the orientation and a position at the origin. If we had specified a different pose, the origin of the reference space would have been offset from the runtime's default.
+When we create the *reference space*, we need to specify an ``XrPosef``, which we will be the origin transform of the space. For our tutorial, we will set ``XrReferenceSpaceCreateInfo::poseInReferenceSpace`` to an identity, where we use an identity quaternion for the orientation and a position at the origin.
+If we specify a different pose, the origin received when we poll the space would be offset from the reference space's origin.
 
-.. code-block:: cpp
+An ``XrSpace`` is a frame of reference defined not by its instantaneous values, but semantically by its purpose and relationship to other spaces. The actual, instantaneous position and orientation of an ``XrSpace`` is called its *pose*.
 
-	referenceSpaceCreateInfo.poseInReferenceSpace.orientation = {0.0f, 0.0f, 0.0f, 1.0f};
-	referenceSpaceCreateInfo.poseInReferenceSpace.position = {0.0f, 0.0f, 0.0f};
+One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``), which is oriented with the user's head, and is useful for user-interfaces and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
 
-*The above code is an example of an* ``XrPosef`` *, which shows assigning values to the orientation (a quaternion) and to the position (a vector3).*
+By using ``XR_REFERENCE_SPACE_TYPE_LOCAL`` we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
 
-An ``XrSpace`` is a frame of reference defined not by its instantaneous values, but instead defined semantically by its purpose and relationship to other spaces. The actual, instantaneous position and orientation of an ``XrSpace`` is called its *pose*.
-
-One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``). View space is oriented with the user's head, and is useful for user-interfaces and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
-
-By using a local space (``XR_REFERENCE_SPACE_TYPE_LOCAL``), we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
-
-Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this implies a roomscale space with its origin on the floor.
+Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this implies a roomscale space, e.g. with its origin on the floor.
 
 See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
 
@@ -870,13 +841,13 @@ See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.
 	  - .. figure:: OpenXR-ReferenceSpace-Local.png
 			:alt: OpenXR Reference Space Local
 			:align: center
-	  - The Local Reference Space uses an initial location to establish a world-locked, gravity aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at application start up or from a calibreated origin point. It is most often used for rendering seated-scale experiences such as car racing or aircraft cockpits, where a physical floor is not required. When recentering, the runtime will queue ``XrEventDataReferenceSpaceChangePending`` structure for the application to respond to.
+	  - The Local Reference Space uses an initial location to establish a world-locked, gravity aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at application start up or from a calibrated origin point. ``TODO: break between spec and opinion.``	It is typically used for rendering seated-scale experiences such as car racing or aircraft cockpits, where a physical floor is not required. When recentering, the runtime will queue a ``XrEventDataReferenceSpaceChangePending`` structure for the application to process.
 
 	* - ``XR_REFERENCE_SPACE_TYPE_STAGE``
 	  - .. figure:: OpenXR-ReferenceSpace-Stage.png
 			:alt: OpenXR Reference Space Stage
 			:align: center
-	  - The Stage Reference Space defines a rectangular area that is flat and devoid of obstructions. The origin is define to be on the floor and at the center of the rectangular area. +Y is up, +X is to the right, and -Z is forward. The origin is also axis aligned to the XZ plane. It is most often used for rendering standing-scale experiences (no bounds) or room-scale experiences (with bounds) where a physical floor is required. When the user is redefining the origin or bounds of the area, the runtime will queue ``XrEventDataReferenceSpaceChangePending`` structure for the application to respond to.
+	  - The Stage Reference Space defines a rectangular area that is flat and devoid of obstructions. The origin is define to be on the floor and at the center of the rectangular area. +Y is up, +X is to the right, and -Z is forward. The origin is axis-aligned to the XZ plane. It is most often used for rendering standing-scale experiences (no bounds) or room-scale experiences (with bounds) where a physical floor is required. When the user is redefining the origin or bounds of the area, the runtime will queue a ``XrEventDataReferenceSpaceChangePending`` structure for the application to process.
 
 For more information on reference see the OpenXR 1.0 Specification here: `7.1. Reference Spaces <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#reference-spaces>`_.
 
@@ -887,7 +858,7 @@ For more information on reference see the OpenXR 1.0 Specification here: `7.1. R
 
 The default coordinate system in OpenXR is right-handed with +Y up, +X to the right, and -Z forward.
 
-Many system and game engines support the XR_EXT_local_floor extension. This extension in general bridges the use-case of an applications wanting to use a seated-scale experience, but also with a physical floor. Neither ``XR_REFERENCE_SPACE_TYPE_LOCAL`` nor ``XR_REFERENCE_SPACE_TYPE_STAGE`` truely fits this requirement.
+The XR_EXT_local_floor extension bridges the use-case of an applications wanting to use a seated-scale experience, but also with a physical floor. Neither ``XR_REFERENCE_SPACE_TYPE_LOCAL`` nor ``XR_REFERENCE_SPACE_TYPE_STAGE`` truly fits this requirement.
 
 The Local Floor Reference Space establishes a world-locked, gravity aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is the same as ``XR_REFERENCE_SPACE_TYPE_LOCAL`` in the X and Z coordinates, but not the Y coordinate. See more here: `12.34. XR_EXT_local_floor <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_local_floor>`_.
 
@@ -904,7 +875,7 @@ At the end of the appplication, we should destroy the ``XrSpace`` by calling ``x
 3.2.3 RenderFrame
 =================
 
-Below is the code needed for rendering a frame in OpenXR. Each frame, we sequence through the three primary functions: ``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()``. These functions wrap around our rendering code and communicate to the OpenXR rumtime that we are rendering and that we need to synchronize with the XR compositor's frame hook. Copy the following code into the ``RenderFrame()``:
+Below is the code needed for rendering a frame in OpenXR. Each frame, we sequence through the three primary functions: ``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()``. These functions wrap around our rendering code and communicate to the OpenXR rumtime that we are rendering and that we need to synchronize with the XR compositor. Copy the following code into ``RenderFrame()``:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -912,7 +883,7 @@ Below is the code needed for rendering a frame in OpenXR. Each frame, we sequenc
 	:end-before: XR_DOCS_TAG_END_RenderFrame
 	:dedent: 8
 
-The primary structure in use here is the ``XrFrameState``, which contains vital members for timing and rendering such as the ``predictedDisplayTime`` member, which is the predicted time that the frame will be displayed to the user, and the ``shouldRender`` member, which states whether the application should render any graphics. This last member could change when the application is transitioning into or out of a running sesssion or that the system UI is focused and covering the application.
+The primary structure in use here is the ``XrFrameState``, which contains vital members for timing and rendering such as the ``predictedDisplayTime`` member, which is the predicted time that the frame will be displayed to the user, and the ``shouldRender`` member, which states whether the application should render any graphics. This last member could change when the application is transitioning into or out of a running session or that the system UI is focused and covering the application.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
@@ -921,7 +892,7 @@ The primary structure in use here is the ``XrFrameState``, which contains vital 
 
 *The above code is an excerpt from openxr/openxr.h*
 
-``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()`` should wrap around all the rendering in the XR frame and thus should be called in that sequence. ``xrWaitFrame()`` provided to the application the information for the frame, which we've discussed above. Next, ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign ``XrFrameState::predictedDisplayTime`` to ``XrFrameEndInfo::displayTime``. It should be noted that we can modify this value during the frame. Next, we assign to ``XrFrameEndInfo::environmentBlendMode`` our selected environment blend mode. Last, we assign the size of and a pointer to an ``std::vector<XrCompositionLayerBaseHeader *>``. These Composition Layers are used by the OpenXR compositor to create the final image for the views.
+``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()`` should wrap around all the rendering in the XR frame and thus should be called in that sequence. ``xrWaitFrame()`` provided to the application the information for the frame, which we've discussed above. Next, ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign ``XrFrameState::predictedDisplayTime`` to ``XrFrameEndInfo::displayTime``. It should be noted that we can modify this value during the frame. Next, we assign to ``XrFrameEndInfo::environmentBlendMode`` our selected blend mode. Last, we assign the size of and a pointer to an ``std::vector<XrCompositionLayerBaseHeader *>``. These Composition Layers are assembled by the OpenXR compositor to create the final images.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
@@ -930,7 +901,7 @@ The primary structure in use here is the ``XrFrameState``, which contains vital 
 
 *The above code is an excerpt from openxr/openxr.h*
 
-``XrCompositionLayerBaseHeader`` is the base structure from which all other ``XrCompositionLayer...`` types extend. They describe the type of layer to be composited along with the relevant information. If we have rendered any graphics within this frame, we cast the memory address our ``XrCompositionLayer...`` structure to an ``XrCompositionLayerBaseHeader *`` and push it back into out ``std::vector<XrCompositionLayerBaseHeader *>``, which will be assigned in our ``XrFrameEndInfo`` structure.
+``XrCompositionLayerBaseHeader`` is the base structure from which all other ``XrCompositionLayer...`` types extend. They describe the type of layer to be composited along with the relevant information. If we have rendered any graphics within this frame, we cast the memory address our ``XrCompositionLayer...`` structure to an ``XrCompositionLayerBaseHeader *`` and push it into ``std::vector<XrCompositionLayerBaseHeader *>``, which will be assigned in our ``XrFrameEndInfo`` structure.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
@@ -963,9 +934,9 @@ Below is a table of the ``XrCompositionLayer...`` types provided by the OpenXR 1
 
 Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` are also in the OpenXR 1.0 specification. 
 
-In this tutorial, we use the a single ``XrCompositionLayerProjection``. The structure describes the ``XrCompositionLayerFlags``, an ``XrSpace`` and a count and pointer to an array of ``XrCompositionLayerProjectionView``.
+Here we will use the a single ``XrCompositionLayerProjection``. The structure describes the ``XrCompositionLayerFlags``, an ``XrSpace`` and a count and pointer to an array of ``XrCompositionLayerProjectionView``.
 
-``XrCompositionLayerProjectionView`` descibes the ``XrPosef`` of the view relative to the reference space, the field of view of the view and to which ``XrSwapchainSubImage`` the view relates.
+``XrCompositionLayerProjectionView`` descibes the ``XrPosef`` of the view relative to the reference space, the field of view and to which ``XrSwapchainSubImage`` the view relates.
 
 .. literalinclude:: ../build/openxr/include/openxr/openxr.h
 	:language: cpp
@@ -993,7 +964,7 @@ Before we call ``RenderLayer()``, we check that the ``XrSession`` is active, as 
 3.2.4 RenderLayer
 =================
 
-From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate the views within the reference space, render to our swapachain images and fill out the ``XrCompositionLayerProjection`` and ``std::vector<XrCompositionLayerProjectionView>`` parameters. Copy the following code into the ``RenderLayer()`` method:
+From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate the views within the reference space, render to our swapchain images and fill out the ``XrCompositionLayerProjection`` and ``std::vector<XrCompositionLayerProjectionView>`` parameters. Copy the following code into the ``RenderLayer()`` method:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1009,13 +980,13 @@ We resize our ``std::vector<XrCompositionLayerProjectionView>`` parameter, and f
 
 The following sections are repeated for each view whilst we are in the loop, which iterates over the views.
 
-We now acquire an image from the swapchain to render to by calling ``xrAcquireSwapchainImage()``. This returns via a parameter an index, with which we can use to index into an array of swapchain images, or in the case of this tutorial the array of structures containing our swapachain images. Next, we call ``xrWaitSwapchainImage()``, we do this to avoid writing to an image that the OpenXR compositor in still reading from. The call will block the CPU thread until the swapachain image is available to use. Skipping slightly forward to the end of the rendering for this view, we call ``xrReleaseSwapchainImage()``. This call hands the swapchain image back to OpenXR for the compositor to use in creating the image for the view. Like with ``xrBeginFrame()`` and ``xrEndFrame()``, the ``xr...SwapchainImage()`` functions need to be called in sequence for correct API usage.
+We now acquire an image from the swapchain to render to by calling ``xrAcquireSwapchainImage()``. This returns via a parameter an index, with which we can use to index into an array of swapchain images, or in the case of this tutorial the array of structures containing our swapchain images. Next, we call ``xrWaitSwapchainImage()``, we do this to avoid writing to an image that the OpenXR compositor in still reading from. The call will block the CPU thread until the swapchain image is available to use. Skipping slightly forward to the end of the rendering for this view, we call ``xrReleaseSwapchainImage()``. This call hands the swapchain image back to OpenXR for the compositor to use in creating the image for the view. Like with ``xrBeginFrame()`` and ``xrEndFrame()``, the ``xr...SwapchainImage()`` functions need to be called in sequence for correct API usage.
 
-After we have waited for the swapachain image, before releasing it, we fill out the ``XrCompositionLayerProjectionView`` associated with the view and render our graphics. First, we quickly get the ``width`` and ``height`` of the view from the ``XrViewConfigurationView``. We use the ``recommendedImageRectWidth`` and ``recommendedImageRectHeight`` values when creating the swapachains.
+After we have waited for the swapchain image, before releasing it, we fill out the ``XrCompositionLayerProjectionView`` associated with the view and render our graphics. First, we quickly get the ``width`` and ``height`` of the view from the ``XrViewConfigurationView``. We use the ``recommendedImageRectWidth`` and ``recommendedImageRectHeight`` values when creating the swapchains.
 
-We can now fill out the ``XrCompositionLayerProjectionView`` using the ``pose`` and ``fov`` from the associated ``XrView``. For the ``XrSwapchainSubImage`` member, we assign the ``swapachain`` used, the ``offset`` and ``extent`` of the render area and ``imageArrayIndex``. If you are using multiview rendering and your single swapachain is comprised of 2D Array images, where each subresource layer in the image relates to a view, you can use ``imageArrayIndex`` to specify the subresource layer of the image used in the rendering of this view.
+We can now fill out the ``XrCompositionLayerProjectionView`` using the ``pose`` and ``fov`` from the associated ``XrView``. For the ``XrSwapchainSubImage`` member, we assign the ``swapchain`` used, the ``offset`` and ``extent`` of the render area and ``imageArrayIndex``. If you are using multiview rendering and your single swapchain is comprised of 2D Array images, where each subresource layer in the image relates to a view, you can use ``imageArrayIndex`` to specify the subresource layer of the image used in the rendering of this view.
 
-After filling out the ``XrCompositionLayerProjectionView`` structure, we can use this tutorial's ``GraphicsAPI`` to clear the images as a very simple test. We first call ``GraphicsAPI::BeginRendering()`` to setup any API-specific objects needed for rendering. Next, we call ``GraphicsAPI::ClearColor()`` taking the created color image view for the swapachain image; note here that we use different clear colors depending on whether our environment blend mode is opaque or otherwise. We also clear our depth image view with ``GraphicsAPI::ClearDepth()``. Finally, we call ``GraphicsAPI::EndRendering()`` to finish the rendering. This function will submit the work to the GPU and wait for it to be completed.
+After filling out the ``XrCompositionLayerProjectionView`` structure, we can use this tutorial's ``GraphicsAPI`` to clear the images as a very simple test. We first call ``GraphicsAPI::BeginRendering()`` to setup any API-specific objects needed for rendering. Next, we call ``GraphicsAPI::ClearColor()`` taking the created color image view for the swapchain image; note here that we use different clear colors depending on whether our environment blend mode is opaque or otherwise. We also clear our depth image view with ``GraphicsAPI::ClearDepth()``. Finally, we call ``GraphicsAPI::EndRendering()`` to finish the rendering. This function will submit the work to the GPU and wait for it to be completed.
 
 Now, we have rendered both views and exited the loop.
 

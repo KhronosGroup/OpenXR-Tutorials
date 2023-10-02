@@ -23,7 +23,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, nav, sectio
 }
 
 section{
-  scroll-margin-top: 200px;
+  scroll-margin-top: 140px;
 }
 
 .sidebartitle
@@ -6124,7 +6124,7 @@ html
 	color:white;
     width: 100%;
     top: 0px;
-    padding:10px 20px 0px 20px;
+    padding:0px 20px 0px 20px;
     z-index:1;
 }
 .wy-nav .wy-menu-vertical header
@@ -6265,7 +6265,8 @@ html
 {
     margin-left: 300px;
     min-height: 100%;
-	height:100%
+	height:100%;
+    overflow:hidden;
 }
 
 .wy-nav-content
@@ -6297,7 +6298,7 @@ html
 footer
 {
     color: #000;
-    margin-bottom: 140px;
+    margin-bottom: 160px;
 }
 
 footer p
@@ -7488,9 +7489,9 @@ span[id*=MathJax-Span]
 }
 
 #selectplatform{
-	margin: 10px 10px 0 10px;
-  display: flex;
-  justify-content: center;
+    margin: 0px 10px 0 10px;
+    display: flex;
+    justify-content: center;
 }
 
 #selectplatform input, #selectplatform label{
@@ -7513,10 +7514,29 @@ span[id*=MathJax-Span]
 {
 	height:40px;
 }
+
 .api-tab-img
 {
-	height:64px;
+	height:56px;
+	padding: 2px;
 }
+
+@media screen and (max-width:1280px)
+{
+    .api-tab-img
+    {
+	    height:44px;
+    }
+}
+
+@media screen and (max-width:1024px)
+{
+    .api-tab-img
+    {
+	    height:32px;
+    }
+}
+
 .selected-platform
 {
     background: #fcfcfc;

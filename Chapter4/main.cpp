@@ -1242,7 +1242,7 @@ private:
     // XR_DOCS_TAG_BEGIN_declareSwapchains
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
     struct SwapchainAndDepthImage {
-        XrSwapchain swapchain = {};
+        XrSwapchain swapchain = XR_NULL_HANDLE;
         int64_t swapchainFormat = 0;
         void *depthImage = nullptr;
 

@@ -94,6 +94,7 @@ private:
         {
             // XR_DOCS_TAG_BEGIN_instanceExtensions
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
+            // TODO make sure this is already defined when we add this line.
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
             // XR_DOCS_TAG_END_instanceExtensions
         }
@@ -208,20 +209,24 @@ private:
 
     void GetEnvironmentBlendModes() {
         // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
-        // Gets the Environment Blend Modes. The first call gets the size of the array that will be returned. The next call fills out the array.
+        // Retrieves the available blend modes. The first call gets the size of the array that will be returned. The next call fills out the array.
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
         m_environmentBlendModes.resize(environmentBlendModeSize);
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, m_environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
 
         // Select the first Environment Blend Mode as our default.
-        m_environmentBlendMode = m_environmentBlendModes[0];
         // Pick the first application supported blend mode supported by the hardware.
         for (const XrEnvironmentBlendMode &environmentBlendMode : m_applicationEnvironmentBlendModes) {
             if (std::find(m_environmentBlendModes.begin(), m_environmentBlendModes.end(), environmentBlendMode) != m_environmentBlendModes.end()) {
                 m_environmentBlendMode = environmentBlendMode;
                 break;
             }
+        }
+        if(m_environmentBlendMode==XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM)
+        {
+            std::cerr<<"Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE.\n";
+            m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         }
         // XR_DOCS_TAG_END_GetEnvironmentBlendModes
     }
@@ -386,18 +391,10 @@ private:
         OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
-        // XR_DOCS_TAG_BEGIN_CheckCoherentViewDimensions
-        // Check the two views for stereo are the same.
-        if (m_viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO && m_viewConfigurationViews.size() == 2) {
-            bool viewWidthsSame = m_viewConfigurationViews[0].recommendedImageRectWidth == m_viewConfigurationViews[1].recommendedImageRectWidth;
-            bool viewHeightsSame = m_viewConfigurationViews[0].recommendedImageRectHeight == m_viewConfigurationViews[1].recommendedImageRectHeight;
-            if (!viewWidthsSame || !viewHeightsSame) {
-                std::cout << "ERROR: The two views for stereo are not the same." << std::endl;
-                DEBUG_BREAK;
-            }
-        }
+        // TODO: Don't like this, just use a for(int loop and use the correct one in the list.
+        // XR_DOCS_TAG_BEGIN_CreateViewConfigurationView
         const XrViewConfigurationView &viewConfigurationView = m_viewConfigurationViews[0];
-        // XR_DOCS_TAG_END_CheckCoherentViewDimensions
+        // XR_DOCS_TAG_END_CreateViewConfigurationView
 
         // Per view, create a swapchain, depth image and their associated image views.
         m_swapchainAndDepthImages.resize(m_viewConfigurationViews.size());
@@ -695,12 +692,12 @@ private:
 
 private:
     XrInstance m_xrInstance = {};
-    std::vector<const char *> m_activeAPILayers = {};
-    std::vector<const char *> m_activeInstanceExtensions = {};
-    std::vector<std::string> m_apiLayers = {};
-    std::vector<std::string> m_instanceExtensions = {};
+    std::vector<const char *> m_activeAPILayers;
+    std::vector<const char *> m_activeInstanceExtensions;
+    std::vector<std::string> m_apiLayers;
+    std::vector<std::string> m_instanceExtensions;
 
-    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
+    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = XR_NULL_HANDLE;
 
     XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     XrSystemId m_systemID = {};
@@ -718,7 +715,7 @@ private:
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
     struct SwapchainAndDepthImage {
-        XrSwapchain swapchain = {};
+        XrSwapchain swapchain = XR_NULL_HANDLE;
         int64_t swapchainFormat = 0;
         void *depthImage = nullptr;
 
@@ -731,7 +728,7 @@ private:
     std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
-    XrSpace m_localOrStageSpace = {};
+    XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {
@@ -764,7 +761,7 @@ void android_main(struct android_app *app) {
     // Without this, there's is no loader and thus our function calls to OpenXR would fail.
     XrInstance m_xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR = nullptr;
-    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr for xrInitializeLoaderKHR.");
     if (!xrInitializeLoaderKHR) {
         return;
     }
