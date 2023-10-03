@@ -100,23 +100,23 @@ else() # Windows / Linux
     if (WIN32) # Windows 
         # D3D11
         target_link_libraries(${PROJECT_NAME} "d3d11.lib") 
-    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D11)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D11)
         # D3D12
         target_link_libraries(${PROJECT_NAME} "d3d12.lib") 
-    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
         # D3D11 / D3D12
         target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
     else() # Linux
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_LINUX_XLIB)
-endif()
+    endif()
 
     # VulkanSDK
     find_package(Vulkan)
-if(Vulkan_FOUND)
+    if(Vulkan_FOUND)
         target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
         target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
-    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
-endif()
+        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
+    endif()
 
     # OpenGL
     # Fix redirection to a different project's build folder

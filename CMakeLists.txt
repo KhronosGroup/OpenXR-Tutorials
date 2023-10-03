@@ -4,7 +4,7 @@ project(openxr-tutorial)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
-option(TUTORIAL_BUILD_TUTORIAL "Build the tutorial docs?" ON)
+option(TUTORIAL_BUILD_DOCUMENTATION "Build the tutorial documentation?" ON)
 
 # Optional override runtime
 set(XR_RUNTIME_JSON
@@ -13,14 +13,15 @@ set(XR_RUNTIME_JSON
           "Optional location of a specific OpenXR runtime configuration file."
 )
 
-if(TUTORIAL_BUILD_TUTORIAL)
+if(TUTORIAL_BUILD_DOCUMENTATION)
     add_subdirectory(tutorial)
 endif()
+
 add_subdirectory(Chapter2)
 add_subdirectory(Chapter3)
 add_subdirectory(Chapter4)
 add_subdirectory(Chapter5)
-if(WIN32)
-    # Windows only
+
+if(WIN32) # Windows only
     add_subdirectory(GraphicsAPI_Test)
 endif()
