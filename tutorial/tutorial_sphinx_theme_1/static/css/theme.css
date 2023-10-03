@@ -7731,46 +7731,12 @@ button.selected-graphics-api > img
 {
 	background:#ad0e28;
 }
-#interactions > h1{
+
+section > h1{
     padding-left:32px;
 }
-
-#interactions > h1:before{
+section >h1:before{
 	content: '';
-    background: url(icons/HandsetIcon.svg);
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: 30px;
-    height: 22px;
-    margin-left: -20px;
-    padding-top: 12px;
-    padding: 1px;
-    display: inline-block;
-}
-
-#toc_interactions> a{
-    padding-left:40px;
-}
-#toc_interactions>a:before{
-	content: '';
-    background: url(icons/HandsetIcon.svg);
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: 36px;
-    height: 28px;
-    margin-left: -28px;
-    padding: 1px;
-    padding-top: 24px;
-    display: inline-block;
-    vertical-align: -50%;
-}
-
-#introduction> h1{
-    padding-left:32px;
-}
-#introduction > h1:before{
-	content: '';
-    background: url(icons/Fanfare.svg);
     background-size: contain;
     background-repeat: no-repeat;
     width: 40px;
@@ -7779,33 +7745,23 @@ button.selected-graphics-api > img
     padding-top: 12px;
     padding: 1px;
     display: inline-block;
+    vertical-align: -25%;
 }
 
-#setup> h1{
-    padding-left:32px;
+#interactions > h1{
 }
-#setup > h1:before{
-	content: '';
-    background: url(icons/Cog.svg);
+
+#interactions > h1:before{
+    background: url(icons/HandsetIcon.svg);
     background-size: contain;
     background-repeat: no-repeat;
-    width: 30px;
-    height: 22px;
-    margin-left: -20px;
-    padding-top: 12px;
-    padding: 1px;
-    display: inline-block;
-    vertical-align: -50%;
 }
 
-#toc_setup> a{
+#toc_interactions> a{
     padding-left:40px;
 }
-#toc_setup>a:before{
+.toctree-l1>a:before{
 	content: '';
-    background: url(icons/Cog.svg);
-    background-size: contain;
-    background-repeat: no-repeat;
     width: 36px;
     height: 28px;
     margin-left: -28px;
@@ -7814,37 +7770,68 @@ button.selected-graphics-api > img
     display: inline-block;
     vertical-align: -50%;
 }
-#extensions > h1{
+
+.toctree-l1> a{
     padding-left:40px;
+}
+#toc_interactions>a:before{
+    background: url(icons/HandsetIcon.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#introduction> h1{
+}
+#introduction > h1:before{
+    background: url(icons/Trumpet.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#openxr-setup> h1{
+}
+#openxr-setup > h1:before{
+    background: url(icons/Cog.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#graphics> h1{
+}
+#graphics > h1:before{
+    background: url(icons/Graphics.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#toc_introduction>a:before{
+    background: url(icons/Trumpet.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#toc_setup>a:before{
+    background: url(icons/Cog.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#toc_graphics>a:before{
+    background: url(icons/Graphics.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+#extensions > h1{
 }
 
 #extensions > h1:before{
-	content: '';
     background: url(icons/JigsawPiece.svg);
     background-size: contain;
     background-repeat: no-repeat;
-    width: 36px;
-    height: 28px;
-    margin-left: -28px;
-    padding: 1px;
-    padding-top: 24px;
-    display: inline-block;
-    vertical-align: -50%;
 }
 
-#toc_extensions> a{
-    padding-left:40px;
-}
 #toc_extensions>a:before{
-	content: '';
     background: url(icons/JigsawPiece.svg);
     background-size: contain;
     background-repeat: no-repeat;
-    width: 36px;
-    height: 28px;
-    margin-left: -28px;
-    padding: 1px;
-    padding-top: 24px;
-    display: inline-block;
-    vertical-align: -50%;
 }
