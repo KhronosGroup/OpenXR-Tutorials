@@ -18,7 +18,7 @@ The goal of this chapter is to build an application that creates and clears colo
 
 .. container:: android
 
-	a `Chapter3` folder in the *workspace* directory and into that folder copy the whole contents of `Chapter2` to it. In CMakeLists.txt, update this line:
+	Add a `Chapter3` folder in the *workspace* directory and into that folder copy the whole contents of `Chapter2` to it. In CMakeLists.txt, update this line:
 
 .. literalinclude:: ../Chapter3/CMakeLists.txt
 	:language: cmake
