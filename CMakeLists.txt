@@ -1,3 +1,4 @@
+#XR_DOCS_TAG_BEGIN_CMakeLists
 cmake_minimum_required(VERSION 3.16)
 
 project(openxr-tutorial)
@@ -12,12 +13,15 @@ set(XR_RUNTIME_JSON
     CACHE PATH
           "Optional location of a specific OpenXR runtime configuration file."
 )
-
+#XR_DOCS_TAG_END_CMakeLists
 if(TUTORIAL_BUILD_DOCUMENTATION)
     add_subdirectory(tutorial)
 endif()
 
+	
+#XR_DOCS_TAG_BEGIN_AddChapter2
 add_subdirectory(Chapter2)
+#XR_DOCS_TAG_END_AddChapter2
 add_subdirectory(Chapter3)
 add_subdirectory(Chapter4)
 add_subdirectory(Chapter5)

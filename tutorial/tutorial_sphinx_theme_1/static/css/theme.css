@@ -12,6 +12,11 @@ p, figure
 
 }
 
+p
+{
+    text-align: justify;
+}
+
 *, :after, :before
 {
     box-sizing: inherit
@@ -7638,7 +7643,7 @@ span[id*=MathJax-Span]
 	border-width:1px 1px 0px 1px;
 	border-color: #d0d4da;
 	border-radius: 7px 8px 0 0;
-	margin: 4px 0px 0px 0px;
+	margin: 1px 0px 0px 0px;
     background: #d0d4da;
 	color:gray;
 }

@@ -79,7 +79,7 @@ Below the set(HEADERS) command, add:
 
 .. container:: windows linux
 
-    Before the line ``if(NOT "${XR_RUNTIME_JSON...)`` add:
+    Replace the line ``add_executable(...)`` with:
 
     .. literalinclude:: ../Chapter4/CMakeLists.txt
         :language: cmake

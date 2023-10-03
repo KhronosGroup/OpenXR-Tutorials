@@ -4,6 +4,7 @@ set(PROJECT_NAME OpenXRTutorialChapter5)
 # XR_DOCS_TAG_END_OpenXRTutorialChapter5
 project("${PROJECT_NAME}") # Needed for Android
 
+#XR_DOCS_TAG_BEGIN_FetchContent
 # For FetchContent_Declare() and FetchContent_MakeAvailable()
 include(FetchContent)
 
@@ -19,6 +20,7 @@ FetchContent_Declare(
         URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.28.zip
         SOURCE_DIR openxr)
 FetchContent_MakeAvailable(OpenXR)
+#XR_DOCS_TAG_END_FetchContent
 
 # Files
 set(SOURCES 
@@ -59,7 +61,7 @@ set(ES_GLSL_SHADERS
 #XR_DOCS_TAG_END_GLESShaders
 
 if (ANDROID) # Android
-    set(SHADERS ${GLSL_SHADERS} ${ES_GLSL_SHADERS} )
+#XR_DOCS_TAG_BEGIN_Android
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate") # export ANativeActivity_onCreate for java to call.
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
     target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
@@ -67,14 +69,18 @@ if (ANDROID) # Android
     # native_app_glue
     include(AndroidNdkModules)
     android_ndk_import_module_native_app_glue()
+#XR_DOCS_TAG_END_Android
 
+#XR_DOCS_TAG_BEGIN_VulkanNDK
     # VulkanNDK
     find_library(vulkan-lib vulkan)
     if (vulkan-lib)
         target_include_directories(${PROJECT_NAME} PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
     endif()
+#XR_DOCS_TAG_END_VulkanNDK
 
+#XR_DOCS_TAG_BEGIN_Gfxwrapper
     # openxr-gfxwrapper - Manually build from OpenXR for OpenGL ES
     add_library(openxr-gfxwrapper STATIC ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.c ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.h)
     target_include_directories(openxr-gfxwrapper PUBLIC ${openxr_SOURCE_DIR}/external/include)
@@ -86,7 +92,7 @@ if (ANDROID) # Android
 
     target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common)
     target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/external/include)
-    target_include_directories(${PROJECT_NAME} PUBLIC ../third_party)
+#XR_DOCS_TAG_END_Gfxwrapper
 
     # Final link
     target_link_libraries(${PROJECT_NAME}
@@ -133,6 +139,7 @@ if (ANDROID) # Android
 #XR_DOCS_TAG_END_CompileAndroidGLESShaders
 
 else() # Windows / Linux
+#XR_DOCS_TAG_BEGIN_WindowsLinux
 #XR_DOCS_TAG_BEGIN_AddExecutableWindowsLinux
     set(SHADERS ${GLSL_SHADERS})
     add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${SHADERS})
@@ -143,20 +150,29 @@ else() # Windows / Linux
     endif()
     target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
     target_link_libraries(${PROJECT_NAME} openxr_loader)
-
+#XR_DOCS_TAG_END_WindowsLinux
     if (WIN32) # Windows 
+#XR_DOCS_TAG_BEGIN_D3D11
         # D3D11
         target_link_libraries(${PROJECT_NAME} "d3d11.lib") 
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D11)
+#XR_DOCS_TAG_END_D3D11
+#XR_DOCS_TAG_BEGIN_D3D12
         # D3D12
         target_link_libraries(${PROJECT_NAME} "d3d12.lib") 
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
+#XR_DOCS_TAG_END_D3D12
+#XR_DOCS_TAG_BEGIN_D3D11_12
         # D3D11 / D3D12
         target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
+#XR_DOCS_TAG_END_D3D11_12
     else() # Linux
+#XR_DOCS_TAG_BEGIN_Linux
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_LINUX_XLIB)
+#XR_DOCS_TAG_END_Linux
     endif()
 
+#XR_DOCS_TAG_BEGIN_VulkanSDK
     # VulkanSDK
     find_package(Vulkan)
     if (Vulkan_FOUND)
@@ -164,13 +180,15 @@ else() # Windows / Linux
         target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
     endif()
+#XR_DOCS_TAG_END_VulkanSDK
 
+#XR_DOCS_TAG_BEGIN_OpenGL
     # OpenGL
     # Fix redirection to a different project's build folder
     target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../Chapter2/openxr/src/common)
     target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
-
+#XR_DOCS_TAG_END_OpenGL
 #XR_DOCS_TAG_BEGIN_BuildShadersWindows
     #Shaders
     if (WIN32)

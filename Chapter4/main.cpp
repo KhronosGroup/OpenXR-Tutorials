@@ -298,7 +298,9 @@ private:
 // XR_DOCS_TAG_END_CreateActionLambda
 // XR_DOCS_TAG_BEGIN_CreateActions
         // An Action for grabbing cubes.
-        CreateAction(m_grabAction, "grab", XR_ACTION_TYPE_FLOAT_INPUT, {"/user/hand/left", "/user/hand/right"});
+        CreateAction(m_grabCubeAction, "grab-cube", XR_ACTION_TYPE_FLOAT_INPUT, {"/user/hand/left", "/user/hand/right"});
+        CreateAction(m_spawnCubeAction, "spawn-cube", XR_ACTION_TYPE_BOOLEAN_INPUT );
+        CreateAction(m_changeColorAction, "change-color", XR_ACTION_TYPE_BOOLEAN_INPUT, {"/user/hand/left", "/user/hand/right"});
         // An Action for the position of the palm of the user's hand - appropriate for the location of a grabbing Actions.
         CreateAction(m_palmPoseAction, "palm-pose", XR_ACTION_TYPE_POSE_INPUT, {"/user/hand/left", "/user/hand/right"});
         // An Action for a vibration output on one or other hand.
@@ -326,8 +328,8 @@ private:
         // XR_DOCS_TAG_BEGIN_SuggestBindings2
         bool any_ok = false;
         // Each Action here has two paths, one for each SubAction path.
-        any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller", {{m_grabAction, CreateXrPath("/user/hand/left/input/select/click")},
-                                                                                  {m_grabAction, CreateXrPath("/user/hand/right/input/select/click")},
+        any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller", {{m_changeColorAction, CreateXrPath("/user/hand/left/input/select/click")},
+                                                                                  {m_grabCubeAction, CreateXrPath("/user/hand/right/input/select/click")},
                                                                                   {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
                                                                                   {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
                                                                                   {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
@@ -335,8 +337,11 @@ private:
         // XR_DOCS_TAG_END_SuggestBindings2
         // XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
         // Each Action here has two paths, one for each SubAction path.
-        any_ok |= SuggestBindings("/interaction_profiles/oculus/touch_controller", {{m_grabAction, CreateXrPath("/user/hand/left/input/squeeze/value")},
-                                                                                    {m_grabAction, CreateXrPath("/user/hand/right/input/squeeze/value")},
+        any_ok |= SuggestBindings("/interaction_profiles/oculus/touch_controller", {{m_grabCubeAction, CreateXrPath("/user/hand/left/input/squeeze/value")},
+                                                                                    {m_grabCubeAction, CreateXrPath("/user/hand/right/input/squeeze/value")},
+                                                                                    {m_spawnCubeAction, CreateXrPath("/user/hand/right/input/a/click")},
+                                                                                    {m_changeColorAction, CreateXrPath("/user/hand/left/input/trigger/value")},
+                                                                                    {m_changeColorAction, CreateXrPath("/user/hand/right/input/trigger/value")},
                                                                                     {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
                                                                                     {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
                                                                                     {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
@@ -607,9 +612,7 @@ private:
                 for (int k = 0; k < 4; k++) {
                     float angleRad = 0;
                     float z = scale * (float(k) - 1.5f) + centre.z;
-                    XrQuaternionf q;
-                    XrVector3f axis = {0, 0.707f, 0.707f};
-                    XrQuaternionf_CreateFromAxisAngle(&q, &axis, angleRad);
+                    XrQuaternionf q= {0, 0,0,1.f};
                     XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                     blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, colour});
                 }
@@ -662,6 +665,7 @@ private:
                 break;
             }
             // Log that there's a reference space change pending.
+            // TODO: expand on this in text.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
@@ -741,9 +745,21 @@ private:
 // XR_DOCS_TAG_END_PollActions2
 // XR_DOCS_TAG_BEGIN_PollActions3
         for (int i = 0; i < 2; i++) {
-            actionStateGetInfo.action = m_grabAction;
+            actionStateGetInfo.action = m_grabCubeAction;
             actionStateGetInfo.subactionPath = m_handPaths[i];
-            OPENXR_CHECK(xrGetActionStateFloat(m_session, &actionStateGetInfo, &m_grabState[i]), "Failed to get Float State.");
+            OPENXR_CHECK(xrGetActionStateFloat(m_session, &actionStateGetInfo, &m_grabState[i]), "Failed to get Float State of Grab Cube action.");
+        }
+        for (int i = 0; i < 2; i++) {
+            actionStateGetInfo.action = m_changeColorAction;
+            actionStateGetInfo.subactionPath = m_handPaths[i];
+            OPENXR_CHECK(xrGetActionStateBoolean(m_session, &actionStateGetInfo, &m_changeColorState[i]), "Failed to get Boolean State of Change Color action.");
+        }
+        // The Spawn Cube action has no subActionPath:
+        {
+            actionStateGetInfo.action = m_spawnCubeAction;
+            actionStateGetInfo.subactionPath = 0;
+            OPENXR_CHECK(xrGetActionStateBoolean(m_session, &actionStateGetInfo, &m_spawnCubeState), "Failed to get Boolean State of Spawn Cube action.");
+            
         }
 // XR_DOCS_TAG_END_PollActions3
 // XR_DOCS_TAG_BEGIN_PollActions4
@@ -790,15 +806,32 @@ private:
                         // How far is it from the hand to this block?
                         XrVector3f diff = block.pose.position - m_handPose[i].position;
                         float distance = std::max(fabs(diff.x), std::max(fabs(diff.y), fabs(diff.z)));
-                        if (distance < 0.1f && distance < nearest) {
+                        if (distance < 0.05f && distance < nearest) {
                             nearBlock[i] = j;
                             nearest = distance;
                         }
                     }
                 }
-                if (nearBlock[i] != -1 && m_grabState[i].isActive && m_grabState[i].currentState > 0.5f) {
-                    grabbedBlock[i] = nearBlock[i];
-                    buzz[i] = 1.0f;
+                if (nearBlock[i] != -1)
+                {
+                    if(m_grabState[i].isActive && m_grabState[i].currentState > 0.5f) {
+                        grabbedBlock[i] = nearBlock[i];
+                        buzz[i] = 1.0f;
+                    } 
+                    else if (m_changeColorState[i].isActive == XR_TRUE && m_changeColorState[i].currentState == XR_FALSE && m_changeColorState[i].changedSinceLastSync == XR_TRUE) {
+                        auto &thisBlock = blocks[nearBlock[i]];
+                        XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
+                        thisBlock.colour = colour;
+                    }
+                }
+                else
+                {
+                    // not near a block? We can spawn one.
+                    if (m_spawnCubeState.isActive == XR_TRUE && m_spawnCubeState.currentState == XR_FALSE && m_spawnCubeState.changedSinceLastSync == XR_TRUE && blocks.size() < MaxBlockCount) {
+                        XrQuaternionf q = {0, 0, 0, 1.f};
+                        XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
+                        blocks.push_back({{q, FixPosition(m_handPose[i].position)}, {0.095f, 0.095f, 0.095f}, colour});
+                    }
                 }
             } else {
                 nearBlock[i] = grabbedBlock[i];
@@ -1114,11 +1147,11 @@ private:
                 }
             }
             for (int i = 0; i < blocks.size(); i++) {
-                auto p = blocks[i];
-                XrVector3f sc = p.scale;
+                auto &thisBlock = blocks[i];
+                XrVector3f sc = thisBlock.scale;
                 if (i == nearBlock[0] || i == nearBlock[1])
-                    sc = p.scale * 1.05f;
-                RenderCuboid(p.pose, sc, p.colour);
+                    sc = thisBlock.scale * 1.05f;
+                RenderCuboid(thisBlock.pose, sc, thisBlock.colour);
             }
             // XR_DOCS_TAG_END_CallRenderCuboid
             m_graphicsAPI->EndRendering();
@@ -1277,15 +1310,20 @@ private:
         XrVector3f colour;
     };
     std::vector<Block> blocks;
+    // Don't let too many blocks get created.
+    const size_t MaxBlockCount=100;
     int grabbedBlock[2] = {-1, -1};
     int nearBlock[2] = {-1, -1};
     // XR_DOCS_TAG_END_Objects
 
     // XR_DOCS_TAG_BEGIN_Actions
     XrActionSet m_actionSet;
-    // An action for grabbing blocks.
-    XrAction m_grabAction;
+    // An action for grabbing blocks, and an action to change the color of a block.
+    XrAction m_grabCubeAction, m_spawnCubeAction, m_changeColorAction;
+    // The realtime states of these actions.
     XrActionStateFloat m_grabState[2] = {{XR_TYPE_ACTION_STATE_FLOAT}, {XR_TYPE_ACTION_STATE_FLOAT}};
+    XrActionStateBoolean m_changeColorState[2] = {{XR_TYPE_ACTION_STATE_BOOLEAN}, {XR_TYPE_ACTION_STATE_BOOLEAN}};
+    XrActionStateBoolean m_spawnCubeState = {XR_TYPE_ACTION_STATE_BOOLEAN};
     // The action haptic vibration of the right controller.
     XrAction m_buzzAction;
     float buzz[2] = {0, 0};

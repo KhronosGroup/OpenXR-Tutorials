@@ -13,7 +13,7 @@ The goal of this chapter is to build an application that creates and clears colo
 			:start-at: add_subdirectory(Chapter3
 			:end-at: )
 
-	Now, create a ``Chapter3`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2/``. For the ``CMakeLists.txt``, copy the from ``Chapter2/`` and update this line:
+	Now, create a ``Chapter3`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2``. For the ``CMakeLists.txt``, copy the from ``Chapter2`` and update this line:
 
 
 .. container:: android
@@ -22,8 +22,8 @@ The goal of this chapter is to build an application that creates and clears colo
 
 .. literalinclude:: ../Chapter3/CMakeLists.txt
 	:language: cmake
-	:start-at: set(PROJECT_NAME
-	:end-at: OpenXRTutorialChapter3)
+	:start-after: XR_DOCS_TAG_BEGIN_SetProjectName3
+	:end-before: XR_DOCS_TAG_END_SetProjectName3
 
 .. container:: android
 	:name: android-id-1
