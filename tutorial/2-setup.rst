@@ -1,6 +1,6 @@
-﻿##########
+﻿##############
 2 OpenXR Setup
-##########
+##############
 
 With your project setup and your application building and running, we can start to use OpenXR to create our application.
 The goal of this chapter is to create an ``XrInstance`` and an ``XrSession``, and setup the OpenXR event loop. This OpenXR code is needed to setup the core functionality of an OpenXR application to have that application interact with the OpenXR runtime and your graphics API correctly.
@@ -14,7 +14,7 @@ We will continue to use the ``OpenXRTutorial`` class in ``Chapter2/main.cpp`` th
 Here, we will add the following highlighted text to the ``OpenXRTutorial`` class:
 
 .. code-block:: cpp
-	:emphasize-lines: 8-15 , 19-49
+	:emphasize-lines: 8-15 , 19-43
 	
 	class OpenXRTutorial {
 	public:
@@ -172,7 +172,7 @@ The next object that we want to get is the ``XrSystemId``. OpenXR 'separates the
 
 So, a ``XrSystemId`` could represent VR headset and a pair of controllers, or perhaps mobile device with video pass-through for AR. So we need to decide what type of ``XrFormFactor`` we are wanting to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``, which is initialised in the class, for a Meta Quest or Pico Neo. OpenXR currently offers two option for the ``XrFormFactor``.
 
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef enum XrFormFactor {
 	:end-at: } XrFormFactor;
@@ -191,7 +191,7 @@ Here, we have filled out the ``XrSystemGetInfo`` structure with the desired ``Xr
 
 With the above code, we have also got the system's properties. We partially filled out a ``XrSystemProperties`` structure and passed it as a pointer along with the ``XrInstance`` and the ``XrSystemId`` to the ``xrGetSystemProperties()`` function. This function will fill out the rest of the ``XrSystemProperties`` structure; detailing the vendor's ID, system's name and the system's graphics and tracking properties.
 
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XrSystemGraphicsProperties {
 	:end-at: } XrSystemProperties;
@@ -489,19 +489,19 @@ Above, we have defined the ``PollEvents()`` method. Here, we use a do-while loop
 
 The description of the events come from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_xrpollevent>`_.
 
-+---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
-| Event Type                                        | Event Structure Type                   | Description                                                                    |
-+---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
-| XR_TYPE_EVENT_DATA_EVENTS_LOST                    | XrEventDataEventsLost                  | The event queue has overflowed and some events were lost.                      |
-+---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
-| XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING          | XrEventDataInstanceLossPending         | The application is about to lose the instance.                                 |
-+---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
-| XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED    | XrEventDataInteractionProfileChanged   | The active input form factor for one or more top level user paths has changed. |
-+---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
-| XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING | XrEventDataReferenceSpaceChangePending | The runtime will begin operating with updated space bounds.                    |
-+---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
-| XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED          | XrEventDataSessionStateChanged         | The application has changed its lifecycle state.                               |
-+---------------------------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
++---------------------------------------------------+--------------------------------------------------------------------------------+
+| Event Type                                        | Description                                                                    |
++---------------------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_EVENTS_LOST                    | The event queue has overflowed and some events were lost.                      |
++---------------------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING          | The application is about to lose the instance.                                 |
++---------------------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED    | The active input form factor for one or more top level user paths has changed. |
++---------------------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING | The runtime will begin operating with updated space bounds.                    |
++---------------------------------------------------+--------------------------------------------------------------------------------+
+| XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED          | The application has changed its lifecycle state.                               |
++---------------------------------------------------+--------------------------------------------------------------------------------+
 
 As described in the table above, most events are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully. ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
 
@@ -516,7 +516,7 @@ For some platforms, we need additional functionality provided via the ``PollSyst
 	:name: android-id-1
 
 	``TODO: don't say this.``
-	For Android, we have already provided the code for the ``PollSystemEvents()`` method in :ref:`Chapter 1.4.3 <1.4.3 OpenXRTutorial and Main>`. So its duplicate definition must be removed from the class. This function is outside the scope of OpenXR, but in general it polls Android for system events,updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members.
+	For Android, we have already provided the code for the ``PollSystemEvents()`` method in :ref:`Chapter 1.4.3 <1.4.3 The main.cpp file and the OpenXRTutorial class>`. So its duplicate definition must be removed from the class. This function is outside the scope of OpenXR, but in general it polls Android for system events, updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members.
 
 
 2.3.2 XrSessionState
@@ -524,7 +524,7 @@ For some platforms, we need additional functionality provided via the ``PollSyst
 
 The final event type, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, in the above code and table is what we will focus on for the rest of this chapter. There are currently nine valid ``XrSessionState`` s described:
 
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 		:language: cpp
 		:start-at: typedef enum XrSessionState {
 		:end-at: } XrSessionState;

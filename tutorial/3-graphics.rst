@@ -367,7 +367,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	``swapchainImages`` is of type ``std::vector<XrSwapchainImageD3D11KHR>``.
 		
-	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
+	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageD3D11KHR {
 		:end-at: } XrSwapchainImageD3D11KHR;
@@ -390,7 +390,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 	
 	``swapchainImages`` is of type ``std::vector<XrSwapchainImageD3D12KHR>``.
 
-	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
+	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageD3D12KHR {
 		:end-at: } XrSwapchainImageD3D12KHR;
@@ -413,7 +413,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	``swapchainImages`` is of type ``std::vector<XrSwapchainImageOpenGLKHR>``.
 
-	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
+	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageOpenGLKHR {
 		:end-at: } XrSwapchainImageOpenGLKHR;
@@ -436,7 +436,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.cpp*
 
-	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
+	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageOpenGLESKHR {
 		:end-at: } XrSwapchainImageOpenGLESKHR;
@@ -459,7 +459,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	``swapchainImages`` is of type ``std::vector<XrSwapchainImageVulkanKHR>``.
 
-	.. literalinclude:: ../build/openxr/include/openxr/openxr_platform.h
+	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageVulkanKHR {
 		:end-at: } XrSwapchainImageVulkanKHR;
@@ -774,7 +774,7 @@ The enum `XrEnvironmentBlendMode` describes how OpenXR should blend the rendered
 
 `XrEnvironmentBlendMode - Enumerant Descriptions <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#compositing>`_.
 
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef enum XrEnvironmentBlendMode {
 	:end-at: } XrEnvironmentBlendMode;
@@ -885,7 +885,7 @@ Below is the code needed for rendering a frame in OpenXR. Each frame, we sequenc
 
 The primary structure in use here is the ``XrFrameState``, which contains vital members for timing and rendering such as the ``predictedDisplayTime`` member, which is the predicted time that the frame will be displayed to the user, and the ``shouldRender`` member, which states whether the application should render any graphics. This last member could change when the application is transitioning into or out of a running session or that the system UI is focused and covering the application.
 
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XrFrameState {
 	:end-at: } XrFrameState;
@@ -894,7 +894,7 @@ The primary structure in use here is the ``XrFrameState``, which contains vital 
 
 ``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()`` should wrap around all the rendering in the XR frame and thus should be called in that sequence. ``xrWaitFrame()`` provided to the application the information for the frame, which we've discussed above. Next, ``xrBeginFrame()`` should be called just before excuting any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign ``XrFrameState::predictedDisplayTime`` to ``XrFrameEndInfo::displayTime``. It should be noted that we can modify this value during the frame. Next, we assign to ``XrFrameEndInfo::environmentBlendMode`` our selected blend mode. Last, we assign the size of and a pointer to an ``std::vector<XrCompositionLayerBaseHeader *>``. These Composition Layers are assembled by the OpenXR compositor to create the final images.
 
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XrFrameEndInfo {
 	:end-at: } XrFrameEndInfo;
@@ -903,7 +903,7 @@ The primary structure in use here is the ``XrFrameState``, which contains vital 
 
 ``XrCompositionLayerBaseHeader`` is the base structure from which all other ``XrCompositionLayer...`` types extend. They describe the type of layer to be composited along with the relevant information. If we have rendered any graphics within this frame, we cast the memory address our ``XrCompositionLayer...`` structure to an ``XrCompositionLayerBaseHeader *`` and push it into ``std::vector<XrCompositionLayerBaseHeader *>``, which will be assigned in our ``XrFrameEndInfo`` structure.
 
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XR_MAY_ALIAS XrCompositionLayerBaseHeader {
 	:end-at: } XrCompositionLayerBaseHeader;
@@ -938,7 +938,7 @@ Here we will use the a single ``XrCompositionLayerProjection``. The structure de
 
 ``XrCompositionLayerProjectionView`` descibes the ``XrPosef`` of the view relative to the reference space, the field of view and to which ``XrSwapchainSubImage`` the view relates.
 
-.. literalinclude:: ../build/openxr/include/openxr/openxr.h
+.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
 	:start-at: typedef struct XrSwapchainSubImage {
 	:end-at: } XrCompositionLayerProjection;
