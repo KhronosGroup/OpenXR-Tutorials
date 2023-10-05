@@ -73,7 +73,13 @@ set(ES_GLSL_SHADERS
 if (ANDROID) # Android
     # XR_DOCS_TAG_BEGIN_Android
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
-    target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+        # In this repo
+        ../Common/
+        # From OpenXR repo
+        "${openxr_SOURCE_DIR}/src/common"
+        "${openxr_SOURCE_DIR}/external/include"
+    )
 
     # export ANativeActivity_onCreate for java to call.
     set_property(
@@ -162,14 +168,12 @@ else() # Windows / Linux
         set_target_properties( ${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
     endif()
 
-    target_include_directories(
-        ${PROJECT_NAME}
-        PRIVATE 
-            # In this repo
-            ../Common/
-            # From OpenXR repo
-            "${openxr_SOURCE_DIR}/src/common"
-            "${openxr_SOURCE_DIR}/external/include"
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+        # In this repo
+        ../Common/
+        # From OpenXR repo
+        "${openxr_SOURCE_DIR}/src/common"
+        "${openxr_SOURCE_DIR}/external/include"
     )
     target_link_libraries(${PROJECT_NAME} openxr_loader)
     # XR_DOCS_TAG_END_WindowsLinux
