@@ -59,6 +59,7 @@ public:
 #endif
         DestroySession();
 #endif
+
         DestroyDebugMessenger();
         DestroyInstance();
     }
@@ -81,6 +82,7 @@ private:
         {
             // XR_DOCS_TAG_BEGIN_instanceExtensions
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
+            // TODO make sure this is already defined when we add this line.
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
             // XR_DOCS_TAG_END_instanceExtensions
         }
@@ -97,7 +99,7 @@ private:
         for (auto &requestLayer : m_apiLayers) {
             for (auto &layerProperty : apiLayerProperties) {
                 // strcmp returns 0 if the strings match.
-                if (strcmp(requestLayer.c_str(), layerProperty.layerName)!=0) {
+                if (strcmp(requestLayer.c_str(), layerProperty.layerName) != 0) {
                     continue;
                 } else {
                     m_activeAPILayers.push_back(requestLayer.c_str());
@@ -120,7 +122,7 @@ private:
             bool found = false;
             for (auto &extensionProperty : extensionProperties) {
                 // strcmp returns 0 if the strings match.
-                if (strcmp(requestedInstanceExtension.c_str(), extensionProperty.extensionName)!=0) {
+                if (strcmp(requestedInstanceExtension.c_str(), extensionProperty.extensionName) != 0) {
                     continue;
                 } else {
                     m_activeInstanceExtensions.push_back(requestedInstanceExtension.c_str());
@@ -129,7 +131,7 @@ private:
                 }
             }
             if (!found) {
-                std::cerr << "Failed to find OpenXR instance extension: " << requestedInstanceExtension << "\n";
+                std::cerr << "Failed to find OpenXR instance extension: " << requestedInstanceExtension << std::endl;
             }
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension
@@ -400,13 +402,13 @@ private:
 #endif
 
 private:
-    XrInstance m_xrInstance = {};
+    XrInstance m_xrInstance = XR_NULL_HANDLE;
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};
     std::vector<std::string> m_instanceExtensions = {};
 
-    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
+    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = XR_NULL_HANDLE;
 
     XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     XrSystemId m_systemID = {};
@@ -450,9 +452,10 @@ void android_main(struct android_app *app) {
 
     // https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_loader_init
     // Load xrInitializeLoaderKHR() function pointer. On Android, the loader must be initialised with variables from android_app *.
+    // Without this, there's is no loader and thus our function calls to OpenXR would fail.
     XrInstance m_xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR = nullptr;
-    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr for xrInitializeLoaderKHR.");
     if (!xrInitializeLoaderKHR) {
         return;
     }

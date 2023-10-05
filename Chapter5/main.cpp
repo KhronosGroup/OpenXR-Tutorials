@@ -5,14 +5,24 @@
 // OpenXR Tutorial for Khronos Group
 
 #include <DebugOutput.h>
-// XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D11
 #include <GraphicsAPI_D3D11.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_D3D11
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D12
 #include <GraphicsAPI_D3D12.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_D3D12
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL
 #include <GraphicsAPI_OpenGL.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL_ES
 #include <GraphicsAPI_OpenGL_ES.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL_ES
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_Vulkan
 #include <GraphicsAPI_Vulkan.h>
-// XR_DOCS_TAG_END_include_GraphicsAPIs
+// XR_DOCS_TAG_END_include_GraphicsAPI_Vulkan
+// XR_DOCS_TAG_BEGIN_include_OpenXRDebugUtils
 #include <OpenXRDebugUtils.h>
+// XR_DOCS_TAG_END_include_OpenXRDebugUtils
 
 // XR_DOCS_TAG_BEGIN_DeclareExtensionFunctions
 PFN_xrCreateHandTrackerEXT xrCreateHandTrackerEXT = nullptr;
@@ -80,7 +90,7 @@ public:
         // XR_DOCS_TAG_BEGIN_CallCreateActionPoses
         CreateActionPoses();
         AttachActionSet();
-// XR_DOCS_TAG_END_CallCreateActionPoses
+        // XR_DOCS_TAG_END_CallCreateActionPoses
 #endif
         // XR_DOCS_TAG_BEGIN_CallCreateHandTracker
         if (handTrackingSystemProperties.supportsHandTracking)
@@ -94,9 +104,11 @@ public:
         CreateSwapchain();
 #endif
 #endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_3
         // XR_DOCS_TAG_BEGIN_CallCreateResources
         CreateResources();
         // XR_DOCS_TAG_END_CallCreateResources
+#endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
         while (m_applicationRunning) {
@@ -114,10 +126,12 @@ public:
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         DestroyReferenceSpace();
 #endif
-#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_3
         // XR_DOCS_TAG_BEGIN_CallDestroyResources
         DestroyResources();
         // XR_DOCS_TAG_END_CallDestroyResources
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
         DestroySession();
 #endif
 
@@ -143,6 +157,7 @@ private:
         {
             // XR_DOCS_TAG_BEGIN_instanceExtensions
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
+            // TODO make sure this is already defined when we add this line.
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
             // XR_DOCS_TAG_END_instanceExtensions
             // XR_DOCS_TAG_BEGIN_handTrackingExtensions
@@ -161,7 +176,8 @@ private:
         // Check the requested API layers against the ones from the OpenXR. If found add it to the Active API Layers.
         for (auto &requestLayer : m_apiLayers) {
             for (auto &layerProperty : apiLayerProperties) {
-                if (strcmp(requestLayer.c_str(), layerProperty.layerName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestLayer.c_str(), layerProperty.layerName) != 0) {
                     continue;
                 } else {
                     m_activeAPILayers.push_back(requestLayer.c_str());
@@ -177,21 +193,23 @@ private:
         extensionProperties.resize(extensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
 
-        // Check the requested Instance Extensions against the ones from the OpenXR. If found add it to Active Instance Extensions.
+        // Check the requested Instance Extensions against the ones from the OpenXR runtime.
+        // If an extension is found add it to Active Instance Extensions.
         // Log error if the Instance Extension is not found.
-        for (auto &requestExtension : m_instanceExtensions) {
+        for (auto &requestedInstanceExtension : m_instanceExtensions) {
             bool found = false;
             for (auto &extensionProperty : extensionProperties) {
-                if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestedInstanceExtension.c_str(), extensionProperty.extensionName) != 0) {
                     continue;
                 } else {
-                    m_activeInstanceExtensions.push_back(requestExtension.c_str());
+                    m_activeInstanceExtensions.push_back(requestedInstanceExtension.c_str());
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                std::cerr << "Failed to find OpenXR instance extension: " << requestExtension << "\n";
+                std::cerr << "Failed to find OpenXR instance extension: " << requestedInstanceExtension << std::endl;
             }
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension
@@ -233,7 +251,7 @@ private:
     void DestroyDebugMessenger() {
         // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         // Check that "XR_EXT_debug_utils" is in the active Instance Extensions before destroying the XrDebugUtilsMessengerEXT.
-        if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+        if (m_debugUtilsMessenger != XR_NULL_HANDLE) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);  // From OpenXRDebugUtils.h.
         }
         // XR_DOCS_TAG_END_DestroyDebugMessenger
@@ -428,20 +446,23 @@ private:
 
     void GetEnvironmentBlendModes() {
         // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
-        // Gets the Environment Blend Modes. The first call gets the size of the array that will be returned. The next call fills out the array.
+        // Retrieves the available blend modes. The first call gets the size of the array that will be returned. The next call fills out the array.
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
         m_environmentBlendModes.resize(environmentBlendModeSize);
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, m_environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
 
-        // Select the first Environment Blend Mode as our default.
-        m_environmentBlendMode = m_environmentBlendModes[0];
         // Pick the first application supported blend mode supported by the hardware.
         for (const XrEnvironmentBlendMode &environmentBlendMode : m_applicationEnvironmentBlendModes) {
             if (std::find(m_environmentBlendModes.begin(), m_environmentBlendModes.end(), environmentBlendMode) != m_environmentBlendModes.end()) {
                 m_environmentBlendMode = environmentBlendMode;
                 break;
             }
+        }
+        if(m_environmentBlendMode==XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM)
+        {
+            std::cerr << "Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE." << std::endl;
+            m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         }
         // XR_DOCS_TAG_END_GetEnvironmentBlendModes
     }
@@ -509,6 +530,7 @@ private:
         OPENXR_CHECK(xrDestroySession(m_session), "Failed to destroy Session.");
         // XR_DOCS_TAG_END_DestroySession
     }
+
     // XR_DOCS_TAG_BEGIN_CreateResources1
     struct CameraConstants {
         XrMatrix4x4f viewProj;
@@ -570,8 +592,8 @@ private:
         // XR_DOCS_TAG_BEGIN_AddHandCuboids
         m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants) * numberOfCuboids, nullptr});
         m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
-
         // XR_DOCS_TAG_END_CreateResources1
+
         // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL
         if (m_apiType == OPENGL) {
             std::string vertexSource = ReadTextFile("VertexShader.glsl");
@@ -624,8 +646,8 @@ private:
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         }
         // XR_DOCS_TAG_END_CreateResources2_D3D
-        // XR_DOCS_TAG_BEGIN_CreateResources3
 
+        // XR_DOCS_TAG_BEGIN_CreateResources3
         GraphicsAPI::PipelineCreateInfo pipelineCI;
         pipelineCI.shaders = {m_vertexShader, m_fragmentShader};
         pipelineCI.vertexInputState.attributes = {{0, 0, GraphicsAPI::VertexType::VEC4, 0, "TEXCOORD"}};
@@ -1055,7 +1077,7 @@ private:
         renderCuboidIndex++;
     }
     // XR_DOCS_TAG_END_RenderCuboid
-    // XR_DOCS_TAG_BEGIN_RenderFrame
+
     void RenderFrame() {
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         // XR_DOCS_TAG_BEGIN_RenderFrame
@@ -1083,7 +1105,7 @@ private:
             PollActions(frameState.predictedDisplayTime);
             // Handle the interaction between the user and the 3D blocks.
             BlockInteraction();
-// XR_DOCS_TAG_END_CallPollActions
+            // XR_DOCS_TAG_END_CallPollActions
 #endif
             // Render the stereo image and associate one of swapchain images with the XrCompositionLayerProjection structure.
             rendered = RenderLayer(frameState.predictedDisplayTime, layerProjection, layerProjectionViews);
@@ -1154,6 +1176,7 @@ private:
             layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
             layerProjectionViews[i].subImage.imageArrayIndex = 0; // Useful for multiview rendering.
 
+            // Rendering code to clear the color and depth image views.
             m_graphicsAPI->BeginRendering();
 
             if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE) {
@@ -1180,8 +1203,8 @@ private:
             XrMatrix4x4f view;
             XrMatrix4x4f_InvertRigidBody(&view, &toView);
             XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
-
             // XR_DOCS_TAG_END_SetupFrameRendering
+
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid
             renderCuboidIndex = 0;
             // Draw a floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
@@ -1295,7 +1318,7 @@ private:
             // Poll and process the Android OS system events.
             struct android_poll_source *source = nullptr;
             int events = 0;
-            // The timeout is depended on whether that applicaion is active.
+            // The timeout depends on whether the application is active.
             const int timeoutMilliseconds = (!androidAppState.resumed && !m_sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
             if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
                 if (source != nullptr) {
@@ -1314,13 +1337,13 @@ private:
 #endif
 
 private:
-    XrInstance m_xrInstance = {};
+    XrInstance m_xrInstance = XR_NULL_HANDLE;
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};
     std::vector<std::string> m_instanceExtensions = {};
 
-    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
+    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = XR_NULL_HANDLE;
 
     XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     XrSystemId m_systemID = {};
@@ -1337,6 +1360,7 @@ private:
     XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
     // XR_DOCS_TAG_BEGIN_declareSwapchains
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
+
     struct SwapchainAndDepthImage {
         XrSwapchain swapchain = XR_NULL_HANDLE;
         int64_t swapchainFormat = 0;
@@ -1351,8 +1375,9 @@ private:
     std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
-    XrSpace m_localOrStageSpace = {};
+    XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
     // XR_DOCS_TAG_ENd_declareSwapchains
+
     // XR_DOCS_TAG_BEGIN_DeclareResources
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
@@ -1438,7 +1463,7 @@ void android_main(struct android_app *app) {
     // Without this, there's is no loader and thus our function calls to OpenXR would fail.
     XrInstance m_xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR = nullptr;
-    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr for xrInitializeLoaderKHR.");
     if (!xrInitializeLoaderKHR) {
         return;
     }
