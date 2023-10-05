@@ -2,7 +2,7 @@
 3 Graphics
 ##########
 
-The goal of this chapter is to build an application that creates and clears color and depth buffers within the scope of OpenXR render loop and to demonstrate its interaction with the Graphics APIs.
+The goal of this chapter is to build an application that creates and clears color and depth buffers and draws some geometry to the views within the scope of OpenXR render loop and to demonstrate its interaction with the Graphics APIs.
 
 .. container:: windows linux
 
@@ -10,11 +10,10 @@ The goal of this chapter is to build an application that creates and clears colo
 
 	.. literalinclude:: ../CMakeLists.txt
 			:language: cmake
-			:start-at: add_subdirectory(Chapter3
-			:end-at: )
+			:start-after: XR_DOCS_TAG_BEGIN_AddChapter3
+			:end-before: XR_DOCS_TAG_END_AddChapter3
 
 	Now, create a ``Chapter3`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2``. For the ``CMakeLists.txt``, copy the from ``Chapter2`` and update this line:
-
 
 .. container:: android
 
@@ -24,6 +23,91 @@ The goal of this chapter is to build an application that creates and clears colo
 	:language: cmake
 	:start-after: XR_DOCS_TAG_BEGIN_SetProjectName3
 	:end-before: XR_DOCS_TAG_END_SetProjectName3
+
+Create a ``Shaders`` folder next to your project folder, download and put these files in it:
+
+.. container:: d3d11 d3d12
+
+	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.hlsl>`
+	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.hlsl>`
+
+.. container:: vulkan opengl
+
+	:download:`Shaders/VertexShader.glsl <../Shaders/VertexShader.glsl>`
+	:download:`Shaders/PixelShader.glsl <../Shaders/PixelShader.glsl>`
+
+.. container:: opengles
+
+	:download:`Shaders/VertexShader_GLES.glsl <../Shaders/VertexShader_GLES.glsl>`
+	:download:`Shaders/PixelShader_GLES.glsl <../Shaders/PixelShader_GLES.glsl>`
+
+Underneath ``SOURCES`` ``HEADERS`` section, add the following CMake code specifying the location of the shaders:
+
+.. container:: d3d11 d3d12
+
+	.. literalinclude:: ../Chapter3/CMakeLists.txt
+		:language: cmake
+		:start-after: XR_DOCS_TAG_BEGIN_HLSLShaders
+		:end-before: XR_DOCS_TAG_END_HLSLShaders
+
+.. container:: opengl vulkan
+
+	.. literalinclude:: ../Chapter3/CMakeLists.txt
+		:language: cmake
+		:start-after: XR_DOCS_TAG_BEGIN_GLSLShaders
+		:end-before: XR_DOCS_TAG_END_GLSLShaders
+
+.. container:: opengles
+
+	.. literalinclude:: ../Chapter3/CMakeLists.txt
+		:language: cmake
+		:start-after: XR_DOCS_TAG_BEGIN_GLESShaders
+		:end-before: XR_DOCS_TAG_END_GLESShaders
+
+Underneath section where specify your Graphics API, add the following CMake code:
+
+.. container:: window
+
+	.. container:: d3d11 d3d12
+
+		.. literalinclude:: ../Chapter3/CMakeLists.txt
+			:language: cmake
+			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersWindows
+			:end-before: XR_DOCS_TAG_END_BuildShadersWindows
+
+.. container:: window linux
+
+	.. container:: vulkan
+
+		.. literalinclude:: ../Chapter3/CMakeLists.txt
+			:language: cmake
+			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersVulkanWindowsLinux
+			:end-before: XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
+
+	.. container:: opengl
+
+		.. literalinclude:: ../Chapter3/CMakeLists.txt
+			:language: cmake
+			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersOpenGLWindowsLinux
+			:end-before: XR_DOCS_TAG_END_BuildShadersOpenGLWindowsLinux
+
+
+.. container:: android
+
+	.. container:: vulkan
+
+		.. literalinclude:: ../Chapter3/CMakeLists.txt
+				:language: cmake
+				:start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLSLShaders
+				:end-before: XR_DOCS_TAG_END_CompileAndroidGLSLShaders
+
+	.. container:: opengles
+
+		.. literalinclude:: ../Chapter3/CMakeLists.txt
+			:language: cmake
+			:start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLESShaders
+			:end-before: XR_DOCS_TAG_END_CompileAndroidGLESShaders
+
 
 .. container:: android
 	:name: android-id-1
@@ -742,7 +826,7 @@ Update the methods and members in the class. Copy the highlighted code:
 		std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
 		XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
-		XrSpace m_localOrStageSpace = {};
+		XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
 	};
 
 3.2.1 xrEnumerateEnvironmentBlendModes
@@ -789,7 +873,7 @@ Copy the following code into the ``GetEnvironmentBlendModes()`` method:
 	:end-before: XR_DOCS_TAG_END_GetEnvironmentBlendModes
 	:dedent: 8
 
-We enumerated the environment blend modes as shown above. This function took a pointer to the first element in an array of ``XrEnvironmentBlendMode`` s as multiple environment blend modes could be available to the system. The runtime returned an array ordered by its preference for the system. After we enumerated all the ``XrEnvironmentBlendMode`` s, we picked the first one as an absolute default, then we looped through all of our ``m_applicationEnvironmentBlendModes`` to try and find our ``m_environmentBlendModes``.
+We enumerated the environment blend modes as shown above. This function took a pointer to the first element in an array of ``XrEnvironmentBlendMode`` s as multiple environment blend modes could be available to the system. The runtime returned an array ordered by its preference for the system. After we enumerated all the ``XrEnvironmentBlendMode`` s,  we looped through all of our ``m_applicationEnvironmentBlendModes`` to try and find one in our ``m_environmentBlendModes``, if we can't find one, we default to ``XR_ENVIRONMENT_BLEND_MODE_OPAQUE``, assigning the result to ``m_environmentBlendMode``.
 
 3.2.2 xrCreateReferenceSpace
 ============================
@@ -992,4 +1076,265 @@ Now, we have rendered both views and exited the loop.
 
 We fill out the ``XrCompositionLayerProjection`` structure, we assign our compositing flags of ``XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT`` and assign our reference space. We assign to the member ``viewCount`` the size of the ``std::vector<XrCompositionLayerProjectionView>`` and to the member ``views`` a pointer to the first element in the ``std::vector<XrCompositionLayerProjectionView>``. Finally, we return ``true`` from the function to state that we have successfully completed our rendering.
 
-We should now have clear colors rendered to each view in your XR system. From here, you can easily expand the graphical complexity of the scene. In the next chapter, we will discuss how to use OpenXR to interact with your XR application enabling new experiences in spatial computing.
+We should now have clear colors rendered to each view in your XR system. From here, you can easily expand the graphical complexity of the scene. 
+
+*********************
+3.3 Rendering Cuboids
+*********************
+
+Now that we have a clear color and depth working, we can now start to render geometry in our scene. We will use ``GraphicsAPI`` to create vertex, index and uniform/constant buffers along with shaders and a pipeline to render some cuboid representing the floor and a table surface.
+
+Update the methods and members in the class. Copy the highlighted code:
+
+.. code-block:: cpp
+	:emphasize-lines: 18, 28, 72-80, 102-109
+	:linenos:
+
+	class OpenXRTutorial {
+	public:
+		// [...] Constructor and Destructor created in previous chapters.
+	
+		void Run() {
+			CreateInstance();
+			CreateDebugMessenger();
+	
+			GetInstanceProperties();
+			GetSystemID();
+	
+			GetViewConfigurationViews();
+			GetEnvironmentBlendModes();
+	
+			CreateSession();
+			CreateReferenceSpace();
+			CreateSwapchain();
+			CreateResources();
+	
+			while (m_applicationRunning) {
+				PollSystemEvents();
+				PollEvents();
+				if (m_sessionRunning) {
+					RenderFrame();
+				}
+			}
+	
+			DestroyResources();
+			DestroySwapchain();
+			DestroyReferenceSpace();
+			DestroySession();
+	
+			DestroyDebugMessenger();
+			DestroyInstance();
+		}
+	
+	private:
+		// [...] Methods created in previous chapters.
+		
+		void GetViewConfigurationViews()
+		{
+			// [...]
+		}
+		void CreateSwapchain()
+		{
+			// [...]
+		}
+		void DestroySwapchain()
+		{
+			// [...]
+		}
+		void GetEnvironmentBlendModes() 
+		{
+			// [...]
+		}
+		void CreateReferenceSpace()
+		{
+			// [...]
+		}
+		void DestroyReferenceSpace() 
+		{
+			// [...]
+		}
+		void RenderFrame()
+		{
+			// [...]
+		}
+		bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews)
+		{
+			// [...]
+		}
+		void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f colour) 
+		{
+		}
+		void CreateResources()
+		{
+		}
+		void DestroyResources()
+		{
+		}
+
+	private:
+		// [...] Members created in previous chapters.
+
+		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
+
+		struct SwapchainAndDepthImage {
+			XrSwapchain swapchain = XR_NULL_HANDLE;
+			int64_t swapchainFormat = 0;
+			void *depthImage = nullptr;
+			std::vector<void *> colorImageViews;
+			void *depthImageView = nullptr;
+		};
+		std::vector<SwapchainAndDepthImage> m_swapchainAndDepthImages = {};
+
+		std::vector<XrEnvironmentBlendMode> m_applicationEnvironmentBlendModes = {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE};
+		std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
+		XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
+
+		XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
+
+		float m_viewHeightM = 1.5f;
+
+		void *m_vertexBuffer = nullptr;
+		void *m_indexBuffer = nullptr;
+		void *m_uniformBuffer_Camera = nullptr;
+		void *m_uniformBuffer_Normals = nullptr;	
+		void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
+		void *m_pipeline = nullptr;
+	};
+
+To draw our geometry, we will need a simple mathematics library for vectors, matrices and the like. Download this header file and place in it in the ``Common`` folder under the *workspace* directory:
+
+:download:`Common/xr_linear_algebra.h <../Common/xr_linear_algebra.h>`
+
+In ``main.cpp``, add the following code under the header include statements:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_include_linear_algebra
+	:end-before: XR_DOCS_TAG_END_include_linear_algebra
+	:dedent: 0
+
+Now, we will need to set up all of our rendering resource for our scene. This consists of a vertex/index buffer pair that hold the vertex data for a cube and uniform buffer large enough to hold multiple instants of our ``CameraConstants`` struct. We use ``GraphicsAPI::CreateBuffer()`` to create and upload our data to the GPU.
+
+Above ``void CreateResources()`` add the following defining ``CameraConstants`` and an array of ``XrVector4f`` normals:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateResources1
+	:end-before: XR_DOCS_TAG_END_CreateResources1
+	:dedent: 4
+
+Copy the following code into ``CreateResources()``:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateResources1_1
+	:end-before: XR_DOCS_TAG_END_CreateResources1_1
+	:dedent: 0
+
+Now, we will add the code to load and create our shaders:
+
+.. container:: opengl
+
+	For OpenGL, we will use GLSL version 450. Add this code to define our vertex and pixel shaders, and to create a shader program:
+
+	.. literalinclude:: ../Chapter3/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL
+		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL
+		:dedent: 8
+
+.. container:: vulkan 
+
+	.. container:: windows linux 
+
+	 	For Vulkan, we will use GLSL version 450. Add this code to define our vertex and pixel shaders:
+
+		.. literalinclude:: ../Chapter3/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_VulkanWindowsLinux
+			:end-before: XR_DOCS_TAG_END_CreateResources2_VulkanWindowsLinux
+			:dedent: 8
+	
+	.. container:: android 
+
+		For Vulkan, we will use GLSL version 450. Add this code to define our vertex and pixel shaders:
+
+		.. literalinclude:: ../Chapter3/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_VulkanAndroid
+			:end-before: XR_DOCS_TAG_END_CreateResources2_VulkanAndroid
+			:dedent: 8
+	
+.. container:: opengles
+
+	For OpenGL ES, we will use GLSL version 310 es. Add this code to define our vertex and pixel shaders:
+
+	.. literalinclude:: ../Chapter3/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
+		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGLES
+		:dedent: 8
+
+.. container:: d3d11 d3d12
+
+	For Direct 3D, add this code to define our vertex and pixel shaders:
+
+	.. literalinclude:: ../Chapter3/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_D3D
+		:end-before: XR_DOCS_TAG_END_CreateResources2_D3D
+		:dedent: 8
+
+Now we'll combine the shaders, the vertex input layout, and the rendering state for drawing a solid cube, into a pipeline object. Add the following code to ``CreateResources()``:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateResources3
+	:end-before: XR_DOCS_TAG_END_CreateResources3
+	:dedent: 8
+
+To destroy the resources when a session has ended, add this code into ``DestroyResources()``:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_DestroyResources
+	:end-before: XR_DOCS_TAG_END_DestroyResources
+	:dedent: 8
+
+With our rendering resources now set up, we can add in the code needed for rendering the cuboids. We will set up the ``RenderCuboid()`` method, which is little helper method that renders a cuboid. It also tracks the number of rendered cuboid with ``renderCuboidIndex``. This is used so that we can correctly index into the right section of the uniform/constant buffer for positioning the cuboid and camera.
+
+Above ``RenderCuboid()``, add the following code:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderCuboid1
+	:end-before: XR_DOCS_TAG_END_RenderCuboid1
+	:dedent: 4
+
+Inside ``RenderCuboid()``, add the following:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderCuboid2
+	:end-before: XR_DOCS_TAG_END_RenderCuboid2
+	:dedent: 8
+
+Now moving to ``RenderLayer()`` and under the section where we clear the color and depth image vies, add the following code:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_SetupFrameRendering
+	:end-before: XR_DOCS_TAG_END_SetupFrameRendering
+	:dedent: 12
+
+The section sets the color and depth image views as rendering attachments for the output merger/color blend stage to write to. We also set the viewport for the rasterizer to transform from normalized device coordinates to texel space and we set the scissor for the rasterizer to the cut in texel space. Next, we compute projection and view matrices and we multiply them together to create a view-projection matrix for ``CameraConstants::viewProj``. Now, add the following code:
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CallRenderCuboid
+	:end-before: XR_DOCS_TAG_END_CallRenderCuboid
+	:dedent: 12
+
+Finally, we set ``renderCuboidIndex`` to ``0`` and call ``RenderCuboid()`` twice, once for the floor and the other for the table surface. With that, we should now have a clear color and two cuboid rendered to each view in your XR system.
+
+In the next chapter, we will discuss how to use OpenXR to interact with your XR application enabling new experiences in spatial computing.

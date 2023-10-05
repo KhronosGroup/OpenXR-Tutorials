@@ -77,17 +77,6 @@ Below the set(HEADERS) command, add:
             :end-before: XR_DOCS_TAG_END_CompileAndroidGLESShaders
             :dedent: 0
 
-.. container:: windows linux
-
-    Replace the line ``add_executable(...)`` with:
-
-    .. literalinclude:: ../Chapter4/CMakeLists.txt
-        :language: cmake
-        :start-after: XR_DOCS_TAG_BEGIN_AddExecutableWindowsLinux
-        :end-before: XR_DOCS_TAG_END_AddExecutableWindowsLinux
-        :dedent: 0
-        
-
 .. container:: windows
 
     .. container:: d3d11 d3d12
