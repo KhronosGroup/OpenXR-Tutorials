@@ -1,0 +1,23 @@
+name: 'Build Site'
+on:
+  push:
+    tags:
+      - "v*.*.*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: ./build-site.sh
+      - name: Upload Release Artifact
+        id: upload
+        uses: softprops/action-gh-release@v1
+        with:
+          files: site.tar.gz
+      - name: Webhook
+        uses: joelwmale/webhook-action@2.3.2
+        with:
+          url: ${{ secrets.WEBHOOK_URL }}
+          body: '{"file": "${{ steps.upload.outputs.url }}/site.tar.gz", "release": "${{github.ref}}", "secret": "${{ secrets.WEBHOOK_KEY }}"}'
