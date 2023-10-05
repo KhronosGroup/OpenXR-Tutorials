@@ -54,6 +54,22 @@ set(HEADERS
     ../Common/OpenXRDebugUtils.h
     ../Common/OpenXRHelper.h)
 
+# XR_DOCS_TAG_BEGIN_HLSLShaders
+set(HLSL_SHADERS
+    "../Shaders/VertexShader.hlsl"
+    "../Shaders/PixelShader.hlsl")
+# XR_DOCS_TAG_END_HLSLShaders
+# XR_DOCS_TAG_BEGIN_GLSLShaders
+set(GLSL_SHADERS
+    "../Shaders/VertexShader.glsl"
+    "../Shaders/PixelShader.glsl")
+# XR_DOCS_TAG_END_GLSLShaders
+# XR_DOCS_TAG_BEGIN_GLESShaders
+set(ES_GLSL_SHADERS
+    "../Shaders/VertexShader_GLES.glsl"
+    "../Shaders/PixelShader_GLES.glsl")
+# XR_DOCS_TAG_END_GLESShaders
+
 if (ANDROID) # Android
     # XR_DOCS_TAG_BEGIN_Android
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
@@ -97,6 +113,50 @@ if (ANDROID) # Android
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL_ES)
     endif()
     # XR_DOCS_TAG_END_Gfxwrapper
+
+    # XR_DOCS_TAG_BEGIN_CompileAndroidGLSLShaders
+    # Vulkan GLSL
+    set(SHADER_DEST "${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders")
+    include(glsl_shader)
+    set_source_files_properties(../Shaders/VertexShader.glsl PROPERTIES ShaderType "vert")
+    set_source_files_properties(../Shaders/PixelShader.glsl PROPERTIES ShaderType "frag")
+
+    foreach(FILE ${GLSL_SHADERS})
+        get_filename_component(FILE_WE ${FILE} NAME_WE)
+        get_source_file_property(shadertype ${FILE} ShaderType)
+        glsl_spv_shader(
+           INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+           OUTPUT "${SHADER_DEST}/${FILE_WE}.spv"
+           STAGE ${shadertype}
+           ENTRY_POINT main
+           TARGET_ENV vulkan1.0
+        )
+        # Make our project depend on these files
+        target_sources(${PROJECT_NAME} PRIVATE "${SHADER_DEST}/${FILE_WE}.spv")
+    endforeach()
+    # XR_DOCS_TAG_END_CompileAndroidGLSLShaders
+
+    # XR_DOCS_TAG_BEGIN_CompileAndroidGLESShaders
+    #OpenGL ES GLSL
+    set(SHADER_DEST "${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders")
+    foreach(FILE ${ES_GLSL_SHADERS})
+        get_filename_component(FILE_WE ${FILE} NAME_WE)
+        add_custom_command(
+            OUTPUT "${SHADER_DEST}/${FILE_WE}.glsl"
+            COMMAND 
+                ${CMAKE_COMMAND} -E copy 
+                "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+                "${SHADER_DEST}/${FILE_WE}.glsl"
+            COMMENT "GLSL ${FILE}"
+            MAIN_DEPENDENCY "${FILE}"
+            DEPEND "${FILE}"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            VERBATIM
+        )
+        # Make our project depend on these files
+        target_sources(${PROJECT_NAME} PRIVATE "${SHADER_DEST}/${FILE_WE}.glsl")
+    endforeach(FILE)
+    # XR_DOCS_TAG_END_CompileAndroidGLESShaders
 
 else() # Windows / Linux
     # XR_DOCS_TAG_BEGIN_WindowsLinux
@@ -155,4 +215,78 @@ else() # Windows / Linux
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
     endif()
     # XR_DOCS_TAG_END_OpenGL
+
+    # XR_DOCS_TAG_BEGIN_BuildShadersWindows
+    # D3D11 and D3D12 HLSL
+    if(WIN32)
+        include(fxc_shader)
+        set_property(SOURCE ${HLSL_SHADERS} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
+        set_source_files_properties(../Shaders/VertexShader.hlsl PROPERTIES ShaderType "vs")
+        set_source_files_properties(../Shaders/PixelShader.hlsl PROPERTIES ShaderType "ps")
+
+        # D3D11: Using Shader Model 5.0
+        # D3D12: Using Shader Model 5.1
+        foreach(shadermodel 5_0 5_1)
+            foreach(FILE ${HLSL_SHADERS})
+                get_filename_component(FILE_WE ${FILE} NAME_WE)
+                get_source_file_property(shadertype ${FILE} ShaderType)
+                fxc_shader(
+                    INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+                    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso"
+                    OUTPUT_PDB "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb"
+                    PROFILE ${shadertype}_${shadermodel}
+                    ENTRY_POINT main
+                )
+                # Make our project depend on these files
+                target_sources(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso")
+            endforeach()
+        endforeach()
+    endif()
+    # XR_DOCS_TAG_END_BuildShadersWindows
+
+    # XR_DOCS_TAG_BEGIN_BuildShadersVulkanWindowsLinux
+    # Vulkan GLSL
+    set(SHADER_DEST "${CMAKE_CURRENT_BINARY_DIR}")
+    if (Vulkan_FOUND)
+        include(glsl_shader)
+        set_source_files_properties(../Shaders/VertexShader.glsl PROPERTIES ShaderType "vert")
+        set_source_files_properties(../Shaders/PixelShader.glsl PROPERTIES ShaderType "frag")
+
+        foreach(FILE ${GLSL_SHADERS})
+            get_filename_component(FILE_WE ${FILE} NAME_WE)
+            get_source_file_property(shadertype ${FILE} ShaderType)
+            glsl_spv_shader(
+               INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+               OUTPUT "${SHADER_DEST}/${FILE_WE}.spv"
+               STAGE ${shadertype}
+               ENTRY_POINT main
+               TARGET_ENV vulkan1.0
+            )
+            # Make our project depend on these files
+            target_sources(${PROJECT_NAME} PRIVATE "${SHADER_DEST}/${FILE_WE}.spv")
+        endforeach()
+    endif()
+    # XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
+
+    # XR_DOCS_TAG_BEGIN_BuildShadersOpenGLWindowsLinux
+    # OpenGL GLSL
+    set(SHADER_DEST "${CMAKE_CURRENT_BINARY_DIR}")
+    foreach(FILE ${GLSL_SHADERS})
+        get_filename_component(FILE_WE ${FILE} NAME_WE)
+        add_custom_command(
+            OUTPUT "${SHADER_DEST}/${FILE_WE}.glsl"
+            COMMAND 
+                ${CMAKE_COMMAND} -E copy 
+                "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+                "${SHADER_DEST}/${FILE_WE}.glsl"
+            COMMENT "GLSL ${FILE}"
+            MAIN_DEPENDENCY "${FILE}"
+            DEPEND "${FILE}"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            VERBATIM
+        )
+        # Make our project depend on these files
+        target_sources(${PROJECT_NAME} PRIVATE "${SHADER_DEST}/${FILE_WE}.glsl")
+    endforeach(FILE)
+    # XR_DOCS_TAG_END_BuildShadersOpenGLWindowsLinux
 endif() # EOF

@@ -160,9 +160,7 @@ if (ANDROID) # Android
 
 else() # Windows / Linux
     # XR_DOCS_TAG_BEGIN_WindowsLinux
-    # XR_DOCS_TAG_BEGIN_AddExecutableWindowsLinux
     add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
-    # XR_DOCS_TAG_END_AddExecutableWindowsLinux
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
         set_target_properties( ${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
