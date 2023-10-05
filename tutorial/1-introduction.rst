@@ -259,7 +259,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 		:start-after: XR_DOCS_TAG_BEGIN_FetchContent
 		:end-before: XR_DOCS_TAG_END_FetchContent
 
-	After setting our CMake version, our own CMake variable `PROJECT_NAME` to `OpenXRTutorialChapter2` and with that variable setting the project's name, we append to the `CMAKE_MODULE_PATH` variable an additional path for `find_package()`` to search within. Next, we include `FetchContent` and use it to get the OpenXR-SDK from Khronos's GitHub page.
+	After setting our CMake version, our own CMake variable `PROJECT_NAME` to `OpenXRTutorialChapter2` and with that variable setting the project's name, we append to the `CMAKE_MODULE_PATH` variable an additional path for `find_package()`` to search within and we include `FetchContent` and use it to get the OpenXR-SDK from Khronos's GitHub page.
 
 	Now, we will add to our `CMakeLists.txt` to specify the source and header files by adding the following code. Here, we are including all the files needed for our project.  
 
@@ -349,7 +349,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 		:end-before: XR_DOCS_TAG_END_WindowsLinux
 		:dedent: 4
 
-	We have used `add_executable()` to create the program we'll be building, and specified its `${SOURCES}` and `${HEADERS}`. We passed the `XR_RUNTIME_JSON` variable on to the debugging environment (Windows only). We've added the `../Common`, `"${openxr_SOURCE_DIR}/src/common"` and `"${openxr_SOURCE_DIR}/external/include"` folders as an include directory and linked the `openxr_loader` which we obtained with `FetchContent`. This will also add the include directory for the OpenXR headers.
+	We have used `add_executable()` to create the program we'll be building, and specified its `${SOURCES}` and `${HEADERS}`. We passed the `XR_RUNTIME_JSON` variable on to the debugging environment (Windows only). We've added the `../Common`, `"${openxr_SOURCE_DIR}/src/common"` and `"${openxr_SOURCE_DIR}/external/include"` folders as include directories and linked the `openxr_loader` which we obtained with `FetchContent`. This will also add the include directory for the OpenXR headers.
 	
 	.. container:: windows
 			:name: windows-id-3
@@ -409,6 +409,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 			:language: cmake
 			:start-after: XR_DOCS_TAG_BEGIN_OpenGL
 			:end-before: XR_DOCS_TAG_END_OpenGL
+			:dedent: 4
 		
 		We include the `gfxwrapper.cmake` from our `cmake` folder in the *workspace* directory. This file creates a static library called `openxr-gfxwrapper`, which will allow us to use OpenGL. We link against `openxr-gfxwrapper`, which also provide us with the needed include directories. We've added the `XR_TUTORIAL_USE_OPENGL` compiler definition to specify which graphics APIs should be supported and have their headers included in `GraphicsAPI.h`.
 
@@ -485,7 +486,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 		:start-after: XR_DOCS_TAG_BEGIN_FetchContent
 		:end-before: XR_DOCS_TAG_END_FetchContent
 
-	After setting our CMake version, our own CMake variable `PROJECT_NAME` to `OpenXRTutorialChapter2` and with that variable setting the project's name, we append to the `CMAKE_MODULE_PATH` variable an additional path for `find_package()`` to search within. Next, we include `FetchContent` and use it to get the OpenXR-SDK from Khronos's GitHub page.
+	After setting our CMake version, our own CMake variable `PROJECT_NAME` to `OpenXRTutorialChapter2` and with that variable setting the project's name, we append to the `CMAKE_MODULE_PATH` variable an additional path for `find_package()`` to search within and we include `FetchContent` and use it to get the OpenXR-SDK from Khronos's GitHub page.
 
 	.. container:: opengles
 		:name: opengles-id-3
@@ -535,7 +536,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 		:end-before: XR_DOCS_TAG_END_Android
 		:dedent: 4
 	
-	We have added a library with the `${SOURCES}` and `${HEADERS}` and have added the `../Common`, `"${openxr_SOURCE_DIR}/src/common"` and `"${openxr_SOURCE_DIR}/external/include"` folders as an include directory. We have set the `LINK_FLAGS` for our `OpenXRTutorialChapter2` project with the flag `-u ANativeActivity_onCreate()` to support C++ native code. This is used by a static library called `native_app_glue`, which connects the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the `void android_main(struct android_app*)` entry point.  We add `native_app_glue` to our project by including `AndroidNdkModules` and calling `android_ndk_import_module_native_app_glue()`. 
+	We have added a library with the `${SOURCES}` and `${HEADERS}` and have added the `../Common`, `"${openxr_SOURCE_DIR}/src/common"` and `"${openxr_SOURCE_DIR}/external/include"` folders as include directories. We have set the `LINK_FLAGS` for our `OpenXRTutorialChapter2` project with the flag `-u ANativeActivity_onCreate()` to support C++ native code. This is used by a static library called `native_app_glue`, which connects the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the `void android_main(struct android_app*)` entry point.  We add `native_app_glue` to our project by including `AndroidNdkModules` and calling `android_ndk_import_module_native_app_glue()`. 
 
 	Now, we link the `android`, `native_app_glue` and `openxr_loader` libraries to our `OpenXRTutorialChapter2` library. Our `libOpenXRTutorialChapter2 .so` will be packaged inside our .apk along with any shared libraries that we have linked. We also add `-Wno-cast-calling-convention` to the compiler option to allow the casting of calling conversions for function pointers.
 
