@@ -1,5 +1,4 @@
 //Color Vertex Shader
-
 cbuffer CameraConstants : register(b0)
 {
     float4x4 viewProj;
@@ -10,7 +9,6 @@ cbuffer CameraConstants : register(b0)
     float4 pad2;
     float4 pad3;
 };
-
 cbuffer Normals : register(b1)
 {
     float4 normals[6];
@@ -28,13 +26,14 @@ struct VS_OUT
     float3 o_Normal : TEXCOORD1;
     nointerpolation float3 o_Colour : TEXCOORD2;
 };
+
 VS_OUT main(VS_IN IN)
 {
     VS_OUT OUT;
-    OUT.o_Position = mul(modelViewProj,IN.a_Positions);
+    OUT.o_Position = mul(modelViewProj, IN.a_Positions);
     int face = IN.vertexId / 6;
     OUT.o_TexCoord = float2(float(face), 0);
-    OUT.o_Normal = (mul(model,normals[face])).xyz;
-    OUT.o_Colour =colour.rgb;
+    OUT.o_Normal = (mul(model, normals[face])).xyz;
+    OUT.o_Colour = colour.rgb;
     return OUT;
 }
