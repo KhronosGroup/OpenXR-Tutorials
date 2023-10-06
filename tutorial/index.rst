@@ -38,7 +38,7 @@ been completed.
 
 At the end of each section is a link to download the full example source code up to that point.
 
-This code can also be downloaded from the following repository: https://github.com/simul/openxr-tutorial-src
+This code can also be downloaded from the following repository: https://github.com/KhronosGroup/OpenXR-Tutorials/
 
 In the Introduction, we describe the basic concepts underpinning OpenXR, and show you how to
 set up a PC or Android development environment to build the code.
@@ -50,7 +50,7 @@ device.
 .. toctree::
 	:maxdepth: 5
 	:caption: Contents:
-	
+
 	licence
 
 	1-introduction
@@ -60,4 +60,4 @@ device.
 	5-extensions
 
 
-   
+
