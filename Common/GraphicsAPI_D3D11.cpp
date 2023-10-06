@@ -131,13 +131,13 @@ static D3D11_BLEND ToD3D11_BLEND(GraphicsAPI::BlendFactor blend) {
         return D3D11_BLEND_ZERO;
     case GraphicsAPI::BlendFactor::ONE:
         return D3D11_BLEND_ONE;
-    case GraphicsAPI::BlendFactor::SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::SRC_COLOR:
         return D3D11_BLEND_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOR:
         return D3D11_BLEND_INV_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::DST_COLOUR:
+    case GraphicsAPI::BlendFactor::DST_COLOR:
         return D3D11_BLEND_DEST_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOR:
         return D3D11_BLEND_INV_DEST_COLOR;
     case GraphicsAPI::BlendFactor::SRC_ALPHA:
         return D3D11_BLEND_SRC_ALPHA;
@@ -846,23 +846,23 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
     blendDesc.AlphaToCoverageEnable = pipelineCI.multisampleState.alphaToCoverageEnable;
     blendDesc.IndependentBlendEnable = true;
     size_t i = 0;
-    for (auto &blend : pipelineCI.colourBlendState.attachments) {
+    for (auto &blend : pipelineCI.colorBlendState.attachments) {
 		blendDesc.RenderTarget[i].RenderTargetWriteMask=0xFF;
         blendDesc.RenderTarget[i].BlendEnable = blend.blendEnable;
-        blendDesc.RenderTarget[i].SrcBlend = ToD3D11_BLEND(blend.srcColourBlendFactor);
-        blendDesc.RenderTarget[i].DestBlend = ToD3D11_BLEND(blend.dstColourBlendFactor);
-        blendDesc.RenderTarget[i].BlendOp = static_cast<D3D11_BLEND_OP>(static_cast<uint32_t>(blend.colourBlendOp) + 1);
+        blendDesc.RenderTarget[i].SrcBlend = ToD3D11_BLEND(blend.srcColorBlendFactor);
+        blendDesc.RenderTarget[i].DestBlend = ToD3D11_BLEND(blend.dstColorBlendFactor);
+        blendDesc.RenderTarget[i].BlendOp = static_cast<D3D11_BLEND_OP>(static_cast<uint32_t>(blend.colorBlendOp) + 1);
         blendDesc.RenderTarget[i].SrcBlendAlpha = ToD3D11_BLEND(blend.srcAlphaBlendFactor);
         blendDesc.RenderTarget[i].DestBlendAlpha = ToD3D11_BLEND(blend.dstAlphaBlendFactor);
         blendDesc.RenderTarget[i].BlendOpAlpha = static_cast<D3D11_BLEND_OP>(static_cast<uint32_t>(blend.alphaBlendOp) + 1);
-        blendDesc.RenderTarget[i].RenderTargetWriteMask = static_cast<UINT8>(blend.colourWriteMask);
+        blendDesc.RenderTarget[i].RenderTargetWriteMask = static_cast<UINT8>(blend.colorWriteMask);
 
         i++;
         if (i >= 8)
             break;
     }
     D3D11_CHECK(device->CreateBlendState(&blendDesc, &blendState), "Failed to create Color Blend State.");
-    immediateContext->OMSetBlendState(blendState, pipelineCI.colourBlendState.blendConstants, pipelineCI.multisampleState.sampleMask);
+    immediateContext->OMSetBlendState(blendState, pipelineCI.colorBlendState.blendConstants, pipelineCI.multisampleState.sampleMask);
     D3D11_SAFE_RELEASE(blendState);
 }
 

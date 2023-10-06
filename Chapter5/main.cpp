@@ -40,13 +40,15 @@ XrVector3f operator-(XrVector3f a, XrVector3f b) {
 XrVector3f operator*(XrVector3f a, float b) {
     return {a.x * b, a.y * b, a.z * b};
 }
+// XR_DOCS_TAG_END_include_linear_algebra
+// XR_DOCS_TAG_BEGIN_include_algorithm_random
 // Include <algorithm> for std::min and max
 #include <algorithm>
-// Random numbers for colourful blocks
+// Random numbers for colorful blocks
 #include <random>
 static std::uniform_real_distribution<float> pseudorandom_distribution(0, 1.f);
 static std::mt19937 pseudo_random_generator;
-// XR_DOCS_TAG_END_include_linear_algebra
+// XR_DOCS_TAG_END_include_algorithm_random
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_5
 
@@ -105,9 +107,7 @@ public:
 #endif
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_3
-        // XR_DOCS_TAG_BEGIN_CallCreateResources
         CreateResources();
-        // XR_DOCS_TAG_END_CallCreateResources
 #endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
@@ -127,9 +127,7 @@ public:
         DestroyReferenceSpace();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_3
-        // XR_DOCS_TAG_BEGIN_CallDestroyResources
         DestroyResources();
-        // XR_DOCS_TAG_END_CallDestroyResources
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
         DestroySession();
@@ -459,8 +457,7 @@ private:
                 break;
             }
         }
-        if(m_environmentBlendMode==XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM)
-        {
+        if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM) {
             std::cerr << "Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE." << std::endl;
             m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         }
@@ -536,7 +533,7 @@ private:
         XrMatrix4x4f viewProj;
         XrMatrix4x4f modelViewProj;
         XrMatrix4x4f model;
-        XrVector4f colour;
+        XrVector4f color;
         XrVector4f pad1;
         XrVector4f pad2;
         XrVector4f pad3;
@@ -549,8 +546,10 @@ private:
         {0.00f, -1.00f, 0.00f, 0},
         {0.00f, 0.00f, 1.00f, 0},
         {0.00f, 0.0f, -1.00f, 0}};
+    // XR_DOCS_TAG_END_CreateResources1
 
     void CreateResources() {
+        // XR_DOCS_TAG_BEGIN_CreateResources1_1
         // Vertices for a 1x1x1 meter cube. (Left/Right, Top/Bottom, Front/Back)
         constexpr XrVector4f vertexPositions[] = {
             {+0.5f, +0.5f, +0.5f, 1.0f},
@@ -586,13 +585,15 @@ private:
 
         m_indexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices), &cubeIndices});
 
+        // XR_DOCS_TAG_BEGIN_Update_numberOfCuboids
         size_t numberOfCuboids = 64 + 2 + 2;
+        // XR_DOCS_TAG_END_Update_numberOfCuboids
         // XR_DOCS_TAG_BEGIN_AddHandCuboids
         numberOfCuboids += XR_HAND_JOINT_COUNT_EXT * 2;
-        // XR_DOCS_TAG_BEGIN_AddHandCuboids
+        // XR_DOCS_TAG_END_AddHandCuboids
         m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants) * numberOfCuboids, nullptr});
         m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
-        // XR_DOCS_TAG_END_CreateResources1
+        // XR_DOCS_TAG_END_CreateResources1_1
 
         // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL
         if (m_apiType == OPENGL) {
@@ -656,7 +657,7 @@ private:
         pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
         pipelineCI.multisampleState = {1, false, 1.0f, 0xFFFFFFFF, false, false};
         pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
-        pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
+        pipelineCI.colorBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColorComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         pipelineCI.colorFormats = {m_swapchainAndDepthImages[0].swapchainFormat};
         pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
         pipelineCI.layout = {{0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
@@ -944,18 +945,10 @@ private:
         OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
-        // XR_DOCS_TAG_BEGIN_CheckCoherentViewDimensions
-        // Check the two views for stereo are the same.
-        if (m_viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO && m_viewConfigurationViews.size() == 2) {
-            bool viewWidthsSame = m_viewConfigurationViews[0].recommendedImageRectWidth == m_viewConfigurationViews[1].recommendedImageRectWidth;
-            bool viewHeightsSame = m_viewConfigurationViews[0].recommendedImageRectHeight == m_viewConfigurationViews[1].recommendedImageRectHeight;
-            if (!viewWidthsSame || !viewHeightsSame) {
-                std::cout << "ERROR: The two views for stereo are not the same." << std::endl;
-                DEBUG_BREAK;
-            }
-        }
+        // TODO: Don't like this, just use a for(int loop and use the correct one in the list.
+        // XR_DOCS_TAG_BEGIN_CreateViewConfigurationView
         const XrViewConfigurationView &viewConfigurationView = m_viewConfigurationViews[0];
-        // XR_DOCS_TAG_END_CheckCoherentViewDimensions
+        // XR_DOCS_TAG_END_CreateViewConfigurationView
 
         // Per view, create a swapchain, depth image and their associated image views.
         m_swapchainAndDepthImages.resize(m_viewConfigurationViews.size());
@@ -965,15 +958,15 @@ private:
             XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-            swapchainCI.format = m_graphicsAPI->SelectSwapchainFormat(formats); // Use GraphicsAPI to select the first compatible format.
-            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount; // Use the recommended values from the XrViewConfigurationView.
+            swapchainCI.format = m_graphicsAPI->SelectSwapchainFormat(formats);               // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
             swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
             swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
             swapchainCI.faceCount = 1;
             swapchainCI.arraySize = 1;
             swapchainCI.mipCount = 1;
             OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &swapchainAndDepthImage.swapchain), "Failed to create Swapchain");
-            swapchainAndDepthImage.swapchainFormat = swapchainCI.format; // Save the swapchain format for later use.
+            swapchainAndDepthImage.swapchainFormat = swapchainCI.format;  // Save the swapchain format for later use.
             // XR_DOCS_TAG_END_CreateSwapchain
 
             // XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
@@ -1053,13 +1046,15 @@ private:
         // XR_DOCS_TAG_END_DestroySwapchain
     }
 
-    // XR_DOCS_TAG_BEGIN_RenderCuboid
+    // XR_DOCS_TAG_BEGIN_RenderCuboid1
     size_t renderCuboidIndex = 0;
-    void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f colour) {
+    // XR_DOCS_TAG_END_RenderCuboid1
+    void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f color) {
+        // XR_DOCS_TAG_BEGIN_RenderCuboid2
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
-        cameraConstants.colour = {colour.x, colour.y, colour.z, 1.0};
+        cameraConstants.color = {color.x, color.y, color.z, 1.0};
         size_t offsetCameraUB = sizeof(CameraConstants) * renderCuboidIndex;
 
         m_graphicsAPI->SetPipeline(m_pipeline);
@@ -1075,8 +1070,8 @@ private:
         m_graphicsAPI->DrawIndexed(36);
 
         renderCuboidIndex++;
+        // XR_DOCS_TAG_END_RenderCuboid2
     }
-    // XR_DOCS_TAG_END_RenderCuboid
 
     void RenderFrame() {
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
@@ -1130,7 +1125,7 @@ private:
         // Locate the views from the view configuration with in the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
 
-        XrViewState viewState{XR_TYPE_VIEW_STATE}; //Will contain information on whether the position and/or orientation is valid and/or tracked.
+        XrViewState viewState{XR_TYPE_VIEW_STATE};  // Will contain information on whether the position and/or orientation is valid and/or tracked.
         XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = m_viewConfiguration;
         viewLocateInfo.displayTime = predictedDisplayTime;
@@ -1144,7 +1139,7 @@ private:
 
         // Resize the layer projection views to match the view count. The layer projection views are used in the layer projection.
         layerProjectionViews.resize(viewCount, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW});
-        
+
         // Per view in the view configuration:
         for (uint32_t i = 0; i < viewCount; i++) {
             // Acquire and wait for an image from the swapchain.
@@ -1174,7 +1169,7 @@ private:
             layerProjectionViews[i].subImage.imageRect.offset.y = 0;
             layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
             layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
-            layerProjectionViews[i].subImage.imageArrayIndex = 0; // Useful for multiview rendering.
+            layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
 
             // Rendering code to clear the color and depth image views.
             m_graphicsAPI->BeginRendering();
@@ -1210,8 +1205,10 @@ private:
             // Draw a floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
             RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f}, {0.4f, 0.5f, 0.5f});
             // Draw a "table".
-            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM + 0.9f, -0.7f}}, {1.0f, 0.2f, 1.0f}, {0.6f, 0.6f, 0.6f});
+            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM + 0.9f, -0.7f}}, {1.0f, 0.2f, 1.0f}, {0.6f, 0.6f, 0.4f});
+            // XR_DOCS_TAG_END_CallRenderCuboid
 
+            // XR_DOCS_TAG_BEGIN_CallRenderCuboid2
             // Draw some blocks at the controller positions:
             for (int i = 0; i < 2; i++) {
                 if (m_handPoseState[i].isActive) {
@@ -1225,8 +1222,7 @@ private:
                     sc = thisBlock.scale * 1.05f;
                 RenderCuboid(thisBlock.pose, sc, thisBlock.colour);
             }
-
-            // XR_DOCS_TAG_END_CallRenderCuboid
+            // XR_DOCS_TAG_END_CallRenderCuboid2
 
             // XR_DOCS_TAG_BEGIN_RenderHands
             if (handTrackingSystemProperties.supportsHandTracking)
@@ -1358,7 +1354,6 @@ private:
     bool m_sessionRunning = false;
 
     XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-    // XR_DOCS_TAG_BEGIN_declareSwapchains
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
     struct SwapchainAndDepthImage {
@@ -1376,9 +1371,7 @@ private:
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
     XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
-    // XR_DOCS_TAG_ENd_declareSwapchains
 
-    // XR_DOCS_TAG_BEGIN_DeclareResources
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
 
@@ -1389,8 +1382,6 @@ private:
 
     void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
     void *m_pipeline = nullptr;
-    // XR_DOCS_TAG_END_DeclareResources
-
 
     // XR_DOCS_TAG_BEGIN_Objects
     struct Block {

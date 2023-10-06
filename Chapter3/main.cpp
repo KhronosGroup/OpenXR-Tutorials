@@ -324,7 +324,7 @@ private:
         XrMatrix4x4f viewProj;
         XrMatrix4x4f modelViewProj;
         XrMatrix4x4f model;
-        XrVector4f colour;
+        XrVector4f color;
         XrVector4f pad1;
         XrVector4f pad2;
         XrVector4f pad3;
@@ -443,7 +443,7 @@ private:
         pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
         pipelineCI.multisampleState = {1, false, 1.0f, 0xFFFFFFFF, false, false};
         pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
-        pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
+        pipelineCI.colorBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColorComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         pipelineCI.colorFormats = {m_swapchainAndDepthImages[0].swapchainFormat};
         pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
         pipelineCI.layout = {{0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
@@ -494,6 +494,7 @@ private:
                 break;
             }
             // Log that there's a reference space change pending.
+            // TODO: expand on this in text.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
@@ -669,12 +670,12 @@ private:
     // XR_DOCS_TAG_BEGIN_RenderCuboid1
     size_t renderCuboidIndex = 0;
     // XR_DOCS_TAG_END_RenderCuboid1
-    void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f colour) {
+    void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f color) {
         // XR_DOCS_TAG_BEGIN_RenderCuboid2
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
-        cameraConstants.colour = {colour.x, colour.y, colour.z, 1.0};
+        cameraConstants.color = {color.x, color.y, color.z, 1.0};
         size_t offsetCameraUB = sizeof(CameraConstants) * renderCuboidIndex;
 
         m_graphicsAPI->SetPipeline(m_pipeline);
@@ -956,7 +957,6 @@ private:
 
     XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
 
-    // XR_DOCS_TAG_BEGIN_DeclareResources
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
 
@@ -967,7 +967,6 @@ private:
 
     void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
     void *m_pipeline = nullptr;
-    // XR_DOCS_TAG_END_DeclareResources
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {

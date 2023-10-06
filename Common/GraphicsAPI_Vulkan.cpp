@@ -900,32 +900,32 @@ void *GraphicsAPI_Vulkan::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     vkDepthStencilState.minDepthBounds = pipelineCI.depthStencilState.minDepthBounds;
     vkDepthStencilState.maxDepthBounds = pipelineCI.depthStencilState.maxDepthBounds;
 
-    // ColourBlend
+    // ColorBlend
     std::vector<VkPipelineColorBlendAttachmentState> vkPipelineColorBlendAttachmentStates;
-    vkPipelineColorBlendAttachmentStates.reserve(pipelineCI.colourBlendState.attachments.size());
-    for (auto &attachment : pipelineCI.colourBlendState.attachments)
+    vkPipelineColorBlendAttachmentStates.reserve(pipelineCI.colorBlendState.attachments.size());
+    for (auto &attachment : pipelineCI.colorBlendState.attachments)
         vkPipelineColorBlendAttachmentStates.push_back(
             {attachment.blendEnable,
-             static_cast<VkBlendFactor>(attachment.srcColourBlendFactor),
-             static_cast<VkBlendFactor>(attachment.dstColourBlendFactor),
-             static_cast<VkBlendOp>(attachment.colourBlendOp),
+             static_cast<VkBlendFactor>(attachment.srcColorBlendFactor),
+             static_cast<VkBlendFactor>(attachment.dstColorBlendFactor),
+             static_cast<VkBlendOp>(attachment.colorBlendOp),
              static_cast<VkBlendFactor>(attachment.srcAlphaBlendFactor),
              static_cast<VkBlendFactor>(attachment.dstAlphaBlendFactor),
              static_cast<VkBlendOp>(attachment.alphaBlendOp),
-             static_cast<VkColorComponentFlags>(attachment.colourWriteMask)});
+             static_cast<VkColorComponentFlags>(attachment.colorWriteMask)});
 
-    VkPipelineColorBlendStateCreateInfo vkColourBlendState;
-    vkColourBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    vkColourBlendState.pNext = nullptr;
-    vkColourBlendState.flags = 0;
-    vkColourBlendState.logicOpEnable = pipelineCI.colourBlendState.logicOpEnable;
-    vkColourBlendState.logicOp = static_cast<VkLogicOp>(pipelineCI.colourBlendState.logicOp);
-    vkColourBlendState.attachmentCount = static_cast<uint32_t>(vkPipelineColorBlendAttachmentStates.size());
-    vkColourBlendState.pAttachments = vkPipelineColorBlendAttachmentStates.data();
-    vkColourBlendState.blendConstants[0] = pipelineCI.colourBlendState.blendConstants[0];
-    vkColourBlendState.blendConstants[1] = pipelineCI.colourBlendState.blendConstants[1];
-    vkColourBlendState.blendConstants[2] = pipelineCI.colourBlendState.blendConstants[2];
-    vkColourBlendState.blendConstants[3] = pipelineCI.colourBlendState.blendConstants[3];
+    VkPipelineColorBlendStateCreateInfo vkColorBlendState;
+    vkColorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    vkColorBlendState.pNext = nullptr;
+    vkColorBlendState.flags = 0;
+    vkColorBlendState.logicOpEnable = pipelineCI.colorBlendState.logicOpEnable;
+    vkColorBlendState.logicOp = static_cast<VkLogicOp>(pipelineCI.colorBlendState.logicOp);
+    vkColorBlendState.attachmentCount = static_cast<uint32_t>(vkPipelineColorBlendAttachmentStates.size());
+    vkColorBlendState.pAttachments = vkPipelineColorBlendAttachmentStates.data();
+    vkColorBlendState.blendConstants[0] = pipelineCI.colorBlendState.blendConstants[0];
+    vkColorBlendState.blendConstants[1] = pipelineCI.colorBlendState.blendConstants[1];
+    vkColorBlendState.blendConstants[2] = pipelineCI.colorBlendState.blendConstants[2];
+    vkColorBlendState.blendConstants[3] = pipelineCI.colorBlendState.blendConstants[3];
 
     // Dynamic
     std::vector<VkDynamicState> vkDynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
@@ -951,7 +951,7 @@ void *GraphicsAPI_Vulkan::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     GPCI.pRasterizationState = &vkRasterisationState;
     GPCI.pMultisampleState = &vkMultisampleState;
     GPCI.pDepthStencilState = &vkDepthStencilState;
-    GPCI.pColorBlendState = &vkColourBlendState;
+    GPCI.pColorBlendState = &vkColorBlendState;
     GPCI.pDynamicState = &vkDynamicState;
     GPCI.layout = pipelineLayout;
     GPCI.renderPass = renderPass;

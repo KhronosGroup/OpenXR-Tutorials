@@ -28,18 +28,18 @@ Create a ``Shaders`` folder next to your project folder, download and put these 
 
 .. container:: d3d11 d3d12
 
-	:download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.hlsl>`
-	:download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.hlsl>`
+	* :download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.hlsl>`
+	* :download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.hlsl>`
 
 .. container:: vulkan opengl
 
-	:download:`Shaders/VertexShader.glsl <../Shaders/VertexShader.glsl>`
-	:download:`Shaders/PixelShader.glsl <../Shaders/PixelShader.glsl>`
+	* :download:`Shaders/VertexShader.glsl <../Shaders/VertexShader.glsl>`
+	* :download:`Shaders/PixelShader.glsl <../Shaders/PixelShader.glsl>`
 
 .. container:: opengles
 
-	:download:`Shaders/VertexShader_GLES.glsl <../Shaders/VertexShader_GLES.glsl>`
-	:download:`Shaders/PixelShader_GLES.glsl <../Shaders/PixelShader_GLES.glsl>`
+	* :download:`Shaders/VertexShader_GLES.glsl <../Shaders/VertexShader_GLES.glsl>`
+	* :download:`Shaders/PixelShader_GLES.glsl <../Shaders/PixelShader_GLES.glsl>`
 
 Underneath ``SOURCES`` ``HEADERS`` section, add the following CMake code specifying the location of the shaders:
 
@@ -110,7 +110,6 @@ Underneath section where specify your Graphics API, add the following CMake code
 
 
 .. container:: android
-	:name: android-id-1
 
 	For Android, you will also need to change all references to ``OpenXRTutorialChapter2`` to ``OpenXRTutorialChapter3`` in app/build.gradle, settings.gradle and app/src/main/AndroidManifest.xml. Refer to :ref:`Chapter 1.4.1<1.4.1 CMake and Project Files>` for a refresher on the Android build files.
 
@@ -259,7 +258,6 @@ Inside the ranged for loop of the ``CreateSwapchain()`` method, add the followin
 Here, we filled out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members were assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to 0 as we require no constraints or additional functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the images are suitable to be read in a shader and to be used as a render target/color attachment.
 
 .. container:: d3d11
-	:name: d3d11-id-1
 
 	.. rubric:: DirectX 11
 
@@ -284,7 +282,6 @@ Here, we filled out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``
 	+-------------------------------------------------+------------------------------------+
 
 .. container:: d3d12
-	:name: d3d12-id-1
 
 	.. rubric:: DirectX 12
 
@@ -309,21 +306,18 @@ Here, we filled out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``
 	+-------------------------------------------------+--------------------------------------------+
 
 .. container:: opengl
-	:name: opengl-id-1
 
 	.. rubric:: OpenGL
 
 	All ``XrSwapchainUsageFlags`` are ignored as OpenGL can't specify usage of an image.
 
 .. container:: opengles
-	:name: opengles-id-1
 
 	.. rubric:: OpenGL ES
 
 	All ``XrSwapchainUsageFlags`` are ignored as OpenGL ES can't specify usage of an image.
 
 .. container:: vulkan
-	:name: vulkan-id-1
 
 	.. rubric:: Vulkan
 
@@ -361,7 +355,6 @@ Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
 The function calls a pure virtual method called ``GraphicsAPI::GetSupportedSwapchainFormats()``, which each class implements. It returns an array of API-specific formats that the GraphicsAPI library supports.
 
 .. container:: d3d11
-	:name: d3d11-id-2
 
 	.. rubric:: DirectX 11
 
@@ -373,7 +366,6 @@ The function calls a pure virtual method called ``GraphicsAPI::GetSupportedSwapc
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
 
 .. container:: d3d12
-	:name: d3d12-id-2
 
 	.. rubric:: DirectX 12
 
@@ -385,7 +377,6 @@ The function calls a pure virtual method called ``GraphicsAPI::GetSupportedSwapc
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.cpp*
 
 .. container:: opengl
-	:name: opengl-id-2
 
 	.. rubric:: OpenGL
 
@@ -397,7 +388,6 @@ The function calls a pure virtual method called ``GraphicsAPI::GetSupportedSwapc
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.cpp*
 
 .. container:: opengles
-	:name: opengles-id-2
 
 	.. rubric:: OpenGL ES
 
@@ -409,7 +399,6 @@ The function calls a pure virtual method called ``GraphicsAPI::GetSupportedSwapc
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.cpp*
 
 .. container:: vulkan
-	:name: vulkan-id-2
 
 	.. rubric:: Vulkan
 
@@ -438,7 +427,6 @@ Copy and append the following code in the ranged for loop of the ``CreateSwapcha
 Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method and the ``XrSwapchainImage...KHR`` structure relating to your chosen graphics API.
 
 .. container:: d3d11
-	:name: d3d11-id-3
 
 	.. rubric:: DirectX 11
 
@@ -461,7 +449,6 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 	The structure contains a ``ID3D11Texture2D *`` member that is the handle to one of the images in the swapchain.
 
 .. container:: d3d12
-	:name: d3d12-id-3
 
 	.. rubric:: DirectX 12
 
@@ -484,7 +471,6 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 	The structure contains a ``ID3D12Resource *`` member that is the handle to one of the images in the swapchain.
 
 .. container:: opengl
-	:name: opengl-id-3
 
 	.. rubric:: OpenGL
 
@@ -507,7 +493,6 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 	The structure contains a ``uint32_t`` member that is the handle to one of the images in the swapchain.
 
 .. container:: opengles
-	:name: opengles-id-3
 
 	.. rubric:: OpenGL ES
 
@@ -530,7 +515,6 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 	The structure contains a ``uint32_t`` member that is the handle to one of the images in the swapchain.
 
 .. container:: vulkan
-	:name: vulkan-id-3
 
 	.. rubric:: Vulkan
 
@@ -568,7 +552,6 @@ Append the following code into the ranged for loop of the ``CreateSwapchain()`` 
 Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``, which return a API-specific image format of type ``D32_F``.
 
 .. container:: d3d11
-	:name: d3d11-id-4
 
 	.. rubric:: DirectX 11
 
@@ -581,7 +564,6 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
 
 .. container:: d3d12
-	:name: d3d12-id-4
 
 	.. rubric:: DirectX 12
 
@@ -594,7 +576,6 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
 
 .. container:: opengl
-	:name: opengl-id-4
 
 	.. rubric:: OpenGL
 
@@ -607,7 +588,6 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
 
 .. container:: opengles
-	:name: opengles-id-4
 
 	.. rubric:: OpenGL ES
 
@@ -620,7 +600,6 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
 
 .. container:: vulkan
-	:name: vulkan-id-4
 
 	.. rubric:: Vulkan
 
@@ -647,7 +626,6 @@ Append the following code into the ranged for loop of the ``CreateSwapchain()`` 
 Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImage()``, which return a API-specific handle to the image, which is cast to a ``void *``.
 
 .. container:: d3d11
-	:name: d3d11-id-5
 
 	.. rubric:: DirectX 11
 
@@ -660,7 +638,6 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
 
 .. container:: d3d12
-	:name: d3d12-id-5
 
 	.. rubric:: DirectX 12
 
@@ -675,7 +652,6 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET``. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
 
 .. container:: opengl
-	:name: opengl-id-5
 
 	.. rubric:: OpenGL
 
@@ -688,7 +664,6 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
 
 .. container:: opengles
-	:name: opengles-id-5
 
 	.. rubric:: OpenGL ES
 
@@ -701,7 +676,6 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
 
 .. container:: vulkan
-	:name: vulkan-id-5
 
 	.. rubric:: Vulkan
 
@@ -1088,7 +1062,6 @@ Update the methods and members in the class. Copy the highlighted code:
 
 .. code-block:: cpp
 	:emphasize-lines: 18, 28, 72-80, 102-109
-	:linenos:
 
 	class OpenXRTutorial {
 	public:
@@ -1319,6 +1292,8 @@ Inside ``RenderCuboid()``, add the following:
 	:end-before: XR_DOCS_TAG_END_RenderCuboid2
 	:dedent: 8
 
+From the passed-in pose and scale, we create the ``model`` matrix, and multiply that with ``CameraConstants::viewProj`` to obtain ``CameraConstants::modelViewProj``, the matrix that transforms from vertices in our unit cube into projection space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing the normals for the cuboid. We assign our vertex and index buffers and draw 36 indices.
+
 Now moving to ``RenderLayer()`` and under the section where we clear the color and depth image vies, add the following code:
 
 .. literalinclude:: ../Chapter3/main.cpp
@@ -1335,6 +1310,6 @@ The section sets the color and depth image views as rendering attachments for th
 	:end-before: XR_DOCS_TAG_END_CallRenderCuboid
 	:dedent: 12
 
-Finally, we set ``renderCuboidIndex`` to ``0`` and call ``RenderCuboid()`` twice, once for the floor and the other for the table surface. With that, we should now have a clear color and two cuboid rendered to each view in your XR system.
+Finally, we set ``renderCuboidIndex`` to ``0`` and call ``RenderCuboid()`` twice drawing two cuboids. The first is offset by our (arbitrary) view height, so as to represent a "floor". We scale it by 2 metres in the horizontal directions and 0.1m in the vertical, so it's flat. With that, we should now have a clear color and two cuboid rendered to each view in your XR system.
 
 In the next chapter, we will discuss how to use OpenXR to interact with your XR application enabling new experiences in spatial computing.

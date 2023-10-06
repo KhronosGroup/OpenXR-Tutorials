@@ -301,7 +301,6 @@ Copy the following code into the ``CreateSession()`` method.
 	:dedent: 8
 
 .. container:: d3d11
-	:name: d3d11-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -310,7 +309,6 @@ Copy the following code into the ``CreateSession()`` method.
 		:dedent: 12
 
 .. container:: d3d12
-	:name: d3d12-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -319,7 +317,6 @@ Copy the following code into the ``CreateSession()`` method.
 		:dedent: 12
 
 .. container:: opengl
-	:name: opengl-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -328,7 +325,6 @@ Copy the following code into the ``CreateSession()`` method.
 		:dedent: 12
 
 .. container:: opengles
-	:name: opengles-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -337,7 +333,6 @@ Copy the following code into the ``CreateSession()`` method.
 		:dedent: 12
 
 .. container:: vulkan
-	:name: vulkan-id-0
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -508,12 +503,10 @@ As described in the table above, most events are transparent in their intensions
 For some platforms, we need additional functionality provided via the ``PollSystemEvents()`` method, so that our application can react to any relevant updates from the platform correctly.
 
 .. container:: windows linux
-	:name: windows-linux-id-1
 
 	For Windows and Linux, there no relevant system event that we need to be aware of, and thus the ``PollSystemEvents()`` method definition can be left blank.
 
 .. container:: android
-	:name: android-id-1
 
 	``TODO: don't say this.``
 	For Android, we have already provided the code for the ``PollSystemEvents()`` method in :ref:`Chapter 1.4.3 <1.4.3 The main.cpp file and the OpenXRTutorial class>`. So its duplicate definition must be removed from the class. This function is outside the scope of OpenXR, but in general it polls Android for system events, updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members.

@@ -190,10 +190,10 @@ public:
     enum class BlendFactor : uint8_t {
         ZERO = 0,
         ONE = 1,
-        SRC_COLOUR = 2,
-        ONE_MINUS_SRC_COLOUR = 3,
-        DST_COLOUR = 4,
-        ONE_MINUS_DST_COLOUR = 5,
+        SRC_COLOR = 2,
+        ONE_MINUS_SRC_COLOR = 3,
+        DST_COLOR = 4,
+        ONE_MINUS_DST_COLOR = 5,
         SRC_ALPHA = 6,
         ONE_MINUS_SRC_ALPHA = 7,
         DST_ALPHA = 8,
@@ -206,21 +206,21 @@ public:
         MIN = 3,
         MAX = 4,
     };
-    enum class ColourComponentBit : uint8_t {
+    enum class ColorComponentBit : uint8_t {
         R_BIT = 0x00000001,
         G_BIT = 0x00000002,
         B_BIT = 0x00000004,
         A_BIT = 0x00000008,
     };
-    struct ColourBlendAttachmentState {
+    struct ColorBlendAttachmentState {
         bool blendEnable;
-        BlendFactor srcColourBlendFactor;
-        BlendFactor dstColourBlendFactor;
-        BlendOp colourBlendOp;
+        BlendFactor srcColorBlendFactor;
+        BlendFactor dstColorBlendFactor;
+        BlendOp colorBlendOp;
         BlendFactor srcAlphaBlendFactor;
         BlendFactor dstAlphaBlendFactor;
         BlendOp alphaBlendOp;
-        ColourComponentBit colourWriteMask;
+        ColorComponentBit colorWriteMask;
     };
     enum class LogicOp : uint8_t {
         CLEAR = 0,
@@ -307,10 +307,10 @@ public:
         float minDepthBounds;
         float maxDepthBounds;
     };
-    struct ColourBlendState {
+    struct ColorBlendState {
         bool logicOpEnable;
         LogicOp logicOp;
-        std::vector<ColourBlendAttachmentState> attachments;
+        std::vector<ColorBlendAttachmentState> attachments;
         float blendConstants[4];
     };
 
@@ -341,7 +341,7 @@ public:
         RasterisationState rasterisationState;
         MultisampleState multisampleState;
         DepthStencilState depthStencilState;
-        ColourBlendState colourBlendState;
+        ColorBlendState colorBlendState;
         std::vector<int64_t> colorFormats;
         int64_t depthFormat;
         std::vector<DescriptorInfo> layout;

@@ -78,13 +78,13 @@ static D3D12_BLEND ToD3D12_BLEND(GraphicsAPI::BlendFactor blend) {
         return D3D12_BLEND_ZERO;
     case GraphicsAPI::BlendFactor::ONE:
         return D3D12_BLEND_ONE;
-    case GraphicsAPI::BlendFactor::SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::SRC_COLOR:
         return D3D12_BLEND_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOR:
         return D3D12_BLEND_INV_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::DST_COLOUR:
+    case GraphicsAPI::BlendFactor::DST_COLOR:
         return D3D12_BLEND_DEST_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOR:
         return D3D12_BLEND_INV_DEST_COLOR;
     case GraphicsAPI::BlendFactor::SRC_ALPHA:
         return D3D12_BLEND_SRC_ALPHA;
@@ -875,17 +875,17 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     GPSD.BlendState.AlphaToCoverageEnable = pipelineCI.multisampleState.alphaToCoverageEnable;
     GPSD.BlendState.IndependentBlendEnable = true;
     size_t i = 0;
-    for (auto &blend : pipelineCI.colourBlendState.attachments) {
+    for (auto &blend : pipelineCI.colorBlendState.attachments) {
         GPSD.BlendState.RenderTarget[i].BlendEnable = blend.blendEnable;
-        GPSD.BlendState.RenderTarget[i].LogicOpEnable = pipelineCI.colourBlendState.logicOpEnable;
-        GPSD.BlendState.RenderTarget[i].SrcBlend = ToD3D12_BLEND(blend.srcColourBlendFactor);
-        GPSD.BlendState.RenderTarget[i].DestBlend = ToD3D12_BLEND(blend.dstColourBlendFactor);
-        GPSD.BlendState.RenderTarget[i].BlendOp = static_cast<D3D12_BLEND_OP>(static_cast<uint32_t>(blend.colourBlendOp) + 1);
+        GPSD.BlendState.RenderTarget[i].LogicOpEnable = pipelineCI.colorBlendState.logicOpEnable;
+        GPSD.BlendState.RenderTarget[i].SrcBlend = ToD3D12_BLEND(blend.srcColorBlendFactor);
+        GPSD.BlendState.RenderTarget[i].DestBlend = ToD3D12_BLEND(blend.dstColorBlendFactor);
+        GPSD.BlendState.RenderTarget[i].BlendOp = static_cast<D3D12_BLEND_OP>(static_cast<uint32_t>(blend.colorBlendOp) + 1);
         GPSD.BlendState.RenderTarget[i].SrcBlendAlpha = ToD3D12_BLEND(blend.srcAlphaBlendFactor);
         GPSD.BlendState.RenderTarget[i].DestBlendAlpha = ToD3D12_BLEND(blend.dstAlphaBlendFactor);
         GPSD.BlendState.RenderTarget[i].BlendOpAlpha = static_cast<D3D12_BLEND_OP>(static_cast<uint32_t>(blend.alphaBlendOp) + 1);
-        GPSD.BlendState.RenderTarget[i].LogicOp = ToD3D12_LOGIC_OP(pipelineCI.colourBlendState.logicOp);
-        GPSD.BlendState.RenderTarget[i].RenderTargetWriteMask = static_cast<UINT8>(blend.colourWriteMask);
+        GPSD.BlendState.RenderTarget[i].LogicOp = ToD3D12_LOGIC_OP(pipelineCI.colorBlendState.logicOp);
+        GPSD.BlendState.RenderTarget[i].RenderTargetWriteMask = static_cast<UINT8>(blend.colorWriteMask);
 
         i++;
         if (i >= 8)
