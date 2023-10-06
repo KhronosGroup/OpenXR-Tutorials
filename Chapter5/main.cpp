@@ -143,7 +143,7 @@ private:
         // The application/engine name and version are user-definied. These may help IHVs or runtimes.
         // XR_DOCS_TAG_BEGIN_XrApplicationInfo
         XrApplicationInfo AI;
-        strncpy(AI.applicationName, "OpenXR Tutorial Chapter 4", XR_MAX_APPLICATION_NAME_SIZE);
+        strncpy(AI.applicationName, "OpenXR Tutorial Chapter 5", XR_MAX_APPLICATION_NAME_SIZE);
         AI.applicationVersion = 1;
         strncpy(AI.engineName, "OpenXR Engine", XR_MAX_ENGINE_NAME_SIZE);
         AI.engineVersion = 1;
@@ -664,7 +664,9 @@ private:
                              {1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
                              {2, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT}};
         m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
-
+        // XR_DOCS_TAG_END_CreateResources3
+        
+        // XR_DOCS_TAG_BEGIN_Setup_Blocks
         float scale = 0.2f;
         XrVector3f centre = {0, -0.2f, -0.7f};
         for (int i = 0; i < 4; i++) {
@@ -682,10 +684,10 @@ private:
                 }
             }
         }
+        // XR_DOCS_TAG_END_Setup_Blocks
     }
-    // XR_DOCS_TAG_END_CreateResources3
-    // XR_DOCS_TAG_BEGIN_DestroyResources
     void DestroyResources() {
+        // XR_DOCS_TAG_BEGIN_DestroyResources
         m_graphicsAPI->DestroyPipeline(m_pipeline);
         m_graphicsAPI->DestroyShader(m_fragmentShader);
         m_graphicsAPI->DestroyShader(m_vertexShader);
@@ -693,8 +695,8 @@ private:
         m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Normals);
         m_graphicsAPI->DestroyBuffer(m_indexBuffer);
         m_graphicsAPI->DestroyBuffer(m_vertexBuffer);
+        // XR_DOCS_TAG_END_DestroyResources
     }
-    // XR_DOCS_TAG_END_DestroyResources
 
     void PollEvents() {
         // XR_DOCS_TAG_BEGIN_PollEvents
