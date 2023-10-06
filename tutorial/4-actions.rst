@@ -287,7 +287,7 @@ Here we enable the Action Set we're interested in (in our case we have only one)
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_PollActions2
 	:end-before: XR_DOCS_TAG_END_PollActions2
-	:dedent: 8
+	:dedent: 4
 
 If, and only if the action is active, we use `xrLocateSpace` to obtain the current pose of the controller. We specify that we want this relative to our reference space `localOrStageSpace`, because this is the global space we're using for rendering. We'll use `leftGripPose` in the next section to render the
 controller's position.
@@ -298,7 +298,7 @@ We'll add the grabbing Action.
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_PollActions3
 	:end-before: XR_DOCS_TAG_END_PollActions3
-	:dedent: 8
+	:dedent: 4
 	
 Finally in this function, we'll add the haptic buzz behaviour, which has variable amplitude.
 
