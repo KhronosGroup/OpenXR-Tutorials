@@ -1074,7 +1074,7 @@ private:
     }
 
     bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews) {
-        // XR_DOCS_TAG_BEGIN_RenderLayer
+        // XR_DOCS_TAG_BEGIN_RenderLayer1
         // Locate the views from the view configuration with in the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
 
@@ -1135,6 +1135,7 @@ private:
                 m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
             }
             m_graphicsAPI->ClearDepth(m_swapchainAndDepthImages[i].depthImageView, 1.0f);
+            // XR_DOCS_TAG_END_RenderLayer1
 
             // XR_DOCS_TAG_BEGIN_SetupFrameRendering
             m_graphicsAPI->SetRenderAttachments(&m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, m_swapchainAndDepthImages[i].depthImageView, width, height, m_pipeline);
@@ -1176,6 +1177,8 @@ private:
                 RenderCuboid(thisBlock.pose, sc, thisBlock.color);
             }
             // XR_DOCS_TAG_END_CallRenderCuboid2
+
+            // XR_DOCS_TAG_BEGIN_RenderLayer2
             m_graphicsAPI->EndRendering();
 
             // Give the swapchain image back to OpenXR, allowing the compositor to use the image.
@@ -1190,7 +1193,7 @@ private:
         layerProjection.views = layerProjectionViews.data();
 
         return true;
-        // XR_DOCS_TAG_END_RenderLayer
+        // XR_DOCS_TAG_END_RenderLayer2
     }
 
 #if defined(__ANDROID__)

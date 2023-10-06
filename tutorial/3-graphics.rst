@@ -12,6 +12,7 @@ The goal of this chapter is to build an application that creates and clears colo
 			:language: cmake
 			:start-after: XR_DOCS_TAG_BEGIN_AddChapter3
 			:end-before: XR_DOCS_TAG_END_AddChapter3
+			:dedent: 4
 
 	Now, create a ``Chapter3`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2``. For the ``CMakeLists.txt``, copy the from ``Chapter2`` and update this line:
 
@@ -66,7 +67,7 @@ Underneath ``SOURCES`` ``HEADERS`` section, add the following CMake code specify
 
 Underneath section where specify your Graphics API, add the following CMake code:
 
-.. container:: window
+.. container:: windows
 
 	.. container:: d3d11 d3d12
 
@@ -74,8 +75,9 @@ Underneath section where specify your Graphics API, add the following CMake code
 			:language: cmake
 			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersWindows
 			:end-before: XR_DOCS_TAG_END_BuildShadersWindows
+			:dedent: 4
 
-.. container:: window linux
+.. container:: windows linux
 
 	.. container:: vulkan
 
@@ -83,6 +85,7 @@ Underneath section where specify your Graphics API, add the following CMake code
 			:language: cmake
 			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersVulkanWindowsLinux
 			:end-before: XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
+			:dedent: 4
 
 	.. container:: opengl
 
@@ -90,6 +93,7 @@ Underneath section where specify your Graphics API, add the following CMake code
 			:language: cmake
 			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersOpenGLWindowsLinux
 			:end-before: XR_DOCS_TAG_END_BuildShadersOpenGLWindowsLinux
+			:dedent: 4
 
 
 .. container:: android
@@ -100,6 +104,7 @@ Underneath section where specify your Graphics API, add the following CMake code
 				:language: cmake
 				:start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLSLShaders
 				:end-before: XR_DOCS_TAG_END_CompileAndroidGLSLShaders
+				:dedent: 4
 
 	.. container:: opengles
 
@@ -107,6 +112,7 @@ Underneath section where specify your Graphics API, add the following CMake code
 			:language: cmake
 			:start-after: XR_DOCS_TAG_BEGIN_CompileAndroidGLESShaders
 			:end-before: XR_DOCS_TAG_END_CompileAndroidGLESShaders
+			:dedent: 4
 
 
 .. container:: android
@@ -1026,8 +1032,14 @@ From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate t
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer
-	:end-before: XR_DOCS_TAG_END_RenderLayer
+	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer1
+	:end-before: XR_DOCS_TAG_END_RenderLayer1
+	:dedent: 4
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer2
+	:end-before: XR_DOCS_TAG_END_RenderLayer2
 	:dedent: 4
 
 Our first call is to ``xrLocateViews()``, which takes a ``XrViewLocateInfo`` structure and return a ``XrViewState`` structure and an array of ``XrView`` s. This functions tells us where the views are in relation to the reference space, as an ``XrPosef``, as well as the field of view, as an ``XrFovf``, for each view; this information is stored in the ``std::vector<XrView>``. The returned ``XrViewState`` contains a member of type ``XrViewStateFlags``, which descibes whether the position and/or orientation is valid and/or tracked.
@@ -1134,7 +1146,7 @@ Update the methods and members in the class. Copy the highlighted code:
 		{
 			// [...]
 		}
-		void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f colour) 
+		void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f color)
 		{
 		}
 		void CreateResources()
@@ -1174,11 +1186,11 @@ Update the methods and members in the class. Copy the highlighted code:
 		void *m_pipeline = nullptr;
 	};
 
-To draw our geometry, we will need a simple mathematics library for vectors, matrices and the like. Download this header file and place in it in the ``Common`` folder under the *workspace* directory:
+To draw our geometry, we will need a simple mathematics library for vectors, matrices and the like. Download this header file and place it in the ``Common`` folder under the *workspace* directory:
 
 :download:`Common/xr_linear_algebra.h <../Common/xr_linear_algebra.h>`
 
-In ``main.cpp``, add the following code under the header include statements:
+In ``main.cpp``, add the following code under the current header include statements:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1186,9 +1198,9 @@ In ``main.cpp``, add the following code under the header include statements:
 	:end-before: XR_DOCS_TAG_END_include_linear_algebra
 	:dedent: 0
 
-Now, we will need to set up all of our rendering resource for our scene. This consists of a vertex/index buffer pair that hold the vertex data for a cube and uniform buffer large enough to hold multiple instants of our ``CameraConstants`` struct. We use ``GraphicsAPI::CreateBuffer()`` to create and upload our data to the GPU.
+Now, we will need to set up all of our rendering resource for our scene. This consists of a vertex/index buffer-pair that holds the geometry data for a cube and uniform/constant buffer large enough to hold multiple instances of our ``CameraConstants`` struct. We use ``GraphicsAPI::CreateBuffer()`` to create and upload our data to the GPU.
 
-Above ``void CreateResources()`` add the following defining ``CameraConstants`` and an array of ``XrVector4f`` normals:
+Above ``void CreateResources()`` add the following code defining ``CameraConstants`` and an array of ``XrVector4f`` normals:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1204,7 +1216,7 @@ Copy the following code into ``CreateResources()``:
 	:end-before: XR_DOCS_TAG_END_CreateResources1_1
 	:dedent: 0
 
-Now, we will add the code to load and create our shaders:
+Now, we will add the code to load and create our shaders with ``GraphicsAPI::CreateShader()``:
 
 .. container:: opengl
 
@@ -1258,7 +1270,7 @@ Now, we will add the code to load and create our shaders:
 		:end-before: XR_DOCS_TAG_END_CreateResources2_D3D
 		:dedent: 8
 
-Now we'll combine the shaders, the vertex input layout, and the rendering state for drawing a solid cube, into a pipeline object. Add the following code to ``CreateResources()``:
+Now we'll combine the shaders, the vertex input layout, and the rendering state for drawing a solid cube, into a pipeline object using ``GraphicsAPI::CreatePipeline()``. Add the following code to ``CreateResources()``:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1266,7 +1278,7 @@ Now we'll combine the shaders, the vertex input layout, and the rendering state 
 	:end-before: XR_DOCS_TAG_END_CreateResources3
 	:dedent: 8
 
-To destroy the resources when a session has ended, add this code into ``DestroyResources()``:
+To destroy the resources, add this code into ``DestroyResources()``, which use the corresponding ``GraphicsAPI::Destroy...()`` methods:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1276,7 +1288,7 @@ To destroy the resources when a session has ended, add this code into ``DestroyR
 
 With our rendering resources now set up, we can add in the code needed for rendering the cuboids. We will set up the ``RenderCuboid()`` method, which is little helper method that renders a cuboid. It also tracks the number of rendered cuboid with ``renderCuboidIndex``. This is used so that we can correctly index into the right section of the uniform/constant buffer for positioning the cuboid and camera.
 
-Above ``RenderCuboid()``, add the following code:
+Above ``void RenderCuboid()``, add the following code:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1292,9 +1304,9 @@ Inside ``RenderCuboid()``, add the following:
 	:end-before: XR_DOCS_TAG_END_RenderCuboid2
 	:dedent: 8
 
-From the passed-in pose and scale, we create the ``model`` matrix, and multiply that with ``CameraConstants::viewProj`` to obtain ``CameraConstants::modelViewProj``, the matrix that transforms from vertices in our unit cube into projection space. We apply our "pipeline" - the shader and render states. We update two uniform buffers, one containing cameraConstants for the vertex shader, the other containing the normals for the cuboid. We assign our vertex and index buffers and draw 36 indices.
+From the passed-in pose and scale, we create the ``model`` matrix, and multiply that with ``CameraConstants::viewProj`` to obtain ``CameraConstants::modelViewProj``, the matrix that transforms the vertices in our unit cube from model space into projection space. We apply our ``pipeline``, which contains the shaders and render states. We update the two uniform buffers, one containing cameraConstants for the vertex shader, the other containing the normals for the cuboid. We assign our vertex and index buffers and draw 36 indices.
 
-Now moving to ``RenderLayer()`` and under the section where we clear the color and depth image vies, add the following code:
+Now moving to the ``RenderLayer()`` method and under the section where we clear the color and depth image views, add the following code:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1302,7 +1314,7 @@ Now moving to ``RenderLayer()`` and under the section where we clear the color a
 	:end-before: XR_DOCS_TAG_END_SetupFrameRendering
 	:dedent: 12
 
-The section sets the color and depth image views as rendering attachments for the output merger/color blend stage to write to. We also set the viewport for the rasterizer to transform from normalized device coordinates to texel space and we set the scissor for the rasterizer to the cut in texel space. Next, we compute projection and view matrices and we multiply them together to create a view-projection matrix for ``CameraConstants::viewProj``. Now, add the following code:
+The section sets the color and depth image views as rendering attachments for the output merger/color blend stage to write to. We also set the viewport for the rasterizer to transform from normalized device coordinates to texel space and we set the scissor for the rasterizer to the cut in texel space. Our viewport and scissor cover the whole render area. Next, we compute projection and view matrices and we multiply them together to create a view-projection matrix for ``CameraConstants::viewProj``. Now, add the following code:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1310,6 +1322,6 @@ The section sets the color and depth image views as rendering attachments for th
 	:end-before: XR_DOCS_TAG_END_CallRenderCuboid
 	:dedent: 12
 
-Finally, we set ``renderCuboidIndex`` to ``0`` and call ``RenderCuboid()`` twice drawing two cuboids. The first is offset by our (arbitrary) view height, so as to represent a "floor". We scale it by 2 metres in the horizontal directions and 0.1m in the vertical, so it's flat. With that, we should now have a clear color and two cuboid rendered to each view in your XR system.
+Finally, we set ``renderCuboidIndex`` to ``0`` and call ``RenderCuboid()`` twice drawing two cuboids. The first is offset by our (arbitrary) view height, so as to represent a "floor". We scale it by 2 meters in the horizontal directions and 0.1 meter in the vertical, so it's flat. With that, we should now have a clear color and two cuboid rendered to each view in your XR system.
 
 In the next chapter, we will discuss how to use OpenXR to interact with your XR application enabling new experiences in spatial computing.
