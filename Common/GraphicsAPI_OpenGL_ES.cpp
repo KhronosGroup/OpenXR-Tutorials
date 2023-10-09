@@ -202,13 +202,13 @@ inline GLenum ToGLBlendFactor(GraphicsAPI::BlendFactor factor) {
         return GL_ZERO;
     case GraphicsAPI::BlendFactor::ONE:
         return GL_ONE;
-    case GraphicsAPI::BlendFactor::SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::SRC_COLOR:
         return GL_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOR:
         return GL_ONE_MINUS_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::DST_COLOUR:
+    case GraphicsAPI::BlendFactor::DST_COLOR:
         return GL_DST_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOR:
         return GL_ONE_MINUS_DST_COLOR;
     case GraphicsAPI::BlendFactor::SRC_ALPHA:
         return GL_SRC_ALPHA;
@@ -947,8 +947,8 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
                           DSS.back.compareMask);
     glStencilMaskSeparate(GL_BACK, DSS.back.writeMask);
 
-    // ColourBlendState
-    const ColourBlendState &CBS = pipelineCI.colourBlendState;
+    // ColorBlendState
+    const ColorBlendState &CBS = pipelineCI.colorBlendState;
 
     /*if (CBS.logicOpEnable) {
         glEnable(GL_COLOR_LOGIC_OP);
@@ -958,7 +958,7 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
     }*/ // None for ES
 
     for (int i = 0; i < (int)CBS.attachments.size(); i++) {
-        const ColourBlendAttachmentState &CBA = CBS.attachments[i];
+        const ColorBlendAttachmentState &CBA = CBS.attachments[i];
 
         if (CBA.blendEnable) {
             glEnablei(GL_BLEND, i);
@@ -966,19 +966,19 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
             glDisablei(GL_BLEND, i);
         }
 
-        glBlendEquationSeparatei(i, ToGLBlendOp(CBA.colourBlendOp), ToGLBlendOp(CBA.alphaBlendOp));
+        glBlendEquationSeparatei(i, ToGLBlendOp(CBA.colorBlendOp), ToGLBlendOp(CBA.alphaBlendOp));
 
         glBlendFuncSeparatei(i,
-                             ToGLBlendFactor(CBA.srcColourBlendFactor),
-                             ToGLBlendFactor(CBA.dstColourBlendFactor),
+                             ToGLBlendFactor(CBA.srcColorBlendFactor),
+                             ToGLBlendFactor(CBA.dstColorBlendFactor),
                              ToGLBlendFactor(CBA.srcAlphaBlendFactor),
                              ToGLBlendFactor(CBA.dstAlphaBlendFactor));
 
         glColorMaski(i,
-                     (((uint32_t)CBA.colourWriteMask & (uint32_t)ColourComponentBit::R_BIT) == (uint32_t)ColourComponentBit::R_BIT),
-                     (((uint32_t)CBA.colourWriteMask & (uint32_t)ColourComponentBit::G_BIT) == (uint32_t)ColourComponentBit::G_BIT),
-                     (((uint32_t)CBA.colourWriteMask & (uint32_t)ColourComponentBit::B_BIT) == (uint32_t)ColourComponentBit::B_BIT),
-                     (((uint32_t)CBA.colourWriteMask & (uint32_t)ColourComponentBit::A_BIT) == (uint32_t)ColourComponentBit::A_BIT));
+                     (((uint32_t)CBA.colorWriteMask & (uint32_t)ColorComponentBit::R_BIT) == (uint32_t)ColorComponentBit::R_BIT),
+                     (((uint32_t)CBA.colorWriteMask & (uint32_t)ColorComponentBit::G_BIT) == (uint32_t)ColorComponentBit::G_BIT),
+                     (((uint32_t)CBA.colorWriteMask & (uint32_t)ColorComponentBit::B_BIT) == (uint32_t)ColorComponentBit::B_BIT),
+                     (((uint32_t)CBA.colorWriteMask & (uint32_t)ColorComponentBit::A_BIT) == (uint32_t)ColorComponentBit::A_BIT));
     }
     glBlendColor(CBS.blendConstants[0], CBS.blendConstants[1], CBS.blendConstants[2], CBS.blendConstants[3]);
 }

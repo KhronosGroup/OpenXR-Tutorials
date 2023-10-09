@@ -5,14 +5,24 @@
 // OpenXR Tutorial for Khronos Group
 
 #include <DebugOutput.h>
-// XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D11
 #include <GraphicsAPI_D3D11.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_D3D11
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D12
 #include <GraphicsAPI_D3D12.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_D3D12
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL
 #include <GraphicsAPI_OpenGL.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL_ES
 #include <GraphicsAPI_OpenGL_ES.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL_ES
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_Vulkan
 #include <GraphicsAPI_Vulkan.h>
-// XR_DOCS_TAG_END_include_GraphicsAPIs
+// XR_DOCS_TAG_END_include_GraphicsAPI_Vulkan
+// XR_DOCS_TAG_BEGIN_include_OpenXRDebugUtils
 #include <OpenXRDebugUtils.h>
+// XR_DOCS_TAG_END_include_OpenXRDebugUtils
 
 // XR_DOCS_TAG_BEGIN_include_linear_algebra
 // include xr linear algebra for XrVector and XrMatrix classes.
@@ -24,13 +34,15 @@ XrVector3f operator-(XrVector3f a, XrVector3f b) {
 XrVector3f operator*(XrVector3f a, float b) {
     return {a.x * b, a.y * b, a.z * b};
 }
+// XR_DOCS_TAG_END_include_linear_algebra
+// XR_DOCS_TAG_BEGIN_include_algorithm_random
 // Include <algorithm> for std::min and max
 #include <algorithm>
-// Random numbers for colourful blocks
+// Random numbers for colorful blocks
 #include <random>
 static std::uniform_real_distribution<float> pseudorandom_distribution(0, 1.f);
 static std::mt19937 pseudo_random_generator;
-// XR_DOCS_TAG_END_include_linear_algebra
+// XR_DOCS_TAG_END_include_algorithm_random
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_5
 
@@ -53,12 +65,12 @@ public:
         GetInstanceProperties();
         GetSystemID();
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_4_1
-// XR_DOCS_TAG_BEGIN_CallCreateActionSet
+        // XR_DOCS_TAG_BEGIN_CallCreateActionSet
         CreateActionSet();
-// XR_DOCS_TAG_END_CallCreateActionSet
-// XR_DOCS_TAG_BEGIN_CallSuggestBindings
+        // XR_DOCS_TAG_END_CallCreateActionSet
+        // XR_DOCS_TAG_BEGIN_CallSuggestBindings
         SuggestBindings();
-// XR_DOCS_TAG_END_CallSuggestBindings
+        // XR_DOCS_TAG_END_CallSuggestBindings
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
         GetViewConfigurationViews();
@@ -74,7 +86,7 @@ public:
         // XR_DOCS_TAG_BEGIN_CallCreateActionPoses
         CreateActionPoses();
         AttachActionSet();
-// XR_DOCS_TAG_END_CallCreateActionPoses
+        // XR_DOCS_TAG_END_CallCreateActionPoses
 #endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
@@ -84,9 +96,9 @@ public:
         CreateSwapchain();
 #endif
 #endif
-        // XR_DOCS_TAG_BEGIN_CallCreateResources
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_3
         CreateResources();
-        // XR_DOCS_TAG_END_CallCreateResources
+#endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
         while (m_applicationRunning) {
@@ -104,10 +116,10 @@ public:
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         DestroyReferenceSpace();
 #endif
-#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
-        // XR_DOCS_TAG_BEGIN_CallDestroyResources
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_3
         DestroyResources();
-        // XR_DOCS_TAG_END_CallDestroyResources
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
         DestroySession();
 #endif
 
@@ -133,6 +145,7 @@ private:
         {
             // XR_DOCS_TAG_BEGIN_instanceExtensions
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
+            // TODO make sure this is already defined when we add this line.
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
             // XR_DOCS_TAG_END_instanceExtensions
         }
@@ -148,7 +161,8 @@ private:
         // Check the requested API layers against the ones from the OpenXR. If found add it to the Active API Layers.
         for (auto &requestLayer : m_apiLayers) {
             for (auto &layerProperty : apiLayerProperties) {
-                if (strcmp(requestLayer.c_str(), layerProperty.layerName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestLayer.c_str(), layerProperty.layerName) != 0) {
                     continue;
                 } else {
                     m_activeAPILayers.push_back(requestLayer.c_str());
@@ -164,21 +178,23 @@ private:
         extensionProperties.resize(extensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
 
-        // Check the requested Instance Extensions against the ones from the OpenXR. If found add it to Active Instance Extensions.
+        // Check the requested Instance Extensions against the ones from the OpenXR runtime.
+        // If an extension is found add it to Active Instance Extensions.
         // Log error if the Instance Extension is not found.
-        for (auto &requestExtension : m_instanceExtensions) {
+        for (auto &requestedInstanceExtension : m_instanceExtensions) {
             bool found = false;
             for (auto &extensionProperty : extensionProperties) {
-                if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestedInstanceExtension.c_str(), extensionProperty.extensionName) != 0) {
                     continue;
                 } else {
-                    m_activeInstanceExtensions.push_back(requestExtension.c_str());
+                    m_activeInstanceExtensions.push_back(requestedInstanceExtension.c_str());
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                std::cerr << "Failed to find OpenXR instance extension: " << requestExtension << "\n";
+                std::cerr << "Failed to find OpenXR instance extension: " << requestedInstanceExtension << std::endl;
             }
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension
@@ -214,7 +230,7 @@ private:
     void DestroyDebugMessenger() {
         // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         // Check that "XR_EXT_debug_utils" is in the active Instance Extensions before destroying the XrDebugUtilsMessengerEXT.
-        if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+        if (m_debugUtilsMessenger != XR_NULL_HANDLE) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);  // From OpenXRDebugUtils.h.
         }
         // XR_DOCS_TAG_END_DestroyDebugMessenger
@@ -275,9 +291,9 @@ private:
         OPENXR_CHECK(xrCreateActionSet(m_xrInstance, &actionSetCI, &m_actionSet), "Failed to create ActionSet.");
         // Set a priority: this comes into play when we have multiple Action Sets, and determines which Action takes priority in binding to a specific input.
         actionSetCI.priority=0;
- // XR_DOCS_TAG_END_CreateActionSet
+    // XR_DOCS_TAG_END_CreateActionSet
 
-// XR_DOCS_TAG_BEGIN_CreateActionLambda
+    // XR_DOCS_TAG_BEGIN_CreateActionLambda
         auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType, std::vector<const char *> subaction_paths = {}) -> void {
             XrActionCreateInfo actionCI{XR_TYPE_ACTION_CREATE_INFO};
             // The type of action: float input, pose, haptic output etc.
@@ -295,8 +311,8 @@ private:
             strncpy(actionCI.localizedActionName, name, XR_MAX_LOCALIZED_ACTION_NAME_SIZE);
             OPENXR_CHECK(xrCreateAction(m_actionSet, &actionCI, &xrAction), "Failed to create Action.");
         };
-// XR_DOCS_TAG_END_CreateActionLambda
-// XR_DOCS_TAG_BEGIN_CreateActions
+    // XR_DOCS_TAG_END_CreateActionLambda
+    // XR_DOCS_TAG_BEGIN_CreateActions
         // An Action for grabbing cubes.
         CreateAction(m_grabCubeAction, "grab-cube", XR_ACTION_TYPE_FLOAT_INPUT, {"/user/hand/left", "/user/hand/right"});
         CreateAction(m_spawnCubeAction, "spawn-cube", XR_ACTION_TYPE_BOOLEAN_INPUT );
@@ -309,9 +325,9 @@ private:
         m_handPaths[0] = CreateXrPath("/user/hand/left");
         m_handPaths[1] = CreateXrPath("/user/hand/right");
     }
-// XR_DOCS_TAG_END_CreateActions
+    // XR_DOCS_TAG_END_CreateActions
 
-// XR_DOCS_TAG_BEGIN_SuggestBindings1
+    // XR_DOCS_TAG_BEGIN_SuggestBindings1
     void SuggestBindings() {
         auto SuggestBindings = [this](const char *profile_path, std::vector<XrActionSuggestedBinding> bindings) -> bool {
             // The application can call xrSuggestInteractionProfileBindings once per interaction profile that it supports.
@@ -397,20 +413,22 @@ private:
 
     void GetEnvironmentBlendModes() {
         // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
-        // Gets the Environment Blend Modes. The first call gets the size of the array that will be returned. The next call fills out the array.
+        // Retrieves the available blend modes. The first call gets the size of the array that will be returned. The next call fills out the array.
         uint32_t environmentBlendModeSize = 0;
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
         m_environmentBlendModes.resize(environmentBlendModeSize);
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, m_environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
 
-        // Select the first Environment Blend Mode as our default.
-        m_environmentBlendMode = m_environmentBlendModes[0];
         // Pick the first application supported blend mode supported by the hardware.
         for (const XrEnvironmentBlendMode &environmentBlendMode : m_applicationEnvironmentBlendModes) {
             if (std::find(m_environmentBlendModes.begin(), m_environmentBlendModes.end(), environmentBlendMode) != m_environmentBlendModes.end()) {
                 m_environmentBlendMode = environmentBlendMode;
                 break;
             }
+        }
+        if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM) {
+            std::cerr << "Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE." << std::endl;
+            m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         }
         // XR_DOCS_TAG_END_GetEnvironmentBlendModes
     }
@@ -473,12 +491,13 @@ private:
         OPENXR_CHECK(xrDestroySession(m_session), "Failed to destroy Session.");
         // XR_DOCS_TAG_END_DestroySession
     }
+
     // XR_DOCS_TAG_BEGIN_CreateResources1
     struct CameraConstants {
         XrMatrix4x4f viewProj;
         XrMatrix4x4f modelViewProj;
         XrMatrix4x4f model;
-        XrVector4f colour;
+        XrVector4f color;
         XrVector4f pad1;
         XrVector4f pad2;
         XrVector4f pad3;
@@ -491,8 +510,10 @@ private:
         {0.00f, -1.00f, 0.00f, 0},
         {0.00f, 0.00f, 1.00f, 0},
         {0.00f, 0.0f, -1.00f, 0}};
+    // XR_DOCS_TAG_END_CreateResources1
 
     void CreateResources() {
+        // XR_DOCS_TAG_BEGIN_CreateResources1_1
         // Vertices for a 1x1x1 meter cube. (Left/Right, Top/Bottom, Front/Back)
         constexpr XrVector4f vertexPositions[] = {
             {+0.5f, +0.5f, +0.5f, 1.0f},
@@ -528,11 +549,13 @@ private:
 
         m_indexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices), &cubeIndices});
 
+        // XR_DOCS_TAG_BEGIN_Update_numberOfCuboids
         size_t numberOfCuboids = 64 + 2 + 2;
+        // XR_DOCS_TAG_END_Update_numberOfCuboids
         m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants) * numberOfCuboids, nullptr});
         m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
+        // XR_DOCS_TAG_END_CreateResources1_1
 
-        // XR_DOCS_TAG_END_CreateResources1
         // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL
         if (m_apiType == OPENGL) {
             std::string vertexSource = ReadTextFile("VertexShader.glsl");
@@ -585,8 +608,8 @@ private:
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         }
         // XR_DOCS_TAG_END_CreateResources2_D3D
-        // XR_DOCS_TAG_BEGIN_CreateResources3
 
+        // XR_DOCS_TAG_BEGIN_CreateResources3
         GraphicsAPI::PipelineCreateInfo pipelineCI;
         pipelineCI.shaders = {m_vertexShader, m_fragmentShader};
         pipelineCI.vertexInputState.attributes = {{0, 0, GraphicsAPI::VertexType::VEC4, 0, "TEXCOORD"}};
@@ -595,14 +618,16 @@ private:
         pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
         pipelineCI.multisampleState = {1, false, 1.0f, 0xFFFFFFFF, false, false};
         pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
-        pipelineCI.colourBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColourComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
+        pipelineCI.colorBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColorComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         pipelineCI.colorFormats = {m_swapchainAndDepthImages[0].swapchainFormat};
         pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
         pipelineCI.layout = {{0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
                              {1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
                              {2, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT}};
         m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
-
+        // XR_DOCS_TAG_END_CreateResources3
+        
+        // XR_DOCS_TAG_BEGIN_Setup_Blocks
         float scale = 0.2f;
         XrVector3f centre = {0, -0.2f, -0.7f};
         for (int i = 0; i < 4; i++) {
@@ -613,15 +638,15 @@ private:
                     float angleRad = 0;
                     float z = scale * (float(k) - 1.5f) + centre.z;
                     XrQuaternionf q= {0, 0,0,1.f};
-                    XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
-                    blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, colour});
+                    XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
+                    blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, color});
                 }
             }
         }
+        // XR_DOCS_TAG_END_Setup_Blocks
     }
-    // XR_DOCS_TAG_END_CreateResources3
-    // XR_DOCS_TAG_BEGIN_DestroyResources
     void DestroyResources() {
+        // XR_DOCS_TAG_BEGIN_DestroyResources
         m_graphicsAPI->DestroyPipeline(m_pipeline);
         m_graphicsAPI->DestroyShader(m_fragmentShader);
         m_graphicsAPI->DestroyShader(m_vertexShader);
@@ -629,8 +654,8 @@ private:
         m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Normals);
         m_graphicsAPI->DestroyBuffer(m_indexBuffer);
         m_graphicsAPI->DestroyBuffer(m_vertexBuffer);
+        // XR_DOCS_TAG_END_DestroyResources
     }
-    // XR_DOCS_TAG_END_DestroyResources
 
     void PollEvents() {
         // XR_DOCS_TAG_BEGIN_PollEvents
@@ -722,8 +747,8 @@ private:
         actionsSyncInfo.countActiveActionSets = 1;
         actionsSyncInfo.activeActionSets = &activeActionSet;
         OPENXR_CHECK(xrSyncActions(m_session, &actionsSyncInfo), "Failed to sync Actions.");
-// XR_DOCS_TAG_END_PollActions
-// XR_DOCS_TAG_BEGIN_PollActions2
+    // XR_DOCS_TAG_END_PollActions
+    // XR_DOCS_TAG_BEGIN_PollActions2
         XrActionStateGetInfo actionStateGetInfo{XR_TYPE_ACTION_STATE_GET_INFO};
         // We pose a single Action, twice - once for each subAction Path.
         actionStateGetInfo.action = m_palmPoseAction;
@@ -742,8 +767,8 @@ private:
                 }
             }
         }
-// XR_DOCS_TAG_END_PollActions2
-// XR_DOCS_TAG_BEGIN_PollActions3
+    // XR_DOCS_TAG_END_PollActions2
+    // XR_DOCS_TAG_BEGIN_PollActions3
         for (int i = 0; i < 2; i++) {
             actionStateGetInfo.action = m_grabCubeAction;
             actionStateGetInfo.subactionPath = m_handPaths[i];
@@ -761,8 +786,8 @@ private:
             OPENXR_CHECK(xrGetActionStateBoolean(m_session, &actionStateGetInfo, &m_spawnCubeState), "Failed to get Boolean State of Spawn Cube action.");
             
         }
-// XR_DOCS_TAG_END_PollActions3
-// XR_DOCS_TAG_BEGIN_PollActions4
+    // XR_DOCS_TAG_END_PollActions3
+    // XR_DOCS_TAG_BEGIN_PollActions4
         for (int i = 0; i < 2; i++) {
             buzz[i] *= 0.5f;
             if (buzz[i] < 0.01f)
@@ -778,9 +803,9 @@ private:
             OPENXR_CHECK(xrApplyHapticFeedback(m_session, &hapticActionInfo, (XrHapticBaseHeader *)&vibration), "Failed to apply haptic feedback.");
         }
     }
-// XR_DOCS_TAG_END_PollActions4
-// XR_DOCS_TAG_BEGIN_BlockInteraction
-// Helper function to snap a 3D position to the nearest 10cm
+    // XR_DOCS_TAG_END_PollActions4
+    // XR_DOCS_TAG_BEGIN_BlockInteraction
+    // Helper function to snap a 3D position to the nearest 10cm
     static XrVector3f FixPosition(XrVector3f pos) {
         int x = int(std::nearbyint(pos.x * 10.f));
         int y = int(std::nearbyint(pos.y * 10.f));
@@ -790,7 +815,7 @@ private:
         pos.z = float(z) / 10.f;
         return pos;
     }
-// Handle the interaction between the user's hands, the grab action, and the 3D blocks.
+    // Handle the interaction between the user's hands, the grab action, and the 3D blocks.
     void BlockInteraction() {
         // For each hand:
         for (int i = 0; i < 2; i++) {
@@ -820,8 +845,8 @@ private:
                     } 
                     else if (m_changeColorState[i].isActive == XR_TRUE && m_changeColorState[i].currentState == XR_FALSE && m_changeColorState[i].changedSinceLastSync == XR_TRUE) {
                         auto &thisBlock = blocks[nearBlock[i]];
-                        XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
-                        thisBlock.colour = colour;
+                        XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
+                        thisBlock.color = color;
                     }
                 }
                 else
@@ -829,8 +854,8 @@ private:
                     // not near a block? We can spawn one.
                     if (m_spawnCubeState.isActive == XR_TRUE && m_spawnCubeState.currentState == XR_FALSE && m_spawnCubeState.changedSinceLastSync == XR_TRUE && blocks.size() < MaxBlockCount) {
                         XrQuaternionf q = {0, 0, 0, 1.f};
-                        XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
-                        blocks.push_back({{q, FixPosition(m_handPose[i].position)}, {0.095f, 0.095f, 0.095f}, colour});
+                        XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
+                        blocks.push_back({{q, FixPosition(m_handPose[i].position)}, {0.095f, 0.095f, 0.095f}, color});
                     }
                 }
             } else {
@@ -873,18 +898,10 @@ private:
         OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
-        // XR_DOCS_TAG_BEGIN_CheckCoherentViewDimensions
-        // Check the two views for stereo are the same.
-        if (m_viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO && m_viewConfigurationViews.size() == 2) {
-            bool viewWidthsSame = m_viewConfigurationViews[0].recommendedImageRectWidth == m_viewConfigurationViews[1].recommendedImageRectWidth;
-            bool viewHeightsSame = m_viewConfigurationViews[0].recommendedImageRectHeight == m_viewConfigurationViews[1].recommendedImageRectHeight;
-            if (!viewWidthsSame || !viewHeightsSame) {
-                std::cout << "ERROR: The two views for stereo are not the same." << std::endl;
-                DEBUG_BREAK;
-            }
-        }
+        // TODO: Don't like this, just use a for(int loop and use the correct one in the list.
+        // XR_DOCS_TAG_BEGIN_CreateViewConfigurationView
         const XrViewConfigurationView &viewConfigurationView = m_viewConfigurationViews[0];
-        // XR_DOCS_TAG_END_CheckCoherentViewDimensions
+        // XR_DOCS_TAG_END_CreateViewConfigurationView
 
         // Per view, create a swapchain, depth image and their associated image views.
         m_swapchainAndDepthImages.resize(m_viewConfigurationViews.size());
@@ -894,15 +911,15 @@ private:
             XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-            swapchainCI.format = m_graphicsAPI->SelectSwapchainFormat(formats); // Use GraphicsAPI to select the first compatible format.
-            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount; // Use the recommended values from the XrViewConfigurationView.
+            swapchainCI.format = m_graphicsAPI->SelectSwapchainFormat(formats);               // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
             swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
             swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
             swapchainCI.faceCount = 1;
             swapchainCI.arraySize = 1;
             swapchainCI.mipCount = 1;
             OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &swapchainAndDepthImage.swapchain), "Failed to create Swapchain");
-            swapchainAndDepthImage.swapchainFormat = swapchainCI.format; // Save the swapchain format for later use.
+            swapchainAndDepthImage.swapchainFormat = swapchainCI.format;  // Save the swapchain format for later use.
             // XR_DOCS_TAG_END_CreateSwapchain
 
             // XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
@@ -982,13 +999,15 @@ private:
         // XR_DOCS_TAG_END_DestroySwapchain
     }
 
-    // XR_DOCS_TAG_BEGIN_RenderCuboid
+    // XR_DOCS_TAG_BEGIN_RenderCuboid1
     size_t renderCuboidIndex = 0;
-    void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f colour) {
+    // XR_DOCS_TAG_END_RenderCuboid1
+    void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f color) {
+        // XR_DOCS_TAG_BEGIN_RenderCuboid2
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
-        cameraConstants.colour = {colour.x, colour.y, colour.z, 1.0};
+        cameraConstants.color = {color.x, color.y, color.z, 1.0};
         size_t offsetCameraUB = sizeof(CameraConstants) * renderCuboidIndex;
 
         m_graphicsAPI->SetPipeline(m_pipeline);
@@ -1004,9 +1023,9 @@ private:
         m_graphicsAPI->DrawIndexed(36);
 
         renderCuboidIndex++;
+        // XR_DOCS_TAG_END_RenderCuboid2
     }
-    // XR_DOCS_TAG_END_RenderCuboid
-    // XR_DOCS_TAG_BEGIN_RenderFrame
+
     void RenderFrame() {
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         // XR_DOCS_TAG_BEGIN_RenderFrame
@@ -1029,12 +1048,12 @@ private:
         bool sessionActive = (m_sessionState == XR_SESSION_STATE_SYNCHRONIZED || m_sessionState == XR_SESSION_STATE_VISIBLE || m_sessionState == XR_SESSION_STATE_FOCUSED);
         if (sessionActive && frameState.shouldRender) {
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_4_2
-// XR_DOCS_TAG_BEGIN_CallPollActions
+            // XR_DOCS_TAG_BEGIN_CallPollActions
             // poll actions here because they require a predicted display time, which we've only just obtained.
             PollActions(frameState.predictedDisplayTime);
             // Handle the interaction between the user and the 3D blocks.
             BlockInteraction();
-// XR_DOCS_TAG_END_CallPollActions
+            // XR_DOCS_TAG_END_CallPollActions
 #endif
             // Render the stereo image and associate one of swapchain images with the XrCompositionLayerProjection structure.
             rendered = RenderLayer(frameState.predictedDisplayTime, layerProjection, layerProjectionViews);
@@ -1055,11 +1074,11 @@ private:
     }
 
     bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews) {
-        // XR_DOCS_TAG_BEGIN_RenderLayer
+        // XR_DOCS_TAG_BEGIN_RenderLayer1
         // Locate the views from the view configuration with in the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
 
-        XrViewState viewState{XR_TYPE_VIEW_STATE}; //Will contain information on whether the position and/or orientation is valid and/or tracked.
+        XrViewState viewState{XR_TYPE_VIEW_STATE};  // Will contain information on whether the position and/or orientation is valid and/or tracked.
         XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = m_viewConfiguration;
         viewLocateInfo.displayTime = predictedDisplayTime;
@@ -1073,7 +1092,7 @@ private:
 
         // Resize the layer projection views to match the view count. The layer projection views are used in the layer projection.
         layerProjectionViews.resize(viewCount, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW});
-        
+
         // Per view in the view configuration:
         for (uint32_t i = 0; i < viewCount; i++) {
             // Acquire and wait for an image from the swapchain.
@@ -1103,8 +1122,9 @@ private:
             layerProjectionViews[i].subImage.imageRect.offset.y = 0;
             layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
             layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
-            layerProjectionViews[i].subImage.imageArrayIndex = 0; // Useful for multiview rendering.
+            layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
 
+            // Rendering code to clear the color and depth image views.
             m_graphicsAPI->BeginRendering();
 
             if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE) {
@@ -1115,6 +1135,7 @@ private:
                 m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
             }
             m_graphicsAPI->ClearDepth(m_swapchainAndDepthImages[i].depthImageView, 1.0f);
+            // XR_DOCS_TAG_END_RenderLayer1
 
             // XR_DOCS_TAG_BEGIN_SetupFrameRendering
             m_graphicsAPI->SetRenderAttachments(&m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, m_swapchainAndDepthImages[i].depthImageView, width, height, m_pipeline);
@@ -1131,15 +1152,17 @@ private:
             XrMatrix4x4f view;
             XrMatrix4x4f_InvertRigidBody(&view, &toView);
             XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
-
             // XR_DOCS_TAG_END_SetupFrameRendering
+
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid
             renderCuboidIndex = 0;
             // Draw a floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
             RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f}, {0.4f, 0.5f, 0.5f});
             // Draw a "table".
-            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM + 0.9f, -0.7f}}, {1.0f, 0.2f, 1.0f}, {0.6f, 0.6f, 0.6f});
+            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM + 0.9f, -0.7f}}, {1.0f, 0.2f, 1.0f}, {0.6f, 0.6f, 0.4f});
+            // XR_DOCS_TAG_END_CallRenderCuboid
 
+            // XR_DOCS_TAG_BEGIN_CallRenderCuboid2
             // Draw some blocks at the controller positions:
             for (int i = 0; i < 2; i++) {
                 if (m_handPoseState[i].isActive) {
@@ -1151,9 +1174,11 @@ private:
                 XrVector3f sc = thisBlock.scale;
                 if (i == nearBlock[0] || i == nearBlock[1])
                     sc = thisBlock.scale * 1.05f;
-                RenderCuboid(thisBlock.pose, sc, thisBlock.colour);
+                RenderCuboid(thisBlock.pose, sc, thisBlock.color);
             }
-            // XR_DOCS_TAG_END_CallRenderCuboid
+            // XR_DOCS_TAG_END_CallRenderCuboid2
+
+            // XR_DOCS_TAG_BEGIN_RenderLayer2
             m_graphicsAPI->EndRendering();
 
             // Give the swapchain image back to OpenXR, allowing the compositor to use the image.
@@ -1168,7 +1193,7 @@ private:
         layerProjection.views = layerProjectionViews.data();
 
         return true;
-        // XR_DOCS_TAG_END_RenderLayer
+        // XR_DOCS_TAG_END_RenderLayer2
     }
 
 #if defined(__ANDROID__)
@@ -1232,7 +1257,7 @@ private:
             // Poll and process the Android OS system events.
             struct android_poll_source *source = nullptr;
             int events = 0;
-            // The timeout is depended on whether that applicaion is active.
+            // The timeout depends on whether the application is active.
             const int timeoutMilliseconds = (!androidAppState.resumed && !m_sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
             if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
                 if (source != nullptr) {
@@ -1251,13 +1276,13 @@ private:
 #endif
 
 private:
-    XrInstance m_xrInstance = {};
+    XrInstance m_xrInstance = XR_NULL_HANDLE;
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};
     std::vector<std::string> m_instanceExtensions = {};
 
-    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
+    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = XR_NULL_HANDLE;
 
     XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     XrSystemId m_systemID = {};
@@ -1272,8 +1297,8 @@ private:
     bool m_sessionRunning = false;
 
     XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-    // XR_DOCS_TAG_BEGIN_declareSwapchains
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
+
     struct SwapchainAndDepthImage {
         XrSwapchain swapchain = XR_NULL_HANDLE;
         int64_t swapchainFormat = 0;
@@ -1288,9 +1313,8 @@ private:
     std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
-    XrSpace m_localOrStageSpace = {};
-    // XR_DOCS_TAG_END_declareSwapchains
-    // XR_DOCS_TAG_BEGIN_DeclareResources
+    XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
+
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
 
@@ -1301,13 +1325,12 @@ private:
 
     void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
     void *m_pipeline = nullptr;
-    // XR_DOCS_TAG_END_DeclareResources
 
     // XR_DOCS_TAG_BEGIN_Objects
     struct Block {
         XrPosef pose;
         XrVector3f scale;
-        XrVector3f colour;
+        XrVector3f color;
     };
     std::vector<Block> blocks;
     // Don't let too many blocks get created.
@@ -1369,7 +1392,7 @@ void android_main(struct android_app *app) {
     // Without this, there's is no loader and thus our function calls to OpenXR would fail.
     XrInstance m_xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR = nullptr;
-    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr for xrInitializeLoaderKHR.");
     if (!xrInitializeLoaderKHR) {
         return;
     }

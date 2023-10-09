@@ -15,7 +15,7 @@ PS_OUT main(PS_IN IN)
 {
     PS_OUT OUT;
     int i = int(IN.i_TexCoord.x);
-	float light=0.2+0.8*IN.i_Normal.g;
-    OUT.o_Colour = float4(light*IN.i_Colour.rgb,1.0);//
+    float light = 0.2 + 0.8 * IN.i_Normal.g;
+    OUT.o_Colour = float4(light * IN.i_Colour.rgb, 1.0);
     return OUT;
 }

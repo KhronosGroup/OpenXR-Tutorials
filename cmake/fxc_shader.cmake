@@ -10,9 +10,11 @@ function(fxc_shader)
     set(oneValueArgs
         INPUT
         OUTPUT
+        OUTPUT_PDB
         TYPE
         VARIABLE
         PROFILE
+        ENTRY_POINT
     )
     set(multiValueArgs EXTRA_DEPENDS)
     cmake_parse_arguments(
@@ -22,12 +24,14 @@ function(fxc_shader)
         "${multiValueArgs}"
         ${ARGN}
     )
+
     if(FXC_EXECUTABLE)
         set(_fxc "${FXC_EXECUTABLE}")
     else()
         # Hope/assume that it will be in the path at build time
         set(_fxc "fxc.exe")
     endif()
+
     if(_fxc_GENERATE_HEADER)
         if(NOT _fxc_VARIABLE)
             message(
@@ -38,15 +42,21 @@ function(fxc_shader)
         set(_fxc_output_args /Vn "${_fxc_VARIABLE}" /Fh)
     else()
         set(_fxc_output_args /Fo)
-
     endif()
+
     add_custom_command(
         OUTPUT "${_fxc_OUTPUT}"
-        BYPRODUCTS "${_fxc_OUTPUT}.pdb"
+        BYPRODUCTS "${_fxc_OUTPUT_PDB}"
         COMMAND
-            "${_fxc}" /nologo ${_fxc_output_args} ${_fxc_OUTPUT}
-            "$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:/Fd${_fxc_OUTPUT}.pdb>"
-            "/T${_fxc_PROFILE}" $<$<CONFIG:Debug>:/Od> $<$<CONFIG:Debug>:/Zss>
+            "${_fxc}"
+            /nologo
+            ${_fxc_output_args} ${_fxc_OUTPUT}
+            $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:/Fd>
+            $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:${_fxc_OUTPUT_PDB}>
+            /T${_fxc_PROFILE}
+            /E${_fxc_ENTRY_POINT}
+            $<$<CONFIG:Debug>:/Od> 
+            $<$<CONFIG:Debug>:/Zss>
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:/Zi>
             "${_fxc_INPUT}"
         MAIN_DEPENDENCY "${_fxc_INPUT}"

@@ -8,18 +8,20 @@ if(NOT TARGET openxr-gfxwrapper)
         find_package(OpenGL)
     endif()
 
-    if(OPENGL_FOUND OR OpenGLES_FOUND)
+    if(OpenGL_FOUND OR OpenGLES_FOUND)
         add_library(
-            openxr-gfxwrapper STATIC
-            ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.c
-            ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.h
+                openxr-gfxwrapper STATIC
+                ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.c
+                ${openxr_SOURCE_DIR}/src/common/gfxwrapper_opengl.h
         )
         target_include_directories(
-            openxr-gfxwrapper PUBLIC ${openxr_SOURCE_DIR}/external/include
+                openxr-gfxwrapper PUBLIC
+                ${openxr_SOURCE_DIR}/src/common
+                ${openxr_SOURCE_DIR}/external/include
         )
         if(ANDROID)
             target_link_libraries(
-                openxr-gfxwrapper PUBLIC OpenGLES::V31 EGL::EGL
+                    openxr-gfxwrapper PUBLIC ${OpenGLES_V3_LIBRARY} EGL::EGL
             )
         else()
             target_link_libraries(openxr-gfxwrapper PUBLIC OpenGL::GL)

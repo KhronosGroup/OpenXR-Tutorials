@@ -5,18 +5,38 @@
 // OpenXR Tutorial for Khronos Group
 
 #include <DebugOutput.h>
-// XR_DOCS_TAG_BEGIN_include_GraphicsAPIs
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D11
 #include <GraphicsAPI_D3D11.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_D3D11
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D12
 #include <GraphicsAPI_D3D12.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_D3D12
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL
 #include <GraphicsAPI_OpenGL.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL_ES
 #include <GraphicsAPI_OpenGL_ES.h>
+// XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL_ES
+// XR_DOCS_TAG_BEGIN_include_GraphicsAPI_Vulkan
 #include <GraphicsAPI_Vulkan.h>
-// XR_DOCS_TAG_END_include_GraphicsAPIs
+// XR_DOCS_TAG_END_include_GraphicsAPI_Vulkan
+// XR_DOCS_TAG_BEGIN_include_OpenXRDebugUtils
 #include <OpenXRDebugUtils.h>
+// XR_DOCS_TAG_END_include_OpenXRDebugUtils
 
-#include <memory>
+// XR_DOCS_TAG_BEGIN_include_linear_algebra
+// include xr linear algebra for XrVector and XrMatrix classes.
+#include <xr_linear_algebra.h>
+// Declare some useful operators for vectors:
+XrVector3f operator-(XrVector3f a, XrVector3f b) {
+    return {a.x - b.x, a.y - b.y, a.z - b.z};
+}
+XrVector3f operator*(XrVector3f a, float b) {
+    return {a.x * b, a.y * b, a.z * b};
+}
+// XR_DOCS_TAG_END_include_linear_algebra
 
-#define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_3_2
+#define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_3_3
 
 class OpenXRTutorial {
 public:
@@ -53,6 +73,9 @@ public:
         CreateSwapchain();
 #endif
 #endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_3
+        CreateResources();
+#endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_3
         while (m_applicationRunning) {
@@ -70,7 +93,12 @@ public:
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         DestroyReferenceSpace();
 #endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_3
+        DestroyResources();
+#endif
+#if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_2_2
         DestroySession();
+#endif
 
         DestroyDebugMessenger();
         DestroyInstance();
@@ -110,7 +138,8 @@ private:
         // Check the requested API layers against the ones from the OpenXR. If found add it to the Active API Layers.
         for (auto &requestLayer : m_apiLayers) {
             for (auto &layerProperty : apiLayerProperties) {
-                if (strcmp(requestLayer.c_str(), layerProperty.layerName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestLayer.c_str(), layerProperty.layerName) != 0) {
                     continue;
                 } else {
                     m_activeAPILayers.push_back(requestLayer.c_str());
@@ -126,21 +155,23 @@ private:
         extensionProperties.resize(extensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
 
-        // Check the requested Instance Extensions against the ones from the OpenXR. If found add it to Active Instance Extensions.
+        // Check the requested Instance Extensions against the ones from the OpenXR runtime.
+        // If an extension is found add it to Active Instance Extensions.
         // Log error if the Instance Extension is not found.
-        for (auto &requestExtension : m_instanceExtensions) {
+        for (auto &requestedInstanceExtension : m_instanceExtensions) {
             bool found = false;
             for (auto &extensionProperty : extensionProperties) {
-                if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestedInstanceExtension.c_str(), extensionProperty.extensionName) != 0) {
                     continue;
                 } else {
-                    m_activeInstanceExtensions.push_back(requestExtension.c_str());
+                    m_activeInstanceExtensions.push_back(requestedInstanceExtension.c_str());
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                std::cerr << "Failed to find OpenXR instance extension: " << requestExtension << "\n";
+                std::cerr << "Failed to find OpenXR instance extension: " << requestedInstanceExtension << std::endl;
             }
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension
@@ -176,7 +207,7 @@ private:
     void DestroyDebugMessenger() {
         // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         // Check that "XR_EXT_debug_utils" is in the active Instance Extensions before destroying the XrDebugUtilsMessengerEXT.
-        if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+        if (m_debugUtilsMessenger != XR_NULL_HANDLE) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);  // From OpenXRDebugUtils.h.
         }
         // XR_DOCS_TAG_END_DestroyDebugMessenger
@@ -215,7 +246,6 @@ private:
         m_environmentBlendModes.resize(environmentBlendModeSize);
         OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, m_environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
 
-        // Select the first Environment Blend Mode as our default.
         // Pick the first application supported blend mode supported by the hardware.
         for (const XrEnvironmentBlendMode &environmentBlendMode : m_applicationEnvironmentBlendModes) {
             if (std::find(m_environmentBlendModes.begin(), m_environmentBlendModes.end(), environmentBlendMode) != m_environmentBlendModes.end()) {
@@ -223,9 +253,8 @@ private:
                 break;
             }
         }
-        if(m_environmentBlendMode==XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM)
-        {
-            std::cerr<<"Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE.\n";
+        if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM) {
+            std::cerr << "Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE." << std::endl;
             m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         }
         // XR_DOCS_TAG_END_GetEnvironmentBlendModes
@@ -290,6 +319,151 @@ private:
         // XR_DOCS_TAG_END_DestroySession
     }
 
+    // XR_DOCS_TAG_BEGIN_CreateResources1
+    struct CameraConstants {
+        XrMatrix4x4f viewProj;
+        XrMatrix4x4f modelViewProj;
+        XrMatrix4x4f model;
+        XrVector4f color;
+        XrVector4f pad1;
+        XrVector4f pad2;
+        XrVector4f pad3;
+    };
+    CameraConstants cameraConstants;
+    XrVector4f normals[6] = {
+        {1.00f, 0.00f, 0.00f, 0},
+        {-1.00f, 0.00f, 0.00f, 0},
+        {0.00f, 1.00f, 0.00f, 0},
+        {0.00f, -1.00f, 0.00f, 0},
+        {0.00f, 0.00f, 1.00f, 0},
+        {0.00f, 0.0f, -1.00f, 0}};
+    // XR_DOCS_TAG_END_CreateResources1
+
+    void CreateResources() {
+        // XR_DOCS_TAG_BEGIN_CreateResources1_1
+        // Vertices for a 1x1x1 meter cube. (Left/Right, Top/Bottom, Front/Back)
+        constexpr XrVector4f vertexPositions[] = {
+            {+0.5f, +0.5f, +0.5f, 1.0f},
+            {+0.5f, +0.5f, -0.5f, 1.0f},
+            {+0.5f, -0.5f, +0.5f, 1.0f},
+            {+0.5f, -0.5f, -0.5f, 1.0f},
+            {-0.5f, +0.5f, +0.5f, 1.0f},
+            {-0.5f, +0.5f, -0.5f, 1.0f},
+            {-0.5f, -0.5f, +0.5f, 1.0f},
+            {-0.5f, -0.5f, -0.5f, 1.0f}};
+
+#define CUBE_FACE(V1, V2, V3, V4, V5, V6) vertexPositions[V1], vertexPositions[V2], vertexPositions[V3], vertexPositions[V4], vertexPositions[V5], vertexPositions[V6],
+
+        XrVector4f cubeVertices[] = {
+            CUBE_FACE(2, 1, 0, 2, 3, 1)  // -X
+            CUBE_FACE(6, 4, 5, 6, 5, 7)  // +X
+            CUBE_FACE(0, 1, 5, 0, 5, 4)  // -Y
+            CUBE_FACE(2, 6, 7, 2, 7, 3)  // +Y
+            CUBE_FACE(0, 4, 6, 0, 6, 2)  // -Z
+            CUBE_FACE(1, 3, 7, 1, 7, 5)  // +Z
+        };
+
+        uint32_t cubeIndices[36] = {
+            0, 1, 2, 3, 4, 5,        // -X
+            6, 7, 8, 9, 10, 11,      // +X
+            12, 13, 14, 15, 16, 17,  // -Y
+            18, 19, 20, 21, 22, 23,  // +Y
+            24, 25, 26, 27, 28, 29,  // -Z
+            30, 31, 32, 33, 34, 35,  // +Z
+        };
+
+        m_vertexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices), &cubeVertices});
+
+        m_indexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices), &cubeIndices});
+
+        size_t numberOfCuboids = 2;
+        m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants) * numberOfCuboids, nullptr});
+        m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
+        // XR_DOCS_TAG_END_CreateResources1_1
+
+        // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL
+        if (m_apiType == OPENGL) {
+            std::string vertexSource = ReadTextFile("VertexShader.glsl");
+            m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+            std::string fragmentSource = ReadTextFile("PixelShader.glsl");
+            m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        }
+        // XR_DOCS_TAG_END_CreateResources2_OpenGL
+        // XR_DOCS_TAG_BEGIN_CreateResources2_VulkanWindowsLinux
+        if (m_apiType == VULKAN) {
+            std::vector<char> vertexSource = ReadBinaryFile("VertexShader.spv");
+            m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+            std::vector<char> fragmentSource = ReadBinaryFile("PixelShader.spv");
+            m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        }
+        // XR_DOCS_TAG_END_CreateResources2_VulkanWindowsLinux
+#if defined(__ANDROID__)
+        // XR_DOCS_TAG_BEGIN_CreateResources2_VulkanAndroid
+        if (m_apiType == VULKAN) {
+            std::vector<char> vertexSource = ReadBinaryFile("shaders/VertexShader.spv", androidApp->activity->assetManager);
+            m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+            std::vector<char> fragmentSource = ReadBinaryFile("shaders/PixelShader.spv", androidApp->activity->assetManager);
+            m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        }
+        // XR_DOCS_TAG_END_CreateResources2_VulkanAndroid
+        // XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
+        if (m_apiType == OPENGL_ES) {
+            std::string vertexSource = ReadTextFile("shaders/VertexShader_GLES.glsl", androidApp->activity->assetManager);
+            m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+            std::string fragmentSource = ReadTextFile("shaders/PixelShader_GLES.glsl", androidApp->activity->assetManager);
+            m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        }
+        // XR_DOCS_TAG_END_CreateResources2_OpenGLES
+#endif
+        // XR_DOCS_TAG_BEGIN_CreateResources2_D3D
+        if (m_apiType == D3D11) {
+            std::vector<char> vertexSource = ReadBinaryFile("VertexShader_5_0.cso");
+            m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+            std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_5_0.cso");
+            m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        }
+        if (m_apiType == D3D12) {
+            std::vector<char> vertexSource = ReadBinaryFile("VertexShader_5_1.cso");
+            m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
+
+            std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_5_1.cso");
+            m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
+        }
+        // XR_DOCS_TAG_END_CreateResources2_D3D
+
+        // XR_DOCS_TAG_BEGIN_CreateResources3
+        GraphicsAPI::PipelineCreateInfo pipelineCI;
+        pipelineCI.shaders = {m_vertexShader, m_fragmentShader};
+        pipelineCI.vertexInputState.attributes = {{0, 0, GraphicsAPI::VertexType::VEC4, 0, "TEXCOORD"}};
+        pipelineCI.vertexInputState.bindings = {{0, 0, 4 * sizeof(float)}};
+        pipelineCI.inputAssemblyState = {GraphicsAPI::PrimitiveTopology::TRIANGLE_LIST, false};
+        pipelineCI.rasterisationState = {false, false, GraphicsAPI::PolygonMode::FILL, GraphicsAPI::CullMode::BACK, GraphicsAPI::FrontFace::COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f};
+        pipelineCI.multisampleState = {1, false, 1.0f, 0xFFFFFFFF, false, false};
+        pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
+        pipelineCI.colorBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColorComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
+        pipelineCI.colorFormats = {m_swapchainAndDepthImages[0].swapchainFormat};
+        pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
+        pipelineCI.layout = {{0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
+                             {1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
+                             {2, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT}};
+        m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
+        // XR_DOCS_TAG_END_CreateResources3
+    }
+    void DestroyResources() {
+        // XR_DOCS_TAG_BEGIN_DestroyResources
+        m_graphicsAPI->DestroyPipeline(m_pipeline);
+        m_graphicsAPI->DestroyShader(m_fragmentShader);
+        m_graphicsAPI->DestroyShader(m_vertexShader);
+        m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Camera);
+        m_graphicsAPI->DestroyBuffer(m_uniformBuffer_Normals);
+        m_graphicsAPI->DestroyBuffer(m_indexBuffer);
+        m_graphicsAPI->DestroyBuffer(m_vertexBuffer);
+        // XR_DOCS_TAG_END_DestroyResources
+    }
+
     void PollEvents() {
         // XR_DOCS_TAG_BEGIN_PollEvents
         XrResult result = XR_SUCCESS;
@@ -320,6 +494,7 @@ private:
                 break;
             }
             // Log that there's a reference space change pending.
+            // TODO: expand on this in text.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
@@ -404,15 +579,15 @@ private:
             XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-            swapchainCI.format = m_graphicsAPI->SelectSwapchainFormat(formats); // Use GraphicsAPI to select the first compatible format.
-            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount; // Use the recommended values from the XrViewConfigurationView.
+            swapchainCI.format = m_graphicsAPI->SelectSwapchainFormat(formats);               // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
             swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
             swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
             swapchainCI.faceCount = 1;
             swapchainCI.arraySize = 1;
             swapchainCI.mipCount = 1;
             OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &swapchainAndDepthImage.swapchain), "Failed to create Swapchain");
-            swapchainAndDepthImage.swapchainFormat = swapchainCI.format; // Save the swapchain format for later use.
+            swapchainAndDepthImage.swapchainFormat = swapchainCI.format;  // Save the swapchain format for later use.
             // XR_DOCS_TAG_END_CreateSwapchain
 
             // XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
@@ -492,6 +667,33 @@ private:
         // XR_DOCS_TAG_END_DestroySwapchain
     }
 
+    // XR_DOCS_TAG_BEGIN_RenderCuboid1
+    size_t renderCuboidIndex = 0;
+    // XR_DOCS_TAG_END_RenderCuboid1
+    void RenderCuboid(XrPosef pose, XrVector3f scale, XrVector3f color) {
+        // XR_DOCS_TAG_BEGIN_RenderCuboid2
+        XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
+
+        XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
+        cameraConstants.color = {color.x, color.y, color.z, 1.0};
+        size_t offsetCameraUB = sizeof(CameraConstants) * renderCuboidIndex;
+
+        m_graphicsAPI->SetPipeline(m_pipeline);
+
+        m_graphicsAPI->SetBufferData(m_uniformBuffer_Camera, offsetCameraUB, sizeof(CameraConstants), &cameraConstants);
+        m_graphicsAPI->SetDescriptor({0, m_uniformBuffer_Camera, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false, offsetCameraUB, sizeof(CameraConstants)});
+        m_graphicsAPI->SetDescriptor({1, m_uniformBuffer_Normals, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false, 0, sizeof(normals)});
+
+        m_graphicsAPI->UpdateDescriptors();
+
+        m_graphicsAPI->SetVertexBuffers(&m_vertexBuffer, 1);
+        m_graphicsAPI->SetIndexBuffer(m_indexBuffer);
+        m_graphicsAPI->DrawIndexed(36);
+
+        renderCuboidIndex++;
+        // XR_DOCS_TAG_END_RenderCuboid2
+    }
+
     void RenderFrame() {
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         // XR_DOCS_TAG_BEGIN_RenderFrame
@@ -532,11 +734,11 @@ private:
     }
 
     bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews) {
-        // XR_DOCS_TAG_BEGIN_RenderLayer
+        // XR_DOCS_TAG_BEGIN_RenderLayer1
         // Locate the views from the view configuration with in the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
 
-        XrViewState viewState{XR_TYPE_VIEW_STATE}; //Will contain information on whether the position and/or orientation is valid and/or tracked.
+        XrViewState viewState{XR_TYPE_VIEW_STATE};  // Will contain information on whether the position and/or orientation is valid and/or tracked.
         XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = m_viewConfiguration;
         viewLocateInfo.displayTime = predictedDisplayTime;
@@ -550,7 +752,7 @@ private:
 
         // Resize the layer projection views to match the view count. The layer projection views are used in the layer projection.
         layerProjectionViews.resize(viewCount, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW});
-        
+
         // Per view in the view configuration:
         for (uint32_t i = 0; i < viewCount; i++) {
             // Acquire and wait for an image from the swapchain.
@@ -580,7 +782,7 @@ private:
             layerProjectionViews[i].subImage.imageRect.offset.y = 0;
             layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
             layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
-            layerProjectionViews[i].subImage.imageArrayIndex = 0; // Useful for multiview rendering.
+            layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
 
             // Rendering code to clear the color and depth image views.
             m_graphicsAPI->BeginRendering();
@@ -593,7 +795,34 @@ private:
                 m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
             }
             m_graphicsAPI->ClearDepth(m_swapchainAndDepthImages[i].depthImageView, 1.0f);
+            // XR_DOCS_TAG_END_RenderLayer1
 
+            // XR_DOCS_TAG_BEGIN_SetupFrameRendering
+            m_graphicsAPI->SetRenderAttachments(&m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, m_swapchainAndDepthImages[i].depthImageView, width, height, m_pipeline);
+            m_graphicsAPI->SetViewports(&viewport, 1);
+            m_graphicsAPI->SetScissors(&scissor, 1);
+
+            // Compute the view-projection transform.
+            // All matrices (including OpenXR's) are column-major, right-handed.
+            XrMatrix4x4f proj;
+            XrMatrix4x4f_CreateProjectionFov(&proj, m_apiType, views[i].fov, 0.05f, 100.0f);
+            XrMatrix4x4f toView;
+            XrVector3f scale1m{1.0f, 1.0f, 1.0f};
+            XrMatrix4x4f_CreateTranslationRotationScale(&toView, &views[i].pose.position, &views[i].pose.orientation, &scale1m);
+            XrMatrix4x4f view;
+            XrMatrix4x4f_InvertRigidBody(&view, &toView);
+            XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
+            // XR_DOCS_TAG_END_SetupFrameRendering
+
+            // XR_DOCS_TAG_BEGIN_CallRenderCuboid
+            renderCuboidIndex = 0;
+            // Draw a floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
+            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM, 0.0f}}, {2.0f, 0.1f, 2.0f}, {0.4f, 0.5f, 0.5f});
+            // Draw a "table".
+            RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -m_viewHeightM + 0.9f, -0.7f}}, {1.0f, 0.2f, 1.0f}, {0.6f, 0.6f, 0.4f});
+            // XR_DOCS_TAG_END_CallRenderCuboid
+
+            // XR_DOCS_TAG_BEGIN_RenderLayer2
             m_graphicsAPI->EndRendering();
 
             // Give the swapchain image back to OpenXR, allowing the compositor to use the image.
@@ -608,7 +837,7 @@ private:
         layerProjection.views = layerProjectionViews.data();
 
         return true;
-        // XR_DOCS_TAG_END_RenderLayer
+        // XR_DOCS_TAG_END_RenderLayer2
     }
 
 #if defined(__ANDROID__)
@@ -672,7 +901,7 @@ private:
             // Poll and process the Android OS system events.
             struct android_poll_source *source = nullptr;
             int events = 0;
-            // The timeout is depended on whether that applicaion is active.
+            // The timeout depends on whether the application is active.
             const int timeoutMilliseconds = (!androidAppState.resumed && !m_sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
             if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
                 if (source != nullptr) {
@@ -691,11 +920,11 @@ private:
 #endif
 
 private:
-    XrInstance m_xrInstance = {};
-    std::vector<const char *> m_activeAPILayers;
-    std::vector<const char *> m_activeInstanceExtensions;
-    std::vector<std::string> m_apiLayers;
-    std::vector<std::string> m_instanceExtensions;
+    XrInstance m_xrInstance = XR_NULL_HANDLE;
+    std::vector<const char *> m_activeAPILayers = {};
+    std::vector<const char *> m_activeInstanceExtensions = {};
+    std::vector<std::string> m_apiLayers = {};
+    std::vector<std::string> m_instanceExtensions = {};
 
     XrDebugUtilsMessengerEXT m_debugUtilsMessenger = XR_NULL_HANDLE;
 
@@ -729,10 +958,21 @@ private:
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
     XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
+
+    // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
+    float m_viewHeightM = 1.5f;
+
+    void *m_vertexBuffer = nullptr;
+    void *m_indexBuffer = nullptr;
+    void *m_uniformBuffer_Camera = nullptr;
+    void *m_uniformBuffer_Normals = nullptr;
+
+    void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
+    void *m_pipeline = nullptr;
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type api) {
-    DebugOutput debugOutput; // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
+    DebugOutput debugOutput;  // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
     std::cout << "OpenXR Tutorial Chapter 3." << std::endl;
 
     OpenXRTutorial app(api);

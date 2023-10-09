@@ -10,6 +10,6 @@ layout(std140, binding = 2) uniform Data {
 d_Data;
 void main() {
     uint i = i_TexCoord.x;
-	float light=0.1+0.9*clamp(i_Normal.g,0.0,1.0);
-    o_Colour = vec4(light*i_Colour.rgb,1.0);
+    float light = 0.1 + 0.9 * clamp(i_Normal.g, 0.0, 1.0);
+    o_Colour = vec4(light * i_Colour.rgb, 1.0);
 }

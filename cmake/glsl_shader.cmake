@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 find_package(Vulkan QUIET)
 
+# find glslc
 if(ANDROID)
     file(GLOB glslc_folders ${ANDROID_NDK}/shader-tools/*)
     find_program(
@@ -18,10 +19,14 @@ else()
         HINTS ${Vulkan_GLSLC_EXECUTABLE}
     )
 endif()
+
+# glslangValidator
 find_program(
     GLSLANG_VALIDATOR glslangValidator
     HINTS ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE}
 )
+
+# log found spirv compilers
 if(GLSL_COMPILER)
     message(STATUS "Found glslc: ${GLSL_COMPILER}")
 elseif(GLSLANG_VALIDATOR)
@@ -30,7 +35,13 @@ endif()
 
 function(glsl_spv_shader)
     set(options GENERATE_HEADER HAVE_PRECOMPILED)
-    set(oneValueArgs INPUT OUTPUT STAGE TARGET_ENV)
+    set(oneValueArgs
+        INPUT
+        OUTPUT
+        STAGE
+        ENTRY_POINT
+        TARGET_ENV
+    )
     set(multiValueArgs EXTRA_DEPENDS)
     cmake_parse_arguments(
         _glsl_spv
@@ -49,14 +60,15 @@ function(glsl_spv_shader)
         add_custom_command(
             OUTPUT "${_glsl_spv_OUTPUT}"
             COMMAND
-                "${GLSL_COMPILER}" #
-                ${_glsl_spv_output_type_arg} #
-                "-fshader-stage=${_glsl_spv_STAGE}" #
-                "${_glsl_spv_INPUT}" #
-                -o "${_glsl_spv_OUTPUT}" #
-                "--target-env=${_glsl_spv_TARGET_ENV}" #
-                $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>,-g,> #
-                $<IF:$<CONFIG:Debug>,-O0,-O> #
+                "${GLSL_COMPILER}"
+                ${_glsl_spv_output_type_arg}
+                -o "${_glsl_spv_OUTPUT}"
+                "-fshader-stage=${_glsl_spv_STAGE}"
+                "-fentry-point=${_glsl_spv_ENTRY_POINT}"
+                $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>,-g,>
+                $<IF:$<CONFIG:Debug>,-O0,-O>
+                "--target-env=${_glsl_spv_TARGET_ENV}"
+                "${_glsl_spv_INPUT}"
             MAIN_DEPENDENCY "${_glsl_spv_INPUT}"
             DEPENDS "${_glsl_spv_INPUT}" ${_glsl_spv_EXTRA_DEPENDS}
             USES_TERMINAL VERBATIM
@@ -71,16 +83,16 @@ function(glsl_spv_shader)
         add_custom_command(
             OUTPUT "${_glsl_spv_OUTPUT}"
             COMMAND
-                "${GLSLANG_VALIDATOR}" #
-                -S "${_glsl_spv_STAGE}" #
-                #--nan-clamp #
+                "${GLSLANG_VALIDATOR}"
+                -o "${_glsl_spv_OUTPUT}"
+                -S "${_glsl_spv_STAGE}"
+                -e "${_glsl_spv_ENTRY_POINT}"
                 -x # output as hex
-                -o "${_glsl_spv_OUTPUT}" #
-                $<$<CONFIG:Debug,RelWithDebInfo>:-gVS> #
-                $<$<CONFIG:Debug>:-Od> #
-                $<$<CONFIG:Release>:-g0> #
-                "--target-env" "${_glsl_spv_TARGET_ENV}" #
-                "${_glsl_spv_INPUT}" #
+                $<$<CONFIG:Debug,RelWithDebInfo>:-gVS>
+                $<$<CONFIG:Debug>:-Od>
+                $<$<CONFIG:Release>:-g0>
+                "--target-env" "${_glsl_spv_TARGET_ENV}"
+                "-V ${_glsl_spv_INPUT}"
             MAIN_DEPENDENCY "${_glsl_spv_INPUT}"
             DEPENDS "${_glsl_spv_INPUT}" ${_glsl_spv_EXTRA_DEPENDS}
             USES_TERMINAL VERBATIM
