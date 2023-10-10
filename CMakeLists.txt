@@ -40,3 +40,6 @@ endif()
 if(WIN32) # Windows only
     add_subdirectory(GraphicsAPI_Test)
 endif()
+
+# Check license information
+add_subdirectory(reuse)
