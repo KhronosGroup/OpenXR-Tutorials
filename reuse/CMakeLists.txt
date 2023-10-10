@@ -27,15 +27,11 @@ endif()
 
 #Append PATH
 if (WIN32)
-	set(REUSE_PATH "%USERPROFILE%/AppData/Roaming/Python/Python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}/Scripts")
-	#message(STATUS "Adding ${REUSE_PATH} to path.")
-	LIST(APPEND CMAKE_PROGRAM_PATH ${REUSE_PATH})
+	file(REAL_PATH "~/AppData/Roaming/Python/Python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}/Scripts" REUSE_PATH EXPAND_TILDE)
 elseif (LINUX)
 	set(REUSE_PATH "~/.local/bin")
-	#message(STATUS "Adding ${REUSE_PATH} to path.")
-	LIST(APPEND CMAKE_PROGRAM_PATH "~/.local/bin")
 endif()
-#message(STATUS ${CMAKE_PROGRAM_PATH})
 
-execute_process(COMMAND reuse lint 
+message(STATUS "${REUSE_PATH}/reuse lint")
+execute_process(COMMAND ${REUSE_PATH}/reuse lint 
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
