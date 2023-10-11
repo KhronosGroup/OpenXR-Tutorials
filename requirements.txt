@@ -1,0 +1,5 @@
+
+myst_parser
+sphinxcontrib-mermaid
+sphinxcontrib-jquery
+sphinx_copybutton
