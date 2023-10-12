@@ -5562,7 +5562,6 @@ hr
     white-space: nowrap;
     max-width: 100%;
     background: #fff;
-    border: 1px solid #e1e4e5;
     font-size: 90%;
     padding: 0 5px;
     font-family: Menlo,Monaco,Consolas,Liberation Mono,Courier New,Courier,monospace;
@@ -6405,7 +6404,7 @@ footer p
 
     .wy-nav-side.shift
     {
-        width: 85%;
+        width: 45%;
         left: 0
     }
 
@@ -6428,7 +6427,7 @@ footer p
     {
         position: fixed;
         min-width: 100%;
-        left: 85%;
+        left: 45%;
         top: 0;
         height: 100%;
         overflow: hidden
