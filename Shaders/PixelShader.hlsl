@@ -1,3 +1,7 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
 //Color Fragment Shader
 struct PS_IN
 {

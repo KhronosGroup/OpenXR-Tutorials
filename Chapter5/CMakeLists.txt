@@ -1,3 +1,7 @@
+# Copyright 2023, The Khronos Group Inc.
+#
+# SPDX-License-Identifier: MIT
+
 # XR_DOCS_TAG_BEGIN_SetProjectName5
 cmake_minimum_required(VERSION 3.22.1)
 set(PROJECT_NAME OpenXRTutorialChapter5)

@@ -1,3 +1,7 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
 #version 310 es
 //Color Fragment Shader
 layout(location = 0) in flat uvec2 i_TexCoord;
