@@ -1,0 +1,55 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: OpenXR-Tutorials
+Upstream-Contact: The Khronos Group Inc.
+Source: https://github.com/KhronosGroup/OpenXR-Tutorials
+
+Files: .github/*
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+
+Files: Chapter2/*
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+
+Files: Chapter3/*
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+
+Files: Chapter4/*
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+
+Files: Chapter5/*
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+
+Files: tutorial/*
+Copyright: 2023 The Khronos Group Inc.
+License: CC-BY-4.0 
+Comment: https://github.com/KhronosGroup/OpenXR-Tutorials/issues/12 (Text)
+
+Files: thirdparty/openxr_loader_manifest_only-1.0.27.aar
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0 
+Comment: https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/LICENSE
+
+Files: .clang-format
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+
+Files: .gitignore
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+
+Files: build-site.sh
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+
+Files: README.md
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+
+Files: requirements.txt
+Copyright: 2023 The Khronos Group Inc.
+License: MIT
+

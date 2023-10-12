@@ -1,3 +1,7 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
 #version 450
 #extension GL_KHR_vulkan_glsl : enable
 // Color Vertex Shader

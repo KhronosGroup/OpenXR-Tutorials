@@ -1,4 +1,8 @@
- #version 310 es
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: MIT
+
+#version 310 es
 //Color Vertex Shader
 layout(std140, binding = 0) uniform CameraConstants {
     mat4 viewProj;

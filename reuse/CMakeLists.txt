@@ -1,3 +1,7 @@
+# Copyright 2023, The Khronos Group Inc.
+#
+# SPDX-License-Identifier: MIT
+
 cmake_minimum_required(VERSION 3.22)
 
 # Find Python
