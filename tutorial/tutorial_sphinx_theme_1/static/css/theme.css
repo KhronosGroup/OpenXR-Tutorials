@@ -5835,7 +5835,8 @@ html
     position: relative;
     background: #ffffff18;
     border: none;
-    padding: .4045em 1.618em
+    padding: .4045em 1.618em;
+    padding-left: 50px;
 }
 
 .wy-menu-vertical li.current > a:hover, .wy-menu-vertical li.on a:hover
@@ -7537,7 +7538,7 @@ span[id*=MathJax-Span]
 {
     .api-tab-img
     {
-	    height:32px;
+	    height:24px;
     }
 }
 
@@ -7746,8 +7747,8 @@ section >h1:before{
     width: 40px;
     height: 32px;
     margin-left: -20px;
-    padding-top: 12px;
     padding: 1px;
+    padding-top: 12px;
     display: inline-block;
     vertical-align: -25%;
 }
@@ -7776,7 +7777,7 @@ section >h1:before{
 }
 
 .toctree-l1> a{
-    padding-left:40px;
+    padding-left:50px;
 }
 #toc_interactions>a:before{
     background: url(icons/HandsetIcon.svg);
