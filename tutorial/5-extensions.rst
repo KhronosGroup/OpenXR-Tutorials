@@ -1,6 +1,6 @@
-﻿###############
+﻿############
 5 Extensions
-###############
+############
 
 OpenXR is designed to be an extensible API. As we've seen above, the call to xrCreateInstance() can include one or more extension names, and we can query xrEnumerateInstanceExtensionProperties() in advance to find out which extensions are supported by the runtime. In this section, we'll see how extensions add to the core API and look at a specific case, the hand tracking extension.
 
@@ -116,3 +116,7 @@ Now in RenderLayer(), just before the call to `m_graphicsAPI->EndRendering()`, a
 	:dedent: 3
 
 Run the app: you'll now see both hands, rendered as blocks.
+
+***************************
+5.2 Composition Layer Depth
+***************************

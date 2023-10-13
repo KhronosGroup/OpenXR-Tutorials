@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-//Color Fragment Shader
 struct PS_IN
 {
     float4 i_Position : SV_Position;

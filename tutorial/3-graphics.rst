@@ -563,8 +563,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D11.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetDepthFormat_D3D11
+		:end-at: XR_DOCS_TAG_END_GetDepthFormat_D3D11
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
@@ -575,8 +575,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D12.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetDepthFormat_D3D12
+		:end-at: XR_DOCS_TAG_END_GetDepthFormat_D3D12
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
@@ -587,8 +587,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetDepthFormat_OpenGL
+		:end-at: XR_DOCS_TAG_END_GetDepthFormat_OpenGL
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
@@ -599,8 +599,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL_ES.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetDepthFormat_OpenGL_ES
+		:end-at: XR_DOCS_TAG_END_GetDepthFormat_OpenGL_ES
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
@@ -611,8 +611,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetDepthFormat_Vulkan
+		:end-at: XR_DOCS_TAG_END_GetDepthFormat_Vulkan
 		:dedent: 4
 	
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
@@ -637,8 +637,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D11.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D11
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_D3D11
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
@@ -649,13 +649,13 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D12.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D12
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_D3D12
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
 
-	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET``. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
+	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET`` for color and ``D3D12_RESOURCE_STATE_DEPTH_WRITE`` for depth. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
 
 .. container:: opengl
 
@@ -663,8 +663,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_OpenGL
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
@@ -675,8 +675,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL_ES.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL_ES
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_OpenGL_ES
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
@@ -687,11 +687,11 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_Vulkan
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_Vulkan
 		:dedent: 4
 
-	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL``. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.
+	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`` for color and ``VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL`` for depth. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.
 
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
 

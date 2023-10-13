@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 #version 450
-// Texture Fragment Shader
 layout(location = 0) in flat uvec2 i_TexCoord;
 layout(location = 1) in vec3 i_Normal;
 layout(location = 2) in flat vec3 i_Colour;

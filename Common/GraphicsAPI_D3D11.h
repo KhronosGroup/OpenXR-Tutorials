@@ -20,12 +20,20 @@ public:
     virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) override;
     virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
 
+    // XR_DOCS_TAG_BEGIN_GetDepthFormat_D3D11
     virtual int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }
+    // XR_DOCS_TAG_END_GetDepthFormat_D3D11
 
     virtual void* GetGraphicsBinding() override;
-    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
-    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
-    virtual void* GetSwapchainImage(uint32_t index) override { return swapchainImages[index].texture; }
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) override;
+    virtual void FreeSwapchainImageData(XrSwapchain swapchain) override {
+        swapchainImagesMap[swapchain].second.clear();
+        swapchainImagesMap.erase(swapchain);
+    }
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
+    // XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D11
+    virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override { return swapchainImagesMap[swapchain].second[index].texture; }
+    // XR_DOCS_TAG_END_GetSwapchainImage_D3D11
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
@@ -79,7 +87,7 @@ private:
     PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR = nullptr;
     XrGraphicsBindingD3D11KHR graphicsBinding{};
 
-    std::vector<XrSwapchainImageD3D11KHR> swapchainImages{};
+    std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageD3D11KHR>>> swapchainImagesMap{};
 
     std::unordered_map<ID3D11Buffer*, BufferCreateInfo> buffers;
 
