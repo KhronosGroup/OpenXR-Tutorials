@@ -7762,9 +7762,6 @@ section >h1:before{
     background-repeat: no-repeat;
 }
 
-#toc_interactions> a{
-    padding-left:40px;
-}
 .toctree-l1>a:before{
 	content: '';
     width: 36px;

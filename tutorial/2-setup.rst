@@ -2,8 +2,7 @@
 2 OpenXR Setup
 ##############
 
-With your project setup and your application building and running, we can start to use OpenXR to create our application.
-The goal of this chapter is to create an ``XrInstance`` and an ``XrSession``, and setup the OpenXR event loop. This OpenXR code is needed to setup the core functionality of an OpenXR application to have that application interact with the OpenXR runtime and your graphics API correctly.
+With your project created and your application building and running, we can start to use OpenXR. The goal of this chapter is to create an ``XrInstance`` and an ``XrSession``, and setup the OpenXR event loop. This OpenXR code is needed to setup the core functionality of an OpenXR application to have that application interact with the OpenXR runtime and your graphics API correctly.
 
 ****************************************
 2.1 Creating an XrInstance / xrGetSystem
@@ -14,7 +13,7 @@ We will continue to use the ``OpenXRTutorial`` class in ``Chapter2/main.cpp`` th
 Here, we will add the following highlighted text to the ``OpenXRTutorial`` class:
 
 .. code-block:: cpp
-	:emphasize-lines: 8-15 , 19-43
+	:emphasize-lines: 8-15 , 19-44
 	
 	class OpenXRTutorial {
 	public:
@@ -59,6 +58,7 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId m_systemID = {};
 		XrSystemProperties m_systemProperties = {XR_TYPE_SYSTEM_PROPERTIES};
+		GraphicsAPI_Type m_apiType = UNKNOWN;
 	};
 
 First, we updated ``OpenXRTutorial::Run()`` to call the new methods ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()`` and ``DestroyInstance()`` in that order. Finally, we added those methods and the following members to the class within thier separate private sections.
@@ -76,6 +76,10 @@ The ``XrInstance`` is the foundational object that we need to create first. The 
 
 This structure allows you specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the ``XrApplicationInfo::apiVersion``. Here we use the ``XR_CURRENT_API_VERSION`` macro to specific the OpenXR version that we want to run. Also note here the use of ``strncpy()`` to set the applicationName and engineName. If you look at ``XrApplicationInfo::applicationName`` and ``XrApplicationInfo::engineName`` members, they are of type ``char[]``, hence you must copy your string into that ``char[]`` and you must also by aware of the allowable length.
 
+.. container:: vulkan
+
+	Note the slight difference in approach the OpenXR API takes compared to the Vulkan API. Name strings are explicitly copied into structures like ``XrApplicationInfo``, which contain fixed-size string buffers, whereas in Vulkan, structures such as ``VkApplicationInfo`` take pointers to C strings of arbitrary size.
+
 .. _instanceextensions:
 
 Similar to Vulkan, OpenXR allows applications to extend functionality past what is provided by the core specification. The functionality could be hardware/vendor specific. Most vital of course is which Graphics API to use with OpenXR. OpenXR supports D3D11, D3D12, Vulkan, OpenGL and OpenGL ES. Due the extensible nature of specification, it allows newer Graphics APIs and hardware functionality to be added with ease. Following on from the previous code in the ``CreateInstance()`` method, add the following:
@@ -86,7 +90,7 @@ Similar to Vulkan, OpenXR allows applications to extend functionality past what 
 	:end-before: XR_DOCS_TAG_END_instanceExtensions
 	:dedent: 12
 
-Here, we store in a vector of strings the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro that you have defined, this code will add the relevant extension.
+Here, we store in a vector of strings the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro you defined, this code will add the relevant extension.
 
 Not all API layers and extensions are available to use, so we much check which ones can use. We will use ``xrEnumerateApiLayerProperties()`` and ``xrEnumerateInstanceExtensionProperties()`` to check which ones the runtime can provide. We will do this by adding the following code to the ``CreateInstance()`` method.
 
@@ -98,9 +102,13 @@ Not all API layers and extensions are available to use, so we much check which o
 
 These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures - this is called the "two-call idiom". Before the second call, we need set ``XrApiLayerProperties::type`` or ``XrExtensionProperties::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layers and extensions, we use a nested loop to check to see whether an API layers or extensions is available and add it to the ``m_activeAPILayers`` and/or ``m_activeInstanceExtensions`` respectively. 
 
+.. container:: vulkan
+
+	There is a subtle difference here from the two-call idiom in the Vulkan API. In OpenXR, we provide an explicit capacity in the first argument, which provides an additional layer of memory-safety.
+
 Note the ``m_activeAPILayers`` and ``m_activeInstanceExtensions`` are of type ``std::vector<const char *>``. This will help us when fill out the next structure ``XrInstanceCreateInfo``.
 
-Now that we have assembled all of the information need we can go ahead and fill out the ``XrInstanceCreateInfo`` structure. Add the following code to the ``CreateInstance()`` method.
+Now we have assembled all of the information needed we will fill the ``XrInstanceCreateInfo`` structure. Add the following to the ``CreateInstance()`` method.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -108,9 +116,9 @@ Now that we have assembled all of the information need we can go ahead and fill 
 	:end-before: XR_DOCS_TAG_END_XrInstanceCreateInfo
 	:dedent: 8
 
-This section is fairly simple, as we have used the previously collected data and assigned it to the members in the ``XrInstanceCreateInfo`` structure. Then, we called ``xrCreateInstance()`` where we took pointers to the ``XrInstanceCreateInfo`` and ``XrInstance`` objects. When the function is called, if successful, it will return a value of ``XR_SUCCESS``, and ``XrInstance`` will be non-null.
+This section is fairly simple, as we have used the previously collected data and assigned it to the members in the ``XrInstanceCreateInfo`` structure. Then, we called ``xrCreateInstance()`` where we took pointers to the ``XrInstanceCreateInfo`` and ``XrInstance`` objects. When the function is called, if successful, it returns ``XR_SUCCESS`` and ``XrInstance`` will be non-null.
 
-At the end of the application, we should destroy the ``XrInstance``. This is simple done with the function ``xrDestroyInstance()``. Add the following code to the ``DestroyInstance()`` method:
+At the end of the application, we should destroy the ``XrInstance``. This is simple done with the function ``xrDestroyInstance()``. Add the following to the ``DestroyInstance()`` method:
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -126,26 +134,26 @@ Whilst we have an ``XrInstance``, let's check its properties. Add the following 
 	:end-before: XR_DOCS_TAG_END_GetInstanceProperties
 	:dedent: 8
 
-Here, we have initialized the ``XrInstanceProperties`` structure with the correct ``XrStructureType`` and passed it along with the ``XrInstance`` to the ``xrGetInstanceProperties()`` function. This function will fill out the rest of that structure for us to use. Next, we have loggod to stdout the runtime's name, and with the use of the ``XR_VERSION_MAJOR``, ``XR_VERSION_MINOR`` and ``XR_VERSION_PATCH`` macros, we have parsed and logged the runtime version.
+Here, we have initialized the ``XrInstanceProperties`` with the correct ``XrStructureType`` and passed it along with the ``XrInstance`` to ``xrGetInstanceProperties()``. This will fill the rest of that structure. Next, we logged out the runtime's name, and using the ``XR_VERSION_...`` macros, we parsed and logged the runtime version.
 
 2.1.2 XR_EXT_debug_utils
 ========================
 
-XR_EXT_debug_utils is an instance extension for OpenXR, which allows the application to get more information on any errors or warnings etc. raised by the runtime. You can specify which message severities and types will checked. If a debug message raised, it is passed to the callback function, which can optionally use the user data pointer provided in the ``XrDebugUtilsMessengerCreateInfoEXT`` structure.
+XR_EXT_debug_utils is an instance extension for OpenXR, which allows the application to get more information on errors, warnings and messages raised by the runtime. You can specify which message severities and types will checked. If a debug message is raised, it is passed to the callback function, which can optionally use the user data pointer provided in the ``XrDebugUtilsMessengerCreateInfoEXT`` structure.
 
-Message Severities: 
- * Verbose: Output all diagnostic messages.
- * Info: Output information messages helpful in debugging.
- * Warning: Output messages that could suggest an application bug and that need reviewing.
+The message severities are:
+ * Verbose: Output all messages.
+ * Info: Output at least information messages helpful in debugging.
+ * Warning: Output at least messages that could suggest an application bug and that need reviewing.
  * Error: Output messages from errors that may cause undefined behavior and/or crashes.
  
-Message Types:
- * General: An event type for general information.
- * Validation: An event type that may indicate invalid usage of OpenXR.
- * Performance: An event type that may indicate non-optimal usage of OpenXR.
- * Conformance: An event type that indicating a non-conformant OpenXR result from the runtime.
+The message types are:
+ * General: General information.
+ * Validation: indicates possibly invalid usage of OpenXR.
+ * Performance: indicates possible non-optimal usage of OpenXR.
+ * Conformance: indicates a non-conformant OpenXR result from the runtime.
 
-`OpenXR Specification 12.26.3. Debug Message Categorization <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#debug-message-categorization>`_. 
+See also `Debug Message Categorization <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#debug-message-categorization>`_ in the OpenXR Specification. 
 
 Copy the following code into ``CreateDebugMessenger()`` and ``DestroyDebugMessenger()`` respectively:
 
@@ -155,7 +163,7 @@ Copy the following code into ``CreateDebugMessenger()`` and ``DestroyDebugMessen
 	:end-before: XR_DOCS_TAG_END_CreateDebugMessenger
 	:dedent: 8
 
-In the code above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or ``"XR_EXT_debug_utils"`` is in ``activeInstanceExtensions``, which we used to create the ``XrInstance``. Next, we call the ``CreateOpenXRDebugUtilsMessenger()`` function. 
+In the above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or ``XR_EXT_debug_utils`` is in ``activeInstanceExtensions``, which we used to create the ``XrInstance``. Next, we call the ``CreateOpenXRDebugUtilsMessenger()`` function.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -163,14 +171,10 @@ In the code above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or 
 	:end-before: XR_DOCS_TAG_END_DestroyDebugMessenger
 	:dedent: 8
 
-
 2.1.3 XrSystemId
 ================
 
-The next object that we want to get is the ``XrSystemId``. OpenXR 'separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences'. 
-`OpenXR Specification 5. System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_. 
-
-So, a ``XrSystemId`` could represent VR headset and a pair of controllers, or perhaps mobile device with video pass-through for AR. So we need to decide what type of ``XrFormFactor`` we are wanting to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``, which is initialised in the class, for a Meta Quest or Pico Neo. OpenXR currently offers two option for the ``XrFormFactor``.
+The next object we want to get is the ``XrSystemId``. According to `System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_ in the OpenXR spec, OpenXR 'separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences'. So, an ``XrSystemId`` could represent VR headset and a pair of controllers, or perhaps mobile device with video pass-through for AR. So we need to decide what type of ``XrFormFactor`` we are wanting to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``. OpenXR currently offers two options for the ``XrFormFactor``:
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -200,6 +204,10 @@ With the above code, we have also got the system's properties. We partially fill
 
 You can now run the application to check that you have a valid ``XrInstance`` and ``XrSystemId``.
 
+.. container:: linux
+
+	Make sure your Monado service is running prior to running your app.
+
 *************************
 2.2 Creating an XrSession
 *************************
@@ -211,7 +219,7 @@ For now, we are just going to create an ``XrSession``. At this point, you'll nee
 Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Run()`` method and also add in the definitions of the new methods and the members to their separate private sections. All the new code is highlighted code below.
 
 .. code-block:: cpp
-	:emphasize-lines: 4-9, 19-20, 51-56, 71-74
+	:emphasize-lines: 4-9, 19-20, 51-56, 72-74
 
 	class OpenXRTutorial {
 	public:
@@ -498,7 +506,8 @@ The description of the events come from `2.22.1. Event Polling of the OpenXR spe
 | XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED          | The application has changed its lifecycle state.                               |
 +---------------------------------------------------+--------------------------------------------------------------------------------+
 
-As described in the table above, most events are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully. ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
+As described in the table above, most events are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully.
+``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
 
 For some platforms, we need additional functionality provided via the ``PollSystemEvents()`` method, so that our application can react to any relevant updates from the platform correctly.
 
@@ -515,7 +524,7 @@ For some platforms, we need additional functionality provided via the ``PollSyst
 2.3.2 XrSessionState
 ====================
 
-The final event type, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, in the above code and table is what we will focus on for the rest of this chapter. There are currently nine valid ``XrSessionState`` s described:
+The final event type, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, in the above code and table is what we will focus on for the rest of this chapter. There are currently nine valid states:
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 		:language: cpp

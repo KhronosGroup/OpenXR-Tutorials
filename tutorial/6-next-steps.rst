@@ -149,3 +149,8 @@ The code below is an example of how you might implement the inclusion and defini
 	:language: cpp
 	:start-at: // OpenXR
 	:end-at: #include <OpenXRHelper.h>
+
+
+	
+
+For more information on color spaces and gamma encoding, see Guy Davidson's video presentation `here <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_.

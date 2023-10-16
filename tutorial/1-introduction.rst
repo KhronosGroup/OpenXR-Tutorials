@@ -138,6 +138,10 @@ by clicking a tab above.
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under `src/common/`. It was originally developed by Oculus VR, LLC and The Brenwill Workshop Ltd.; this wrapper is written against the `OpenGL 4.3 <https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf>`_ specification.
 		If you want to use OpenGL stand-alone, you will need to use GLX to create a valid OpenGL Context for Linux - `Tutorial: OpenGL 3.0 Context Creation (GLX) <Tutorial:_OpenGL_3.0_Context_Creation_(GLX)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_.
+
+	.. rubric Install Monado
+
+		XR support for Linux is provided by `Monado <https://monado.freedesktop.org/>`_, an open source runtime. Monado supports a selection of XR devices and can also run in a device emulation mode. Follow the instructions `here <https://monado.freedesktop.org/getting-started.html>`_ to set up the runtime.
 	
 .. container:: android
 	
@@ -624,7 +628,7 @@ For the OpenXR platform header file, note the comment about using the preceding 
 
 This header also defines the macro `OPENXR_CHECK`. Many OpenXR functions return an `XrResult`. This macro will check if the call has failed and logs a message to `std::cerr`. This can be modified to suit your needs. There are two additional functions `GetXRErrorString()` and `OpenXRDebugBreak()`, which are used to convert the `XrResult` to a string and as a breakpoint function respectively.
 
-1.4.3 The main.cpp file and the OpenXRTutorial class
+1.4.3 Main.cpp and the OpenXRTutorial Class
 ====================================================
 
 Now, create a text file called `main.cpp` in the `Chapter2` folder. Open `main.cpp` and add the following:
@@ -746,13 +750,13 @@ Then, we create the actual platform specific main function (our entry point to t
 	.. figure:: images/linux-vscode-initial-files.png
 		:alt: Initial files in VS Code 
 
-	Having installed the CMake extension for Visual Studio Code, you can now right-click on the main `CMakeLists.txt` file (the one in the root *workspace* folder). We can select “Configure and Build All” from the right-click menu of the main `CMakeLists.txt` file.
+	Having installed the CMake extension for VS Code, you can now right-click on the main `CMakeLists.txt` file (the one in the root *workspace* folder). We can select “Configure and Build All” from the right-click menu of the main `CMakeLists.txt` file.
 
 	.. figure:: linux-vscode-cmake-configure.png
 		:alt: Select
-
-	To enable debugging, select the Run/Debug panel in Visual Studio Code. You will now need to create a debugging configuration.
-	Click the "Gear" icon to edit the file launch.json, and enter the following:
+		
+	If you haven't previously done so, install the gdb extension for VS Code: select the "Extensions" tab, and type "gdb" in the search box. To enable debugging, select the Run/Debug panel in Visual Studio Code. You will now need to create a debugging configuration.
+	Click the link "create a launch.json file" to and enter the following in launch.json:
 
 	.. code-block:: json
 
@@ -763,9 +767,8 @@ Then, we create the actual platform specific main function (our entry point to t
 					"type": "cppdbg",
 					"request": "launch",
 					"name": "Chapter2",
-					"program": "${workspaceFolder}/build/Chapter2/Chapter2",
-					"cwd":"${workspaceFolder}/Chapter2",
-					"externalConsole": true,
+					"program": "${workspaceFolder}/build/Chapter2/OpenXRTutorialChapter2",
+					"cwd":"${workspaceFolder}/OpenXRTutorialChapter2"
 				}
 			]
 		}
@@ -784,4 +787,4 @@ Then, we create the actual platform specific main function (our entry point to t
 	
 	To debug/run the application click the green bug icon.
 
-Now that we have a basic application up and running with the OpenXR header files and libraries, we can start to set up the core aspects of OpenXR. As a modern Khronos API, the OpenXR is heavily influcencd by the Vulkan API. So those who are familiar with the style of the Vulkan API will find OpenXR easy to follow.
+Now that we have a basic application up and running with the OpenXR header files and libraries, we can start to set up the core aspects of OpenXR. As a modern Khronos API, the OpenXR is heavily influenced by the Vulkan API. So those who are familiar with the style of the Vulkan API will find OpenXR easy to follow.

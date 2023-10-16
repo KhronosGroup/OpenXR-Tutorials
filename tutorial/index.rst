@@ -27,7 +27,7 @@ Other prerequisites are:
 * An IDE (integrated development environment) that supports your target device: either Visual Studio 2017 or later; or Android Studio.
 * Some XR hardware to run on: either an XR device that connects to your PC, or an Android-based device like a Meta Quest or Pico Neo.
 
-In the latter case, it is possible to use Monado to emulate XR hardware - see Section x.x.
+In the latter case, it is possible to use `Monado <https://monado.freedesktop.org/>`_ to emulate XR hardware - see Section 1.4 for details.
 
 Tutorial Structure
 ------------------
