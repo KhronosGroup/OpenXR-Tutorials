@@ -785,5 +785,4 @@ Then, we create the actual platform specific main function (our entry point to t
 ***********
 1.5 Summary
 ***********
-In this chapter, you learned about the fundamental concepts of OpenXR, and created 
-Now that we have a basic application up and running with the OpenXR header files and libraries, we can start to set up the core aspects of OpenXR. As a modern Khronos API, the OpenXR is heavily influenced by the Vulkan API. So those who are familiar with the style of the Vulkan API will find OpenXR easy to follow.
+In this chapter, you learned about the fundamental concepts of OpenXR, and created a project you will use to build your OpenXR application. Now that we have this basic application up and running, we will start to set up OpenXR.
