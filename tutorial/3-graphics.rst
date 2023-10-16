@@ -200,7 +200,7 @@ Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new me
 
 We will explore the added methods in the sub chapters below.
 
-3.1.1 XrViewConfigurationView
+3.1.1 View Configurations
 =============================
 
 The first thing we need to do is get all of the views available to our view configuration. It is worth just parsing the name of this type: ``XrViewConfigurationView``. We can break the typename up as follow "XrViewConfiguration" - "View", where it relates to one view in the view configuration, which may contain multiple views. We call ``xrEnumerateViewConfigurationViews()`` twice, first to get the count of the views in the view configuration, and second to fill in the data to the ``std::vector<XrViewConfigurationView>``.
@@ -213,7 +213,7 @@ Add the following code to the ``GetViewConfigurationViews()`` method:
 	:end-before: XR_DOCS_TAG_END_GetViewConfigurationViews
 	:dedent: 8
 
-3.1.2 xrEnumerateSwapchainFormats
+3.1.2 Enumerate the Swapchain Formats
 =================================
 
 For each runtime, the OpenXR compositor has certain preferred image formats that should be used by the swapchain. When calling ``xrEnumerateSwapchainFormats()``, the ``XrSession`` and alongwith the Graphics API will return an array of API-specific formats ordered by preference. ``xrEnumerateSwapchainFormats()`` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
@@ -221,7 +221,7 @@ For each runtime, the OpenXR compositor has certain preferred image formats that
 Both Linear and sRGB color spaces are supported and one may have preference over the other. In cases where you are compositing multiple layers, you may wish to use linear color spaces only, as OpenXR's compositor will perform all blend operations in a linear color space for correctness. For certain runtimes, systems and/or applications, sRGB maybe preferred especially if there's just a single opaque layer to composite.
 
 If you wish to use an sRGB color format, you *must* use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB`` for the OpenXR runtime to automatically do sRGB-to-linear color space conversions when reading the image.
- 
+
 Copy the code below into the ``CreateSwapchain()`` method:
 
 .. literalinclude:: ../Chapter3/main.cpp
@@ -230,7 +230,7 @@ Copy the code below into the ``CreateSwapchain()`` method:
 	:end-before: XR_DOCS_TAG_END_EnumerateSwapchainFormats
 	:dedent: 8
 
-3.1.3 xrCreateSwapchain
+3.1.3 Create the Swapchains
 =======================
 
 Append the following code to the ``CreateSwapchain()`` method:
@@ -865,52 +865,49 @@ Now that OpenXR know what the user should see, we need to tell OpenXR about the 
 
 We fill out a ``XrReferenceSpaceCreateInfo`` structure. The first member is of type ``XrReferenceSpaceType``, which we will discuss shortly. 
 
-When we create the *reference space*, we need to specify an ``XrPosef``, which we will be the origin transform of the space. For our tutorial, we will set ``XrReferenceSpaceCreateInfo::poseInReferenceSpace`` to an identity, where we use an identity quaternion for the orientation and a position at the origin.
-If we specify a different pose, the origin received when we poll the space would be offset from the reference space's origin.
+When we create the *reference space*, we need to specify an ``XrPosef``, which will be the origin transform of the space. In this case we will set ``XrReferenceSpaceCreateInfo::poseInReferenceSpace`` to an "identity" pose - an identity quaternion and a zero position.
+
+If we specify a different pose, the origin received when we poll the space would be offset from the default origin the runtime defines for that space type.
 
 An ``XrSpace`` is a frame of reference defined not by its instantaneous values, but semantically by its purpose and relationship to other spaces. The actual, instantaneous position and orientation of an ``XrSpace`` is called its *pose*.
 
+.. rubric:: View Space
+
+.. figure:: images/ViewSpace.png
+	:alt: OpenXR Reference Space View
+	:align: center
+	:width: 60%
+
 One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``), which is oriented with the user's head, and is useful for user-interfaces and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
+
+The View Reference Space uses the view origin (or the centroid of the views in the case of stereo) as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The space is aligned in front of the viewer and it is not gravity aligned. It is most often used for rendering small head-locked content like a HUD (Head-up display).
+	
+.. rubric:: Local Space
+
+.. figure:: images/LocalSpace.png
+		:alt: OpenXR Reference Space Local
+		:align: center
+		:width: 60%
 
 By using ``XR_REFERENCE_SPACE_TYPE_LOCAL`` we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
 
-Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this implies a roomscale space, e.g. with its origin on the floor.
+The Local Reference Space uses an initial location to establish a world-locked, gravity aligned point as the origin of the space. +Y is up,+X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at pplication start up or from a calibrated origin point.
+  
+It may be used for rendering seated-scale experiences such as driving or aircraft simulation, where a virtual floor is not required. When recentering, the runtime will queue a ``XrEventDataReferenceSpaceChangePending`` structure for the application to process.
 
-See https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html
+	
+.. rubric:: Stage Space
 
-.. figure:: images/OpenXRSpaces.png
-	:alt: OpenXR Reference Spaces
-	:align: center
-
-	Reference Spaces in OpenXR
-
-.. list-table:: OpenXR Reference Spaces
-	:widths: 1 1 1
-	:class: longtable
-	:header-rows: 1
-
-	* - XrReferenceSpaceType
-	  - Diagram
-	  - Description
-	* - ``XR_REFERENCE_SPACE_TYPE_VIEW``
-	  - .. figure:: OpenXR-ReferenceSpace-View.png
-			:alt: OpenXR Reference Space View
-			:align: center
-	  - The View Reference Space uses the view origin (or the centroid of the views in the case of stereo) as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The space is aligned in front of the viewer and it is not gravity aligned. It is most often used for rendering small head-locked content like a HUD (Head-up display).
-
-	* -	``XR_REFERENCE_SPACE_TYPE_LOCAL``
-	  - .. figure:: OpenXR-ReferenceSpace-Local.png
-			:alt: OpenXR Reference Space Local
-			:align: center
-	  - The Local Reference Space uses an initial location to establish a world-locked, gravity aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at application start up or from a calibrated origin point. ``TODO: break between spec and opinion.``	It is typically used for rendering seated-scale experiences such as car racing or aircraft cockpits, where a physical floor is not required. When recentering, the runtime will queue a ``XrEventDataReferenceSpaceChangePending`` structure for the application to process.
-
-	* - ``XR_REFERENCE_SPACE_TYPE_STAGE``
-	  - .. figure:: OpenXR-ReferenceSpace-Stage.png
+.. figure:: OpenXR-ReferenceSpace-Stage.png
 			:alt: OpenXR Reference Space Stage
 			:align: center
-	  - The Stage Reference Space defines a rectangular area that is flat and devoid of obstructions. The origin is define to be on the floor and at the center of the rectangular area. +Y is up, +X is to the right, and -Z is forward. The origin is axis-aligned to the XZ plane. It is most often used for rendering standing-scale experiences (no bounds) or room-scale experiences (with bounds) where a physical floor is required. When the user is redefining the origin or bounds of the area, the runtime will queue a ``XrEventDataReferenceSpaceChangePending`` structure for the application to process.
+			:width: 60%
 
-For more information on reference see the OpenXR 1.0 Specification here: `7.1. Reference Spaces <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#reference-spaces>`_.
+Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this implies a roomscale space, e.g. with its origin on the floor.
+
+The Stage Reference Space defines a rectangular area that is flat and devoid of obstructions. The origin is define to be on the floor and at the center of the rectangular area. +Y is up, +X is to the right, and -Z is forward. The origin is axis-aligned to the XZ plane. It is most often used for rendering standing-scale experiences (no bounds) or room-scale experiences (with bounds) where a physical floor is required. When the user is redefining the origin or bounds of the area, the runtime will queue a ``XrEventDataReferenceSpaceChangePending`` structure for the application to process.
+
+For more information on reference spaces see `the OpenXR Specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#reference-spaces>`_.
 
 .. figure:: OpenXR-Coordinate-System.png
 	:alt: OpenXR Default Coordinate System
