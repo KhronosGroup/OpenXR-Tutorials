@@ -25,9 +25,7 @@ Other prerequisites are:
 
 * A Windows or Linux PC to compile the code
 * An IDE (integrated development environment) that supports your target device: either Visual Studio 2017 or later; or Android Studio.
-* Some XR hardware to run on: either an XR device that connects to your PC, or an Android-based device like a Meta Quest or Pico Neo.
-
-In the latter case, it is possible to use `Monado <https://monado.freedesktop.org/>`_ to emulate XR hardware - see Section 1.4 for details.
+* Some XR hardware to run on: either an XR device that connects to your PC, or an Android-based device like a Meta Quest or Pico Neo. It is also possible to use `Monado <https://monado.freedesktop.org/>`_ to emulate XR hardware.
 
 Tutorial Structure
 ------------------
@@ -38,7 +36,7 @@ been completed.
 
 At the end of each section is a link to download the full example source code up to that point.
 
-This code can also be downloaded from the following repository: https://github.com/KhronosGroup/OpenXR-Tutorials/
+This code can also be downloaded from `here <https://github.com/KhronosGroup/OpenXR-Tutorials>`_.
 
 In the Introduction, we describe the basic concepts underpinning OpenXR, and show you how to
 set up a PC or Android development environment to build the code.

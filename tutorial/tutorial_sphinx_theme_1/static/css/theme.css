@@ -772,7 +772,7 @@ big, small
 
 .fa-download:before, .rst-content code.download span:first-child:before, .rst-content tt.download span:first-child:before
 {
-    content: ""
+    content: ""
 }
 
 .fa-arrow-circle-o-down:before

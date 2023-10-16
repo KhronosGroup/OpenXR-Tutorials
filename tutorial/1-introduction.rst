@@ -74,8 +74,7 @@ OpenXR recognised that there is vast and ever changing array of hardware and con
 1.3 Environment Setup
 *********************
 
-This section will help you set up your development environment. Here your choice of platform really makes a difference. After that, things will be much more consistent. You can change platform at any time by clicking the tabs at the top of the page. Select the platform you want to develop for
-by clicking a tab above.
+This section will help you set up your development environment. Here your choice of platform really makes a difference. After that, things will be much more consistent. You can change platform at any time by clicking the tabs at the top of the page. Select the platform you want to develop for now, by clicking a tab above.
 
 .. container:: windows
 
@@ -113,7 +112,7 @@ by clicking a tab above.
 
 	.. rubric:: Install CMake
 
-	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake with Visual Studio Code to build the project.
+	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake with Visual Studio Code to build the project. At least CMake 3.22.1 will be needed, so follow the instructions on the CMake download page to ensure that you have an up-to-date version.
 
 	Now choose which graphics API you want to use, on the second row of tabs at the top of the page. For Linux you can either use OpenGL or Vulkan.
 
@@ -134,6 +133,8 @@ by clicking a tab above.
 	
 .. container:: android
 	
+	When building for Android, you can use Microsoft Windows, Linux or Apple macOS as the host platform.
+
 	.. rubric:: Android Studio
 
 	Install Android studio from this location: `https://developer.android.com/studio <https://developer.android.com/studio>`_.
@@ -142,7 +143,6 @@ by clicking a tab above.
 		
 		.. rubric:: Vulkan
 
-		Vulkan is recommended for Android for its modern, low-level API and extension.
 		Vulkan is included as part of the NDK provided by Google and is supported on Android 7.0 (Nougat), API level 24 or higher (see `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_).
 	
 	.. container:: opengles
@@ -169,8 +169,8 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 .. container:: linux
 
-	You are free to use any code editor and/or compiler; this tutorial will use Visual Studio Code.
-	For the Linux OpenXR project, we'll use CMake alongside Visual Studio Code to build the project.
+	You can use any code editor and/or compiler with OpenXR; this tutorial will use Visual Studio Code as an example.
+	For the Linux OpenXR project, we'll use CMake alongside VS Code to build the project.
 	Create a directory where the code will go, we'll call this the *workspace* directory. Open Visual Studio Code and from the File menu, select "Open Folder..."
 
 	.. figure:: linux-vscode-open-folder.png
@@ -188,7 +188,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 	
 .. container:: windows linux
 
-	Create a folder called `cmake` in the *workspace* directory. Download each of the linked files below and put them in `cmake`. These will be used in our `CMakeLists.txt` to help build our project. Files with `shader` in the name will be used in later chapters.
+	Create a folder called `cmake` in the *workspace* directory. Download the linked file below and put it in `cmake`. This will be used in our `CMakeLists.txt` to help build our project.
 
 	.. container:: d3d11 d3d12
 		
@@ -403,7 +403,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 	.. rubric:: CMake
 	
-	Set the Name to 'OpenXR Tutorial Chapter 2', the Package name to 'org.khronos.openxrtutorialchapter2' and save location to that `/Chapter2` folder. 	The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0(Nougat) or higher. If a "Build Configuration Language" option is shown, set this to "Groovy DSL (build.gradle)". Click "Finish" to complete the set up.
+	Set the Name to 'OpenXR Tutorial Chapter 2', the Package name to '`org.khronos.openxrtutorialchapter2`` and save location to that ``Chapter2`` folder. 	The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0 (Nougat) or higher. If a "Build Configuration Language" option is shown, set this to ``Groovy DSL (build.gradle)``. Click "Finish" to complete the set up.
 
 	.. figure:: images/android-studio-newproject-options.png
 		:alt: Android Studio - New Project - options.
@@ -411,7 +411,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 	.. rubric:: CMake
 
-	With the Android Studio project now set up, we need to modify some of the files and folders so as to set up the project to support the C++ Native Activity.
+	With the Android Studio project now set up, we need to modify some of the files and folders to support the C++ Native Activity.
 
 	Then switch to the "Project" view in the "Project" tab (on the top right of the default Android Studio layout).
 	Under the `app` folder in `Chapter2`, you can delete the `libs` folder, and under the `app/src` you can also delete the `androidTest` and `test` folders. Finally under `app/src/main`, delete the `java` folder. Under the `app/src/main/res`, delete the `layout`, `values-night` and `xml` folders. Under the `values` folder, delete `colors.xml` and `themes.xml`
@@ -422,19 +422,21 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 		:alt: Gradle Sync
 		:scale: 55%
 
-	Create a folder called `cmake` in the *workspace* directory. Download each of the linked files below and put them in `cmake`. These will be used in our `CMakeLists.txt` to help build our project. Files with `shader` in the name will be used in later chapters.
-
 	.. container:: opengles
+	
+		Create a folder called `cmake` in the *workspace* directory. Download the linked files below and put them in `cmake`. These will be used in our `CMakeLists.txt` to help build our project. Files with `shader` in the name will be used in later chapters.
 
 		:download:`gfxwrapper.cmake <../cmake/gfxwrapper.cmake>`
 		:download:`FindEGL.cmake <../cmake/FindEGL.cmake>`
 		:download:`FindOpenGLES.cmake <../cmake/FindOpenGLES.cmake>`
 
 	.. container:: vulkan
+	
+		Create a folder called `cmake` in the *workspace* directory. Download the linked file below and put it in `cmake`. This will be used in later chapters in our `CMakeLists.txt` to help build our project.
 
 		:download:`glsl_shader.cmake <../cmake/glsl_shader.cmake>`
 
-	Create a text file called `CMakeLists.txt` in the `Chapter2` directory. We will use this file to specific how our Native C++ code will be built. This `CMakeLists.txt` file will be invoked by Android Studio's Gradle build system and we will point Gradle to this CMake file. 
+	Create a text file called `CMakeLists.txt` in the `Chapter2` directory. We will use this file to specific how our Native C++ code will be built. This file will be invoked by Android Studio's Gradle build system. 
 
 	.. rubric:: CMakeLists.txt
 
@@ -505,9 +507,11 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 		:end-before: XR_DOCS_TAG_END_Android
 		:dedent: 4
 	
-	We have added a library with the `${SOURCES}` and `${HEADERS}` and have added the `../Common`, `"${openxr_SOURCE_DIR}/src/common"` and `"${openxr_SOURCE_DIR}/external/include"` folders as include directories. We have set the `LINK_FLAGS` for our `OpenXRTutorialChapter2` project with the flag `-u ANativeActivity_onCreate()` to support C++ native code. This is used by a static library called `native_app_glue`, which connects the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the `void android_main(struct android_app*)` entry point.  We add `native_app_glue` to our project by including `AndroidNdkModules` and calling `android_ndk_import_module_native_app_glue()`. 
+	We have added a library with the ``${SOURCES}`` and ``${HEADERS}`` and have added the ``../Common``, ``"${openxr_SOURCE_DIR}/src/common"`` and ``"${openxr_SOURCE_DIR}/external/include"`` folders as include directories. We have set the ``LINK_FLAGS`` for our project with the flag ``-u ANativeActivity_onCreate()`` to support C++ native code. This is used by a static library called `native_app_glue`, which connects the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``android_main()`` entry point.  We add `native_app_glue` to our project by including ``AndroidNdkModules`` and calling:
+	
+	``android_ndk_import_module_native_app_glue()``. 
 
-	Now, we link the `android`, `native_app_glue` and `openxr_loader` libraries to our `OpenXRTutorialChapter2` library. Our `libOpenXRTutorialChapter2 .so` will be packaged inside our .apk along with any shared libraries that we have linked. We also add `-Wno-cast-calling-convention` to the compiler option to allow the casting of calling conversions for function pointers.
+	Now, we link the `android`, `native_app_glue` and `openxr_loader` libraries to our `OpenXRTutorialChapter2` library. Our `libOpenXRTutorialChapter2 .so` will be packaged inside our .apk along with any shared libraries that we have linked. We also add ``-Wno-cast-calling-convention`` to the compiler option to allow the casting of calling conversions for function pointers.
 
 	.. container:: opengles
 	
@@ -537,27 +541,29 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 	Replace the file 'app/src/main/AndroidManifest.xml' with the following:
 
-	Download :download:`AndroidManifest.xml <../Chapter2/app/src/main/AndroidManifest.xml>`
-
-	Thing to note are:
+	Download :download:`AndroidManifest.xml <../Chapter2/app/src/main/AndroidManifest.xml>`, and open the file. You don't need to edit it, but note:
 
 	* We added a `<uses-feature>` to require OpenGL ES 3.2 and Vulkan 1.0.3 support.
 	* Next, we added `android.hardware.vr.headtracking` to specify that the application works with 3DOF or 6DOF and on devices that are not all-in-ones. It's set to false so as to allow greater compatibility across devices.
 	* Finally, we updated the `<intent-filter>` to tell the application that it should take over rendering when active, rather than appearing in a window. We set:
 	
-	`<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />`
+	``<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />``
 	
 	Note: not all devices yet support this category. For example, for Meta Quest devices you will need
 	
-	`<category android:name="com.oculus.intent.category.VR" />`
+	``<category android:name="com.oculus.intent.category.VR" />``
 	
-	for the same purpose. The code shows both the 'Standard Khronos OpenXR' and 'Meta Quest-specific non-standard' ways of setting the intent filter.
+	for the same purpose. The code shows both the 'Standard Khronos OpenXR' and 'Meta Quest-specific non-standard' ways of setting the intent filter. If you're building for another Android-based XR device which does not support all of the standard commands used here, you may need to look up the appropriate commands and modify the manifest.
 
 	.. rubric:: Gradle
 
-	Now we will replace the file `app/build.gradle`. Download :download:`app/build.gradle <../Chapter2/app/build.gradle>` and copy it over the existing file in `app`.
+	Now download :download:`app/build.gradle <../Chapter2/app/build.gradle>` and copy it over the existing file `app/build.gradle`.
 
-	In the `dependencies {}` section we have added `implementation 'org.khronos.openxr:openxr_loader_for_android:...'`. This provides an `AndroidManifest.xml` that will be merged into our own, setting some required properties for the package and application. We are still required to add to our own `AndroidManifest.xml` file the relevant intent filters, such as `<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />`. It also provides the OpenXR headers and library binaries in a format that the Android Gradle Plugin will expose to CMake.
+	In the `dependencies` section we have added:
+	
+	``implementation 'org.khronos.openxr:openxr_loader_for_android:...'``
+	
+	This provides an `AndroidManifest.xml` that will be merged into our own, setting some required properties for the package and application. We are still required to add to our own `AndroidManifest.xml` file with relevant intent filters, such as ``org.khronos.openxr.intent.category.IMMERSIVE_HMD``. It also provides the OpenXR headers and library binaries in a format that the Android Gradle Plugin will expose to CMake.
 
 	Now download :download:`build.gradle <../Chapter2/build.gradle>` and place it in your "Chapter2" folder.
 
@@ -759,7 +765,7 @@ Then, we create the actual platform specific main function (our entry point to t
 
 	And we will initialize the app with your chosen API:
 
-	.. container:: opengl_es
+	.. container:: opengles
 
 		.. literalinclude:: ../Chapter2/main.cpp
 			:language: cpp
@@ -831,11 +837,10 @@ Then, we create the actual platform specific main function (our entry point to t
 
 	Next to the green hammer icon is the Run/Debug configuration dropdown menu. If that isn't populated, create a configuration called app.
 
-	Turn on and connect your Android device. Set up any requirements for USB debugging and adb. You device should appear in the dropdown. Here, I am using a Oculus Quest 2.
+	Turn on and connect your Android device. Set up any requirements for USB debugging and adb. You device should appear in the dropdown. Here, we are using a Meta Quest 2:
 
 	.. figure:: images/android-studio-build-run-toolbar.png
 		:alt: Build/Run Toolbar
-		:scale: 55%
 	
 	To debug/run the application click the green bug icon.
 
