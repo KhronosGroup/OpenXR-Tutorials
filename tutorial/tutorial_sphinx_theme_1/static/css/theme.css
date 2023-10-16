@@ -6,7 +6,7 @@ html
 	overflow:clip ;
 }
 
-p, figure
+p, figure, table
 {
     max-width: 800px;
 
