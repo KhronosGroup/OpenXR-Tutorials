@@ -356,9 +356,10 @@ void *GraphicsAPI_D3D12::GetGraphicsBinding() {
 // XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetGraphicsBinding
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_AllocateSwapchainImageData
-XrSwapchainImageBaseHeader *GraphicsAPI_D3D12::AllocateSwapchainImageData(uint32_t count) {
-    swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D12_KHR});
-    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImages.data());
+XrSwapchainImageBaseHeader *GraphicsAPI_D3D12::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
+    swapchainImagesMap[swapchain].first = type;
+    swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D12_KHR});
+    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
 // XR_DOCS_TAG_END_GraphicsAPI_D3D12_AllocateSwapchainImageData
 

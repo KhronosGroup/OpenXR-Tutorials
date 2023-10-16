@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-//Color Vertex Shader
 cbuffer CameraConstants : register(b0)
 {
     float4x4 viewProj;

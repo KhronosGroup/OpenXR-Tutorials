@@ -20,16 +20,25 @@ public:
     virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) override;
     virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
 
+    // XR_DOCS_TAG_BEGIN_GetDepthFormat_Vulkan
     virtual int64_t GetDepthFormat() override { return (int64_t)VK_FORMAT_D32_SFLOAT; }
+    // XR_DOCS_TAG_END_GetDepthFormat_Vulkan
 
     virtual void* GetGraphicsBinding() override;
-    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
-    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
-    virtual void* GetSwapchainImage(uint32_t index) override {
-        VkImage image = swapchainImages[index].image;
-        imageStates[image] = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) override;
+    virtual void FreeSwapchainImageData(XrSwapchain swapchain) override {
+        swapchainImagesMap[swapchain].second.clear();
+        swapchainImagesMap.erase(swapchain);
+    }
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
+    // XR_DOCS_TAG_BEGIN_GetSwapchainImage_Vulkan
+    virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override {
+        VkImage image = swapchainImagesMap[swapchain].second[index].image;
+        VkImageLayout layout = swapchainImagesMap[swapchain].first == SwapchainType::COLOR ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        imageStates[image] = layout;
         return (void *)image;
     }
+    // XR_DOCS_TAG_END_GetSwapchainImage_Vulkan
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
@@ -97,7 +106,7 @@ private:
     PFN_xrGetVulkanGraphicsDeviceKHR xrGetVulkanGraphicsDeviceKHR = nullptr;
     XrGraphicsBindingVulkanKHR graphicsBinding{};
 
-    std::vector<XrSwapchainImageVulkanKHR> swapchainImages{};
+    std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageVulkanKHR>>> swapchainImagesMap{};
 
     VkImage currentDesktopSwapchainImage = VK_NULL_HANDLE;
 

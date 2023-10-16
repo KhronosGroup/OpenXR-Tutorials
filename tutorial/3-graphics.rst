@@ -216,12 +216,11 @@ Add the following code to the ``GetViewConfigurationViews()`` method:
 3.1.2 Enumerate the Swapchain Formats
 =================================
 
-Due to way that OpenXR and its compositor operate, there are certain preferred image formats that should be used by the swapchain. When calling ``xrEnumerateSwapchainFormats()``, the ``XrSession`` and alongwith the Graphics API will return an array of API-specific formats ordered in preference. ``xrEnumerateSwapchainFormats()`` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
+For each runtime, the OpenXR compositor has certain preferred image formats that should be used by the swapchain. When calling ``xrEnumerateSwapchainFormats()``, the ``XrSession`` and alongwith the Graphics API will return an array of API-specific formats ordered by preference. ``xrEnumerateSwapchainFormats()`` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
 
-The question is: Whether to use a Linear or sRGB color space? OpenXR's compositor performs all blend operations in a linear color space (i.e. the values have not been gamma encoded). Most gamma-encoding operations are algebraically non-linear, so you can't composite the values with simple addition or multiplication operations. If you wish to use an sRGB color format, it's best to use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB``. The OpenXR runtime will automatically do sRGB-to-linear color space conversions when reading the image. There are two issues with this: 
+Both Linear and sRGB color spaces are supported and one may have preference over the other. In cases where you are compositing multiple layers, you may wish to use linear color spaces only, as OpenXR's compositor will perform all blend operations in a linear color space for correctness. For certain runtimes, systems and/or applications, sRGB maybe preferred especially if there's just a single opaque layer to composite.
 
-1. Runtime conversion of image data could be too slow and affect performance and comfort.
-2. The conversion process may not use the same style of gamma encoding/decoding and therefore may result in a loss in color accuracy.
+If you wish to use an sRGB color format, you *must* use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB`` for the OpenXR runtime to automatically do sRGB-to-linear color space conversions when reading the image.
 
 Copy the code below into the ``CreateSwapchain()`` method:
 
@@ -561,8 +560,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D11.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-after: XR_DOCS_TAG_BEGIN_GetDepthFormat_D3D11
+		:end-before: XR_DOCS_TAG_END_GetDepthFormat_D3D11
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
@@ -573,8 +572,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D12.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-after: XR_DOCS_TAG_BEGIN_GetDepthFormat_D3D12
+		:end-before: XR_DOCS_TAG_END_GetDepthFormat_D3D12
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
@@ -585,8 +584,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-after: XR_DOCS_TAG_BEGIN_GetDepthFormat_OpenGL
+		:end-before: XR_DOCS_TAG_END_GetDepthFormat_OpenGL
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
@@ -597,8 +596,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL_ES.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-after: XR_DOCS_TAG_BEGIN_GetDepthFormat_OpenGL_ES
+		:end-before: XR_DOCS_TAG_END_GetDepthFormat_OpenGL_ES
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
@@ -609,8 +608,8 @@ Each graphics API overrides the virtual method ``GraphicsAPI::GetDepthFormat()``
 
 	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.h
 		:language: cpp
-		:start-at: virtual int64_t GetDepthFormat() override
-		:end-at: }
+		:start-after: XR_DOCS_TAG_BEGIN_GetDepthFormat_Vulkan
+		:end-before: XR_DOCS_TAG_END_GetDepthFormat_Vulkan
 		:dedent: 4
 	
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
@@ -635,8 +634,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D11.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D11
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_D3D11
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
@@ -647,13 +646,13 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D12.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D12
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_D3D12
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
 
-	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET``. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
+	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET`` for color and ``D3D12_RESOURCE_STATE_DEPTH_WRITE`` for depth. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
 
 .. container:: opengl
 
@@ -661,8 +660,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_OpenGL
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
@@ -673,8 +672,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL_ES.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL_ES
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_OpenGL_ES
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
@@ -685,11 +684,11 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.h
 		:language: cpp
-		:start-at: virtual void* GetSwapchainImage(uint32_t index) override
-		:end-at: }
+		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_Vulkan
+		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_Vulkan
 		:dedent: 4
 
-	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL``. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.
+	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`` for color and ``VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL`` for depth. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.
 
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
 

@@ -20,12 +20,20 @@ public:
     virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) override;
     virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
 
+    // XR_DOCS_TAG_BEGIN_GetDepthFormat_OpenGL
     virtual int64_t GetDepthFormat() override { return (int64_t)GL_DEPTH_COMPONENT32F; }
+    // XR_DOCS_TAG_END_GetDepthFormat_OpenGL
 
     virtual void* GetGraphicsBinding() override;
-    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
-    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
-    virtual void* GetSwapchainImage(uint32_t index) override { return (void*)(uint64_t)swapchainImages[index].image; }
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) override;
+    virtual void FreeSwapchainImageData(XrSwapchain swapchain) override {
+        swapchainImagesMap[swapchain].second.clear();
+        swapchainImagesMap.erase(swapchain);
+    }
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
+    // XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL
+    virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override { return (void*)(uint64_t)swapchainImagesMap[swapchain].second[index].image; }
+    // XR_DOCS_TAG_END_GetSwapchainImage_OpenGL
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
@@ -82,7 +90,7 @@ private:
     XrGraphicsBindingOpenGLWaylandKHR graphicsBinding{};
 #endif
 
-    std::vector<XrSwapchainImageOpenGLKHR> swapchainImages{};
+    std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageOpenGLKHR>>> swapchainImagesMap{};
 
     std::unordered_map<GLuint, BufferCreateInfo> buffers{};
     std::unordered_map<GLuint, ImageCreateInfo> images{};

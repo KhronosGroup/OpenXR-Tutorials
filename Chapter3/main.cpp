@@ -594,7 +594,7 @@ private:
             // Get the number of images in the swapchain and allocate Swapchain image data via GraphicsAPI to store the returned array.
             uint32_t swapchainImageCount = 0;
             OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, 0, &swapchainImageCount, nullptr), "Failed to enumerate Swapchain Images.");
-            XrSwapchainImageBaseHeader *swapchainImages = m_graphicsAPI->AllocateSwapchainImageData(swapchainImageCount);
+            XrSwapchainImageBaseHeader *swapchainImages = m_graphicsAPI->AllocateSwapchainImageData(swapchainAndDepthImage.swapchain, GraphicsAPI::SwapchainType::COLOR, swapchainImageCount);
             OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, swapchainImageCount, &swapchainImageCount, swapchainImages), "Failed to enumerate Swapchain Images.");
             // XR_DOCS_TAG_END_EnumerateSwapchainImages
 
@@ -620,7 +620,7 @@ private:
             // Per image in the swapchain, fill out a GraphicsAPI::ImageViewCreateInfo structure and create a color image view.
             for (uint32_t i = 0; i < swapchainImageCount; i++) {
                 GraphicsAPI::ImageViewCreateInfo imageViewCI;
-                imageViewCI.image = m_graphicsAPI->GetSwapchainImage(i);
+                imageViewCI.image = m_graphicsAPI->GetSwapchainImage(swapchainAndDepthImage.swapchain, i);
                 imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::RTV;
                 imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D;
                 imageViewCI.format = swapchainAndDepthImage.swapchainFormat;
@@ -660,6 +660,9 @@ private:
 
             // Destroy the depth image from GraphicsAPI
             m_graphicsAPI->DestroyImage(swapchainAndDepthImage.depthImage);
+
+            // Free Swapchain Image Data
+            m_graphicsAPI->FreeSwapchainImageData(swapchainAndDepthImage.swapchain);
 
             // Destory the swapchain.
             OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");

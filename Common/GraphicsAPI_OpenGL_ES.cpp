@@ -437,9 +437,10 @@ void GraphicsAPI_OpenGL_ES::AcquireDesktopSwapchanImage(void *swapchain, uint32_
 void GraphicsAPI_OpenGL_ES::PresentDesktopSwapchainImage(void *swapchain, uint32_t index) {}
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_AllocateSwapchainImageData
-XrSwapchainImageBaseHeader *GraphicsAPI_OpenGL_ES::AllocateSwapchainImageData(uint32_t count) {
-    swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR});
-    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImages.data());
+XrSwapchainImageBaseHeader *GraphicsAPI_OpenGL_ES::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
+    swapchainImagesMap[swapchain].first = type;
+    swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR});
+    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
 // XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_AllocateSwapchainImageData
 
