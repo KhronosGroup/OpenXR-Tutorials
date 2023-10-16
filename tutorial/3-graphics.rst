@@ -344,7 +344,7 @@ Here, we filled out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``
 	| XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_KHR     | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT         |
 	+-------------------------------------------------+---------------------------------------------+
 
-Then, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we used ``1``, as we have separate swapchains per view/eye, but for a stereo view you could pass ``2`` and have an image 2D array, which is suitable for multiview rendering. ``mipCount`` describes the number of mips levels; this is useful when using the swapchain image as a sampled image in a shader. Finally, we set the format. Here, we asked our ``GraphicsAPI_...`` class to pick a suitable format for the swapchain from the enumerated formats we acquired earlier. 
+Then, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we used ``1``, as we have separate swapchains per view/eye. If your graphics API supports multiview rendering (see Chapter 6), you could pass ``2`` and have a 2D image array. ``mipCount`` describes the number of texture detail levels; this is useful when using the swapchain image as a sampled image in a shader. Finally, we set the format. Here, we asked our ``GraphicsAPI_...`` class to pick a suitable format for the swapchain from the enumerated formats we acquired earlier. 
 
 Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
 
@@ -634,8 +634,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D11.h
 		:language: cpp
-		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D11
-		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_D3D11
+		:start-after: XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D11
+		:end-before: XR_DOCS_TAG_END_GetSwapchainImage_D3D11
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
@@ -646,8 +646,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D12.h
 		:language: cpp
-		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D12
-		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_D3D12
+		:start-after: XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D12
+		:end-before: XR_DOCS_TAG_END_GetSwapchainImage_D3D12
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
@@ -660,8 +660,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL.h
 		:language: cpp
-		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL
-		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_OpenGL
+		:start-after: XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL
+		:end-before: XR_DOCS_TAG_END_GetSwapchainImage_OpenGL
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
@@ -672,8 +672,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL_ES.h
 		:language: cpp
-		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL_ES
-		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_OpenGL_ES
+		:start-after: XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL_ES
+		:end-before: XR_DOCS_TAG_END_GetSwapchainImage_OpenGL_ES
 		:dedent: 4
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
@@ -684,8 +684,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.h
 		:language: cpp
-		:start-at: XR_DOCS_TAG_BEGIN_GetSwapchainImage_Vulkan
-		:end-at: XR_DOCS_TAG_END_GetSwapchainImage_Vulkan
+		:start-after: XR_DOCS_TAG_BEGIN_GetSwapchainImage_Vulkan
+		:end-before: XR_DOCS_TAG_END_GetSwapchainImage_Vulkan
 		:dedent: 4
 
 	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`` for color and ``VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL`` for depth. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.

@@ -48,8 +48,8 @@ static std::mt19937 pseudo_random_generator;
 
 class OpenXRTutorial {
 public:
-    OpenXRTutorial(GraphicsAPI_Type api)
-        : m_apiType(api) {
+    OpenXRTutorial(GraphicsAPI_Type apiType)
+        : m_apiType(apiType) {
         // Check API compatibility with Platform.
         if (!CheckGraphicsAPI_TypeIsValidForPlatform(m_apiType)) {
             std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
@@ -1365,11 +1365,11 @@ private:
     // XR_DOCS_TAG_END_Actions
 };
 
-void OpenXRTutorial_Main(GraphicsAPI_Type api) {
+void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
     DebugOutput debugOutput; // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
     std::cout << "OpenXR Tutorial Chapter 4." << std::endl;
 
-    OpenXRTutorial app(api);
+    OpenXRTutorial app(apiType);
     app.Run();
 }
 
