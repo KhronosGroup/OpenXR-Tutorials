@@ -1051,7 +1051,7 @@ void GraphicsAPI_OpenGL_ES::Draw(uint32_t vertexCount, uint32_t instanceCount, u
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
-const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedSwapchainFormats() {
+const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedColorSwapchainFormats() {
     // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengles.cpp#L208-L216
     GLint glMajorVersion = 0;
     glGetIntegerv(GL_MAJOR_VERSION, &glMajorVersion);
@@ -1060,6 +1060,12 @@ const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedSwapchainFormats()
     } else {
         return {GL_RGBA8, GL_RGBA8_SNORM};
     }
+}
+const std::vector<int64_t> GraphicsAPI_OpenGL::GetSupportedDepthSwapchainFormats() {
+    return {
+        GL_DEPTH_COMPONENT32F,
+        GL_DEPTH_COMPONENT24,
+        GL_DEPTH_COMPONENT16};
 }
 // XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
 #endif

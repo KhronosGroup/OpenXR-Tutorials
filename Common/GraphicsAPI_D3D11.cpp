@@ -995,12 +995,17 @@ void GraphicsAPI_D3D11::Draw(uint32_t vertexCount, uint32_t instanceCount, uint3
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
-const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedSwapchainFormats() {
+const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedColorSwapchainFormats() {
     return {
         DXGI_FORMAT_R8G8B8A8_UNORM,
         DXGI_FORMAT_B8G8R8A8_UNORM,
         DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
         DXGI_FORMAT_B8G8R8A8_UNORM_SRGB};
+}
+const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedDepthSwapchainFormats() {
+    return {
+        DXGI_FORMAT_D32_FLOAT,
+        DXGI_FORMAT_D16_UNORM};
 }
 // XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 #endif

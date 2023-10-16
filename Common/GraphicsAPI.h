@@ -466,7 +466,8 @@ public:
 public:
     virtual ~GraphicsAPI() = default;
 
-    int64_t SelectSwapchainFormat(const std::vector<int64_t>& formats);
+    int64_t SelectColorSwapchainFormat(const std::vector<int64_t>& formats);
+    int64_t SelectDepthSwapchainFormat(const std::vector<int64_t>& formats);
 
     virtual void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) = 0;
     virtual void DestroyDesktopSwapchain(void*& swapchain) = 0;
@@ -521,6 +522,7 @@ public:
     virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
 
 protected:
-    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() = 0;
+    virtual const std::vector<int64_t> GetSupportedColorSwapchainFormats() = 0;
+    virtual const std::vector<int64_t> GetSupportedDepthSwapchainFormats() = 0;
     bool debugAPI = false;
 };

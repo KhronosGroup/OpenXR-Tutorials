@@ -967,7 +967,7 @@ private:
             XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-            swapchainCI.format = m_graphicsAPI->SelectSwapchainFormat(formats);               // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);               // Use GraphicsAPI to select the first compatible format.
             swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
             swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
             swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
@@ -982,7 +982,7 @@ private:
             // Get the number of images in the swapchain and allocate Swapchain image data via GraphicsAPI to store the returned array.
             uint32_t swapchainImageCount = 0;
             OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, 0, &swapchainImageCount, nullptr), "Failed to enumerate Swapchain Images.");
-            XrSwapchainImageBaseHeader *swapchainImages = m_graphicsAPI->AllocateSwapchainImageData(swapchainImageCount);
+            XrSwapchainImageBaseHeader *swapchainImages = m_graphicsAPI->AllocateSwapchainImageData(swapchainAndDepthImage.swapchain, GraphicsAPI::SwapchainType::COLOR, swapchainImageCount);
             OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, swapchainImageCount, &swapchainImageCount, swapchainImages), "Failed to enumerate Swapchain Images.");
             // XR_DOCS_TAG_END_EnumerateSwapchainImages
 
@@ -1008,7 +1008,7 @@ private:
             // Per image in the swapchain, fill out a GraphicsAPI::ImageViewCreateInfo structure and create a color image view.
             for (uint32_t i = 0; i < swapchainImageCount; i++) {
                 GraphicsAPI::ImageViewCreateInfo imageViewCI;
-                imageViewCI.image = m_graphicsAPI->GetSwapchainImage(i);
+                imageViewCI.image = m_graphicsAPI->GetSwapchainImage(swapchainAndDepthImage.swapchain, i);
                 imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::RTV;
                 imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D;
                 imageViewCI.format = swapchainAndDepthImage.swapchainFormat;

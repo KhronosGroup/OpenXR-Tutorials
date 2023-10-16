@@ -83,7 +83,8 @@ private:
     std::vector<std::string> GetInstanceExtensionsForOpenXR(XrInstance m_xrInstance, XrSystemId systemId);
     std::vector<std::string> GetDeviceExtensionsForOpenXR(XrInstance m_xrInstance, XrSystemId systemId);
 
-    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
+    virtual const std::vector<int64_t> GetSupportedColorSwapchainFormats() override;
+    virtual const std::vector<int64_t> GetSupportedDepthSwapchainFormats() override;
 
 private:
     VkInstance instance{};
