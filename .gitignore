@@ -60,3 +60,6 @@ Chapter3/app/src/main/assets/shaders/*.glsl
 
 Chapter2/app/src/main/assets/shaders/*.spv
 Chapter2/app/src/main/assets/shaders/*.glsl
+
+# Force reuse.software to ignore External
+/External/

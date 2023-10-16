@@ -160,6 +160,7 @@ private:
             // XR_DOCS_TAG_END_instanceExtensions
             // XR_DOCS_TAG_BEGIN_handTrackingExtensions
             m_instanceExtensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+            m_instanceExtensions.push_back(XR_EXT_HAND_INTERACTION_EXTENSION_NAME);
             // XR_DOCS_TAG_END_handTrackingExtensions
         }
 
@@ -277,6 +278,7 @@ private:
 
         // Get the System's properties for some general information about the hardware and the vendor.
         // XR_DOCS_TAG_BEGIN_SystemHandTrackingProperties
+	    // Check if hand tracking is supported.
         m_systemProperties.next = &handTrackingSystemProperties;
         // XR_DOCS_TAG_END_SystemHandTrackingProperties
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &m_systemProperties), "Failed to get SystemProperties.");
@@ -383,6 +385,13 @@ private:
                                                                                     {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
                                                                                     {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
         // XR_DOCS_TAG_END_SuggestTouchNativeBindings
+        // XR_DOCS_TAG_BEGIN_HandInteractionBindings
+        // These bindings are for the hand interaction extension.
+        any_ok |= SuggestBindings("/interaction_profiles/ext/hand_interaction_ext", {{m_grabCubeAction, CreateXrPath("/user/hand/left/input/grasp_ext/value")},
+                                                                                     {m_grabCubeAction, CreateXrPath("/user/hand/right/input/grasp_ext/value")},
+                                                                                     {m_changeColorAction, CreateXrPath("/user/hand/right/input/pinch_ext/value")},
+                                                                                     {m_changeColorAction, CreateXrPath("/user/hand/right/input/pinch_ext/value")}});
+        // XR_DOCS_TAG_END_HandInteractionBindings
         // XR_DOCS_TAG_BEGIN_SuggestBindings3
         if (!any_ok) {
             DEBUG_BREAK;
@@ -838,7 +847,6 @@ private:
         }
         // XR_DOCS_TAG_BEGIN_PollHands
         if (handTrackingSystemProperties.supportsHandTracking) {
-            XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
             XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
             for (int i = 0; i < 2; i++) {
                 bool Unobstructed = true;
@@ -857,7 +865,6 @@ private:
                 OPENXR_CHECK(xrLocateHandJointsEXT(hand.m_handTracker, &locateInfo, &locations), "Failed to locate hand joints.");
             }
         }
-
         // XR_DOCS_TAG_END_PollHands
     }
 
@@ -1420,7 +1427,7 @@ private:
     XrPosef m_handPose[2];
     // XR_DOCS_TAG_END_Actions
     // XR_DOCS_TAG_BEGIN_HandTracking
-    XrSystemHandTrackingPropertiesEXT handTrackingSystemProperties{XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT};
+    XrSystemHandTrackingPropertiesEXT handTrackingSystemProperties={XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT};
     struct Hand {
         XrHandJointLocationEXT m_jointLocations[XR_HAND_JOINT_COUNT_EXT];
         XrHandTrackerEXT m_handTracker = 0;
