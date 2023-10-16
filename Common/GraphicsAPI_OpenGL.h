@@ -74,7 +74,8 @@ public:
     virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) override;
 
 private:
-    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
+    virtual const std::vector<int64_t> GetSupportedColorSwapchainFormats() override;
+    virtual const std::vector<int64_t> GetSupportedDepthSwapchainFormats() override;
 
 private:
     ksGpuWindow window{};

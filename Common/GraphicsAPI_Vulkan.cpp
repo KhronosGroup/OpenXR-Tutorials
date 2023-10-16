@@ -1419,12 +1419,17 @@ std::vector<std::string> GraphicsAPI_Vulkan::GetDeviceExtensionsForOpenXR(XrInst
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
-const std::vector<int64_t> GraphicsAPI_Vulkan::GetSupportedSwapchainFormats() {
+const std::vector<int64_t> GraphicsAPI_Vulkan::GetSupportedColorSwapchainFormats() {
     return {
         VK_FORMAT_B8G8R8A8_SRGB,
         VK_FORMAT_R8G8B8A8_SRGB,
         VK_FORMAT_B8G8R8A8_UNORM,
         VK_FORMAT_R8G8B8A8_UNORM};
+}
+const std::vector<int64_t> GraphicsAPI_Vulkan::GetSupportedDepthSwapchainFormats() {
+    return {
+        VK_FORMAT_D32_SFLOAT,
+        VK_FORMAT_D16_UNORM};
 }
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
 #endif

@@ -50,18 +50,32 @@ const char *GetGraphicsAPIInstanceExtensionString(GraphicsAPI_Type type) {
 
 // GraphicsAPI
 
-// XR_DOCS_TAG_BEGIN_GraphicsAPI_SelectSwapchainFormat
-int64_t GraphicsAPI::SelectSwapchainFormat(const std::vector<int64_t> &formats) {
-    const std::vector<int64_t> &supportSwapchainFormats = GetSupportedSwapchainFormats();
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_SelectSwapchainFormats
+int64_t GraphicsAPI::SelectColorSwapchainFormat(const std::vector<int64_t> &formats) {
+    const std::vector<int64_t> &supportSwapchainFormats = GetSupportedColorSwapchainFormats();
 
     const std::vector<int64_t>::const_iterator &swapchainFormatIt = std::find_first_of(formats.begin(), formats.end(),
                                                                                        std::begin(supportSwapchainFormats), std::end(supportSwapchainFormats));
     if (swapchainFormatIt == formats.end()) {
-        std::cout << "ERROR: Unable to find supported Swapchain Format" << std::endl;
+        std::cout << "ERROR: Unable to find supported Color Swapchain Format" << std::endl;
         DEBUG_BREAK;
         return 0;
     }
 
     return *swapchainFormatIt;
 }
-// XR_DOCS_TAG_END_GraphicsAPI_SelectSwapchainFormat
+
+int64_t GraphicsAPI::SelectDepthSwapchainFormat(const std::vector<int64_t> &formats) {
+    const std::vector<int64_t> &supportSwapchainFormats = GetSupportedDepthSwapchainFormats();
+
+    const std::vector<int64_t>::const_iterator &swapchainFormatIt = std::find_first_of(formats.begin(), formats.end(),
+                                                                                       std::begin(supportSwapchainFormats), std::end(supportSwapchainFormats));
+    if (swapchainFormatIt == formats.end()) {
+        std::cout << "ERROR: Unable to find supported Depth Swapchain Format" << std::endl;
+        DEBUG_BREAK;
+        return 0;
+    }
+
+    return *swapchainFormatIt;
+}
+// XR_DOCS_TAG_END_GraphicsAPI_SelectSwapchainFormats
