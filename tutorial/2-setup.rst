@@ -517,8 +517,7 @@ For some platforms, we need additional functionality provided via the ``PollSyst
 
 .. container:: android
 
-	``TODO: don't say this.``
-	For Android, we have already provided the code for the ``PollSystemEvents()`` method in :ref:`Chapter 1.4.3 <1.4.3 The main.cpp file and the OpenXRTutorial class>`. So its duplicate definition must be removed from the class. This function is outside the scope of OpenXR, but in general it polls Android for system events, updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members.
+	The PollSystemEvents() function is outside the scope of OpenXR, but in general it polls Android for system events, updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members.
 
 
 2.3.2 XrSessionState

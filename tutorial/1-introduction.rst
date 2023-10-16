@@ -395,10 +395,18 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 	Here, We'll show how to hand build an Android Studio project that runs a C++ Native Activity.
 	First, we will create a *workspace* folder and in that folder create a subdirectory called `/Chapter2`.
-	Open Android Studio, select New Project and choose an Empty View Activity (Android Studio 22+) or an Empty Activity (Android Studio up to version 21). Set the Name to 'OpenXR Tutorial Chapter 2', the Package name to 'org.khronos.openxrtutorialchapter2' and save location to that `/Chapter2` folder. The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0(Nougat) or higher. Click "Finish" to complete the set up.
+	Open Android Studio, select New Project and choose an Empty View Activity (Android Studio 22+) or an Empty Activity (Android Studio up to version 21).
 
 	.. figure:: images/android-studio-newproject.png
-		:alt: Android Studio - New Project - Empty Activity.
+		:alt: Android Studio - New Project - Empty View Activity.
+		:scale: 55%
+
+	.. rubric:: CMake
+	
+	Set the Name to 'OpenXR Tutorial Chapter 2', the Package name to 'org.khronos.openxrtutorialchapter2' and save location to that `/Chapter2` folder. 	The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0(Nougat) or higher. If a "Build Configuration Language" option is shown, set this to "Groovy DSL (build.gradle)". Click "Finish" to complete the set up.
+
+	.. figure:: images/android-studio-newproject-options.png
+		:alt: Android Studio - New Project - options.
 		:scale: 55%
 
 	.. rubric:: CMake
@@ -534,8 +542,16 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 	Thing to note are:
 
 	* We added a `<uses-feature>` to require OpenGL ES 3.2 and Vulkan 1.0.3 support.
-	* Next, we added `<uses-feature android:name="android.hardware.vr.headtracking" android:required="false" />` to specify that the application works with 3DOF or 6DOF and on devices that are not all-in-ones. It's set to false so as to allow greater compatibility across devices.
-	* Finally, we updated the `<intent-filter>` to tell the application that it should take over rendering when active, rather than appearing in a window. Set `<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />`. Note: not all devices yet support this `<category>`. For example, for Meta Quest devices you will need `<category android:name="com.oculus.intent.category.VR" />` for the same purpose. The code shows both the 'Standard Khronos OpenXR' and 'Meta Quest-specific non-standard' ways of setting the `<intent-filter>`.
+	* Next, we added `android.hardware.vr.headtracking` to specify that the application works with 3DOF or 6DOF and on devices that are not all-in-ones. It's set to false so as to allow greater compatibility across devices.
+	* Finally, we updated the `<intent-filter>` to tell the application that it should take over rendering when active, rather than appearing in a window. We set:
+	
+	`<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />`
+	
+	Note: not all devices yet support this category. For example, for Meta Quest devices you will need
+	
+	`<category android:name="com.oculus.intent.category.VR" />`
+	
+	for the same purpose. The code shows both the 'Standard Khronos OpenXR' and 'Meta Quest-specific non-standard' ways of setting the intent filter.
 
 	.. rubric:: Gradle
 
@@ -689,6 +705,9 @@ Now we will define the main class `OpenXRTutorial` of the application. It's just
 		}
 		bool m_applicationRunning = true;
 		bool m_sessionRunning = false;
+	private:
+		void PollSystemEvents() {
+		}
 	};
 
 We'll add the main function for the application. It will look slightly different, depending on your
@@ -703,10 +722,33 @@ Then, we create the actual platform specific main function (our entry point to t
 
 .. container:: windows linux
 
-	.. literalinclude:: ../Chapter2/main.cpp
-		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_main_WIN32___linux__
-		:end-before: XR_DOCS_TAG_END_main_WIN32___linux__
+	.. container:: opengl
+
+		.. literalinclude:: ../Chapter2/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
+			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
+
+	.. container:: vulkan
+
+		.. literalinclude:: ../Chapter2/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
+			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_VULKAN
+
+	.. container:: d3d11
+
+		.. literalinclude:: ../Chapter2/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D11
+			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_D3D11
+
+	.. container:: d3d12
+
+		.. literalinclude:: ../Chapter2/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D12
+			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_D3D12
 
 .. container:: android
 	
@@ -714,6 +756,22 @@ Then, we create the actual platform specific main function (our entry point to t
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 		:end-before: XR_DOCS_TAG_END_android_main___ANDROID__
+
+	And we will initialize the app with your chosen API:
+
+	.. container:: opengl_es
+
+		.. literalinclude:: ../Chapter2/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_android_main_OPENGL_ES
+			:end-before: XR_DOCS_TAG_END_android_main_OPENGL_ES
+
+	.. container:: vulkan
+
+		.. literalinclude:: ../Chapter2/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_android_main_VULKAN
+			:end-before: XR_DOCS_TAG_END_android_main_VULKAN
 	
 	Before we can use OpenXR for Android, we need to initialise the loader based the application's context and virtual machine. We retrieve the function pointer to `xrInitializeLoaderKHR`, and with the `XrLoaderInitInfoAndroidKHR` filled out call that function to initialise OpenXR for our use. At this point, we also attach the current thread to the Java Virtual Machine. We assign our `AndroidAppState` static member and our `AndroidAppHandleCmd()` static method to the `android_app *` and save it to a static member in the class.
 
@@ -732,7 +790,7 @@ Then, we create the actual platform specific main function (our entry point to t
 
 	In the *workspace* directory, create a `build/` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original `CMakeLists.txt` is located. Point the "Where to build the binaries" box to a subdirectory called `build`, that we have just created. Click "Configure" and "OK" to accept the default Generator, then click "Generate" to create the Visual Studio solution and project. Finally click "Open Project" to open that solution with Visual Studio.
 
-	You can now build and run your program. It should compile and link with no errors or warnings.
+	You can now build and run your program. It should compile and link with no errors or warnings, but it won't run correctly yet.
 
 .. container:: linux
 
