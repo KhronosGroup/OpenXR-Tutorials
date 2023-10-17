@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 #version 310 es
-//Color Vertex Shader
 layout(std140, binding = 0) uniform CameraConstants {
     mat4 viewProj;
     mat4 modelViewProj;
