@@ -1,6 +1,6 @@
 // Copyright 2023, The Khronos Group Inc.
 //
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 #version 310 es
 layout(std140, binding = 0) uniform CameraConstants {

@@ -1,6 +1,6 @@
 # Copyright 2023, The Khronos Group Inc.
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 
 # Build from OpenXR to provide OpenGL (ES) support
 if(NOT TARGET openxr-gfxwrapper)
