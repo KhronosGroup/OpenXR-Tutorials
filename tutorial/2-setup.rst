@@ -92,7 +92,7 @@ Similarly to Vulkan, OpenXR allows applications to extend functionality past wha
 
 Here, we store in a vector of strings the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is extension that checks the validity of calls made to OpenXR, and can use a call back function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro you defined, this code will add the relevant extension.
 
-Not all API layers and extensions are available to use, so we much check which ones are available when OpenXR is initialized. We will use ``xrEnumerateApiLayerProperties()`` and ``xrEnumerateInstanceExtensionProperties()`` to check which ones the runtime can provide. Let's do this now by adding the following code to the ``CreateInstance()`` method:
+Not all API layers and extensions are available to use, so we must check which ones are available when OpenXR is initialized. We will use ``xrEnumerateApiLayerProperties()`` and ``xrEnumerateInstanceExtensionProperties()`` to check which ones the runtime can provide. Let's do this now by adding the following code to the ``CreateInstance()`` method:
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp

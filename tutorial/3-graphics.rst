@@ -891,7 +891,7 @@ The View Reference Space uses the view origin (or the centroid of the views in t
 
 By using ``XR_REFERENCE_SPACE_TYPE_LOCAL`` we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
 
-The Local Reference Space uses an initial location to establish a world-locked, gravity aligned point as the origin of the space. +Y is up,+X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at pplication start up or from a calibrated origin point.
+The Local Reference Space uses an initial location to establish a world-locked, gravity aligned point as the origin of the space. +Y is up,+X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at application start up or from a calibrated origin point.
   
 It may be used for rendering seated-scale experiences such as driving or aircraft simulation, where a virtual floor is not required. When recentering, the runtime will queue a ``XrEventDataReferenceSpaceChangePending`` structure for the application to process.
 

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 # XR_DOCS_TAG_BEGIN_CMakeLists
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22.1)
 
 project(openxr-tutorial)
 

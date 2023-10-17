@@ -58,30 +58,29 @@ We'll start with the main concepts you'll need to be familiar with around OpenXR
 	* - Input
 	  - The OpenXR Input System allows apps to query what inputs are available. These can then be bound to Actions or Poses, so the app knows what the user is doing.
 
-OpenXR's lexicon and API style are based on the Vulkan API, and it provides a clear and precise common language for developers and hardware vendors to use. It was a decision by the OpenXR working group to have APIs similar.
+OpenXR provides a clear and precise common language for developers and hardware vendors to use.
 
-An OpenXR Runtime implements the OpenXR API. There maybe multiple runtime installed on a system, but an OpenXR application can only choose one. The runtime acts to translate the OpenXR function calls into something that the vendor's software/hardware can understand. There is a fully open source OpenXR runtime for Linux in development called `Monado <https://monado.dev/>`_.
+An OpenXR Runtime implements the OpenXR API. The runtime translates the OpenXR function calls into something that the vendor's software/hardware can understand.
 
 The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as `XR_EXT_debug_utils`, any functions associated with that extension will need to be loaded in with `xrGetInstanceProcAddr()`. Some platforms like Android require extra work and information to initialise the loader.
 
-API Layers are additional code layers that are inserted between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Some simple examples of API Layers would be logging the OpenXR functions to the output or a file, or creating trace file of the OpenXR calls for later replay. A validation layer could be used to check that the function calls made to OpenXR are compatible with the specification and with the current state of OpenXR, which would be very similar the Vulkan Validation layer.
+API Layers are additional code layers that are inserted between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or to check that the function calls made to OpenXR are compatible with the OpenXR specification.
 
-OpenXR supports multiple graphics APIs via its extension functionality. Like in Vulkan, OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of absolving the core specification of the graphics API functionality, as bold as it might seem, provides us with the flexibility in choosing the graphics APIs now and in the future. Firstly, OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. Secondly, the extensive nature of OpenXR allows revisions of and any new graphics APIs to be integrated with ease. Already, there are two mutually exclusive extensions in OpenXR for interacting with Vulkan.
+OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of abstracting the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensiblee nature of OpenXR allows revisions of existing API's and new graphics API's to be integrated with ease.
 	
-OpenXR recognised that there is vast and ever changing array of hardware and configurations in the XR space. With new headsets and controllers coming to the market, an abstraction of the input system was needed so that same application can target difference and newer hardware. The abstraction is done via the concept of an `XrAction`, which acts as handle to interactive elements of the application. Instead of directly querying the state of any one button, joysticks, trigger, touch pad etc., you create an `XrAction` for a specific action such as a "menu_click". You provide a suggested binding along with an interaction profile so that OpenXR can link that action with the available input hardware at runtime.
+OpenXR recognizes that there is a vast and ever changing array of hardware and configurations in the XR space. With new headsets and controllers coming to the market, an abstraction of the input system was needed so that the same applications can target different and newer hardware with minimal change.
 
 *********************
 1.3 Environment Setup
 *********************
 
-This section will help you set up your development environment. Here your choice of platform really makes a difference. After that, things will be much more consistent. You can change platform at any time by clicking the tabs at the top of the page. Select the platform you want to develop for now, by clicking a tab above.
+This section will help you set up your development environment. Here your choice of platform really makes a difference, but afterwards things will be much more consistent. You can change platform at any time by clicking the tabs at the top of the page. Select the platform you want to develop for now, by clicking a tab above.
 
 .. container:: windows
 
 	.. rubric:: Visual Studio
 
-	If you'll be building an OpenXR project for Microsoft Windows PC based devices, we'll assume you'll be using Microsoft Visual Studio.
-	The free Community edition of Visual Studio is available to download `here <https://visualstudio.microsoft.com/vs/community/>`_.
+	If you'll be building an OpenXR project for Microsoft Windows PC based devices, we'll assume you'll be using Microsoft Visual Studio. The free Community Edition of Visual Studio is available to download `here <https://visualstudio.microsoft.com/vs/community/>`_.
 
 	.. rubric:: CMake
 
@@ -239,7 +238,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 	After setting our CMake version, our own CMake variable `PROJECT_NAME` to `OpenXRTutorialChapter2` and with that variable setting the project's name, we append to the `CMAKE_MODULE_PATH` variable an additional path for `find_package()`` to search within and we include `FetchContent` and use it to get the OpenXR-SDK from Khronos's GitHub page.
 
-	Now, we will add to our `CMakeLists.txt` to specify the source and header files by adding the following code. Here, we are including all the files needed for our project.  
+	Now, we will add to `Chapter2/CMakeLists.txt` to specify the source and header files by adding the following code. Here, we are including all the files needed for our project.  
 
 	.. container:: d3d11
 
@@ -315,7 +314,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 	All the files listed above with `../Common/*.*` are available to download below. In the next section, you will find the links and discussion of their usage. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files for your chosen API.
 	
-	Add the following code to `CMakeLists.txt`:
+	Add the following code to `Chapter2/CMakeLists.txt`:
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake
@@ -424,7 +423,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 	.. container:: opengles
 	
-		Create a folder called `cmake` in the *workspace* directory. Download the linked files below and put them in `cmake`. These will be used in our `CMakeLists.txt` to help build our project. Files with `shader` in the name will be used in later chapters.
+		Create a folder called `cmake` in the *workspace* directory. Download the linked files below and put them in `cmake`. These will be used by CMake to help build our project. Files with `shader` in the name will be used in later chapters.
 
 		:download:`gfxwrapper.cmake <../cmake/gfxwrapper.cmake>`
 		:download:`FindEGL.cmake <../cmake/FindEGL.cmake>`
@@ -432,7 +431,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 	.. container:: vulkan
 	
-		Create a folder called `cmake` in the *workspace* directory. Download the linked file below and put it in `cmake`. This will be used in later chapters in our `CMakeLists.txt` to help build our project.
+		Create a folder called `cmake` in the *workspace* directory. Download the linked file below and put it in `cmake`. This will be used by CMake to help build our project.
 
 		:download:`glsl_shader.cmake <../cmake/glsl_shader.cmake>`
 
@@ -825,7 +824,7 @@ Then, we create the actual platform specific main function (our entry point to t
 					"request": "launch",
 					"name": "Chapter2",
 					"program": "${workspaceFolder}/build/Chapter2/OpenXRTutorialChapter2",
-					"cwd":"${workspaceFolder}/OpenXRTutorialChapter2"
+					"cwd":"${workspaceFolder}/Chapter2"
 				}
 			]
 		}

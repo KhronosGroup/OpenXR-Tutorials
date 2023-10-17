@@ -4366,19 +4366,18 @@ button[disabled]
 
 .btn-neutral
 {
-    background-color: #f3f6f6 !important;
-    color: #101010 !important
+    background-color: #782B90 !important;
+    color: white !important
 }
 
 .btn-neutral:hover
 {
-    background-color: #e5ebeb !important;
-    color: #101010
+    background-color: #782B90 !important;
+    color: white
 }
 
 .btn-neutral:visited
 {
-    color: #101010 !important
 }
 
 .btn-success
@@ -6323,7 +6322,8 @@ footer p
 
 .rst-footer-buttons
 {
-    *zoom: 1
+    *zoom: 1;
+	max-width:800px;
 }
 
 .rst-footer-buttons:after, .rst-footer-buttons:before
