@@ -139,7 +139,7 @@ To implement this in the Chapter 5 code, we first add the following memeber to t
 	:end-before: XR_DOCS_TAG_END_RenderLayer_LayerDepthInfos
 	:dedent: 8
 
-Now, in the ``CreateInstance()`` under the extension from Chapter 2:
+Now, in the ``CreateInstance()`` under the extensions from Chapter 2:
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
@@ -165,7 +165,7 @@ In ``RenderLayer()`` after we've resized the ``std::vector<XrCompositionLayerPro
 	:end-before: XR_DOCS_TAG_END_ResizeLeyerDepthInfos
 	:dedent: 8
 
-After we have filled out the ``XrCompositionLayerProjectionView`` structure, we fill out the ``XrCompositionLayerDepthInfoKHR`` structure and using the ``XrCompositionLayerProjectionView::next`` pointer we chain the two structures together. This submit the depth and the color image together for the XR compositor.
+After we have filled out the ``XrCompositionLayerProjectionView`` structure, we fill out the ``XrCompositionLayerDepthInfoKHR`` structure and using the ``XrCompositionLayerProjectionView::next`` pointer we chain the two structures together. This submits the depth and the color image together for the XR compositor.
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
