@@ -214,7 +214,7 @@ Add the following code to the ``GetViewConfigurationViews()`` method:
 	:dedent: 8
 
 3.1.2 Enumerate the Swapchain Formats
-=================================
+=====================================
 
 For each runtime, the OpenXR compositor has certain preferred image formats that should be used by the swapchain. When calling ``xrEnumerateSwapchainFormats()``, the ``XrSession`` and alongwith the Graphics API will return an array of API-specific formats ordered by preference. ``xrEnumerateSwapchainFormats()`` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
 
@@ -231,7 +231,7 @@ Copy the code below into the ``CreateSwapchain()`` method:
 	:dedent: 8
 
 3.1.3 Create the Swapchains
-=======================
+===========================
 
 Append the following code to the ``CreateSwapchain()`` method:
 

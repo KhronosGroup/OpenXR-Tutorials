@@ -721,7 +721,7 @@ chosen platform. We first create a 'pseudo-main function' called `OpenXRTutorial
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
-	:start-at: void OpenXRTutorial_Main(GraphicsAPI_Type api) {
+	:start-at: void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 	:end-at: }
 
 Then, we create the actual platform specific main function (our entry point to the application), which will call `OpenXRTutorial_Main()` with our `GraphicsAPI_Type` parameter. By default, this tutorial uses `OPENGL` as the parameter to `OpenXRTutorial_Main()`. This must be changed to match on your chosen graphics API, one of: `D3D11`,     `D3D12`,     `OPENGL`,    `OPENGL_ES`, or   `VULKAN`.

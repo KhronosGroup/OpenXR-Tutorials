@@ -56,6 +56,7 @@ device.
 	3-graphics
 	4-actions
 	5-extensions
+	6-next-steps
 
 
 
