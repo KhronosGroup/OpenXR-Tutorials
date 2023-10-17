@@ -5,23 +5,23 @@ Source: https://github.com/KhronosGroup/OpenXR-Tutorials
 
 Files: .github/*
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
 Files: Chapter2/*
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
 Files: Chapter3/*
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
 Files: Chapter4/*
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
 Files: Chapter5/*
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
 Files: tutorial/*
 Copyright: 2023 The Khronos Group Inc.
@@ -35,21 +35,21 @@ Comment: https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/LICENSE
 
 Files: .clang-format
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
 Files: .gitignore
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
 Files: build-site.sh
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
 Files: README.md
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
 Files: requirements.txt
 Copyright: 2023 The Khronos Group Inc.
-License: MIT
+License: Apache-2.0
 
