@@ -983,11 +983,28 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 }
 
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
-// XR_DOCS_TAG_BEGIN_main_WIN32___linux__
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
 int main(int argc, char **argv) {
     OpenXRTutorial_Main(OPENGL);
 }
-// XR_DOCS_TAG_END_main_WIN32___linux__
+// XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
+/*
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(VULKAN);
+}
+// XR_DOCS_TAG_END_main_Windows_Linux_VULKAN
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D11
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(D3D11);
+}
+// XR_DOCS_TAG_END_main_Windows_Linux_D3D11
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D12
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(D3D12);
+}
+// XR_DOCS_TAG_END_main_Windows_Linux_D3D12
+*/
 #elif (__ANDROID__)
 // XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 android_app *OpenXRTutorial::androidApp = nullptr;
@@ -1020,7 +1037,15 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
+// XR_DOCS_TAG_END_android_main___ANDROID__
+// XR_DOCS_TAG_BEGIN_android_main_OPENGL_ES
     OpenXRTutorial_Main(OPENGL_ES);
 }
-// XR_DOCS_TAG_END_android_main___ANDROID__
+// XR_DOCS_TAG_END_android_main_OPENGL_ES
+/*
+// XR_DOCS_TAG_BEGIN_android_main_VULKAN
+    OpenXRTutorial_Main(VULKAN);
+}
+// XR_DOCS_TAG_END_android_main_VULKAN
+*/
 #endif

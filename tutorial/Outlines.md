@@ -16,12 +16,12 @@ Discuss API layers, their use in extensibility.
 Describe the concept of the Runtime, mention different runtimes and where they are found.
 Discuss how graphics are enabled by Instance extensions, how OpenXR supports various Graphics APIs with support for future ones too.
 Introduce the Input System, show how it enables extensibility, cross-device applications.
-Again, appropriate diagrams, matching site colour scheme and design.
+Again, appropriate diagrams, matching site color scheme and design.
 
 ## Chapter 1.3 Setting Up
 Rename 1.3 to "Setting up a Development Environment"? Move to Chapter 2?
 Highly platform-dependent. Also API-dependent.
-Separate tabs for Windows GL, WIndows D3D12, Windows Vulkan etc.
+Separate tabs for Windows GL, Windows D3D12, Windows Vulkan etc.
 Where/how to get the SDK: FetchContent, say what it does.
 What dependencies are required, and where to get them. Again, highly platform- and API-dependent. Refer to FetchContent where appropriate, not too much detail.
 Introduce CMake and briefly explain its use.
@@ -60,12 +60,12 @@ Describe the XrEventDataEventsLost, XrEventDataInstanceLossPending, XrEventDataI
 Getting the new XrSessionState from XrEventDataSessionStateChanged - code.
 
 ## Chapter 3
-The goal is to create and clear colour and depth buffers within the scope of OpenXR render loop and its interaction with all the Graphics APIs.
+The goal is to create and clear color and depth buffers within the scope of OpenXR render loop and its interaction with all the Graphics APIs.
 
 ## Chapter 3.1 Creating Swapchains
 Introduce XrViewConfigurationView and explain various types of XR systems and their possible view configurations and how to use xrEnumerateViewConfigurationViews() to get the number of view in the system - there's not always 2 views.
 Use xrEnumerateSwapchainFormats() to find a compatible format that is suitable for our rendering. Discuss the Graphics APIs's preference for a specific format and the subtetlies of usage, and the general usage of sRGB and linear formats.
-Describe the XrSwapchainCreateInfo struct and the usage flags. Use xrCreateSwapchain() to create images that are layered for easier handling of resources. Use xrEnumerateSwapchainImages() to get the resources for rendering and create layered depth textures (one per eye/view). The layered images are easier to integrate with Multiview and allow binding 2D Array images in the colour blend/output merger stage.
+Describe the XrSwapchainCreateInfo struct and the usage flags. Use xrCreateSwapchain() to create images that are layered for easier handling of resources. Use xrEnumerateSwapchainImages() to get the resources for rendering and create layered depth textures (one per eye/view). The layered images are easier to integrate with Multiview and allow binding 2D Array images in the color blend/output merger stage.
 
 ## Chapter 3.2 Building a RenderLoop
 Describe the idea of an OpenXR frame and show the usage of xrWaitFrame(), xrBeginFrame() and xrEndFrame().

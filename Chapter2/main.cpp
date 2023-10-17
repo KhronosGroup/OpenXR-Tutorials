@@ -277,6 +277,7 @@ private:
                 break;
             }
             // Log that there's a reference space change pending.
+            // TODO: expand on this in text.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
@@ -426,7 +427,7 @@ private:
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
-    DebugOutput debugOutput; // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
+    DebugOutput debugOutput;  // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
     std::cout << "OpenXR Tutorial Chapter 2." << std::endl;
 
     OpenXRTutorial app(apiType);
