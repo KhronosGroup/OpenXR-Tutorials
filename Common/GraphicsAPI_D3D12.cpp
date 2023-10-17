@@ -872,7 +872,7 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     GPSD.DepthStencilState.BackFace.StencilPassOp = static_cast<D3D12_STENCIL_OP>(static_cast<uint32_t>(pipelineCI.depthStencilState.back.passOp) + 1);
     GPSD.DepthStencilState.BackFace.StencilFunc = static_cast<D3D12_COMPARISON_FUNC>(static_cast<uint32_t>(pipelineCI.depthStencilState.back.compareOp) + 1);
 
-    // ColourBlend
+    // ColorBlend
     GPSD.BlendState.AlphaToCoverageEnable = pipelineCI.multisampleState.alphaToCoverageEnable;
     GPSD.BlendState.IndependentBlendEnable = true;
     size_t i = 0;

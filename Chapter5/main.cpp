@@ -688,8 +688,8 @@ private:
                     XrQuaternionf q;
                     XrVector3f axis = {0, 0.707f, 0.707f};
                     XrQuaternionf_CreateFromAxisAngle(&q, &axis, angleRad);
-                    XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
-                    blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, colour});
+                    XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
+                    blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, color});
                 }
             }
         }
@@ -910,8 +910,8 @@ private:
                 }
                     else if (m_changeColorState[i].isActive == XR_TRUE && m_changeColorState[i].currentState == XR_FALSE && m_changeColorState[i].changedSinceLastSync == XR_TRUE) {
                         auto &thisBlock = blocks[nearBlock[i]];
-                        XrVector3f colour = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
-                        thisBlock.colour = colour;
+                        XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
+                        thisBlock.color = color;
                     }
                 }
             } else {
@@ -967,7 +967,7 @@ private:
             XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-            swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);               // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);          // Use GraphicsAPI to select the first compatible format.
             swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
             swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
             swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
@@ -1048,6 +1048,9 @@ private:
 
             // Destroy the depth image from GraphicsAPI
             m_graphicsAPI->DestroyImage(swapchainAndDepthImage.depthImage);
+
+            // Free Swapchain Image Data
+            m_graphicsAPI->FreeSwapchainImageData(swapchainAndDepthImage.swapchain);
 
             // Destory the swapchain.
             OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");
@@ -1230,7 +1233,7 @@ private:
                 XrVector3f sc = thisBlock.scale;
                 if (i == nearBlock[0] || i == nearBlock[1])
                     sc = thisBlock.scale * 1.05f;
-                RenderCuboid(thisBlock.pose, sc, thisBlock.colour);
+                RenderCuboid(thisBlock.pose, sc, thisBlock.color);
             }
             // XR_DOCS_TAG_END_CallRenderCuboid2
 
@@ -1238,11 +1241,11 @@ private:
             if (handTrackingSystemProperties.supportsHandTracking)
                 for (int i = 0; i < 2; i++) {
                     auto hand = m_hands[i];
-                    XrVector3f hand_colour = {1.f, 1.f, 0.f};
+                    XrVector3f hand_color = {1.f, 1.f, 0.f};
                     for (int j = 0; j < XR_HAND_JOINT_COUNT_EXT; j++) {
                         XrVector3f sc = {1.5f, 1.5f, 2.5f};
                         sc = sc * hand.m_jointLocations[j].radius;
-                        RenderCuboid(hand.m_jointLocations[j].pose, sc, hand_colour);
+                        RenderCuboid(hand.m_jointLocations[j].pose, sc, hand_color);
                     }
                 }
             // XR_DOCS_TAG_END_RenderHands
@@ -1399,7 +1402,7 @@ private:
     struct Block {
         XrPosef pose;
         XrVector3f scale;
-        XrVector3f colour;
+        XrVector3f color;
     };
     std::vector<Block> blocks;
     int grabbedBlock[2] = {-1, -1};
@@ -1444,11 +1447,28 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 }
 
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
-// XR_DOCS_TAG_BEGIN_main_WIN32___linux__
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(OPENGL);
+}
+// XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
+/*
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
 int main(int argc, char **argv) {
     OpenXRTutorial_Main(VULKAN);
 }
-// XR_DOCS_TAG_END_main_WIN32___linux__
+// XR_DOCS_TAG_END_main_Windows_Linux_VULKAN
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D11
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(D3D11);
+}
+// XR_DOCS_TAG_END_main_Windows_Linux_D3D11
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D12
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(D3D12);
+}
+// XR_DOCS_TAG_END_main_Windows_Linux_D3D12
+*/
 #elif (__ANDROID__)
 // XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 android_app *OpenXRTutorial::androidApp = nullptr;
@@ -1481,7 +1501,15 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
+// XR_DOCS_TAG_END_android_main___ANDROID__
+// XR_DOCS_TAG_BEGIN_android_main_OPENGL_ES
+    OpenXRTutorial_Main(OPENGL_ES);
+}
+// XR_DOCS_TAG_END_android_main_OPENGL_ES
+/*
+// XR_DOCS_TAG_BEGIN_android_main_VULKAN
     OpenXRTutorial_Main(VULKAN);
 }
-// XR_DOCS_TAG_END_android_main___ANDROID__
+// XR_DOCS_TAG_END_android_main_VULKAN
+*/
 #endif

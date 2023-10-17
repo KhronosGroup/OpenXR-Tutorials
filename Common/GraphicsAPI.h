@@ -101,7 +101,7 @@
 #include <vulkan/vulkan.h>
 #endif
 
-// OpenXR
+// OpenXR Helper
 #include <OpenXRHelper.h>
 
 enum GraphicsAPI_Type : uint8_t {

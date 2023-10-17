@@ -1003,7 +1003,7 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
                           DSS.back.compareMask);
     glStencilMaskSeparate(GL_BACK, DSS.back.writeMask);
 
-    // ColourBlendState
+    // ColorBlendState
     const ColorBlendState &CBS = pipelineCI.colorBlendState;
 
     if (CBS.logicOpEnable) {
