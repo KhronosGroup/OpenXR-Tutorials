@@ -1061,7 +1061,7 @@ const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedColorSwapchainForm
         return {GL_RGBA8, GL_RGBA8_SNORM};
     }
 }
-const std::vector<int64_t> GraphicsAPI_OpenGL::GetSupportedDepthSwapchainFormats() {
+const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedDepthSwapchainFormats() {
     return {
         GL_DEPTH_COMPONENT32F,
         GL_DEPTH_COMPONENT24,

@@ -47,6 +47,9 @@ static std::mt19937 pseudo_random_generator;
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_4_5
 
 class OpenXRTutorial {
+private:
+    struct RenderLayerInfo;
+
 public:
     OpenXRTutorial(GraphicsAPI_Type apiType)
         : m_apiType(apiType) {
@@ -93,7 +96,7 @@ public:
         CreateReferenceSpace();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
-        CreateSwapchain();
+        CreateSwapchains();
 #endif
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_3
@@ -111,7 +114,7 @@ public:
 #endif
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_1
-        DestroySwapchain();
+        DestroySwapchains();
 #endif
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         DestroyReferenceSpace();
@@ -619,7 +622,7 @@ private:
         pipelineCI.multisampleState = {1, false, 1.0f, 0xFFFFFFFF, false, false};
         pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
         pipelineCI.colorBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColorComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
-        pipelineCI.colorFormats = {m_swapchainAndDepthImages[0].swapchainFormat};
+        pipelineCI.colorFormats = {m_colorSwapchainInfos[0].swapchainFormat};
         pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
         pipelineCI.layout = {{0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
                              {1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
@@ -889,13 +892,19 @@ private:
         // XR_DOCS_TAG_END_DestroyReferenceSpace
     }
 
-    void CreateSwapchain() {
+    void CreateSwapchains() {
         // XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
         // Get the supported swapchain formats as an array of int64_t and ordered by runtime preference.
         uint32_t formatSize = 0;
         OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, 0, &formatSize, nullptr), "Failed to enumerate Swapchain Formats");
         std::vector<int64_t> formats(formatSize);
         OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
+        if (m_graphicsAPI->SelectDepthSwapchainFormat(formats) == 0) {
+            std::cerr << "Failed to find depth format for Swapchain." << std::endl;
+            std::cerr << "For systems that don't support this feature, they should use a depth image." << std::endl;
+            std::cerr << "They will be no support for XR_KHR_composition_layer_depth." << std::endl;
+            DEBUG_BREAK;
+        }
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
         // TODO: Don't like this, just use a for(int loop and use the correct one in the list.
@@ -903,11 +912,16 @@ private:
         const XrViewConfigurationView &viewConfigurationView = m_viewConfigurationViews[0];
         // XR_DOCS_TAG_END_CreateViewConfigurationView
 
-        // Per view, create a swapchain, depth image and their associated image views.
-        m_swapchainAndDepthImages.resize(m_viewConfigurationViews.size());
-        for (SwapchainAndDepthImage &swapchainAndDepthImage : m_swapchainAndDepthImages) {
-            // XR_DOCS_TAG_BEGIN_CreateSwapchain
+        // Per view, create a color and depth swapchain, and their associated image views.
+        m_colorSwapchainInfos.resize(m_viewConfigurationViews.size());
+        m_depthSwapchainInfos.resize(m_viewConfigurationViews.size());
+        for (size_t i = 0; i < m_viewConfigurationViews.size(); i++) {
+            // XR_DOCS_TAG_BEGIN_CreateSwapchains
+            SwapchainInfo &colorSwapchainInfo = m_colorSwapchainInfos[i];
+            SwapchainInfo &depthSwapchainInfo = m_depthSwapchainInfos[i];
+
             // Fill out an XrSwapchainCreateInfo structure and create an XrSwapchain.
+            // Color.
             XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
@@ -918,88 +932,92 @@ private:
             swapchainCI.faceCount = 1;
             swapchainCI.arraySize = 1;
             swapchainCI.mipCount = 1;
-            OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &swapchainAndDepthImage.swapchain), "Failed to create Swapchain");
-            swapchainAndDepthImage.swapchainFormat = swapchainCI.format;  // Save the swapchain format for later use.
-            // XR_DOCS_TAG_END_CreateSwapchain
+            OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &colorSwapchainInfo.swapchain), "Failed to create Color Swapchain");
+            colorSwapchainInfo.swapchainFormat = swapchainCI.format;  // Save the swapchain format for later use.
+
+            // Depth.
+            swapchainCI.createFlags = 0;
+            swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+            swapchainCI.format = m_graphicsAPI->SelectDepthSwapchainFormat(formats);          // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
+            swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
+            swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
+            swapchainCI.faceCount = 1;
+            swapchainCI.arraySize = 1;
+            swapchainCI.mipCount = 1;
+            OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &depthSwapchainInfo.swapchain), "Failed to create Depth Swapchain");
+            depthSwapchainInfo.swapchainFormat = swapchainCI.format;  // Save the swapchain format for later use.
+            // XR_DOCS_TAG_END_CreateSwapchains
 
             // XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
-            // Get the number of images in the swapchain and allocate Swapchain image data via GraphicsAPI to store the returned array.
-            uint32_t swapchainImageCount = 0;
-            OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, 0, &swapchainImageCount, nullptr), "Failed to enumerate Swapchain Images.");
-            XrSwapchainImageBaseHeader *swapchainImages = m_graphicsAPI->AllocateSwapchainImageData(swapchainAndDepthImage.swapchain, GraphicsAPI::SwapchainType::COLOR, swapchainImageCount);
-            OPENXR_CHECK(xrEnumerateSwapchainImages(swapchainAndDepthImage.swapchain, swapchainImageCount, &swapchainImageCount, swapchainImages), "Failed to enumerate Swapchain Images.");
+            // Get the number of images in the color/depth swapchain and allocate Swapchain image data via GraphicsAPI to store the returned array.
+            uint32_t colorSwapchainImageCount = 0;
+            OPENXR_CHECK(xrEnumerateSwapchainImages(colorSwapchainInfo.swapchain, 0, &colorSwapchainImageCount, nullptr), "Failed to enumerate Color Swapchain Images.");
+            XrSwapchainImageBaseHeader *colorSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(colorSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::COLOR, colorSwapchainImageCount);
+            OPENXR_CHECK(xrEnumerateSwapchainImages(colorSwapchainInfo.swapchain, colorSwapchainImageCount, &colorSwapchainImageCount, colorSwapchainImages), "Failed to enumerate Color Swapchain Images.");
+            
+            uint32_t depthSwapchainImageCount = 0;
+            OPENXR_CHECK(xrEnumerateSwapchainImages(depthSwapchainInfo.swapchain, 0, &depthSwapchainImageCount, nullptr), "Failed to enumerate Depth Swapchain Images.");
+            XrSwapchainImageBaseHeader *depthSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(depthSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::DEPTH, depthSwapchainImageCount);
+            OPENXR_CHECK(xrEnumerateSwapchainImages(depthSwapchainInfo.swapchain, depthSwapchainImageCount, &depthSwapchainImageCount, depthSwapchainImages), "Failed to enumerate Depth Swapchain Images.");
             // XR_DOCS_TAG_END_EnumerateSwapchainImages
 
-            // XR_DOCS_TAG_BEGIN_CreateDepthImage
-            // Fill out a GraphicsAPI::ImageCreateInfo structure and create a depth image.
-            GraphicsAPI::ImageCreateInfo depthImageCI;
-            depthImageCI.dimension = 2;
-            depthImageCI.width = viewConfigurationView.recommendedImageRectWidth;
-            depthImageCI.height = viewConfigurationView.recommendedImageRectHeight;
-            depthImageCI.depth = 1;
-            depthImageCI.mipLevels = 1;
-            depthImageCI.arrayLayers = 1;
-            depthImageCI.sampleCount = 1;
-            depthImageCI.format = m_graphicsAPI->GetDepthFormat();
-            depthImageCI.cubemap = false;
-            depthImageCI.colorAttachment = false;
-            depthImageCI.depthAttachment = true;
-            depthImageCI.sampled = false;
-            swapchainAndDepthImage.depthImage = m_graphicsAPI->CreateImage(depthImageCI);
-            // XR_DOCS_TAG_END_CreateDepthImage
-
             // XR_DOCS_TAG_BEGIN_CreateImageViews
-            // Per image in the swapchain, fill out a GraphicsAPI::ImageViewCreateInfo structure and create a color image view.
-            for (uint32_t i = 0; i < swapchainImageCount; i++) {
+            // Per image in the swapchains, fill out a GraphicsAPI::ImageViewCreateInfo structure and create a color/depth image view.
+            for (uint32_t j = 0; j < colorSwapchainImageCount; j++) {
                 GraphicsAPI::ImageViewCreateInfo imageViewCI;
-                imageViewCI.image = m_graphicsAPI->GetSwapchainImage(swapchainAndDepthImage.swapchain, i);
+                imageViewCI.image = m_graphicsAPI->GetSwapchainImage(colorSwapchainInfo.swapchain, j);
                 imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::RTV;
                 imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D;
-                imageViewCI.format = swapchainAndDepthImage.swapchainFormat;
+                imageViewCI.format = colorSwapchainInfo.swapchainFormat;
                 imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::COLOR_BIT;
                 imageViewCI.baseMipLevel = 0;
                 imageViewCI.levelCount = 1;
                 imageViewCI.baseArrayLayer = 0;
                 imageViewCI.layerCount = 1;
-                swapchainAndDepthImage.colorImageViews.push_back(m_graphicsAPI->CreateImageView(imageViewCI));
+                colorSwapchainInfo.imageViews.push_back(m_graphicsAPI->CreateImageView(imageViewCI));
             }
-
-            // Fill out a GraphicsAPI::ImageViewCreateInfo structure and create a depth image view.
-            GraphicsAPI::ImageViewCreateInfo imageViewCI;
-            imageViewCI.image = swapchainAndDepthImage.depthImage;
-            imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::DSV;
-            imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D;
-            imageViewCI.format = m_graphicsAPI->GetDepthFormat();
-            imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::DEPTH_BIT;
-            imageViewCI.baseMipLevel = 0;
-            imageViewCI.levelCount = 1;
-            imageViewCI.baseArrayLayer = 0;
-            imageViewCI.layerCount = 1;
-            swapchainAndDepthImage.depthImageView = m_graphicsAPI->CreateImageView(imageViewCI);
+            for (uint32_t j = 0; j < depthSwapchainImageCount; j++) {
+                GraphicsAPI::ImageViewCreateInfo imageViewCI;
+                imageViewCI.image = m_graphicsAPI->GetSwapchainImage(depthSwapchainInfo.swapchain, j);
+                imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::DSV;
+                imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D;
+                imageViewCI.format = depthSwapchainInfo.swapchainFormat;
+                imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::DEPTH_BIT;
+                imageViewCI.baseMipLevel = 0;
+                imageViewCI.levelCount = 1;
+                imageViewCI.baseArrayLayer = 0;
+                imageViewCI.layerCount = 1;
+                depthSwapchainInfo.imageViews.push_back(m_graphicsAPI->CreateImageView(imageViewCI));
+            }
             // XR_DOCS_TAG_END_CreateImageViews
         }
     }
 
-    void DestroySwapchain() {
-        // XR_DOCS_TAG_BEGIN_DestroySwapchain
+    void DestroySwapchains() {
+        // XR_DOCS_TAG_BEGIN_DestroySwapchains
         // Per view in the view configuration:
-        for (SwapchainAndDepthImage &swapchainAndDepthImage : m_swapchainAndDepthImages) {
+        for (size_t i = 0; i < m_viewConfigurationViews.size(); i++) {
+            SwapchainInfo &colorSwapchainInfo = m_colorSwapchainInfos[i];
+            SwapchainInfo &depthSwapchainInfo = m_depthSwapchainInfos[i];
+
             // Destroy the color and depth image views from GraphicsAPI.
-            m_graphicsAPI->DestroyImageView(swapchainAndDepthImage.depthImageView);
-            for (void *&colorImageView : swapchainAndDepthImage.colorImageViews) {
-                m_graphicsAPI->DestroyImageView(colorImageView);
+            for (void *&imageView : colorSwapchainInfo.imageViews) {
+                m_graphicsAPI->DestroyImageView(imageView);
+            }
+            for (void *&imageView : depthSwapchainInfo.imageViews) {
+                m_graphicsAPI->DestroyImageView(imageView);
             }
 
-            // Destroy the depth image from GraphicsAPI
-            m_graphicsAPI->DestroyImage(swapchainAndDepthImage.depthImage);
+            // Free the Swapchain Image Data.
+            m_graphicsAPI->FreeSwapchainImageData(colorSwapchainInfo.swapchain);
+            m_graphicsAPI->FreeSwapchainImageData(depthSwapchainInfo.swapchain);
 
-            // Free Swapchain Image Data
-            m_graphicsAPI->FreeSwapchainImageData(swapchainAndDepthImage.swapchain);
-
-            // Destory the swapchain.
-            OPENXR_CHECK(xrDestroySwapchain(swapchainAndDepthImage.swapchain), "Failed to destroy Swapchain");
+            // Destory the swapchains.
+            OPENXR_CHECK(xrDestroySwapchain(colorSwapchainInfo.swapchain), "Failed to destroy Color Swapchain");
+            OPENXR_CHECK(xrDestroySwapchain(depthSwapchainInfo.swapchain), "Failed to destroy Depth Swapchain");
         }
-        // XR_DOCS_TAG_END_DestroySwapchain
+        // XR_DOCS_TAG_END_DestroySwapchains
     }
 
     // XR_DOCS_TAG_BEGIN_RenderCuboid1
@@ -1043,9 +1061,8 @@ private:
 
         // Variables for rendering and layer composition.
         bool rendered = false;
-        std::vector<XrCompositionLayerBaseHeader *> layers;
-        XrCompositionLayerProjection layerProjection{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
-        std::vector<XrCompositionLayerProjectionView> layerProjectionViews;
+        RenderLayerInfo renderLayerInfo;
+        renderLayerInfo.predictedDisplayTime = frameState.predictedDisplayTime;
 
         // Check that the session is active and that we should render.
         bool sessionActive = (m_sessionState == XR_SESSION_STATE_SYNCHRONIZED || m_sessionState == XR_SESSION_STATE_VISIBLE || m_sessionState == XR_SESSION_STATE_FOCUSED);
@@ -1059,9 +1076,9 @@ private:
             // XR_DOCS_TAG_END_CallPollActions
 #endif
             // Render the stereo image and associate one of swapchain images with the XrCompositionLayerProjection structure.
-            rendered = RenderLayer(frameState.predictedDisplayTime, layerProjection, layerProjectionViews);
+            rendered = RenderLayer(renderLayerInfo);
             if (rendered) {
-                layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader *>(&layerProjection));
+                renderLayerInfo.layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader *>(&renderLayerInfo.layerProjection));
             }
         }
 
@@ -1069,14 +1086,14 @@ private:
         XrFrameEndInfo frameEndInfo{XR_TYPE_FRAME_END_INFO};
         frameEndInfo.displayTime = frameState.predictedDisplayTime;
         frameEndInfo.environmentBlendMode = m_environmentBlendMode;
-        frameEndInfo.layerCount = static_cast<uint32_t>(layers.size());
-        frameEndInfo.layers = layers.data();
+        frameEndInfo.layerCount = static_cast<uint32_t>(renderLayerInfo.layers.size());
+        frameEndInfo.layers = renderLayerInfo.layers.data();
         OPENXR_CHECK(xrEndFrame(m_session, &frameEndInfo), "Failed to end the XR Frame.");
         // XR_DOCS_TAG_END_RenderFrame
 #endif
     }
 
-    bool RenderLayer(const XrTime &predictedDisplayTime, XrCompositionLayerProjection &layerProjection, std::vector<XrCompositionLayerProjectionView> &layerProjectionViews) {
+    bool RenderLayer(RenderLayerInfo& renderLayerInfo) {
         // XR_DOCS_TAG_BEGIN_RenderLayer1
         // Locate the views from the view configuration with in the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
@@ -1084,7 +1101,7 @@ private:
         XrViewState viewState{XR_TYPE_VIEW_STATE};  // Will contain information on whether the position and/or orientation is valid and/or tracked.
         XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = m_viewConfiguration;
-        viewLocateInfo.displayTime = predictedDisplayTime;
+        viewLocateInfo.displayTime = renderLayerInfo.predictedDisplayTime;
         viewLocateInfo.space = m_localOrStageSpace;
         uint32_t viewCount = 0;
         XrResult result = xrLocateViews(m_session, &viewLocateInfo, &viewState, static_cast<uint32_t>(views.size()), &viewCount, views.data());
@@ -1094,61 +1111,69 @@ private:
         }
 
         // Resize the layer projection views to match the view count. The layer projection views are used in the layer projection.
-        layerProjectionViews.resize(viewCount, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW});
+        renderLayerInfo.layerProjectionViews.resize(viewCount, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW});
 
         // Per view in the view configuration:
         for (uint32_t i = 0; i < viewCount; i++) {
-            // Acquire and wait for an image from the swapchain.
-            // Get the image index of an image in the swapchain.
+            SwapchainInfo &colorSwapchainInfo = m_colorSwapchainInfos[i];
+            SwapchainInfo &depthSwapchainInfo = m_depthSwapchainInfos[i];
+
+            // Acquire and wait for an image from the swapchains.
+            // Get the image index of an image in the swapchains.
             // The timeout is infinite.
-            uint32_t imageIndex = 0;
+            uint32_t colorImageIndex = 0;
+            uint32_t depthImageIndex = 0;
             XrSwapchainImageAcquireInfo acquireInfo{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
-            OPENXR_CHECK(xrAcquireSwapchainImage(m_swapchainAndDepthImages[i].swapchain, &acquireInfo, &imageIndex), "Failed to acquire Image from the Swapchian");
+            OPENXR_CHECK(xrAcquireSwapchainImage(colorSwapchainInfo.swapchain, &acquireInfo, &colorImageIndex), "Failed to acquire Image from the Color Swapchian");
+            OPENXR_CHECK(xrAcquireSwapchainImage(depthSwapchainInfo.swapchain, &acquireInfo, &depthImageIndex), "Failed to acquire Image from the Depth Swapchian");
 
             XrSwapchainImageWaitInfo waitInfo = {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
             waitInfo.timeout = XR_INFINITE_DURATION;
-            OPENXR_CHECK(xrWaitSwapchainImage(m_swapchainAndDepthImages[i].swapchain, &waitInfo), "Failed to wait for Image from the Swapchain");
+            OPENXR_CHECK(xrWaitSwapchainImage(colorSwapchainInfo.swapchain, &waitInfo), "Failed to wait for Image from the Color Swapchain");
+            OPENXR_CHECK(xrWaitSwapchainImage(depthSwapchainInfo.swapchain, &waitInfo), "Failed to wait for Image from the Depth Swapchain");
 
             // Get the width and height and construct the viewport and scissors.
             const uint32_t &width = m_viewConfigurationViews[i].recommendedImageRectWidth;
             const uint32_t &height = m_viewConfigurationViews[i].recommendedImageRectHeight;
             GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
             GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
+            float nearZ = 0.05f;
+            float farZ = 100.0f;
 
             // Fill out the XrCompositionLayerProjectionView structure specifying the pose and fov from the view.
             // This also associates the swapchain image with this layer projection view.
-            layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
-            layerProjectionViews[i].pose = views[i].pose;
-            layerProjectionViews[i].fov = views[i].fov;
-            layerProjectionViews[i].subImage.swapchain = m_swapchainAndDepthImages[i].swapchain;
-            layerProjectionViews[i].subImage.imageRect.offset.x = 0;
-            layerProjectionViews[i].subImage.imageRect.offset.y = 0;
-            layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
-            layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
-            layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
+           renderLayerInfo.layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+           renderLayerInfo.layerProjectionViews[i].pose = views[i].pose;
+           renderLayerInfo.layerProjectionViews[i].fov = views[i].fov;
+           renderLayerInfo.layerProjectionViews[i].subImage.swapchain = colorSwapchainInfo.swapchain;
+           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.x = 0;
+           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.y = 0;
+           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
+           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
+           renderLayerInfo.layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
 
             // Rendering code to clear the color and depth image views.
             m_graphicsAPI->BeginRendering();
 
             if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE) {
                 // VR mode use a background color.
-                m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.17f, 0.17f, 0.17f, 1.00f);
+                m_graphicsAPI->ClearColor(colorSwapchainInfo.imageViews[colorImageIndex], 0.17f, 0.17f, 0.17f, 1.00f);
             } else {
                 // In AR mode make the background color black.
-                m_graphicsAPI->ClearColor(m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
+                m_graphicsAPI->ClearColor(colorSwapchainInfo.imageViews[colorImageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
             }
-            m_graphicsAPI->ClearDepth(m_swapchainAndDepthImages[i].depthImageView, 1.0f);
+            m_graphicsAPI->ClearDepth(depthSwapchainInfo.imageViews[depthImageIndex], 1.0f);
             // XR_DOCS_TAG_END_RenderLayer1
 
             // XR_DOCS_TAG_BEGIN_SetupFrameRendering
-            m_graphicsAPI->SetRenderAttachments(&m_swapchainAndDepthImages[i].colorImageViews[imageIndex], 1, m_swapchainAndDepthImages[i].depthImageView, width, height, m_pipeline);
+            m_graphicsAPI->SetRenderAttachments(&colorSwapchainInfo.imageViews[colorImageIndex], 1, depthSwapchainInfo.imageViews[depthImageIndex], width, height, m_pipeline);
             m_graphicsAPI->SetViewports(&viewport, 1);
             m_graphicsAPI->SetScissors(&scissor, 1);
 
             // Compute the view-projection transform.
             // All matrices (including OpenXR's) are column-major, right-handed.
             XrMatrix4x4f proj;
-            XrMatrix4x4f_CreateProjectionFov(&proj, m_apiType, views[i].fov, 0.05f, 100.0f);
+            XrMatrix4x4f_CreateProjectionFov(&proj, m_apiType, views[i].fov, nearZ, farZ);
             XrMatrix4x4f toView;
             XrVector3f scale1m{1.0f, 1.0f, 1.0f};
             XrMatrix4x4f_CreateTranslationRotationScale(&toView, &views[i].pose.position, &views[i].pose.orientation, &scale1m);
@@ -1186,14 +1211,15 @@ private:
 
             // Give the swapchain image back to OpenXR, allowing the compositor to use the image.
             XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
-            OPENXR_CHECK(xrReleaseSwapchainImage(m_swapchainAndDepthImages[i].swapchain, &releaseInfo), "Failed to release Image back to the Swapchain");
-        };
+            OPENXR_CHECK(xrReleaseSwapchainImage(colorSwapchainInfo.swapchain, &releaseInfo), "Failed to release Image back to the Color Swapchain");
+            OPENXR_CHECK(xrReleaseSwapchainImage(depthSwapchainInfo.swapchain, &releaseInfo), "Failed to release Image back to the Depth Swapchain");
+        }
 
         // Fill out the XrCompositionLayerProjection structure for usage with xrEndFrame().
-        layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
-        layerProjection.space = m_localOrStageSpace;
-        layerProjection.viewCount = static_cast<uint32_t>(layerProjectionViews.size());
-        layerProjection.views = layerProjectionViews.data();
+        renderLayerInfo.layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
+        renderLayerInfo.layerProjection.space = m_localOrStageSpace;
+        renderLayerInfo.layerProjection.viewCount = static_cast<uint32_t>(renderLayerInfo.layerProjectionViews.size());
+        renderLayerInfo.layerProjection.views = renderLayerInfo.layerProjectionViews.data();
 
         return true;
         // XR_DOCS_TAG_END_RenderLayer2
@@ -1302,21 +1328,30 @@ private:
     XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
-    struct SwapchainAndDepthImage {
+    struct SwapchainInfo {
         XrSwapchain swapchain = XR_NULL_HANDLE;
         int64_t swapchainFormat = 0;
-        void *depthImage = nullptr;
-
-        std::vector<void *> colorImageViews;
-        void *depthImageView = nullptr;
+        std::vector<void *> imageViews;
     };
-    std::vector<SwapchainAndDepthImage> m_swapchainAndDepthImages = {};
+    std::vector<SwapchainInfo> m_colorSwapchainInfos = {};
+    std::vector<SwapchainInfo> m_depthSwapchainInfos = {};
 
     std::vector<XrEnvironmentBlendMode> m_applicationEnvironmentBlendModes = {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE};
     std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
     XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
+    struct RenderLayerInfo {
+        XrTime predictedDisplayTime;
+        std::vector<XrCompositionLayerBaseHeader *> layers;
+        XrCompositionLayerProjection layerProjection = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+        std::vector<XrCompositionLayerProjectionView> layerProjectionViews;
+#if XR_DOCS_CHAPTER_VERSION == XR_DOCS_CHAPTER_5_2
+        // XR_DOCS_TAG_BEGIN_RenderLayer_LayerDepthInfos
+        std::vector<XrCompositionLayerDepthInfoKHR> layerDepthInfos;
+        // XR_DOCS_TAG_END_RenderLayer_LayerDepthInfos
+#endif
+    };
 
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
