@@ -4366,19 +4366,18 @@ button[disabled]
 
 .btn-neutral
 {
-    background-color: #f3f6f6 !important;
-    color: #101010 !important
+    background-color: #782B90 !important;
+    color: white !important
 }
 
 .btn-neutral:hover
 {
-    background-color: #e5ebeb !important;
-    color: #101010
+    background-color: #782B90 !important;
+    color: white
 }
 
 .btn-neutral:visited
 {
-    color: #101010 !important
 }
 
 .btn-success
@@ -6323,7 +6322,8 @@ footer p
 
 .rst-footer-buttons
 {
-    *zoom: 1
+    *zoom: 1;
+	max-width:800px;
 }
 
 .rst-footer-buttons:after, .rst-footer-buttons:before
@@ -7581,7 +7581,7 @@ span[id*=MathJax-Span]
 {
 	display: block;
 	padding:0px;
-	margin:0px;
+	margin:auto;
 }
 
 #selectwindows label, 
@@ -7643,9 +7643,10 @@ span[id*=MathJax-Span]
 	border-width:1px 1px 0px 1px;
 	border-color: #d0d4da;
 	border-radius: 7px 8px 0 0;
-	margin: 1px 0px 0px 0px;
+	margin: 1px 1px 0px 0px;
     background: #d0d4da;
 	color:gray;
+
 }
 .selected-graphics-api
 {
