@@ -6277,7 +6277,7 @@ html
 {
     padding: 0 0 1.618em 0;
     height: 100%;
-    margin: 2 40 20 20;
+	margin: 20px 20px 20px 40px;
     z-index:-1;
     
     top:140px;
@@ -7630,11 +7630,6 @@ span[id*=MathJax-Span]
 	max-height:40px;
 }
 
-.wy-nav-content
-{
-	margin: 2px 20px 20px 40px;
-}
-
 .d3d11, .d3d12, .opengl, .opengles, .vulkan
 {
 }
@@ -7765,17 +7760,18 @@ section >h1:before{
 
 .toctree-l1>a:before{
 	content: '';
-    width: 36px;
-    height: 28px;
-    margin-left: -28px;
+    width: 32px;
+    height: 32px;
+    margin-left: -42px;
     padding: 1px;
     padding-top: 24px;
+    margin-right: 8px;
     display: inline-block;
     vertical-align: -50%;
 }
 
 .toctree-l1> a{
-    padding-left:50px;
+    padding-left:56px;
 }
 #toc_interactions>a:before{
     background: url(icons/HandsetIcon.svg);
