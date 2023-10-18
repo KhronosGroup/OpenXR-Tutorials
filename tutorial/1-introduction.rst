@@ -700,7 +700,7 @@ You can also include `OpenXRDebugUtils.h` to help with set up of `XrDebugUtilsMe
 	:start-after: XR_DOCS_TAG_BEGIN_include_OpenXRDebugUtils
 	:end-before: XR_DOCS_TAG_END_include_OpenXRDebugUtils
 
-Now we will define the main class `OpenXRTutorial` of the application. It's just a stub for now, with an empty `Run()` method:
+Now we will define the main class `OpenXRTutorial` of the application. It's just a stub for now, with an empty `Run()` method. Add the following to main.cpp:
 
 .. code-block:: cpp
 
@@ -714,11 +714,11 @@ Now we will define the main class `OpenXRTutorial` of the application. It's just
 		void Run()
 		{
 		}
-		bool m_applicationRunning = true;
-		bool m_sessionRunning = false;
 	private:
 		void PollSystemEvents() {
 		}
+		bool m_applicationRunning = true;
+		bool m_sessionRunning = false;
 	};
 
 We'll add the main function for the application. It will look slightly different, depending on your

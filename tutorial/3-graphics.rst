@@ -25,7 +25,7 @@ The goal of this chapter is to build an application that creates and clears colo
 	:start-after: XR_DOCS_TAG_BEGIN_SetProjectName3
 	:end-before: XR_DOCS_TAG_END_SetProjectName3
 
-Create a ``Shaders`` folder next to your project folder, download and put these files in it:
+Create a ``Shaders`` folder in your root workspace folder, download and put these files in it:
 
 .. container:: d3d11 d3d12
 
@@ -639,7 +639,7 @@ When the main render loop has finished and the application is shutting down, we 
 	:end-before: XR_DOCS_TAG_END_DestroySwapchains
 	:dedent: 8
 
-We now have swapchains and a depth images, ready for rendering. Next, we setup the render loop for OpenXR!
+We now have swapchains and depth images, ready for rendering. Next, we setup the render loop for OpenXR!
 
 *************************
 3.2 Building a RenderLoop
@@ -816,7 +816,6 @@ An ``XrSpace`` is a frame of reference defined not by its instantaneous values, 
 
 .. figure:: images/ViewSpace.png
 	:alt: OpenXR Reference Space View
-	:align: center
 	:width: 60%
 
 One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``), which is oriented with the user's head, and is useful for user-interfaces and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
@@ -827,7 +826,6 @@ The View Reference Space uses the view origin (or the centroid of the views in t
 
 .. figure:: images/LocalSpace.png
 		:alt: OpenXR Reference Space Local
-		:align: center
 		:width: 60%
 
 By using ``XR_REFERENCE_SPACE_TYPE_LOCAL`` we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
@@ -836,12 +834,10 @@ The Local Reference Space uses an initial location to establish a world-locked, 
   
 It may be used for rendering seated-scale experiences such as driving or aircraft simulation, where a virtual floor is not required. When recentering, the runtime will queue a ``XrEventDataReferenceSpaceChangePending`` structure for the application to process.
 
-	
 .. rubric:: Stage Space
 
 .. figure:: OpenXR-ReferenceSpace-Stage.png
 			:alt: OpenXR Reference Space Stage
-			:align: center
 			:width: 60%
 
 Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this implies a roomscale space, e.g. with its origin on the floor.
