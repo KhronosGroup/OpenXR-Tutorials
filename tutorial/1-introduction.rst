@@ -392,6 +392,12 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 .. container:: android
 
+	For a quick setup download this ``.zip`` archive and follow later instructions to build the ``CMakeLists.txt`` and ``main.cpp``:
+
+	:download:`AndroidBuildFolder.zip <../thirdparty/AndroidBuildFolder.zip>`
+
+	For a detailed explantion of the Android build folder set up continue below:
+
 	Here, We'll show how to hand build an Android Studio project that runs a C++ Native Activity.
 	First, we will create a *workspace* folder and in that folder create a subdirectory called `/Chapter2`.
 	Open Android Studio, select New Project and choose an Empty View Activity (Android Studio 22+) or an Empty Activity (Android Studio up to version 21).

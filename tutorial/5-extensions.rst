@@ -31,13 +31,13 @@ We saw in :ref:`Chapter 2 <instanceextensions>`  how to create a list of instanc
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_instanceExtensions
 	:end-before: XR_DOCS_TAG_END_instanceExtensions
-	:dedent: 3
+	:dedent: 12
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_handTrackingExtensions
 	:end-before: XR_DOCS_TAG_END_handTrackingExtensions
-	:dedent: 3
+	:dedent: 12
 
 It happens that XR_EXT_HAND_TRACKING is an official extension, so its name and function prototypes are provided in openxr.h. This won't be the case for every extension!
 
@@ -55,7 +55,7 @@ openxr.h has prototyped these functions for us, but we'll need to get the functi
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_ExtensionFunctions
 	:end-before: XR_DOCS_TAG_END_ExtensionFunctions
-	:dedent: 2
+	:dedent: 8
 
 These calls require an XrInstance, so we must initialize these after XrCreateInstance() has successfully returned. If hand tracking is not supported (or not enabled), we'll get a warning, and these functions will be null. You can run your app now to check this.
 
@@ -65,7 +65,7 @@ At the end of your OpenXRTutorial application class, declare the following:
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_HandTracking
 	:end-before: XR_DOCS_TAG_END_HandTracking
-	:dedent: 1
+	:dedent: 4
 
 `Hand` is a simple struct to encapsulate the XrHandTrackerEXT object for each hand, and the joint location structures that we'll update to track hand motion. Now, in Run(), after the call to AttachActionSet(), add:
 
@@ -81,7 +81,7 @@ Add this function after the definition of AttachActionSet(). For each of two han
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateHandTracker
 	:end-before: XR_DOCS_TAG_END_CreateHandTracker
-	:dedent: 1
+	:dedent: 4
 
 The XrHandTrackerEXT object is a session-lifetime object, so in DestroySession(), at the top of the function we'll add:
 
@@ -89,7 +89,7 @@ The XrHandTrackerEXT object is a session-lifetime object, so in DestroySession()
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_DestroyHandTracker
 	:end-before: XR_DOCS_TAG_END_DestroyHandTracker
-	:dedent: 2
+	:dedent: 8
 
 Hands should be polled once per frame. At the end of PollActions(), we'll poll each hand. We'll assume to begin with that the user isn't holding the controller, so we'll use the XR_HAND_JOINTS_MOTION_RANGE_UNOBSTRUCTED_EXT motion range.
 
@@ -97,7 +97,7 @@ Hands should be polled once per frame. At the end of PollActions(), we'll poll e
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_PollHands
 	:end-before: XR_DOCS_TAG_END_PollHands
-	:dedent: 2
+	:dedent: 8
 
 Finally, we'll render the hands simply by drawing a cuboid at each of the 26 joints of each hand. Where `numberOfCuboids` is defined, add this to make sure we have enough space in the constant buffers:
 
@@ -105,7 +105,7 @@ Finally, we'll render the hands simply by drawing a cuboid at each of the 26 joi
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_AddHandCuboids
 	:end-before: XR_DOCS_TAG_END_AddHandCuboids
-	:dedent: 2
+	:dedent: 8
 
 Now in RenderLayer(), just before the call to `m_graphicsAPI->EndRendering()`, add this so we render both hands, with all their joints:
 
@@ -113,7 +113,7 @@ Now in RenderLayer(), just before the call to `m_graphicsAPI->EndRendering()`, a
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_RenderHands
 	:end-before: XR_DOCS_TAG_END_RenderHands
-	:dedent: 3
+	:dedent: 12
 
 Run the app: you'll now see both hands, rendered as blocks.
 
@@ -130,3 +130,45 @@ The ``XrCompositionLayerProjection`` structure contains a pointer an array of ``
 One thing is now very clear to the programmer - we need a depth swapchain! Seldom used in windowed graphics, but required here to allow smooth rendering of the depth image and not lock either runtime or application waiting on a single depth image to be passed back and forth between the two. In most windowed graphics application, the depth image is discarded at the end of the frame and doesn't interact with the windowing system at all.
 
 When creating a depth swapchain, we must check that the system supports a depth format for swapchain creation. You can check this with ``xrEnumerateSwapchainImages()``. Unfortunately, there are no guarantees with in the OpenXR 1.0 core specification or the XR_KHR_composition_layer_depth extension revision 6 that runtimes must support depth format for swapchains.
+
+To implement this in the Chapter 5 code, we first add the following memeber to the ``RenderLayerInfo`` structure:
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer_LayerDepthInfos
+	:end-before: XR_DOCS_TAG_END_RenderLayer_LayerDepthInfos
+	:dedent: 8
+
+Now, in the ``CreateInstance()`` under the extensions from Chapter 2:
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_instanceExtensions
+	:end-before: XR_DOCS_TAG_END_instanceExtensions
+	:dedent: 12
+
+We add this code:
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CompositionLayerDepthExtensions
+	:end-before: XR_DOCS_TAG_END_CompositionLayerDepthExtensions
+	:dedent: 12
+
+This enables the XR_KHR_composition_layer_depth extension for us.
+
+In ``RenderLayer()`` after we've resized the ``std::vector<XrCompositionLayerProjectionView>``, we also resize the ``std::vector<XrCompositionLayerDepthInfoKHR>``, both of which are found in the ``RenderLayerInfo`` parameter.
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_ResizeLeyerDepthInfos
+	:end-before: XR_DOCS_TAG_END_ResizeLeyerDepthInfos
+	:dedent: 8
+
+After we have filled out the ``XrCompositionLayerProjectionView`` structure, we fill out the ``XrCompositionLayerDepthInfoKHR`` structure and using the ``XrCompositionLayerProjectionView::next`` pointer we chain the two structures together. This submits the depth and the color image together for the XR compositor.
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_SetupLeyerDepthInfos
+	:end-before: XR_DOCS_TAG_END_SetupLeyerDepthInfos
+	:dedent: 8
