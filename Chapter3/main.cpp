@@ -125,7 +125,7 @@ private:
         {
             // XR_DOCS_TAG_BEGIN_instanceExtensions
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
-            // TODO make sure this is already defined when we add this line.
+            // Ensure m_apiType is already defined when we call this line.
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
             // XR_DOCS_TAG_END_instanceExtensions
         }
