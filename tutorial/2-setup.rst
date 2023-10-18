@@ -13,11 +13,12 @@ We will continue to use the ``OpenXRTutorial`` class in ``Chapter2/main.cpp`` th
 Here, we will add the following highlighted text to the ``OpenXRTutorial`` class:
 
 .. code-block:: cpp
-	:emphasize-lines: 8-15 , 19-44
+	:emphasize-lines: 9-16 , 20-45
 	
 	class OpenXRTutorial {
 	public:
-		OpenXRTutorial(GraphicsAPI_Type apiType) {
+		OpenXRTutorial(GraphicsAPI_Type apiType)
+			: m_apiType(apiType)  {
 		}
 		~OpenXRTutorial() = default;
 	
@@ -219,7 +220,7 @@ For now, we are just going to create an ``XrSession``. At this point, you'll nee
 Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Run()`` method and also add in the definitions of the new methods and the members to their separate private sections. All the new code is highlighted code below.
 
 .. code-block:: cpp
-	:emphasize-lines: 4-9, 19-20, 51-56, 72-74
+	:emphasize-lines: 5-9, 19-20, 51-56, 72-74
 
 	class OpenXRTutorial {
 	public:
