@@ -506,7 +506,7 @@ The description of the events come from `2.22.1. Event Polling of the OpenXR spe
 | XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED          | The application has changed its lifecycle state.                               |
 +---------------------------------------------------+--------------------------------------------------------------------------------+
 
-As described in the table above, most events are transparent in their intensions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully.
+As described in the table above, most events are transparent in their intentions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully.
 ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
 
 For some platforms, we need additional functionality provided via the ``PollSystemEvents()`` method, so that our application can react to any relevant updates from the platform correctly.
@@ -580,7 +580,7 @@ As the application runs, if the ``XrSessionState`` changes to ``XR_SESSION_STATE
 
 From the code that we copied in Chpater 2.1.3, we've assigned to ``XrSessionBeginInfo::primaryViewConfigurationType`` the ``m_viewConfiguration`` from the class, which in the case of this tutorial is ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye).
 
-If the ``XrSessionState`` changes to ``XR_SESSION_STATE_STOPPING``, the application should call ``xrEndSession()``. This means that the runtime has stop the session either from a user's input or from some other reason, our application should response by ending the session and freeing any resources. Below is a small excerpt from the code that we copied in Chpater 2.1.3.
+If the ``XrSessionState`` changes to ``XR_SESSION_STATE_STOPPING``, the application should call ``xrEndSession()``. This means that the runtime has stop the session either from a user's input or from some other reason, our application should respond by ending the session and freeing any resources. Below is a small excerpt from the code that we copied in Chapter 2.1.3.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
