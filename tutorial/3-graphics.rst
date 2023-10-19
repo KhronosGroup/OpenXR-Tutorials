@@ -242,9 +242,9 @@ Append the following code to the ``CreateSwapchains()`` method:
 	:end-before: XR_DOCS_TAG_END_CreateViewConfigurationView
 	:dedent: 8
 
-As we are rendering in stereo in this tutorial, the two view are the same.
+As we are rendering in stereo in this tutorial, the two views are the same.
 
-We will create an ``XrSwapchain`` for each view in the system. First, we will resize our color and depth ``std::vector<SwapchainInfo>`` to match the number of views in the system. Next, we set up a loop to iterate through and create the swapchains and all the image views.
+We will create an ``XrSwapchain`` for each view in the system. First, we will resize our color and depth ``std::vector<SwapchainInfo>`` s to match the number of views in the system. Next, we set up a loop to iterate through and create the swapchains and all the image views.
 Append the following this code to the ``CreateSwapchains()`` method:
 
 .. code-block:: cpp
@@ -262,7 +262,7 @@ Inside the for loop of the ``CreateSwapchains()`` method, add the following code
 	:end-before: XR_DOCS_TAG_END_CreateSwapchains
 	:dedent: 12
 
-Here, we filled out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members were assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to 0 as we require no constraints or additional functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the images are suitable to be read in a shader and to be used as a render target/color attachment. For the depth swapchain, we set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` as these images will be used as a depth stencil attachment.
+Here, we've filled out the ``XrSwapchainCreateInfo`` structure. The ``sampleCount``, ``width`` and ``height`` members were assigned from the ``XrViewConfigurationView``. We set the ``createFlags`` to ``0`` as we require no constraints or additional functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the images are suitable to be read in a shader and to be used as a render target/color attachment. For the depth swapchain, we set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` as these images will be used as a depth stencil attachments.
 
 .. container:: d3d11
 
@@ -549,7 +549,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 3.1.5 Create the Swapchain Image Views
 ======================================
 
-Now, we create the image views: one per image in the color and depth ``XrSwapchain``s. In this tutorial, we have a ``GraphicsAPI::ImageViewCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImageView()`` that creates the API-specific objects. We create swapchain image view both the color and depth swapchains.
+Now, we create the image views: one per image in the color and depth ``XrSwapchain`` s. In this tutorial, we have a ``GraphicsAPI::ImageViewCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImageView()`` that creates the API-specific objects. We create swapchain image views both the color and depth swapchains.
 
 Append the following code into the for loop of the ``CreateSwapchains()`` method.
 
@@ -559,7 +559,7 @@ Append the following code into the for loop of the ``CreateSwapchains()`` method
 	:end-before: XR_DOCS_TAG_END_CreateImageViews
 	:dedent: 12
 
-Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImage()``, which return a API-specific handle to the image, which is cast to a ``void *``.
+Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImage()``, which returns a API-specific handle to the image, which is cast to a ``void *``.
 
 .. container:: d3d11
 
@@ -625,13 +625,12 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
 
-For the color image views, we use the previously stored color image format, that we used when creating the swapchain, and for the depth image view, we use the previously created depth image and the same depth format from the graphics API.
-We store our newly created color image views for the swapchain in ``SwapchainAndDepthImage::colorImageViews`` and the depth image view in ``SwapchainAndDepthImage::depthImageView`` for later usage when rendering. 
+For the color and depth image views, we use the previously stored color/depth image format, that we used when creating their respective swapchains. We store our newly created color and depth image views for the swapchains in separate ``SwapchainInfo::imageViews`` instantiations.
 
 3.1.6 xrDestroySwapchain
 ========================
 
-When the main render loop has finished and the application is shutting down, we need to destroy our created ``XrSwapchain``s. This is done by calling ``xrDestroySwapchain()`` passing the ``XrSwapchain`` as a parameter. It will return ``XR_SUCCESS`` if successful. At the same time, we destroy all of the image views (both color and depth) by calling ``GraphicsAPI::DestroyImageView()`` and freeing all the allocated swapchain image data with ``GraphicsAPI::FreeSwapchainImageData()``.
+When the main render loop has finished and the application is shutting down, we need to destroy our created ``XrSwapchain`` s. This is done by calling ``xrDestroySwapchain()`` passing the ``XrSwapchain`` as a parameter. It will return ``XR_SUCCESS`` if successful. At the same time, we destroy all of the image views (both color and depth) by calling ``GraphicsAPI::DestroyImageView()`` and freeing all the allocated swapchain image data with ``GraphicsAPI::FreeSwapchainImageData()``.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -639,7 +638,7 @@ When the main render loop has finished and the application is shutting down, we 
 	:end-before: XR_DOCS_TAG_END_DestroySwapchains
 	:dedent: 8
 
-We now have swapchains and depth images, ready for rendering. Next, we setup the render loop for OpenXR!
+We now have swapchains and image views, ready for rendering. Next, we setup the render loop for OpenXR!
 
 *************************
 3.2 Building a RenderLoop
@@ -931,7 +930,7 @@ Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` 
 
 In our ``RenderLayerInfo`` struct, we have used a single ``XrCompositionLayerProjection``. The structure describes the ``XrCompositionLayerFlags``, an ``XrSpace`` and a count and pointer to an array of ``XrCompositionLayerProjectionView``.
 
-``XrCompositionLayerProjectionView`` descibes the ``XrPosef`` of the view relative to the reference space, the field of view and to which ``XrSwapchainSubImage`` the view relates.
+``XrCompositionLayerProjectionView`` describes the ``XrPosef`` of the view relative to the reference space, the field of view and to which ``XrSwapchainSubImage`` the view relates.
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -981,9 +980,9 @@ We resize our ``std::vector<XrCompositionLayerProjectionView>`` member in ``Rend
 
 The following sections are repeated for each view whilst we are in the loop, which iterates over the views.
 
-We now acquire both a color and depth image from the swapchains to render to by calling ``xrAcquireSwapchainImage()``. This returns via a parameter an index, with which we can use to index into an array of swapchain images, or in the case of this tutorial the array of structures containing our swapchain images. Next, we call ``xrWaitSwapchainImage()`` for both swapchains, we do this to avoid writing to images that the OpenXR compositor is still reading from. The call will block the CPU thread until the swapchain images are available to use. Skipping slightly forward to the end of the rendering for this view, we call ``xrReleaseSwapchainImage()`` for the color and depth swapchains. This call hands the swapchain image back to OpenXR for the compositor to use in creating the image for the view. Like with ``xrBeginFrame()`` and ``xrEndFrame()``, the ``xr...SwapchainImage()`` functions need to be called in sequence for correct API usage.
+We now acquire both a color and depth image from the swapchains to render to by calling ``xrAcquireSwapchainImage()``. This returns via a parameter an index, with which we can use to index into an array of swapchain images, or in the case of this tutorial the array of structures containing our swapchain images. Next, we call ``xrWaitSwapchainImage()`` for both swapchains, we do this to avoid writing to images that the OpenXR compositor is still reading from. These calls will block the CPU thread until the swapchain images are available to use. Skipping slightly forward to the end of the rendering for this view, we call ``xrReleaseSwapchainImage()`` for the color and depth swapchains. These calls hand the swapchain images back to OpenXR for the compositor to use in creating the image for the view. Like with ``xrBeginFrame()`` and ``xrEndFrame()``, the ``xr...SwapchainImage()`` functions need to be called in sequence for correct API usage.
 
-After we have waited for the swapchain images, but before releasing it, we fill out the ``XrCompositionLayerProjectionView`` (found in ``RenderLayerInfo``) associated with the view and render our graphics. First, we quickly get the ``width`` and ``height`` of the view from the ``XrViewConfigurationView``. We used the same ``recommendedImageRectWidth`` and ``recommendedImageRectHeight`` values when creating the swapchains. We also create the viewport, scissor, nearZ and farZ values for rendering.
+After we have waited for the swapchain images, but before releasing it, we fill out the ``XrCompositionLayerProjectionView`` associated with the view and render our graphics. First, we quickly get the ``width`` and ``height`` of the view from the ``XrViewConfigurationView``. We used the same ``recommendedImageRectWidth`` and ``recommendedImageRectHeight`` values when creating the swapchains. We also create the viewport, scissor, nearZ and farZ values for rendering.
 
 We can now fill out the ``XrCompositionLayerProjectionView`` using the ``pose`` and ``fov`` from the associated ``XrView``. For the ``XrSwapchainSubImage`` member, we assign the color ``swapchain`` used, the ``offset`` and ``extent`` of the render area and ``imageArrayIndex``. If you are using multiview rendering and your single swapchain is comprised of 2D Array images, where each subresource layer in the image relates to a view, you can use ``imageArrayIndex`` to specify the subresource layer of the image used in the rendering of this view. (See :ref:`Chapter 6.1<6.1 Multiview rendering>`).
 
@@ -991,9 +990,9 @@ After filling out the ``XrCompositionLayerProjectionView`` structure, we can use
 
 Now, we have rendered both views and exited the loop.
 
-We fill out the ``XrCompositionLayerProjection`` structure, found in ``RenderLayerInfo``, we assign our compositing flags of ``XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT`` and assign our reference space. We assign to the member ``viewCount`` the size of the ``std::vector<XrCompositionLayerProjectionView>`` and to the member ``views`` a pointer to the first element in the ``std::vector<XrCompositionLayerProjectionView>``, also found in ``RenderLayerInfo``. Finally, we return ``true`` from the function to state that we have successfully completed our rendering.
+We fill out the ``XrCompositionLayerProjection`` structure and assign our compositing flags of ``XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT`` and assign our reference space. We assign to the member ``viewCount`` the size of the ``std::vector<XrCompositionLayerProjectionView>`` and to the member ``views`` a pointer to the first element in the ``std::vector<XrCompositionLayerProjectionView>``. Finally, we return ``true`` from the function to state that we have successfully completed our rendering.
 
-We should now have clear colors rendered to each view in your XR system. From here, you can easily expand the graphical complexity of the scene. 
+We should now have clear colors rendered to each view in your XR system. From here, you can easily expand the graphical complexity of the scene.
 
 *********************
 3.3 Rendering Cuboids
