@@ -426,7 +426,7 @@ The same process is repeated for the depth swapchain.
 Now that we have created the swapchain, we need to get access to its images. We first call ``xrEnumerateSwapchainImages()`` to get the count of the images in the swapchain. Next, we set up an array of structures to store the images from the ``XrSwapchain``. In this tutorial, this array of structures, which stores the swapchains images, are stored in the ``GraphicsAPI_...`` class. We use the ``XrSwapchain`` handle as key to an ``std::unordered_map`` to get the type and the images relating to the swapchain. They are stored inside the ``GraphicsAPI_...`` class, because OpenXR will return to the application an array of structures that contain the API-specific handles to the swapchain images. ``GraphicsAPI::AllocateSwapchainImageData()`` is a virtual method implemented by each graphics API, which stores the type and resizes an API-specific ``std::vector<XrSwapchainImage...KHR>`` and returns a pointer to the first element in that array casting it to a ``XrSwapchainImageBaseHeader *``.
 The same process again is repeated for the depth swapchain.
 
-Copy and append the following code in the ranged for loop of the ``CreateSwapchains()`` method.
+Copy and append the following code into the for loop of the ``CreateSwapchains()`` method.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -447,7 +447,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
 
-	``swapchainImages`` is of type ``std::vector<XrSwapchainImageD3D11KHR>``.
+	``swapchainImagesMap`` is of type ``std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageD3D11KHR>>``.
 		
 	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
@@ -469,7 +469,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.cpp*
 	
-	``swapchainImages`` is of type ``std::vector<XrSwapchainImageD3D12KHR>``.
+	``swapchainImagesMap`` is of type ``std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageD3D12KHR>>``.
 
 	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
@@ -491,7 +491,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.cpp*
 
-	``swapchainImages`` is of type ``std::vector<XrSwapchainImageOpenGLKHR>``.
+	``swapchainImagesMap`` is of type ``std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageOpenGLKHR>>``.
 
 	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
@@ -511,7 +511,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_AllocateSwapchainImageData
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_AllocateSwapchainImageData
 
-	``swapchainImages`` is of type ``std::vector<XrSwapchainImageOpenGLESKHR>``.
+	``swapchainImagesMap`` is of type ``std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageOpenGLESKHR>>``.
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.cpp*
 
@@ -535,7 +535,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.cpp*
 
-	``swapchainImages`` is of type ``std::vector<XrSwapchainImageVulkanKHR>``.
+	``swapchainImagesMap`` is of type ``std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageVulkanKHR>>``.
 
 	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
@@ -551,7 +551,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 Now, we create the image views: one per image in the color and depth ``XrSwapchain``s. In this tutorial, we have a ``GraphicsAPI::ImageViewCreateInfo`` structure and virtual method ``GraphicsAPI::CreateImageView()`` that creates the API-specific objects. We create swapchain image view both the color and depth swapchains.
 
-Append the following code into the ranged for loop of the ``CreateSwapchains()`` method.
+Append the following code into the for loop of the ``CreateSwapchains()`` method.
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -959,7 +959,7 @@ Before we call ``RenderLayer()``, we check that the ``XrSession`` is active, as 
 3.2.4 RenderLayer
 =================
 
-From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate the views within the reference space, render to our swapchain images and fill out the ``XrCompositionLayerProjection`` and ``std::vector<XrCompositionLayerProjectionView>`` members in the ``RenderLayerInfo`` parameter. Copy the following code into the ``RenderLayer()`` method:
+From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate the views within the reference space, render to our swapchain images and fill out the ``XrCompositionLayerProjection`` and ``std::vector<XrCompositionLayerProjectionView>`` members in the ``RenderLayerInfo`` parameter. Copy the two following blocks of code into the ``RenderLayer()`` method:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
@@ -1155,7 +1155,7 @@ Copy the following code into ``CreateResources()``:
 	:end-before: XR_DOCS_TAG_END_CreateResources1_1
 	:dedent: 0
 
-Now, we will add the code to load and create our shaders with ``GraphicsAPI::CreateShader()``:
+Now, we will add the code to load and create our shaders with ``GraphicsAPI::CreateShader()``. Copy the following code into ``CreateResources()``:
 
 .. container:: opengl
 
@@ -1245,7 +1245,7 @@ Inside ``RenderCuboid()``, add the following:
 
 From the passed-in pose and scale, we create the ``model`` matrix, and multiply that with ``CameraConstants::viewProj`` to obtain ``CameraConstants::modelViewProj``, the matrix that transforms the vertices in our unit cube from model space into projection space. We apply our ``pipeline``, which contains the shaders and render states. We update the two uniform buffers, one containing cameraConstants for the vertex shader, the other containing the normals for the cuboid. We assign our vertex and index buffers and draw 36 indices.
 
-Now moving to the ``RenderLayer()`` method and under the section where we clear the color and depth image views, add the following code:
+Now moving to the ``RenderLayer()`` method and under the section where we clear the color and depth image views, but before the call to end rendering, add the following code:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp

@@ -92,13 +92,13 @@ So you can create multiple Action Sets, but we only need one for this example. T
 	:end-before: XR_DOCS_TAG_END_CreateActionLambda
 	:dedent: 4
 
+Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is. It also, optionally, has a list of sub-action paths. A sub-action is, essentially the same action on a different control device: left- or right-hand controllers for example.
+
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateActions
 	:end-before: XR_DOCS_TAG_END_CreateActions
 	:dedent: 4
-
-Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is. It also, optionally, has a list of sub-action paths. A sub-action is, essentially the same action on a different control device: left- or right-hand controllers for example.
 
 Each Action and Action Set has both a name, for internal use, and a localized description to show to the end-user. This is because the user may want to re-map actions from the default controls, so there must be a human-readable name to show them.
 
@@ -363,6 +363,13 @@ Recall that we've already inserted a call to ``PollActions()`` in the function `
 	:dedent: 12
 
 Now build and run your application. You should see something like this:
+
+.. figure:: images/Chapter4-Screenshot.png
+	:alt: Chapter4 Screenshot of final result.
+	:align: left
+	:width: 99%
+
+You should also be able to grab and move the cubes with the controllers.
 
 **************************************
 4.6 Checking for Connected Controllers
