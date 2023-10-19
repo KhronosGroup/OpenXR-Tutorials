@@ -724,6 +724,16 @@ Now we will define the main class `OpenXRTutorial` of the application. It's just
 		bool m_sessionRunning = false;
 	};
 
+Note here that for some platforms, we need additional functionality provided via the ``PollSystemEvents()`` method, so that our application can react to any relevant updates from the platform correctly.
+
+.. container:: windows linux
+
+	For Windows and Linux, there no relevant system event that we need to be aware of, and thus the ``PollSystemEvents()`` method definition can be left blank.
+
+.. container:: android
+
+	The ``PollSystemEvents()`` method is outside the scope of OpenXR, but in general it polls Android for system events, updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members, which we describe later in this chapter.
+
 We'll add the main function for the application. It will look slightly different, depending on your
 chosen platform. We first create a 'pseudo-main function' called `OpenXRTutorial_Main()`, in which we create an instance of our `OpenXRTutorial` class, taking a `GraphicsAPI_Type` parameter, and call the `Run()` method. `GraphicsAPI_Type` can be changed to suit the graphics API that you have chosen.
 
