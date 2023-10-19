@@ -13,7 +13,7 @@ We will continue to use the ``OpenXRTutorial`` class in ``Chapter2/main.cpp`` th
 Here, we will add the following highlighted text to the ``OpenXRTutorial`` class:
 
 .. code-block:: cpp
-	:emphasize-lines: 9-16 , 20-45
+	:emphasize-lines: 9-16 , 20-31, 36-48
 	
 	class OpenXRTutorial {
 	public:
@@ -46,6 +46,8 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 		}
 		void GetSystemID() {
 		}
+		void PollSystemEvents() {
+		}
 	
 	private:
 		XrInstance m_xrInstance = {};
@@ -59,7 +61,11 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 		XrSystemId m_systemID = {};
 		XrSystemProperties m_systemProperties = {XR_TYPE_SYSTEM_PROPERTIES};
+
 		GraphicsAPI_Type m_apiType = UNKNOWN;
+
+		bool m_applicationRunning = true;
+		bool m_sessionRunning = false;
 	};
 
 First, we updated ``OpenXRTutorial::Run()`` to call the new methods ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()`` and ``DestroyInstance()`` in that order. Finally, we added those methods and the following members to the class within thier separate private sections.
@@ -220,7 +226,7 @@ For now, we are just going to create an ``XrSession``. At this point, you'll nee
 Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Run()`` method and also add in the definitions of the new methods and the members to their separate private sections. All the new code is highlighted code below.
 
 .. code-block:: cpp
-	:emphasize-lines: 5-9, 19-20, 51-56, 72-74
+	:emphasize-lines: 5-9, 19-20, 51-56, 76-78
 
 	class OpenXRTutorial {
 	public:
@@ -278,6 +284,10 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 		void DestroySession()
 		{
 		}
+		void PollSystemEvents() 
+		{
+		}
+
 
 	private:
 		XrInstance m_xrInstance = {};
@@ -296,6 +306,9 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 		std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
 
 		XrSession m_session = XR_NULL_HANDLE;
+
+		bool m_applicationRunning = true;
+		bool m_sessionRunning = false;
 	};
 
 2.2.1 XrSession
@@ -349,6 +362,8 @@ Copy the following code into the ``CreateSession()`` method.
 		:end-at: );
 		:dedent: 12
 
+	When creating the Vulkan Instance, developers should be aware of any Vulkan layers that they may have externally actived.
+
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_CreateSession2
@@ -377,106 +392,106 @@ OpenXR uses an event based system to describes changes within the XR system. It'
 Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add the highlighted code below. Also add the highlighted code for the new methods and members in their separate private sections.
 
 .. code-block:: cpp
-    :emphasize-lines: 21-27, 68-70, 92-94
+	:emphasize-lines: 21-27, 68-70, 92, 96
+	:linenos:
 
-    class OpenXRTutorial {
-    public:
-        OpenXRTutorial(GraphicsAPI_Type apiType)
-            : m_apiType(apiType) {
-            if(!CheckGraphicsAPI_TypeIsValidForPlatform(m_apiType)) {
-                 std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
-                DEBUG_BREAK;
-            }
-        }
-        ~OpenXRTutorial() = default;
+	class OpenXRTutorial {
+	public:
+		OpenXRTutorial(GraphicsAPI_Type apiType)
+			: m_apiType(apiType) {
+			if(!CheckGraphicsAPI_TypeIsValidForPlatform(m_apiType)) {
+				 std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
+				DEBUG_BREAK;
+			}
+		}
+		~OpenXRTutorial() = default;
 
-        void Run() {
-            CreateInstance();
-            CreateDebugMessenger();
+		void Run() {
+			CreateInstance();
+			CreateDebugMessenger();
 
-            GetInstanceProperties();
-            GetSystemID();
+			GetInstanceProperties();
+			GetSystemID();
 
-            CreateSession();
+			CreateSession();
 
-            while (m_applicationRunning) {
-                PollSystemEvents();
-                PollEvents();
-                if (m_sessionRunning) {
-                    // Draw Frame.
-                }
-            }
+			while (m_applicationRunning) {
+				PollSystemEvents();
+				PollEvents();
+				if (m_sessionRunning) {
+					// Draw Frame.
+				}
+			}
 
-            DestroySession();
+			DestroySession();
 
-            DestroyDebugMessenger();
-            DestroyInstance();
-    }
+			DestroyDebugMessenger();
+			DestroyInstance();
+	}
 
-    private:
-        void CreateInstance()
-        {
-            // [...]
-        }
-        void DestroyInstance()
-        {
-            // [...]
-        }
-        void GetInstanceProperties()
-        {
-            // [...]
-        }
-        void GetSystemID()
-        {
-            // [...]
-        }
-        void CreateDebugMessenger()
-        {
-            // [...]
-        }
-        void DestroyDebugMessenger()
-        {
-            // [...]
-        }
-        void CreateSession()
-        {
-            // [...]
-        }
-        void DestroySession()
-        {
-            // [...]
-        }
-        void PollEvents()
-        {
-        }
-        void PollSystemEvents()
-        {
-        }
+	private:
+		void CreateInstance()
+		{
+			// [...]
+		}
+		void DestroyInstance()
+		{
+			// [...]
+		}
+		void GetInstanceProperties()
+		{
+			// [...]
+		}
+		void GetSystemID()
+		{
+			// [...]
+		}
+		void CreateDebugMessenger()
+		{
+			// [...]
+		}
+		void DestroyDebugMessenger()
+		{
+			// [...]
+		}
+		void CreateSession()
+		{
+			// [...]
+		}
+		void DestroySession()
+		{
+			// [...]
+		}
+		void PollEvents()
+		{
+		}
+		void PollSystemEvents()
+		{
+		}
 
-    private:
-        XrInstance m_xrInstance = {};
-        std::vector<const char *> m_activeAPILayers = {};
-        std::vector<const char *> m_activeInstanceExtensions = {};
-        std::vector<std::string> m_apiLayers = {};
-        std::vector<std::string> m_instanceExtensions = {};
+	private:
+		XrInstance m_xrInstance = {};
+		std::vector<const char *> m_activeAPILayers = {};
+		std::vector<const char *> m_activeInstanceExtensions = {};
+		std::vector<std::string> m_apiLayers = {};
+		std::vector<std::string> m_instanceExtensions = {};
 
-        XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
+		XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
 
-        XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
-        XrSystemId m_systemID = {};
-        XrSystemProperties m_systemProperties = {XR_TYPE_SYSTEM_PROPERTIES};
+		XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
+		XrSystemId m_systemID = {};
+		XrSystemProperties m_systemProperties = {XR_TYPE_SYSTEM_PROPERTIES};
 
-        GraphicsAPI_Type m_apiType = UNKNOWN;
-        std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
+		GraphicsAPI_Type m_apiType = UNKNOWN;
+		std::unique_ptr<GraphicsAPI> m_graphicsAPI = nullptr;
 
-        XrSession m_session = XR_NULL_HANDLE;
-        XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
-    
-        XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+		XrSession m_session = XR_NULL_HANDLE;
+		XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
+		bool m_applicationRunning = true;
+		bool m_sessionRunning = false;
 
-        bool m_applicationRunning = true;
-        bool m_sessionRunning = false;
-    };
+		XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+	};
 
 2.3.1 xrPollEvent
 =================

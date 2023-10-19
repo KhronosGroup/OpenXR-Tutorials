@@ -715,8 +715,11 @@ Now we will define the main class `OpenXRTutorial` of the application. It's just
 		{
 		}
 	private:
-		void PollSystemEvents() {
+		void PollSystemEvents() 
+		{
 		}
+
+	private:
 		bool m_applicationRunning = true;
 		bool m_sessionRunning = false;
 	};
