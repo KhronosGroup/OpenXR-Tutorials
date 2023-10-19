@@ -172,3 +172,46 @@ After we have filled out the ``XrCompositionLayerProjectionView`` structure, we 
 	:start-after: XR_DOCS_TAG_BEGIN_SetupLeyerDepthInfos
 	:end-before: XR_DOCS_TAG_END_SetupLeyerDepthInfos
 	:dedent: 8
+
+*****************
+5.3 XR_API_LAYERS
+*****************
+
+The OpenXR loader has a layer system that allows the OpenXR API calls to pass through a number of optional layers, that add some functionality for the application. These are exceptionally useful for debugging.
+
+The OpenXR SDK provides us two API layers for us to use:
+There's the layer name and its associated library and json file.
+
++------------------------------------+-----------------------------------------------+-------------------------------------+
+| XR_APILAYER_LUNARG_api_dump        | ``XrApiLayer_api_dump.dll`` or ``.so``        | ``XrApiLayer_api_dump.json``        |
++------------------------------------+-----------------------------------------------+-------------------------------------+
+| XR_APILAYER_LUNARG_core_validation | ``XrApiLayer_core_validation.dll`` or ``.so`` | ``XrApiLayer_core_validation.json`` |
++------------------------------------+-----------------------------------------------+-------------------------------------+
+
+XR_APILAYER_LUNARG_api_dump simply logs extra/verbose information to ``std::cout`` descibing in more detail what has happened during that API call. XR_APILAYER_LUNARG_core_validation acts similarly to VK_LAYER_KHRONOS_validation in Vulkan, where the layer intercepts the API call and performance validation to ensure conformance with the specification.
+
+Other runtimes and hardware vendor may provide layers that are useful for debugging your XR system.
+
+To enable api layers, add the ``XR_API_LAYER_PATH=<path>`` environment variable to your project or your system. Something like this: ``XR_API_LAYER_PATH=<openxr_base>/<build_folder>/src/api_layers/;<another_path>``. 
+
+The path must point a folder containing a ``.json`` file similar to the one for XR_APILAYER_LUNARG_core_validation, shown below:
+
+.. code-block::json
+	{
+		"file_format_version": "1.0.0",
+		"api_layer": {
+			"name": "XR_APILAYER_LUNARG_core_validation",
+			"library_path": "./XrApiLayer_core_validation.dll",
+			"api_version": "1.0",
+			"implementation_version": "1",
+			"description": "API Layer to perform validation of api calls and parameters as they occur"
+		}
+	}
+
+To select which API Layers we want to use, there are two ways to do this:
+ 1. Add the ``XR_ENABLE_API_LAYERS=<layer_name>`` environment variable to your project or your system. Something like this: ``XR_ENABLE_API_LAYERS=XR_APILAYER_LUNARG_test1;XR_APILAYER_LUNARG_test2``.
+ 2. When creating the ``XrInstance``, specify the requested API layers in the ``XrInstanceCreateInfo`` struct.
+
+Calls to ``xrEnumerateApiLayerProperties()`` should now return the count and data of all API layers available to the application.
+
+For more details, please see `API Layers README <https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/src/api_layers/README.md>`_ and see `OpenXR API Layers <https://registry.khronos.org/OpenXR/specs/1.0/loader.html#openxr-api-layers>`_.
