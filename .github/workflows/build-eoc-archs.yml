@@ -1,0 +1,22 @@
+name: 'Build End of Chapter Archives'
+on:
+  push:
+    tags:
+      - "v*.*.*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: ./build-eoc-archs.sh
+      - name: Upload End of Chapter Archives
+        id: upload
+        uses: softprops/action-gh-release@v1
+        with:
+          files:
+            - eoc-archs/Chapter2.zip 
+            - eoc-archs/Chapter3.zip 
+            - eoc-archs/Chapter4.zip 
+            - eoc-archs/Chapter5.zip 
