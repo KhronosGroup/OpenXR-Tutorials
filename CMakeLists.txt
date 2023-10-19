@@ -9,16 +9,17 @@ project(openxr-tutorial)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
+# Optional override runtime
+set(XR_RUNTIME_JSON
+"$ENV{XR_RUNTIME_JSON}"
+CACHE PATH
+"Optional location of a specific OpenXR runtime configuration file."
+)
+# XR_DOCS_TAG_END_CMakeLists
+
 option(TUTORIAL_BUILD_DOCUMENTATION "Build the tutorial documentation?" ON)
 option(TUTORIAL_BUILD_PROJECTS "Build the tutorial projects?" ON)
 
-# Optional override runtime
-set(XR_RUNTIME_JSON
-    "$ENV{XR_RUNTIME_JSON}"
-    CACHE PATH
-        "Optional location of a specific OpenXR runtime configuration file."
-)
-# XR_DOCS_TAG_END_CMakeLists
 if(TUTORIAL_BUILD_DOCUMENTATION)
     add_subdirectory(tutorial)
 endif()
