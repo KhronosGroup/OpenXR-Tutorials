@@ -308,7 +308,7 @@ Finally in this function, we'll add the haptic buzz behaviour, which has variabl
 	:end-before: XR_DOCS_TAG_END_PollActions4
 	:dedent: 4
 
-Now we've completed polling all the actions in the application. We will add two more functions to enable some interaction between the user and the 3D blocks:    
+Now we've completed polling all the actions in the application. We will add two more functions to enable some interaction between the user and the 3D blocks:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp

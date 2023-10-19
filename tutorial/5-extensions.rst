@@ -121,17 +121,17 @@ Run the app: you'll now see both hands, rendered as blocks.
 5.2 Composition Layer Depth
 ***************************
 
-Composition Layer Depth is truly important for AR use cases as it allows applications to submit to the runtime a depth image that can be used in the accurate compostion of rendered graphics with in the real world. Without a submitted depth image, runtimes would be unable to composite rendered objects that are occluded by real world objects e.g. a rendering a cube partially occluded by a door frame.
+Composition Layer Depth is truly important for AR use cases as it allows applications to submit to the runtime a depth image that can be used for the accurate reprojection of rendered graphics in the real world. Without a submitted depth image, certain AR applications would experience lag and 'sloshing' of the rendered graphics over top of the real world. This extension may also include the ability for runtimes to have real world objects occlude rendered objects correctly. e.g. a rendering a cube partially occluded by a door frame.
 
-This functionality is provided to OpenXR via the use of the XR_KHR_composition_layer_depth extension (`OpenXR Specification 12.8. XR_KHR_composition_layer_depth <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_depth>`_). The extension allows depth images from a swapchain to be submitted alongside the color images. This extension works in conjunction with projection layer type. 
+This functionality is provided to OpenXR via the use of the XR_KHR_composition_layer_depth extension (`OpenXR Specification 12.8. XR_KHR_composition_layer_depth <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_depth>`_). The extension allows depth images from a swapchain to be submitted alongside the color images. This extension works in conjunction with the projection layer type. 
 
-The ``XrCompositionLayerProjection`` structure contains a pointer an array of ``XrCompositionLayerProjectionView`` structures. Each of these structures refer to a single view in the XR system and a single image subresource from a swapchain. To submit a depth image, we employ the use of a ``XrCompositionLayerDepthInfoKHR`` structure. Like with ``XrCompositionLayerProjectionView``, ``XrCompositionLayerDepthInfoKHR`` refers to a single view in the XR system and a single image subresource from a swapchain. These structures are 'chained' together via the use of the ``const void* next`` member in ``XrCompositionLayerProjectionView``. We assigned the memory address of  a ``XrCompositionLayerDepthInfoKHR`` structure that we want to chain together. The runtime time will read the ``next`` pointer and associate the structure and ultimately the color and depth images togehter for compositing. This is same style of extensiblity used in the Vulkan API.
+The ``XrCompositionLayerProjection`` structure contains a pointer to an array of ``XrCompositionLayerProjectionView`` structures. Each of these structures refers to a single view in the XR system and a single image subresource from a swapchain. To submit a depth image, we employ the use of a ``XrCompositionLayerDepthInfoKHR`` structure. Like with ``XrCompositionLayerProjectionView``, ``XrCompositionLayerDepthInfoKHR`` refers to a single view in the XR system and a single image subresource from a swapchain. These structures are 'chained' together via the use of the ``const void* next`` member in ``XrCompositionLayerProjectionView``. We assign the memory address of a ``XrCompositionLayerDepthInfoKHR`` structure that we want to chain together. The runtime time will read the ``next`` pointer and associate the structures and ultimately the color and depth images togehter for compositing. This is the same style of extensiblity used in the Vulkan API.
 
-One thing is now very clear to the programmer - we need a depth swapchain! Seldom used in windowed graphics, but required here to allow smooth rendering of the depth image and not lock either runtime or application waiting on a single depth image to be passed back and forth between the two. In most windowed graphics application, the depth image is discarded at the end of the frame and doesn't interact with the windowing system at all.
+One thing is now very clear to the programmer - we need a depth swapchain! Seldom used in windowed graphics, but required here to allow smooth rendering of the depth image and to not lock either the runtime or the application by waiting on a single depth image to be passed back and forth between them. In most windowed graphics applications, the depth image is 'discarded' at the end of the frame and it doesn't interact with the windowing system at all.
 
-When creating a depth swapchain, we must check that the system supports a depth format for swapchain creation. You can check this with ``xrEnumerateSwapchainImages()``. Unfortunately, there are no guarantees with in the OpenXR 1.0 core specification or the XR_KHR_composition_layer_depth extension revision 6 that runtimes must support depth format for swapchains.
+When creating a depth swapchain, we must check that the system supports a depth format for swapchain creation. You can check this with ``xrEnumerateSwapchainImages()``. Unfortunately, there are no guarantees with in the OpenXR 1.0 core specification or the XR_KHR_composition_layer_depth extension revision 6 that states runtimes must support depth format for swapchains.
 
-To implement this in the Chapter 5 code, we first add the following memeber to the ``RenderLayerInfo`` structure:
+To implement this extension in the Chapter 5 code, we first add the following member to the ``RenderLayerInfo`` structure:
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
@@ -139,7 +139,7 @@ To implement this in the Chapter 5 code, we first add the following memeber to t
 	:end-before: XR_DOCS_TAG_END_RenderLayer_LayerDepthInfos
 	:dedent: 8
 
-Now, in the ``CreateInstance()`` under the extensions from Chapter 2:
+Now, in the ``CreateInstance()`` method under the extensions from Chapter 2:
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
@@ -157,7 +157,7 @@ We add this code:
 
 This enables the XR_KHR_composition_layer_depth extension for us.
 
-In ``RenderLayer()`` after we've resized the ``std::vector<XrCompositionLayerProjectionView>``, we also resize the ``std::vector<XrCompositionLayerDepthInfoKHR>``, both of which are found in the ``RenderLayerInfo`` parameter.
+In the ``RenderLayer()`` method after we've resized the ``std::vector<XrCompositionLayerProjectionView>``, we also resize the ``std::vector<XrCompositionLayerDepthInfoKHR>``, both of which are found in the ``RenderLayerInfo`` parameter.
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
@@ -165,53 +165,10 @@ In ``RenderLayer()`` after we've resized the ``std::vector<XrCompositionLayerPro
 	:end-before: XR_DOCS_TAG_END_ResizeLeyerDepthInfos
 	:dedent: 8
 
-After we have filled out the ``XrCompositionLayerProjectionView`` structure, we fill out the ``XrCompositionLayerDepthInfoKHR`` structure and using the ``XrCompositionLayerProjectionView::next`` pointer we chain the two structures together. This submits the depth and the color image together for the XR compositor.
+After we have filled out the ``XrCompositionLayerProjectionView`` structure, we fill out the ``XrCompositionLayerDepthInfoKHR`` structure and by using the ``XrCompositionLayerProjectionView::next`` pointer we chain the two structures together. This submits the depth and the color image together for use by the XR compositor.
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_SetupLeyerDepthInfos
 	:end-before: XR_DOCS_TAG_END_SetupLeyerDepthInfos
 	:dedent: 8
-
-*****************
-5.3 XR_API_LAYERS
-*****************
-
-The OpenXR loader has a layer system that allows the OpenXR API calls to pass through a number of optional layers, that add some functionality for the application. These are exceptionally useful for debugging.
-
-The OpenXR SDK provides us two API layers for us to use:
-There's the layer name and its associated library and json file.
-
-+------------------------------------+-----------------------------------------------+-------------------------------------+
-| XR_APILAYER_LUNARG_api_dump        | ``XrApiLayer_api_dump.dll`` or ``.so``        | ``XrApiLayer_api_dump.json``        |
-+------------------------------------+-----------------------------------------------+-------------------------------------+
-| XR_APILAYER_LUNARG_core_validation | ``XrApiLayer_core_validation.dll`` or ``.so`` | ``XrApiLayer_core_validation.json`` |
-+------------------------------------+-----------------------------------------------+-------------------------------------+
-
-XR_APILAYER_LUNARG_api_dump simply logs extra/verbose information to ``std::cout`` descibing in more detail what has happened during that API call. XR_APILAYER_LUNARG_core_validation acts similarly to VK_LAYER_KHRONOS_validation in Vulkan, where the layer intercepts the API call and performance validation to ensure conformance with the specification.
-
-Other runtimes and hardware vendor may provide layers that are useful for debugging your XR system.
-
-To enable api layers, add the ``XR_API_LAYER_PATH=<path>`` environment variable to your project or your system. Something like this: ``XR_API_LAYER_PATH=<openxr_base>/<build_folder>/src/api_layers/;<another_path>``. 
-
-The path must point a folder containing a ``.json`` file similar to the one for XR_APILAYER_LUNARG_core_validation, shown below:
-
-.. code-block::json
-	{
-		"file_format_version": "1.0.0",
-		"api_layer": {
-			"name": "XR_APILAYER_LUNARG_core_validation",
-			"library_path": "./XrApiLayer_core_validation.dll",
-			"api_version": "1.0",
-			"implementation_version": "1",
-			"description": "API Layer to perform validation of api calls and parameters as they occur"
-		}
-	}
-
-To select which API Layers we want to use, there are two ways to do this:
- 1. Add the ``XR_ENABLE_API_LAYERS=<layer_name>`` environment variable to your project or your system. Something like this: ``XR_ENABLE_API_LAYERS=XR_APILAYER_LUNARG_test1;XR_APILAYER_LUNARG_test2``.
- 2. When creating the ``XrInstance``, specify the requested API layers in the ``XrInstanceCreateInfo`` struct.
-
-Calls to ``xrEnumerateApiLayerProperties()`` should now return the count and data of all API layers available to the application.
-
-For more details, please see `API Layers README <https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/src/api_layers/README.md>`_ and see `OpenXR API Layers <https://registry.khronos.org/OpenXR/specs/1.0/loader.html#openxr-api-layers>`_.
