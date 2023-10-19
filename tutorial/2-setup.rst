@@ -178,6 +178,8 @@ In the above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or ``XR_
 	:end-before: XR_DOCS_TAG_END_DestroyDebugMessenger
 	:dedent: 8
 
+Another feature of OpenXR is the API Layers, which may also assist you in debugging. You can read more about them in :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`.
+
 2.1.3 XrSystemId
 ================
 

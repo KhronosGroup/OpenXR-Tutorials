@@ -535,9 +535,9 @@ When setting up the graphics API core obejcts, there are things that we need to 
 		:end-before: // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 	
 
-*****************
-6.3 XR_API_LAYERS
-*****************
+*********************
+6.3 OpenXR API Layers
+*********************
 
 The OpenXR loader has a layer system that allows OpenXR API calls to pass through a number of optional layers, that add some functionality for the application. These are extremely useful for debugging.
 
@@ -586,4 +586,4 @@ For more details, please see `API Layers README <https://github.com/KhronosGroup
 
 As OpenXR support both linear and sRGB color spaces for compositing. It is helpful to have a deeper knowledge of color science; especially if you are planning to use sRGB formats and have the OpenXR runtime/compositor do automatic conversions for you.
 
-For more information on color spaces and gamma encoding, see Guy Davidson's video presentation `here <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_.
+For more information on color spaces and gamma encoding, see Guy Davidson's `video presentation <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_.
