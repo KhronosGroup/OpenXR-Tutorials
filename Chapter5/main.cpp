@@ -1321,7 +1321,7 @@ private:
     }
 
 #if defined(__ANDROID__)
-    // XR_DOCS_TAG_BEGIN_Android_System_Functionality
+    // XR_DOCS_TAG_BEGIN_Android_System_Functionality1
 public:
     // Stored pointer to the android_app structure from android_main().
     static android_app *androidApp;
@@ -1369,9 +1369,11 @@ public:
         }
         }
     }
+    // XR_DOCS_TAG_END_Android_System_Functionality1
 
 private:
     void PollSystemEvents() {
+        // XR_DOCS_TAG_BEGIN_Android_System_Functionality2
         // Checks whether Android has requested that application should by destroyed.
         if (androidApp->destroyRequested != 0) {
             m_applicationRunning = false;
@@ -1391,8 +1393,8 @@ private:
                 break;
             }
         }
+        // XR_DOCS_TAG_END_Android_System_Functionality2
     }
-    // XR_DOCS_TAG_END_Android_System_Functionality
 #else
     void PollSystemEvents() {
         return;

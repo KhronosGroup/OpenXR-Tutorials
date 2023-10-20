@@ -392,13 +392,18 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 .. container:: android
 
-	For a quick setup download this ``.zip`` archive:
+	**For a quick setup download this ``.zip`` archive:**
 	
 	:download:`AndroidBuildFolder.zip <../thirdparty/AndroidBuildFolder.zip>`
 
-	First, create a *workspace* folder and copy the downloaded zip archive into that folder. Unzip the archive in place and rename the ``AndroidBuildFolder`` folder to ``Chapter2``. You can delete the used zip archive as it's no longer needed. Now follow later instructions to build the ``CMakeLists.txt`` and ``main.cpp``:
+	First, create a *workspace* folder and copy the downloaded zip archive into that folder. Unzip the archive in place and rename the ``AndroidBuildFolder`` folder to ``Chapter2``. You can delete the used zip archive as it's no longer needed.
+	Open Android Studio and then open the ``Chapter2`` foler that was created.
 
-	For a detailed explantion of the Android build folder set up continue below:
+	*Now follow instructions under the CMake and CMakeLists.txt headings of this sub-chapter and then go straight on to 1.4.2 Common Files.*
+
+	**For a detailed explantion of the Android build folder set up continue below:**
+
+	.. rubric:: Android Studio
 
 	Here, We'll show how to hand build an Android Studio project that runs a C++ Native Activity.
 	First, we will create a *workspace* folder and in that folder create a subdirectory called `/Chapter2`.
@@ -407,16 +412,12 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 	.. figure:: images/android-studio-newproject.png
 		:alt: Android Studio - New Project - Empty View Activity.
 		:scale: 55%
-
-	.. rubric:: CMake
 	
 	Set the Name to 'OpenXR Tutorial Chapter 2', the Package name to '`org.khronos.openxrtutorialchapter2`` and save location to that ``Chapter2`` folder. 	The language can be ignored here as we are using C++, and we can set the Minimum SDK to API 24: Android 7.0 (Nougat) or higher. If a "Build Configuration Language" option is shown, set this to ``Groovy DSL (build.gradle)``. Click "Finish" to complete the set up.
 
 	.. figure:: images/android-studio-newproject-options.png
 		:alt: Android Studio - New Project - options.
 		:scale: 55%
-
-	.. rubric:: CMake
 
 	With the Android Studio project now set up, we need to modify some of the files and folders to support the C++ Native Activity.
 
@@ -428,6 +429,8 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 	.. figure:: images/GradleSync.png
 		:alt: Gradle Sync
 		:scale: 55%
+
+	.. rubric:: CMake
 
 	.. container:: opengles
 	
@@ -712,7 +715,6 @@ Now we will define the main class `OpenXRTutorial` of the application. It's just
 		{
 		}
 		~OpenXRTutorial() = default;
-
 		void Run()
 		{
 		}
@@ -720,7 +722,6 @@ Now we will define the main class `OpenXRTutorial` of the application. It's just
 		void PollSystemEvents() 
 		{
 		}
-
 	private:
 		bool m_applicationRunning = true;
 		bool m_sessionRunning = false;
@@ -805,8 +806,16 @@ Then, we create the actual platform specific main function (our entry point to t
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
-		:start-after: XR_DOCS_TAG_BEGIN_Android_System_Functionality
-		:end-before: XR_DOCS_TAG_END_Android_System_Functionality
+		:start-after: XR_DOCS_TAG_BEGIN_Android_System_Functionality1
+		:end-before: XR_DOCS_TAG_END_Android_System_Functionality1
+
+	And into ``PollSystemEvents()`` method copy:
+
+	.. literalinclude:: ../Chapter2/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_Android_System_Functionality2
+		:end-before: XR_DOCS_TAG_END_Android_System_Functionality2
+		:dedent: 8
 
 
 1.4.4 Build and Run
