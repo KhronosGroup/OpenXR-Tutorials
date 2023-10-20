@@ -12,6 +12,16 @@ cp Chapter3/main.cpp Chapter3/CMakeLists.txt eoc_archs/Chapter3
 cp Chapter4/main.cpp Chapter4/CMakeLists.txt eoc_archs/Chapter4
 cp Chapter5/main.cpp Chapter5/CMakeLists.txt eoc_archs/Chapter5
 
+#Remove XR_DOCS_TAG_ lines from files
+python eoc-archs-rm-tags.py -f eoc_archs/Chapter2/main.cpp
+python eoc-archs-rm-tags.py -f eoc_archs/Chapter3/main.cpp
+python eoc-archs-rm-tags.py -f eoc_archs/Chapter4/main.cpp
+python eoc-archs-rm-tags.py -f eoc_archs/Chapter5/main.cpp
+python eoc-archs-rm-tags.py -f eoc_archs/Chapter2/CMakeLists.txt
+python eoc-archs-rm-tags.py -f eoc_archs/Chapter3/CMakeLists.txt
+python eoc-archs-rm-tags.py -f eoc_archs/Chapter4/CMakeLists.txt
+python eoc-archs-rm-tags.py -f eoc_archs/Chapter5/CMakeLists.txt
+
 #Zip the folders
 pushd eoc_archs
 zip -r Chapter2.zip Chapter2
