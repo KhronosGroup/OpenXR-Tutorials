@@ -392,9 +392,11 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 
 .. container:: android
 
-	For a quick setup download this ``.zip`` archive and follow later instructions to build the ``CMakeLists.txt`` and ``main.cpp``:
-
+	For a quick setup download this ``.zip`` archive:
+	
 	:download:`AndroidBuildFolder.zip <../thirdparty/AndroidBuildFolder.zip>`
+
+	First, create a *workspace* folder and copy the downloaded zip archive into that folder. Unzip the archive in place and rename the ``AndroidBuildFolder`` folder to ``Chapter2``. You can delete the used zip archive as it's no longer needed. Now follow later instructions to build the ``CMakeLists.txt`` and ``main.cpp``:
 
 	For a detailed explantion of the Android build folder set up continue below:
 
