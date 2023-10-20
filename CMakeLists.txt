@@ -11,16 +11,18 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
 # Optional override runtime
 set(XR_RUNTIME_JSON
-"$ENV{XR_RUNTIME_JSON}"
-CACHE PATH
-"Optional location of a specific OpenXR runtime configuration file."
+    "$ENV{XR_RUNTIME_JSON}"
+    CACHE PATH
+    "Optional location of a specific OpenXR runtime configuration file."
 )
 # XR_DOCS_TAG_END_CMakeLists
 
-option(
-
 option(XR_TUTORIAL_BUILD_DOCUMENTATION "Build the tutorial documentation?" ON)
 option(XR_TUTORIAL_BUILD_PROJECTS "Build the tutorial projects?" ON)
+
+if (NOT ANDROID)
+    include("cmake/graphics_api_select.cmake")
+endif()
 
 if(XR_TUTORIAL_BUILD_DOCUMENTATION)
     add_subdirectory(tutorial)

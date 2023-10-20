@@ -75,6 +75,7 @@ set(ES_GLSL_SHADERS
 # XR_DOCS_TAG_END_GLESShaders
 
 if (ANDROID) # Android
+    include("../cmake/graphics_api_select.cmake")
     # XR_DOCS_TAG_BEGIN_Android
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
     target_include_directories(${PROJECT_NAME} PRIVATE 
@@ -99,6 +100,7 @@ if (ANDROID) # Android
     target_link_libraries(${PROJECT_NAME} android native_app_glue openxr_loader)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-cast-calling-convention)
     # XR_DOCS_TAG_END_Android
+    AddGraphicsAPIDefine(${PROJECT_NAME})
 
     # XR_DOCS_TAG_BEGIN_VulkanNDK
     # VulkanNDK
@@ -179,6 +181,7 @@ else() # Windows / Linux
     )
     target_link_libraries(${PROJECT_NAME} openxr_loader)
     # XR_DOCS_TAG_END_WindowsLinux
+    AddGraphicsAPIDefine(${PROJECT_NAME})
 
     if (WIN32) # Windows 
         # XR_DOCS_TAG_BEGIN_D3D11

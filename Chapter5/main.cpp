@@ -1510,12 +1510,15 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 }
 
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(XR_TUTORIAL_GRAPHICS_API);
+}
+/*
 // XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
 int main(int argc, char **argv) {
     OpenXRTutorial_Main(OPENGL);
 }
 // XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
-/*
 // XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
 int main(int argc, char **argv) {
     OpenXRTutorial_Main(VULKAN);
@@ -1564,12 +1567,14 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
-// XR_DOCS_TAG_END_android_main___ANDROID__
+    // XR_DOCS_TAG_END_android_main___ANDROID__
+    OpenXRTutorial_Main(XR_TUTORIAL_GRAPHICS_API);
+}
+/*
 // XR_DOCS_TAG_BEGIN_android_main_OPENGL_ES
     OpenXRTutorial_Main(OPENGL_ES);
 }
 // XR_DOCS_TAG_END_android_main_OPENGL_ES
-/*
 // XR_DOCS_TAG_BEGIN_android_main_VULKAN
     OpenXRTutorial_Main(VULKAN);
 }
