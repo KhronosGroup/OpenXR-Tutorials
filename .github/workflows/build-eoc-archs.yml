@@ -11,12 +11,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Build
         run: ./build-eoc-archs.sh
-      #- name: Upload End of Chapter Archives
-      #  id: upload
-      #  uses: softprops/action-gh-release@v1
-      #  with:
-      #    files:
-      #      - eoc-archs/Chapter2.zip 
-      #      - eoc-archs/Chapter3.zip 
-      #      - eoc-archs/Chapter4.zip 
-      #      - eoc-archs/Chapter5.zip 
+      - name: Upload End of Chapter Archives
+        id: upload
+        uses: softprops/action-gh-release@v1
+        with:
+          files:
+            - build/eoc_archs/Chapter2.zip
+            - build/eoc_archs/Chapter3.zip
+            - build/eoc_archs/Chapter4.zip
+            - build/eoc_archs/Chapter5.zip
