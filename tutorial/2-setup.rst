@@ -594,3 +594,13 @@ If the ``XrSessionState`` changes to ``XR_SESSION_STATE_STOPPING``, the applicat
 	:start-at: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
 	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_EXITING) {
 	:dedent: 16
+
+***********
+2.4 Summary
+***********
+
+We have now created an XR application that can begin and stop an ``XrSession``, next we will look to add graphics to our application!
+
+Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
+
+:download:`Chapter2.zip <../build/eoc_archs/Chapter2.zip>`

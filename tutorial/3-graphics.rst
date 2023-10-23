@@ -1262,4 +1262,13 @@ The section sets the color and depth image views as rendering attachments for th
 
 Finally, we set ``renderCuboidIndex`` to ``0`` and call ``RenderCuboid()`` twice drawing two cuboids. The first is offset by our (arbitrary) view height, so as to represent a "floor". We scale it by 2 meters in the horizontal directions and 0.1 meter in the vertical, so it's flat. With that, we should now have a clear color and two cuboid rendered to each view in your XR system.
 
+***********
+3.4 Summary
+***********
+
+Our XR application now renders graphics to the views and uses the XR compositor to presents them correctly.
 In the next chapter, we will discuss how to use OpenXR to interact with your XR application enabling new experiences in spatial computing.
+
+Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
+
+:download:`Chapter3.zip <../build/eoc_archs/Chapter3.zip>`

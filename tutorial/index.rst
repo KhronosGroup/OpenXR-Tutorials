@@ -49,14 +49,9 @@ device.
 	:maxdepth: 5
 	:caption: Contents:
 
-	licence
-
 	1-introduction
 	2-setup
 	3-graphics
 	4-actions
 	5-extensions
 	6-next-steps
-
-
-

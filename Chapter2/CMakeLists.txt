@@ -12,6 +12,7 @@ project("${PROJECT_NAME}") # Needed for Android
 # Additional Directories for find_package() to search within.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 # XR_DOCS_TAG_END_CMakeModulePath
+include("../cmake/graphics_api_select.cmake")
 
 # XR_DOCS_TAG_BEGIN_FetchContent
 # For FetchContent_Declare() and FetchContent_MakeAvailable()
@@ -59,7 +60,6 @@ set(HEADERS
     ../Common/OpenXRHelper.h)
 
 if (ANDROID) # Android
-    include("../cmake/graphics_api_select.cmake")
     # XR_DOCS_TAG_BEGIN_Android
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
     target_include_directories(${PROJECT_NAME} PRIVATE 

@@ -20,15 +20,18 @@ set(XR_RUNTIME_JSON
 option(XR_TUTORIAL_BUILD_DOCUMENTATION "Build the tutorial documentation?" ON)
 option(XR_TUTORIAL_BUILD_PROJECTS "Build the tutorial projects?" ON)
 
-if (NOT ANDROID)
-    include("cmake/graphics_api_select.cmake")
-endif()
-
-if(XR_TUTORIAL_BUILD_DOCUMENTATION)
+if (XR_TUTORIAL_BUILD_DOCUMENTATION)
     add_subdirectory(tutorial)
+
+    #Build end of chapter archives
+    if (WIN32)
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-eoc-archs.bat" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    elseif(LINUX)
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-eoc-archs.sh" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
 endif()
 
-if(XR_TUTORIAL_BUILD_PROJECTS)
+if (XR_TUTORIAL_BUILD_PROJECTS)
     # XR_DOCS_TAG_BEGIN_AddChapter2
     add_subdirectory(Chapter2)
     # XR_DOCS_TAG_END_AddChapter2
@@ -46,7 +49,7 @@ if(XR_TUTORIAL_BUILD_PROJECTS)
     # XR_DOCS_TAG_END_AddChapter5
 endif()
 
-if(WIN32) # Windows only
+if (WIN32) # Windows only
     add_subdirectory(GraphicsAPI_Test)
 endif()
 

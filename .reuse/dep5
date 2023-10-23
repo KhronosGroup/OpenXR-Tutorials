@@ -41,11 +41,15 @@ Files: .gitignore
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 
-Files: build-site.sh
+Files: build-eoc-archs.bat
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 
 Files: build-eoc-archs.sh
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
+Files: build-site.sh
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 

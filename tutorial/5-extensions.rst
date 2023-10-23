@@ -172,3 +172,13 @@ After we have filled out the ``XrCompositionLayerProjectionView`` structure, we 
 	:start-after: XR_DOCS_TAG_BEGIN_SetupLeyerDepthInfos
 	:end-before: XR_DOCS_TAG_END_SetupLeyerDepthInfos
 	:dedent: 8
+
+***********
+5.3 Summary
+***********
+
+In this chapter, we have discussed a couple of pertinent extension that offers possiblites and accessiblity options.
+
+Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
+
+:download:`Chapter5.zip <../build/eoc_archs/Chapter5.zip>`
