@@ -14,9 +14,9 @@ cp Chapter2/main.cpp Chapter2/CMakeLists.txt build/eoc_archs/Chapter2
 cp Chapter3/main.cpp Chapter3/CMakeLists.txt build/eoc_archs/Chapter3
 cp Chapter4/main.cpp Chapter4/CMakeLists.txt build/eoc_archs/Chapter4
 cp Chapter5/main.cpp Chapter5/CMakeLists.txt build/eoc_archs/Chapter5
-cp cmake                                     build/eoc_archs/cmake
-cp Common                                    build/eoc_archs/Common
-cp Shaders                                   build/eoc_archs/Shaders
+cp -r cmake                                  build/eoc_archs
+cp -r Common                                 build/eoc_archs
+cp -r Shaders                                build/eoc_archs
 
 #Remove XR_DOCS_TAG_ lines from files
 python eoc-archs-rm-tags.py -f build/eoc_archs/Chapter2/main.cpp
