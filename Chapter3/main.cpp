@@ -992,11 +992,6 @@ private:
         std::vector<XrCompositionLayerBaseHeader *> layers;
         XrCompositionLayerProjection layerProjection = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
         std::vector<XrCompositionLayerProjectionView> layerProjectionViews;
-#if XR_DOCS_CHAPTER_VERSION == XR_DOCS_CHAPTER_5_2
-        // XR_DOCS_TAG_BEGIN_RenderLayer_LayerDepthInfos
-        std::vector<XrCompositionLayerDepthInfoKHR> layerDepthInfos;
-        // XR_DOCS_TAG_END_RenderLayer_LayerDepthInfos
-#endif
     };
 
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
