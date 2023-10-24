@@ -988,7 +988,7 @@ private:
 
     XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
     struct RenderLayerInfo {
-        XrTime predictedDisplayTime;
+        XrTime predictedDisplayTime = 0;
         std::vector<XrCompositionLayerBaseHeader *> layers;
         XrCompositionLayerProjection layerProjection = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
         std::vector<XrCompositionLayerProjectionView> layerProjectionViews;
