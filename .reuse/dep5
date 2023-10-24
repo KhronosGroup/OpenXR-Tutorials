@@ -23,6 +23,10 @@ Files: Chapter5/*
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 
+Files: Chapter6_1_Multiview/*
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
 Files: tutorial/*
 Copyright: 2023 The Khronos Group Inc.
 License: CC-BY-4.0 
