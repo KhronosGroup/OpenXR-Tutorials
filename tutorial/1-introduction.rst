@@ -6,8 +6,7 @@
 1.1 Goal of OpenXR
 ******************
 
-OpenXR aims to help solve the fragmentation of the XR ecosystem. Before the advent of OpenXR, software developers working with multiple
-hardware platforms had to write different code for each platform to address the different hardware.
+OpenXR aims to help solve the fragmentation of the XR ecosystem. Before the advent of OpenXR, software developers working with multiple hardware platforms had to write different code for each platform to address the different hardware.
 Each platform had its own, often proprietary, API, and deploying an existing app to a new platform required a lot of
 adaptation. Developing a new app for a new platform was even more challenging.
 
@@ -23,8 +22,7 @@ many had analogue controls like triggers or joysticks; many had haptic feedback.
 	OpenXR provides a common interface to reduce XR fragmentation.
 
 OpenXR aims to solve this problem by providing a common API to address XR hardware, in reading its inputs
-and outputting to its displays and haptic systems. Just as OpenGL and Vulkan provide a common API to access graphics hardware, so OpenXR
-allows you to write code that works with multiple XR platforms, with minimal adaptation.
+and outputting to its displays and haptic systems. Just as OpenGL and Vulkan provide a common API to access graphics hardware, so OpenXR allows you to write code that works with multiple XR platforms, with minimal adaptation.
 
 
 ************
@@ -64,9 +62,9 @@ An OpenXR Runtime implements the OpenXR API. The runtime translates the OpenXR f
 
 The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as `XR_EXT_debug_utils`, any functions associated with that extension will need to be loaded in with `xrGetInstanceProcAddr()`. Some platforms like Android require extra work and information to initialise the loader.
 
-API Layers are additional code layers that are inserted between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or to check that the function calls made to OpenXR are compatible with the OpenXR specification.
+API Layers are additional code layers that are inserted by the loader between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or to check that the function calls made to OpenXR are compatible with the OpenXR specification. See :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`. 
 
-OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of abstracting the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensible nature of OpenXR allows revisions of existing APIs and new graphics APIs to be integrated with ease.
+OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of absolving the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensible nature of OpenXR allows revisions of existing APIs and new graphics APIs to be integrated with ease. See :ref:`Chapter <5 Extensions>`.
 	
 OpenXR recognizes that there is a vast and ever changing array of hardware and configurations in the XR space. With new headsets and controllers coming to the market, an abstraction of the input system was needed so that the same applications can target different and newer hardware with minimal change.
 
@@ -216,8 +214,8 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 		:end-before: XR_DOCS_TAG_END_AddChapter2
 		:dedent: 4
 
-	In the workspace folder, create a folder called `Chapter2`, and in it create another `CMakeLists.txt` file.
-	In it, put the following code:
+	In the *workspace* folder, create a folder called `Chapter2`, and in it create another `CMakeLists.txt` file.
+	Into the `Chapter2/CMakeLists.txt`, put the following code:
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake

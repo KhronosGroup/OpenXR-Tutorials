@@ -98,9 +98,10 @@ public:
         // XR_DOCS_TAG_END_CallCreateActionPoses
 #endif
         // XR_DOCS_TAG_BEGIN_CallCreateHandTracker
-        if (handTrackingSystemProperties.supportsHandTracking)
+        if (handTrackingSystemProperties.supportsHandTracking) {
             CreateHandTrackers();
-            // XR_DOCS_TAG_END_CallCreateHandTracker
+        }
+        // XR_DOCS_TAG_END_CallCreateHandTracker
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         CreateReferenceSpace();
@@ -1289,7 +1290,7 @@ private:
             // XR_DOCS_TAG_END_CallRenderCuboid2
 
             // XR_DOCS_TAG_BEGIN_RenderHands
-            if (handTrackingSystemProperties.supportsHandTracking)
+            if (handTrackingSystemProperties.supportsHandTracking) {
                 for (int i = 0; i < 2; i++) {
                     auto hand = m_hands[i];
                     XrVector3f hand_color = {1.f, 1.f, 0.f};
@@ -1299,6 +1300,7 @@ private:
                         RenderCuboid(hand.m_jointLocations[j].pose, sc, hand_color);
                     }
                 }
+            }
             // XR_DOCS_TAG_END_RenderHands
 
             // XR_DOCS_TAG_BEGIN_RenderLayer2
