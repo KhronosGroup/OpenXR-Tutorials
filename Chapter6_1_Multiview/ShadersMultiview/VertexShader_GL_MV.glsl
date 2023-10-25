@@ -6,17 +6,17 @@
 #extension GL_KHR_vulkan_glsl : enable
 #extension GL_OVR_multiview : enable
 layout(num_views = 2) in;
-layout(std140, binding = 0) uniform CameraConstants{
-        mat4 viewProj[2];
-        mat4 modelViewProj[2];
-        mat4 model;
-        vec4 color;
-        vec4 pad1;
-        vec4 pad2;
-        vec4 pad3;
+layout(std140, binding = 0) uniform CameraConstants {
+    mat4 viewProj[2];
+    mat4 modelViewProj[2];
+    mat4 model;
+    vec4 color;
+    vec4 pad1;
+    vec4 pad2;
+    vec4 pad3;
 };
-layout(std140, binding = 1) uniform Normals{
-        vec4 normals[6];
+layout(std140, binding = 1) uniform Normals {
+    vec4 normals[6];
 };
 layout(location = 0) in vec4 a_Positions;
 layout(location = 0) out flat uvec2 o_TexCoord;

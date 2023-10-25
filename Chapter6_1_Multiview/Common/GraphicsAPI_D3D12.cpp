@@ -988,9 +988,7 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     ID3D12PipelineState *pipeline = nullptr;
 
 #if XR_TUTORIAL_ENABLE_MULTIVIEW
-    D3D12_FEATURE_DATA_D3D12_OPTIONS3 opt3 = {};
-    device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS3, &opt3, sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS3));
-    if (pipelineCI.viewMask != 0 && opt3.ViewInstancingTier > D3D12_VIEW_INSTANCING_TIER_NOT_SUPPORTED) {
+    if (pipelineCI.viewMask != 0) {
         //Pipeline Extensions
         CD3DX12_PIPELINE_STATE_STREAM1 gpss1(GPSD);
 

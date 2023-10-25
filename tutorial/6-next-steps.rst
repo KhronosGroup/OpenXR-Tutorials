@@ -6,60 +6,80 @@
 6.1 Multiview rendering
 ***********************
 
-* D3D11 supports rendering to a Texture2DArray RenderTarget, but requires the use of instanced rendering to render to multiviews in the same draw call.
-* D3D12 supports rendering to both eye views with View Instancing, which simplifies the rendering code. `D3D12 View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_.
-* Vulkan supports rendering to both eye views with multiview, which simplifies the rendering code. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
-* OpenGL supports rendering to both eye views with multiview, which simplifies the rendering code. `OpenGL Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
+.. container:: d3d11
 
-View Instancing/Multiview can be used for stereo rendering by creating one ``XrSwapchain`` with 2D array images. This is done by setting the ``XrSwapchainCreateInfo::arraySize`` to ``2``; similarly we also create image views that compasses the two subresources one for each eye view.
+	D3D11 supports rendering to a Texture2DArray RenderTarget, but requires the use of instanced rendering to render to multiviews in the same draw call.
+
+.. container:: d3d12
+
+	D3D12 supports rendering to both eye views with View Instancing, which simplifies the rendering code. `D3D12 View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_.
+
+.. container:: opengl opengles
+
+	OpenGL and OpenGL ES supports rendering to both eye views with multiview, which simplifies the rendering code. `OpenGL and OpenGL ES Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
+
+.. container:: Vulkan
+
+	Vulkan supports rendering to both eye views with multiview, which simplifies the rendering code. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
+
+Multiview or View Instancing can be used for stereo rendering by creating one ``XrSwapchain`` that contains 2D array images. This is done by setting the ``XrSwapchainCreateInfo::arraySize`` to ``2``; similarly we also create image views that encompasses the two subresources - one layer for each eye view.
+
+Remember also to update any uniform/constant buffer data types to support multiple view matrics via the use of arrays. Update any changes to shaders paths and set the ``PipelineCreateInfo::viewMask`` member to ``0b11`` for two views.
 
 .. code-block:: cpp
-	:emphasize-lines: 9, 25
+	:emphasize-lines: 11, 21, 27
+
+	uint32_t viewCount = static_cast<uint32_t>(m_viewConfigurationViews.size());
 
 	XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
 	swapchainCI.createFlags = 0;
 	swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-	swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);          // Use 	GraphicsAPI to select the first compatible format.
-	swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the 	recommended values from the XrViewConfigurationView.
+	swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);          // Use GraphicsAPI to select the first compatible format.
+	swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
 	swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
 	swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
 	swapchainCI.faceCount = 1;
-	swapchainCI.arraySize = 2;
+	swapchainCI.arraySize = viewCount;
 	swapchainCI.mipCount = 1;
-	OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &swapchainAndDepthImage.swapchain), "Failed to create Swapchain");
+	OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &m_colorSwapchainInfo.swapchain), "Failed to create Color Swapchain");
 
-	// [...]
+	// Similar for depth swapchain
 
 	for (uint32_t i = 0; i < swapchainImageCount; i++) {
 		GraphicsAPI::ImageViewCreateInfo imageViewCI;
-		imageViewCI.image = m_graphicsAPI->GetSwapchainImage(swapchainAndDepthImage.swapchain, i);
+		imageViewCI.image = m_graphicsAPI->GetSwapchainImage(m_colorSwapchainInfo.swapchain, j);
 		imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::RTV;
-		imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D;
-		imageViewCI.format = swapchainAndDepthImage.swapchainFormat;
+		imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D_ARRAY;
+		imageViewCI.format = m_colorSwapchainInfo.swapchainFormat;
 		imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::COLOR_BIT;
 		imageViewCI.baseMipLevel = 0;
 		imageViewCI.levelCount = 1;
 		imageViewCI.baseArrayLayer = 0;
-		imageViewCI.layerCount = 2;
-		swapchainAndDepthImage.colorImageViews.push_back(m_graphicsAPI->CreateImageView(imageViewCI));
+		imageViewCI.layerCount = viewCount;
+		m_colorSwapchainInfo.imageViews.push_back(m_graphicsAPI->CreateImageView(imageViewCI));
 	}
 
-When setting up the rendering code in ``RenderLayer()``, there's no need to repeat rendering code per eye view; instead we call ``xrAcquireSwapchainImage()`` and ``xrWaitSwapchainImage()`` to get the next 2D array from the swapchain. We are still required to submit an ``XrCompositionLayerProjectionView`` struct for each view in the system, but in the ``XrSwapchainSubImage`` we can set the ``imageArrayIndex`` to specify which layer of the swapchain image we wish to associate with that view; so in the case of stereo rendering it would be ``0`` for left and ``1`` for right eye views. We attach our 2D array image as an render target/color attachment for the pixel/fragment shader to write to.
+	// Similar for depth image views
+
+When setting up the rendering code in ``RenderLayer()``, there's no need to repeat rendering code per eye view; instead we call ``xrAcquireSwapchainImage()`` and ``xrWaitSwapchainImage()`` to get the next 2D array image from the swapchain. We are still required to submit an ``XrCompositionLayerProjectionView`` structure for each view in the system, but in the ``XrSwapchainSubImage`` we can set the ``imageArrayIndex`` to specify which layer of the swapchain image we wish to associate with that view. So in the case of stereo rendering, it would be ``0`` for left and ``1`` for right eye views. We attach our 2D array image as an render target/color attachment for the pixel/fragment shader to write to.
 
 .. code-block:: cpp
-	:emphasize-lines: 5-10, 18-30, 44
+	:emphasize-lines: 6-13, 21-33, 47
 
 	// Acquire and wait for an image from the swapchain.
 	// Get the image index of an image in the swapchain.
 	// The timeout is infinite.
-	uint32_t imageIndex = 0;
+	uint32_t colorImageIndex = 0;
+	uint32_t depthImageIndex = 0;
 	XrSwapchainImageAcquireInfo acquireInfo{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
-	OPENXR_CHECK(xrAcquireSwapchainImage(m_swapchainAndDepthImage.swapchain, &acquireInfo, &imageIndex), "Failed to acquire Image from the Swapchian");
-
+	OPENXR_CHECK(xrAcquireSwapchainImage(m_colorSwapchainInfo.swapchain, &acquireInfo, &colorImageIndex), "Failed to acquire Image from the Color Swapchian");
+	OPENXR_CHECK(xrAcquireSwapchainImage(m_depthSwapchainInfo.swapchain, &acquireInfo, &depthImageIndex), "Failed to acquire Image from the Depth Swapchian");	
+	
 	XrSwapchainImageWaitInfo waitInfo = {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
 	waitInfo.timeout = XR_INFINITE_DURATION;
-	OPENXR_CHECK(xrWaitSwapchainImage(m_swapchainAndDepthImage.swapchain, &waitInfo), "Failed to wait for Image from the Swapchain");
-
+	OPENXR_CHECK(xrWaitSwapchainImage(m_colorSwapchainInfo.swapchain, &waitInfo), "Failed to wait for Image from the Color Swapchain");
+	OPENXR_CHECK(xrWaitSwapchainImage(m_depthSwapchainInfo.swapchain, &waitInfo), "Failed to wait for Image from the Depth Swapchain");
+	
 	// Get the width and height and construct the viewport and scissors.
 	const uint32_t &width = m_viewConfigurationViews[0].recommendedImageRectWidth;
 	const uint32_t &height = m_viewConfigurationViews[0].recommendedImageRectHeight;
@@ -85,12 +105,12 @@ When setting up the rendering code in ``RenderLayer()``, there's no need to repe
 
 	if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE) {
 		// VR mode use a background color.
-		m_graphicsAPI->ClearColor(m_swapchainAndDepthImage.colorImageViews[imageIndex], 0.17f, 0.17f, 0.17f, 1.00f);
+		m_graphicsAPI->ClearColor(m_colorSwapchainInfo.imageViews[colorImageIndex], 0.17f, 0.17f, 0.17f, 1.00f);
 	} else {
 		// In AR mode make the background color black.
-		m_graphicsAPI->ClearColor(m_swapchainAndDepthImage.colorImageViews[imageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
+		m_graphicsAPI->ClearColor(m_colorSwapchainInfo.imageViews[colorImageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
 	}
-	m_graphicsAPI->ClearDepth(m_swapchainAndDepthImage.depthImageView, 1.0f);
+	m_graphicsAPI->ClearDepth(m_depthSwapchainInfo.imageViews[depthImageIndex], 1.0f);
 
 	m_graphicsAPI->SetRenderAttachments(&m_swapchainAndDepthImage.colorImageViews[imageIndex], 1, m_swapchainAndDepthImage.depthImageView, width, eight, m_pipeline);
 	
@@ -100,260 +120,86 @@ When setting up the rendering code in ``RenderLayer()``, there's no need to repe
 
 	// Give the swapchain image back to OpenXR, allowing the compositor to use the image.
 	XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
-	OPENXR_CHECK(xrReleaseSwapchainImage(m_swapchainAndDepthImage.swapchain, &releaseInfo), "Failed to release Image back to the Swapchain");
+	OPENXR_CHECK(xrReleaseSwapchainImage(m_colorSwapchainInfo.swapchain, &releaseInfo), "Failed to release Image back to the Color Swapchain");
+	OPENXR_CHECK(xrReleaseSwapchainImage(m_depthSwapchainInfo.swapchain, &releaseInfo), "Failed to release Image back to the Depth Swapchain");
 
 Shaders and Pipelines will need to be modified to support multiview rendering.
 
 .. container:: d3d11
 	
-	Here we use the vertex shader to write to the ``SV_RenderTargetArrayIndex`` System-Value Semantics. Note that this is only supported when ``D3D11_FEATURE_DATA_D3D11_OPTIONS3::VPAndRTArrayIndexFromAnyShaderFeedingRasterizer`` is set to true. Otherwise, you would need to use a geometry shader. `HLSL Semantics <https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics>`_.
-	Also see this example from Microsoft's OpenXR-MixedReality GitHub repository `here <https://github.com/microsoft/OpenXR-MixedReality/blob/a46ea22a396a38725043fea91166c6d5b1a49dfc/samples/BasicXrApp/CubeGraphics.cpp>_`.
+	Here we use the vertex shader to write to the ``SV_RenderTargetArrayIndex`` System-Value Semantic, which specifies which index in the array within the render target we should emit the primitives data to. This System-Value Semantic must be matched in the pixel shader input. Note that this is only supported when ``D3D11_FEATURE_DATA_D3D11_OPTIONS3::VPAndRTArrayIndexFromAnyShaderFeedingRasterizer`` is set to true. Otherwise, you would need to use a geometry shader. `HLSL Semantics <https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics>`_.
+	Also see this example from Microsoft's `OpenXR-MixedReality GitHub repository <https://github.com/microsoft/OpenXR-MixedReality/blob/a46ea22a396a38725043fea91166c6d5b1a49dfc/samples/BasicXrApp/CubeGraphics.cpp>`_ and a reference page from Mixed Reality about `Rendering in DirectX <https://learn.microsoft.com/en-us/windows/mixed-reality/develop/native/rendering-in-directx>`_.
 
-	.. code-block:: hlsl
-		:emphasize-lines: 4, 5, 20, 26, 35, 36
+	When executing draw calls remember to set the instance count parameter to ``2``.
 
-		// Vertex Shader
-		cbuffer CameraConstants : register(b0)
-		{
-			float4x4 viewProj[2];
-			float4x4 modelViewProj[2];
-			float4x4 model;
-			float4 color;
-			float4 pad1;
-			float4 pad2;
-			float4 pad3;
-		};
-		cbuffer Normals : register(b1)
-		{
-			float4 normals[6];
-		};
-		
-		struct VS_IN
-		{
-			uint vertexId : SV_VertexId;
-			uint instanceId : SV_InstanceId;
-			float4 a_Positions : TEXCOORD0;
-		};
-		struct VS_OUT
-		{
-			float4 o_Position : SV_Position;
-			uint viewId : SV_RenderTargetArrayIndex;
-			nointerpolation float2 o_TexCoord : TEXCOORD0;
-			float3 o_Normal : TEXCOORD1;
-			nointerpolation float3 o_Color : TEXCOORD2;
-		};
-		
-		VS_OUT main(VS_IN IN)
-		{
-			VS_OUT OUT;
-			OUT.o_Position = mul(modelViewProj[IN.instanceId], IN.a_Positions);
-			OUT.viewId = IN.instanceId;
-			int face = IN.vertexId / 6;
-			OUT.o_TexCoord = float2(float(face), 0);
-			OUT.o_Normal = (mul(model, normals[face])).xyz;
-			OUT.o_Color = color.rgb;
-			return OUT;
-		}
+	Vertex Shader:
+
+	.. literalinclude:: ../Chapter6_1_Multiview/ShadersMultiview/VertexShader_DX11_MV.hlsl
+		:diff: ../Shaders/VertexShader.hlsl
+		:language: hlsl
+
+	Pixel Shader:
+
+	.. literalinclude:: ../Chapter6_1_Multiview/ShadersMultiview/PixelShader_DX11_MV.hlsl
+		:diff: ../Shaders/PixelShader.hlsl
+		:language: hlsl
+
 
 .. container:: d3d12
 
-	Set up the ``D3D12_VIEW_INSTANCING_DESC`` and ``D3D12_VIEW_INSTANCE_LOCATION`` for the ``ID3D12Pipeline``.
-	Set the RenderTargetArrayIndex to ``0`` for left and ``1`` for right eye views. We don't need to write to SV_RenderTargetArrayIndex in the shader.
+	First, you need to check that ``D3D12_FEATURE_DATA_D3D12_OPTIONS3::ViewInstancingTier`` doesn't equal ``D3D12_VIEW_INSTANCING_TIER_NOT_SUPPORTED``. Next, within the pipeline creation, set up the ``D3D12_VIEW_INSTANCING_DESC`` and a ``std::vector<D3D12_VIEW_INSTANCE_LOCATION>`` for the ``ID3D12Pipeline``. Here, we must use ``ID3D12Device2::CreatePipelineState()`` for pipeline creation for ViewInstancing. Set the ``D3D12_VIEW_INSTANCE_LOCATION::RenderTargetArrayIndex`` to ``0`` for left and ``1`` for right eye views. This means that we don't need to write to ``SV_RenderTargetArrayIndex`` in the shader. We set ``D3D12_VIEW_INSTANCING_DESC::Flags`` to ``D3D12_VIEW_INSTANCING_FLAG_NONE``, though it's possible to set it to ``D3D12_VIEW_INSTANCING_FLAG_ENABLE_VIEW_INSTANCE_MASKING`` and use ``ID3D12CommandList2::SetViewInstanceMask()`` to control further which views will be written to.
 
-	.. code-block:: cpp
+	.. literalinclude:: ../Chapter6_1_Multiview/Common/GraphicsAPI_D3D12.cpp
+		:language: cpp
+		:start-at: if (pipelineCI.viewMask != 0) {
+		:end-before: #else
 
-		D3D12_VIEW_INSTANCING_DESC viewInstancingDesc;
-		std::vector<D3D12_VIEW_INSTANCE_LOCATION> viewInstanceLocations;
+	Modify the shader to use ``SV_ViewID`` and compile with shader model 6.1 to allow the vertex shader to use the new ``SV_ViewID`` System-Value Semantic. See `HLSL Semantics <https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics>`_ for its usage.
 
-		viewInstancingDesc.ViewInstanceCount = 2;
-		viewInstanceLocations.resize(viewInstancingDesc.ViewInstanceCount);
-		for (size_t i = 0; i < viewInstanceLocations.size(); i++)
-		{
-			viewInstanceLocations.RenderTargetArrayIndex = static_cast<UINT>(i);
-			viewInstanceLocations.ViewportArrayIndex = 0;
-		}
-		viewInstancingDesc.pViewInstanceLocations = viewInstanceLocations.data();
-		viewInstancingDesc.Flags = D3D12_VIEW_INSTANCING_FLAG_ENABLE_VIEW_INSTANCE_MASKING;
+		Vertex Shader:
 
-	Modify the shader to use ``SV_ViewID`` and use shader model 6.1.
-	See `HLSL Semantics <https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics>`_ for the usage of ``SV_ViewId``.
-
-	.. code-block:: hlsl
-		:emphasize-lines: 4, 5, 20, 34, 35
-
-		// Vertex Shader
-		cbuffer CameraConstants : register(b0)
-		{
-			float4x4 viewProj[2];
-			float4x4 modelViewProj[2];
-			float4x4 model;
-			float4 color;
-			float4 pad1;
-			float4 pad2;
-			float4 pad3;
-		};
-		cbuffer Normals : register(b1)
-		{
-			float4 normals[6];
-		};
-
-		struct VS_IN
-		{
-			uint vertexId : SV_VertexId;
-			uint viewId : SV_ViewId
-			float4 a_Positions : TEXCOORD0;
-		};
-		struct VS_OUT
-		{
-			float4 o_Position : SV_Position;
-			nointerpolation float2 o_TexCoord : TEXCOORD0;
-			float3 o_Normal : TEXCOORD1;
-			nointerpolation float3 o_Color : TEXCOORD2;
-		};
-
-		VS_OUT main(VS_IN IN)
-		{
-			VS_OUT OUT;
-			OUT.o_Position = mul(modelViewProj[IN.viewId], IN.a_Positions);
-			int face = IN.vertexId / 6;
-			OUT.o_TexCoord = float2(float(face), 0);
-			OUT.o_Normal = (mul(model, normals[face])).xyz;
-			OUT.o_Color = color.rgb;
-			return OUT;
-		}
+	.. literalinclude:: ../Chapter6_1_Multiview/ShadersMultiview/VertexShader_DX12_MV.hlsl
+		:diff: ../Shaders/VertexShader.hlsl
+		:language: hlsl
 
 .. container:: opengl
 
-	TODO: Check this!
+	Enusre you have support for ``GL_OVR_multiview`` by checking the extensions and that you have loaded the ``glFramebufferTextureMultiviewOVR()`` function pointer, if you need to do so. You will use this to create a framebuffer supports rendering to multiple layers.
+	See this example from ARM's OpenGL ES SDK for Android `here <https://arm-software.github.io/opengl-es-sdk-for-android/multiview.html>`_, which works for OpenGL too.
 
-	Enusre you have support for GL_OVR_multiview  and have loaded the ``glFramebufferTextureMultiviewOVR()`` function. You will use this to create a framebuffer to render to.
-	Also see this example from ARM's OpenGL ES SDK for Android `here <https://arm-software.github.io/opengl-es-sdk-for-android/multiview.html>`_.
+	Modify the shader to use ``gl_ViewIndex_OVR`` and the GL_OVR_multiview GLSL extension. The line ``layout(num_views = 2) in`` specifies the number of views the vertex shader a will broadcast to.
 
-	Modify the shader to use ``gl_ViewIndex_OVR`` and the GL_OVR_multiview GLSL extension.
-
-	.. code-block:: glsl
-		:emphasize-lines: 4, 6, 7, 22
-
-		// Vertex Shader
-		#version 450
-		#extension GL_KHR_vulkan_glsl : enable
-		#extension GL_OVR_multiview : enable
-		layout(std140, binding = 0) uniform CameraConstants {
-			mat4 viewProj[2];
-			mat4 modelViewProj[2];
-			mat4 model;
-			vec4 color;
-			vec4 pad1;
-			vec4 pad2;
-			vec4 pad3;
-		};
-		layout(std140, binding = 1) uniform Normals {
-			vec4 normals[6];
-		};
-		layout(location = 0) in vec4 a_Positions;
-		layout(location = 0) out flat uvec2 o_TexCoord;
-		layout(location = 1) out flat vec3 o_Normal;
-		layout(location = 2) out flat vec3 o_Color;
-		void main() {
-			gl_Position = modelViewProj[gl_ViewIndex_OVR] * a_Positions;
-			int face = gl_VertexIndex / 6;
-			o_TexCoord = uvec2(face, 0);
-			o_Normal = (model * normals[face]).xyz;
-			o_Color = color.rgb;
-		}
+	.. literalinclude:: ../Chapter6_1_Multiview/ShadersMultiview/VertexShader_GL_MV.glsl
+		:diff: ../Shaders/VertexShader.glsl
+		:language: glsl
 
 .. container:: opengles
 
-	Enusre you have support for GL_OVR_multiview  and have loaded the ``glFramebufferTextureMultiviewOVR()`` function. You will use this to create a framebuffer to render to.
-	Also see this example from ARM's OpenGL ES SDK for Android `here <https://arm-software.github.io/opengl-es-sdk-for-android/multiview.html>`_.
+	Enusre you have support for ``GL_OVR_multiview`` by checking the extensions and that you have loaded the ``glFramebufferTextureMultiviewOVR()`` function pointer, if you need to do so. You will use this to create a framebuffer supports rendering to multiple layers.
+	See this example from ARM's OpenGL ES SDK for Android `here <https://arm-software.github.io/opengl-es-sdk-for-android/multiview.html>`_.
 
-	Modify the shader to use ``gl_ViewIndex_OVR`` and the GL_OVR_multiview GLSL extension.
+	Modify the shader to use ``gl_ViewIndex_OVR`` and the GL_OVR_multiview GLSL extension. The line ``layout(num_views = 2) in`` specifies the number of views the vertex shader a will broadcast to.
 
-	.. code-block:: glsl
-		:emphasize-lines: 2, 4, 5, 20
-		
-		#version 310 es
-		#extension GL_OVR_multiview : enable
-		layout(std140, binding = 0) uniform CameraConstants {
-			mat4 viewProj[2];
-			mat4 modelViewProj[2];
-			mat4 model;
-			vec4 colour;
-			vec4 pad1;
-			vec4 pad2;
-			vec4 pad3;
-		};
-		layout(std140, binding = 1) uniform Normals {
-			vec4 normals[6];
-		};
-		layout(location = 0) in highp vec4 a_Positions;
-		layout(location = 0) out flat uvec2 o_TexCoord;
-		layout(location = 1) out highp vec3 o_Normal;
-		layout(location = 2) out flat vec3 o_Colour;
-		void main() {
-			gl_Position = modelViewProj[gl_ViewID_OVR] * a_Positions;
-			int face = gl_VertexID / 6;
-			o_TexCoord = uvec2(face, 0);
-			o_Normal = (model * normals[face]).xyz;
-			o_Colour = colour.rgb;
-		}
+	.. literalinclude:: ../Chapter6_1_Multiview/ShadersMultiview/VertexShader_GL_MV.glsl
+		:diff: ../Shaders/VertexShader.glsl
+		:language: glsl
 
 .. container:: vulkan
 
-	Add ``VkRenderPassMultiviewCreateInfo`` to the ``VkRenderPassCreateInfo`` when creating the ``VkPipeline``. Note that there is similar functionality for Vulkan 1.3 - Dynamic Rendering.
+	First, add the ``VK_KHR_MULTIVIEW_EXTENSION_NAME`` or ``"VK_KHR_multiview"`` string to the device extensions list when creating the ``VkDevice``.
 
-	.. code-block:: cpp
+	At pipeline creation, chain via the next pointer a ``VkRenderPassMultiviewCreateInfo`` structure to the ``VkRenderPassCreateInfo`` structure when creating the ``VkRenderPass``. Note that there is similar functionality for ``VK_KHR_dynamic_rendering``. The viewMask specifies the number of views the rasterizer a will broadcast to.
 
-		VkRenderPassCreateInfo renderPassCI = {};
-
-		// [...]
-
-		uint32_t viewMask = 0b11; //Render to layers 0 and 1
-
-		VkRenderPassMultiviewCreateInfo multiviewCreateInfo;
-		multiviewCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO;
-		multiviewCreateInfo.pNext = nullptr;
-		multiviewCreateInfo.subpassCount = 1;
-		multiviewCreateInfo.pViewMasks = &viewMask;
-		multiviewCreateInfo.dependencyCount = 0;
-		multiviewCreateInfo.pViewOffsets = nullptr;
-		multiviewCreateInfo.correlationMaskCount = 1;
-		multiviewCreateInfo.pCorrelationMasks = &viewMask;
-		renderPassCI.pNext = &multiviewCreateInfo;
+	.. literalinclude:: ../Chapter6_1_Multiview/Common/GraphicsAPI_Vulkan.cpp
+		:language: cpp
+		:start-at: bool multiview = false;
+		:end-at: VULKAN_CHECK(vkCreateRenderPass
 
 	Modify the shader to use ``gl_ViewIndex`` and the GL_EXT_multiview GLSL extension.
 
-	.. code-block:: glsl
-		:emphasize-lines: 4, 6, 7, 22
-
-		// Vertex Shader
-		#version 450
-		#extension GL_KHR_vulkan_glsl : enable
-		#extension GL_EXT_multiview : enable
-		layout(std140, binding = 0) uniform CameraConstants {
-			mat4 viewProj[2];
-			mat4 modelViewProj[2];
-			mat4 model;
-			vec4 color;
-			vec4 pad1;
-			vec4 pad2;
-			vec4 pad3;
-		};
-		layout(std140, binding = 1) uniform Normals {
-			vec4 normals[6];
-		};
-		layout(location = 0) in vec4 a_Positions;
-		layout(location = 0) out flat uvec2 o_TexCoord;
-		layout(location = 1) out flat vec3 o_Normal;
-		layout(location = 2) out flat vec3 o_Color;
-		void main() {
-			gl_Position = modelViewProj[gl_ViewIndex] * a_Positions;
-			int face = gl_VertexIndex / 6;
-			o_TexCoord = uvec2(face, 0);
-			o_Normal = (model * normals[face]).xyz;
-			o_Color = color.rgb;
-		}
-
+	.. literalinclude:: ../Chapter6_1_Multiview/ShadersMultiview/VertexShader_VK_MV.glsl
+		:diff: ../Shaders/VertexShader.glsl
+		:language: glsl
 
 ****************
 6.2 Graphics API
