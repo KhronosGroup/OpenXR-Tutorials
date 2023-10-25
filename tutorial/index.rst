@@ -17,7 +17,7 @@ This tutorial introduces programming with OpenXR. If you use a game engine such 
 you may not need to interact directly with OpenXR: the engine abstracts this away. It may be beneficial
 to learn the underlying concepts however.
 
-OpenXR is designed to work with various different graphics API's: Vulkan, Direct3D 11 and 12,
+OpenXR is designed to work with various different graphics APIs: Vulkan, Direct3D 11 and 12,
 OpenGL and OpenGL ES are all supported at present. You will need some familiarity with your graphics
 API of choice to get the most out of this tutorial.
 

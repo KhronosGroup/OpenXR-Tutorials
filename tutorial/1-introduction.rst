@@ -54,7 +54,7 @@ We'll start with the main concepts you'll need to be familiar with around OpenXR
 	* - Instance
 	  - The Instance is an object that allows your app to communicate with a Runtime. You'll ask OpenXR to create an Instance when initializing XR support in your app.
 	* - Graphics
-	  - OpenXR usually needs to connect to a graphics API, in order to permit rendering of headset views for example. Which Graphics API's are supported depends on the Runtime.
+	  - OpenXR usually needs to connect to a graphics API, in order to permit rendering of headset views for example. Which Graphics APIs are supported depends on the Runtime.
 	* - Input
 	  - The OpenXR Input System allows apps to query what inputs are available. These can then be bound to Actions or Poses, so the app knows what the user is doing.
 
@@ -66,7 +66,7 @@ The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on t
 
 API Layers are additional code layers that are inserted between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or to check that the function calls made to OpenXR are compatible with the OpenXR specification.
 
-OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of abstracting the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensiblee nature of OpenXR allows revisions of existing API's and new graphics API's to be integrated with ease.
+OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of abstracting the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensible nature of OpenXR allows revisions of existing APIs and new graphics APIs to be integrated with ease.
 	
 OpenXR recognizes that there is a vast and ever changing array of hardware and configurations in the XR space. With new headsets and controllers coming to the market, an abstraction of the input system was needed so that the same applications can target different and newer hardware with minimal change.
 
