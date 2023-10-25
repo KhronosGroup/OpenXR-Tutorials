@@ -645,7 +645,7 @@ Now, create a text file called `main.cpp` in the `Chapter2` folder. Open `main.c
 	:start-at: #include <DebugOutput
 	:end-at: .h>
 
-Next, we add the `GraphicsAPI_....h` header to include the Graphics API code of your chosen graphics API. This will in turn include `GraphicsAPI.h`, `HelperFunctions.h`  and `OpenXRHelper.h`.
+Next, we add the `GraphicsAPI_....h` header to include the `GraphicsAPI` code of your chosen graphics API. This will in turn include `GraphicsAPI.h`, `HelperFunctions.h`  and `OpenXRHelper.h`.
 
 .. container:: d3d11
 
@@ -689,7 +689,7 @@ You can also include `OpenXRDebugUtils.h` to help with set up of `XrDebugUtilsMe
 	:start-after: XR_DOCS_TAG_BEGIN_include_OpenXRDebugUtils
 	:end-before: XR_DOCS_TAG_END_include_OpenXRDebugUtils
 
-Now we will define the main class `OpenXRTutorial` of the application. It's just a stub for now, with an empty `Run()` method. Add the following to main.cpp:
+Now we will define the main class `OpenXRTutorial` of the application. It's just a stub class for now, with an empty `Run()` method. Add the following to `main.cpp`:
 
 .. code-block:: cpp
 
@@ -715,11 +715,11 @@ Note here that for some platforms, we need additional functionality provided via
 
 .. container:: windows linux
 
-	For Windows and Linux, there no relevant system event that we need to be aware of, and thus the ``PollSystemEvents()`` method definition can be left blank.
+	For Windows and Linux, there are no relevant system events that we need to be aware of, and thus the ``PollSystemEvents()`` method definition can be left blank.
 
 .. container:: android
 
-	The ``PollSystemEvents()`` method is outside the scope of OpenXR, but in general it polls Android for system events, updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members, which we describe later in this chapter.
+	The ``PollSystemEvents()`` method is outside the scope of OpenXR, but in general it will poll Android for system events, updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members, which we describe later in this chapter.
 
 We'll add the main function for the application. It will look slightly different, depending on your
 chosen platform. We first create a 'pseudo-main function' called `OpenXRTutorial_Main()`, in which we create an instance of our `OpenXRTutorial` class, taking a `GraphicsAPI_Type` parameter, and call the `Run()` method. `GraphicsAPI_Type` can be changed to suit the graphics API that you have chosen.
@@ -729,23 +729,9 @@ chosen platform. We first create a 'pseudo-main function' called `OpenXRTutorial
 	:start-at: void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 	:end-at: }
 
-Then, we create the actual platform specific main function (our entry point to the application), which will call `OpenXRTutorial_Main()` with our `GraphicsAPI_Type` parameter. By default, this tutorial uses `OPENGL` as the parameter to `OpenXRTutorial_Main()`. This must be changed to match on your chosen graphics API, one of: `D3D11`,     `D3D12`,     `OPENGL`,    `OPENGL_ES`, or   `VULKAN`.
+Then, we create the actual platform specific main function (our entry point to the application), which will call `OpenXRTutorial_Main()` with our `GraphicsAPI_Type` parameter. This must be changed to match on your chosen graphics API, one of: `D3D11`, `D3D12`, `OPENGL`, `OPENGL_ES`, or `VULKAN`.
 
 .. container:: windows linux
-
-	.. container:: opengl
-
-		.. literalinclude:: ../Chapter2/main.cpp
-			:language: cpp
-			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
-			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
-
-	.. container:: vulkan
-
-		.. literalinclude:: ../Chapter2/main.cpp
-			:language: cpp
-			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
-			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_VULKAN
 
 	.. container:: d3d11
 
@@ -760,6 +746,20 @@ Then, we create the actual platform specific main function (our entry point to t
 			:language: cpp
 			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D12
 			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_D3D12
+
+	.. container:: opengl
+
+		.. literalinclude:: ../Chapter2/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
+			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
+
+	.. container:: vulkan
+
+		.. literalinclude:: ../Chapter2/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
+			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_VULKAN
 
 .. container:: android
 	
@@ -784,9 +784,9 @@ Then, we create the actual platform specific main function (our entry point to t
 			:start-after: XR_DOCS_TAG_BEGIN_android_main_VULKAN
 			:end-before: XR_DOCS_TAG_END_android_main_VULKAN
 	
-	Before we can use OpenXR for Android, we need to initialise the loader based the application's context and virtual machine. We retrieve the function pointer to `xrInitializeLoaderKHR`, and with the `XrLoaderInitInfoAndroidKHR` filled out call that function to initialise OpenXR for our use. At this point, we also attach the current thread to the Java Virtual Machine. We assign our `AndroidAppState` static member and our `AndroidAppHandleCmd()` static method to the `android_app *` and save it to a static member in the class.
+	Before we can use OpenXR for Android, we need to initialise the loader based the application's context and virtual machine. We retrieve the function pointer to `xrInitializeLoaderKHR`, and with the `XrLoaderInitInfoAndroidKHR` filled out, call that function to initialise OpenXR for our use. At this point, we also attach the current thread to the Java Virtual Machine. We assign our `AndroidAppState` static member and our `AndroidAppHandleCmd()` static method to the `android_app *` and save it to a static member in the class.
 
-	Android requires a few extra additions to the OpenXRTutorial class. Namely, `android_app *`, `AndroidAppState` and `AndroidAppHandleCmd`, which are used in getting updates from the Android Operating System and keep our application functioning. Add the following after the definition of `Run()` in your OpenXRTutorial class declaration:
+	Android requires a few extra additions to the OpenXRTutorial class. Namely, `android_app *`, `AndroidAppState` and `AndroidAppHandleCmd`, which are used in getting updates from the Android Operating System and keep our application functioning. Add the following code after the definition of `Run()` in your `OpenXRTutorial`` class declaration:
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -813,7 +813,7 @@ Then, we create the actual platform specific main function (our entry point to t
 
 .. container:: linux
 
-	You now have the files and folders, laid out as follows:
+	You now have all the files and folders, laid out as follows:
 
 	.. figure:: images/linux-vscode-initial-files.png
 		:alt: Initial files in VS Code 
@@ -850,7 +850,7 @@ Then, we create the actual platform specific main function (our entry point to t
 
 	Next to the green hammer icon is the Run/Debug configuration dropdown menu. If that isn't populated, create a configuration called app.
 
-	Turn on and connect your Android device. Set up any requirements for USB debugging and adb. You device should appear in the dropdown. Here, we are using a Meta Quest 2:
+	Turn on and connect your Android device. Set up any requirements for USB debugging and adb. Your device should appear in the dropdown. Here, we are using a Meta Quest 2:
 
 	.. figure:: images/android-studio-build-run-toolbar.png
 		:alt: Build/Run Toolbar
@@ -861,4 +861,5 @@ Then, we create the actual platform specific main function (our entry point to t
 ***********
 1.5 Summary
 ***********
+
 In this chapter, you learned about the fundamental concepts of OpenXR, and created a project you will use to build your OpenXR application. Now that we have this basic application up and running, we will start to set up OpenXR.
