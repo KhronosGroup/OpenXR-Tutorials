@@ -47,7 +47,7 @@ In this chapter, you'll learn how to create an Action Set containing multiple Ac
 4.2 Creating Actions and Action Sets
 ************************************
 
-An OpenXR application has interactions with the user which can be user input to the application, or haptic output to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: Spaces, Actions, and Bindings.
+An OpenXR application has interactions with the user which can be user input to the application or haptic output to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: Spaces, Actions, and Bindings.
 
 At the end of your application class, add this code:
 
@@ -83,8 +83,8 @@ Now we will define the `CreateActionSet` function. Add the first part of this fu
 	:end-before: XR_DOCS_TAG_END_CreateActionSet
 	:dedent: 4
 
-An Action Set is a group of actions that apply in a specific context. You might have an Action Set for when your XR game is showing a pause menu or control panel, and a different Action Set for in-game. There might be different Action Sets for different situations in an XR application: rowing in a boat, climbing a cliff, and so on.
-So you can create multiple Action Sets, but we only need one for this example. The Action Set is created with a name, and a localized string for its description. Now add:
+An Action Set is a group of actions that apply in a specific context. You might have an Action Set for when your XR game is showing a pause menu or control panel and a different Action Set for in-game. There might be different Action Sets for different situations in an XR application: rowing in a boat, climbing a cliff, and so on.
+So you can create multiple Action Sets, but we only need one for this example. The Action Set is created with a name and a localized string for its description. Now add:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -111,7 +111,7 @@ Each Action and Action Set has both a name, for internal use, and a localized de
 
 As OpenXR is an API for many different devices, it needs to provide a way for you as a developer to refer to the various buttons, joysticks, inputs and outputs that a device may have, without needing to know in advance which device or devices the user will have.
 
-To do this, OpenXR defines the concept of *interaction profiles*. An interaction profile is a collection of interactions supported by a given device and runtime, and defined by means of textual paths.
+To do this, OpenXR defines the concept of *interaction profiles*. An interaction profile is a collection of interactions supported by a given device and runtime, and defined using textual paths.
 
 Each interaction is defined by a path with three components: the Profile Path, the User Path, and the Component Path. The Profile Path has the form ``"/interaction_profiles/<vendor_name>/<type_name>"``. The User Path is a string identifying the controller device, e.g. ``"/user/hand/left"``, or ``"/user/gamepad"``. The Component Path is a string identifying the specific input or output, e.g. ``"/input/select/click"`` or ``"/output/haptic_left_trigger"``.
 
@@ -166,7 +166,7 @@ After the definition of CreateActionSet(), add:
 	:end-before: XR_DOCS_TAG_END_SuggestBindings1
 	:dedent: 4
 
-By means of a lambda function ``SuggestBindings``, we call into OpenXR with a given list of suggestions. Let's try this:
+Using the lambda function ``SuggestBindings``, we call into OpenXR with a given list of suggestions. Let's try this:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -174,7 +174,7 @@ By means of a lambda function ``SuggestBindings``, we call into OpenXR with a gi
 	:end-before: XR_DOCS_TAG_END_SuggestBindings2
 	:dedent: 4
 
-Here, we create a proposed match-up between our app-specific actions, and XrPaths which refer to specific controls as interpreted by the Runtime. We call ``xrSuggestInteractionProfileBindings()``. If the user's device supports the given profile ( and ``"/interaction_profiles/khr/simple_controller"`` should usually be supported in any OpenXR runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
+Here, we create a proposed match-up between our app-specific actions and XrPaths which refer to specific controls as interpreted by the Runtime. We call ``xrSuggestInteractionProfileBindings()``. If the user's device supports the given profile ( and ``"/interaction_profiles/khr/simple_controller"`` should usually be supported in any OpenXR runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
 The suggested bindings are not guaranteed to be used: that's up to the runtime. Some runtimes allow users to override the default bindings, and OpenXR expects this.
 
 
@@ -222,7 +222,7 @@ To get the best results from your application on the end-user's device, it is im
 * An application written for OpenXR should work without modification on device/runtime combination, even those created after the application has been written.
 * An OpenXR device and runtime should work with any OpenXR application, even those not tested with that device.
 
-The way this is achieved is as follows: usually, each device will have its own "native" profile, and should also support ``"khr/simple_controller"``. As a developer:
+The way this is achieved is as follows: Usually, each device will have its own "native" profile, and should also support ``"khr/simple_controller"``. As a developer:
 
 * You should *test the devices and runtimes you have*.
 * You should *specify profile bindings for each device you have tested*.
@@ -234,10 +234,10 @@ See also `semantic-path-interaction-profiles <https://registry.khronos.org/OpenX
 
 
 ************************************
-4.4 Using Actions in the application
+4.4 Using Actions in the Application
 ************************************
 
-Action Sets and Suggested Bindings are created before the session is initialized. There is session-specific setup to be done for our actions also. After the call to CreateSession(), add:
+Action Sets and Suggested Bindings are created before the session is initialized. There is a session-specific setup to be done for our actions also. After the call to CreateSession(), add:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -255,7 +255,7 @@ Now after the definition of SuggestBindings(), add:
 
 Here, we're creating the XrSpace that represents the hand pose actions. As with the reference space, we use an identity ``XrPosef`` to indicate that we'll take the pose as-is, without offsets.
 
-Finally as far as action setup goes, we will attach the Action Set to the session. Add this function:
+Finally, as far as action setup goes, we will attach the Action Set to the session. Add this function:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -317,7 +317,7 @@ Now we've completed polling all the actions in the application. We will add two 
 	:dedent: 4
 
 *************************************
-4.5 Rendering the Controller position
+4.5 Rendering the Controller Posiiton
 *************************************
 
 We will now draw some geometry to represent the controller poses. We already have a mathematics library from a previous chapter, but we will need a couple more headers for ``std::min()``, ``std::max()`` and for generating pseudo-random colors.
@@ -338,7 +338,7 @@ After your declaration of ``m_pipeline`` and before ``XrActionSet m_actionSet``,
 	:end-before: XR_DOCS_TAG_END_Objects
 	:dedent: 4
 	
-Inside our ``CreateResources()`` method, locate where set the variable ``numberOfCuboids`` and update it as follows:
+Inside our ``CreateResources()`` method, locate where we set the variable ``numberOfCuboids`` and update it as follows:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -346,7 +346,7 @@ Inside our ``CreateResources()`` method, locate where set the variable ``numberO
 	:end-before: XR_DOCS_TAG_END_Update_numberOfCuboids
 	:dedent: 8
 
-We will render 64 interactable cubes, 2 cuboids representing the controllers and a further 2 for the floor and table from the previous chapter. After the call to create the graphics pipeline object, add the following coded that sets up the orientation, position and color of each interactable cube.
+We will render 64 interactable cubes, 2 cuboids representing the controllers and a further 2 for the floor and table from the previous chapter. After the call to create the graphics pipeline object, add the following code that sets up the orientation, position and color of each interactable cube.
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -390,7 +390,7 @@ https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#multiple_inputs
 4.7 Summary
 ***********
 
-In this chapter, you have learned about Actions, Controller Profiles, Bindings.
+In this chapter, you have learned about Actions, Controller Profiles and Bindings.
 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 
