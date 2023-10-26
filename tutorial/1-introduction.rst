@@ -1,4 +1,4 @@
-﻿##############
+##############
 1 Introduction
 ##############
 
@@ -8,7 +8,7 @@
 
 OpenXR aims to help solve the fragmentation of the XR ecosystem. Before the advent of OpenXR, software developers working with multiple hardware platforms had to write different code paths for each platform to address the different hardware. Each platform had its own, often proprietary, API, and deploying an existing application to a new platform required a lot of adaptation. Developing a new application for a new platform was even more challenging.
 
-In spite of their unique features, the platforms had a great deal in common. For example, most headsets had a main view seen from two slightly different perspectives. Most had a way to track the user's head and hands or hand-controllers. Most had buttons, many had analogue controls like triggers or joysticks and many had haptic feedback.
+Despite of their unique features, the platforms had a great deal in common. For example, most headsets had a main view seen from two slightly different perspectives. Most had a way to track the user's head and hands or hand controllers. Most had buttons, many had analogue controls like triggers or joysticks and many had haptic feedback.
 
 .. figure:: OpenXRBeforeAfter.png
 	:alt: XR Fragmentation 
@@ -17,7 +17,7 @@ In spite of their unique features, the platforms had a great deal in common. For
 
 	OpenXR provides a common interface to reduce XR fragmentation.
 
-OpenXR aims to solve this problem by providing a common API to address XR hardware, in reading its inputs and outputting to its displays and haptic systems. Just as OpenGL and Vulkan provide a common API to access graphics hardware, so OpenXR allows you to write code that works with multiple XR platforms, with minimal adaptation.
+OpenXR aims to solve this problem by providing a common API to address XR hardware, in reading its inputs and outputting to its displays and haptic systems. Just as OpenGL and Vulkan provide a common API to access graphics hardware, OpenXR allows you to write code that works with multiple XR platforms, with minimal adaptation.
 
 ************
 1.2 Overview
@@ -55,30 +55,30 @@ An OpenXR Runtime implements the OpenXR API. The runtime translates the OpenXR f
 
 The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as `XR_EXT_debug_utils`, any functions associated with that extension will need to be loaded in with `xrGetInstanceProcAddr()`. Some platforms like Android require extra work and information to initialise the loader.
 
-API Layers are additional code layers that are inserted by the loader between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or to check that the function calls made to OpenXR are compatible with the OpenXR specification. See :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`. 
+API Layers are additional code layers that are inserted by the loader between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or for checking that the function calls made to OpenXR are compatible with the OpenXR specification. See :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`. 
 
 OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of absolving the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensible nature of OpenXR allows revisions of existing APIs and new graphics APIs to be integrated with ease. See :ref:`Chapter 5 <5 Extensions>`.
 OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of absolving the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensible nature of OpenXR allows revisions of existing APIs and new graphics APIs to be integrated with ease. See :ref:`Chapter 5 <5 Extensions>`.
 	
-OpenXR recognizes that there is a vast and ever changing array of hardware and configurations in the XR space. With new headsets and controllers coming to the market, an abstraction of the input system was needed so that the same applications can target different and newer hardware with minimal change. This is the core reasoning behind the OpenXR Actions System.
+OpenXR recognizes that there is a vast and ever-changing array of hardware and configurations in the XR space. With new headsets and controllers coming to the market, an abstraction of the input system was needed so that the same applications can target different and newer hardware with minimal change. This is the core reasoning behind the OpenXR Actions System.
 
 *********************
 1.3 Environment Setup
 *********************
 
-This section will help you set up your development environment. Here your choice of platform really makes a difference, but afterwards things will be much more consistent. You can change platform and graphics API at any time by clicking the tabs at the top of the page. Select the platform you want to develop for now, by clicking a tab above.
+This section will help you set up your development environment. Here your choice of platform makes a difference, but afterwards, things will be much more consistent. You can change platform and graphics API at any time by clicking the tabs at the top of the page. Select the platform you want to develop for now, by clicking the appropriate tab above.
 
 .. container:: windows
 
 	.. rubric:: Visual Studio
 
-	If you'll be building an OpenXR project for Microsoft Windows PC based devices, we'll assume you'll be using Microsoft Visual Studio. The free Community Edition of Visual Studio is available to download `here <https://visualstudio.microsoft.com/vs/community/>`_.
+	If you'll be building an OpenXR project for Microsoft Windows PC-based devices, we'll assume you'll be using Microsoft Visual Studio. The free Community Edition of Visual Studio is available to download `here <https://visualstudio.microsoft.com/vs/community/>`_.
 
 	.. rubric:: CMake
 
 	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake to generate the Visual Studio Solution and Project files. At least CMake 3.22.1 will be needed, so follow the instructions on the CMake download page to ensure that you have an up-to-date version.
 
-	Next you'll want to choose which graphics API you'll be using.
+	Next, you'll want to choose which graphics API you'll be using.
 	
 	.. container:: d3d11 d3d12
 
@@ -141,7 +141,7 @@ This section will help you set up your development environment. Here your choice
 1.4 Project Setup
 *****************
 
-This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Creating an XrInstance / xrGetSystem>` and will make references to the `/Chapter2` folder. It explains how to include the OpenXR headers, link the `openxr_loader` library, graphics API integration, other boilerplate code and finally create a simple stub application which will be expanded on in later chapters.
+This section explains how to set up your project ready for :ref:`Chapter 2<2.1 Creating an XrInstance / xrGetSystem>` and will make references to the `/Chapter2` folder. It explains how to include the OpenXR headers, link the `openxr_loader` library, graphics API integration, and other boilerplate code and finally create a simple stub application which will be expanded on in later chapters.
 
 1.4.1 CMake and Project Files
 =============================
@@ -191,7 +191,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 		:start-after: XR_DOCS_TAG_BEGIN_CMakeLists
 		:end-before: XR_DOCS_TAG_END_CMakeLists
 
-	Here, we specify the CMake version, project name and the configurations types, and provide a CMake variable called `XR_RUNTIME_JSON` which you can use to point to the runtime you will be using (by default, OpenXR will try to find the standard runtime from your hardware vendor). Finally, we specify CMake to continue the build into the Chapter2 directory with `add_subdirectory()`.
+	Here, we specify the CMake version, project name and configuration types, and provide a CMake variable called `XR_RUNTIME_JSON` which you can use to point to the runtime you will be using (by default, OpenXR will try to find the standard runtime from your hardware vendor). Finally, we specify CMake to continue the build into the Chapter2 directory with `add_subdirectory()`.
 
 	.. literalinclude:: ../CMakeLists.txt
 		:language: cmake
@@ -294,7 +294,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
 
-	All the files listed above with `../Common/*.*` are available to download below. In the next section, you will find the links and discussion of their usage. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files for your chosen graphics API.
+	All the files listed above with `../Common/*.*` are available to download below. In the next section, you will find the links and a discussion of their usage. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files for your chosen graphics API.
 
 	Add the following code to `Chapter2/CMakeLists.txt`:
 
@@ -304,7 +304,7 @@ This section explains how to setup your project ready for :ref:`Chapter 2<2.1 Cr
 		:end-before: XR_DOCS_TAG_END_WindowsLinux
 		:dedent: 4
 
-	We have used `add_executable()` to create the program we'll be building, and specified its `${SOURCES}` and `${HEADERS}`. We passed the `XR_RUNTIME_JSON` variable on to the debugging environment (Windows only). We've added the `../Common`, `"${openxr_SOURCE_DIR}/src/common"` and `"${openxr_SOURCE_DIR}/external/include"` folders as include directories and linked the `openxr_loader` which we obtained with `FetchContent`. This will also add the include directory for the OpenXR headers.
+	We have used `add_executable()` to create the program we'll be building, and specified its `${SOURCES}` and `${HEADERS}`. We passed the `XR_RUNTIME_JSON` variable onto the debugging environment (Windows only). We've added the `../Common`, `"${openxr_SOURCE_DIR}/src/common"` and `"${openxr_SOURCE_DIR}/external/include"` folders as include directories and linked the `openxr_loader` which we obtained with `FetchContent`. This will also add the include directory for the OpenXR headers.
 	
 	.. container:: windows
 
@@ -602,7 +602,7 @@ Create a folder called `Common` in the *workspace* directory. Download each of t
 
 .. container:: windows
 
-	`DebugOutput` inherits from `vsBufferedStringStreamBuf`, which inherits from `std::streambuf`. `vsBufferedStringStreamBuf` queues the data from the redirected `std::streambuf` and calls `virtual void writeString(const std::string &)`, which `DebugOutput` inplements as a call to `OutputDebugStringA()`.
+	`DebugOutput` inherits from `vsBufferedStringStreamBuf`, which inherits from `std::streambuf`. `vsBufferedStringStreamBuf` queues the data from the redirected `std::streambuf` and calls `virtual void writeString(const std::string &)`, which `DebugOutput` implements as a call to `OutputDebugStringA()`.
 
 .. container:: linux
 
@@ -614,12 +614,12 @@ Create a folder called `Common` in the *workspace* directory. Download each of t
 
 .. rubric::  HelperFunctions
 
-This is a simple header file for boilerplate code for the various platforms. It includes various C/C++ standard header, and the code that defines the macro `DEBUG_BREAK`, according to which platform we're building for. This macro will stop execution of your program when an error occurs, so you can see where it happened and fix it. We use this macro in the `OpenXRMessageCallbackFunction()` function, which is discussed in detail in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`.
+This is a simple header file for boilerplate code for the various platforms. It includes various C/C++ standard header and the code that defines the macro `DEBUG_BREAK`, according to which platform we're building for. This macro will stop the execution of your program when an error occurs, so you can see where it happened and fix it. We use this macro in the `OpenXRMessageCallbackFunction()` function, which is discussed in detail in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`.
 `IsStringInVector()` and `BitwiseCheck()` are just simple wrappers over commonly used code. `IsStringInVector()` checks if a `const char *` is in a `std::vector<const char *>` by using `strcmp()`, and `BitwiseCheck()` checks if a bit is set in a bitfield.
 
 .. rubric::  OpenXRDebugUtils
 
-A header and cpp file pair that helps in setting up the DebugUtilsMessenger. `XR_EXT_debug_utils` in an OpenXR instance extension that can intercept call made to OpenXR and provide extra information or report warning and errors, if the usage of the API or the current state of OpenXR is not valid. As you go through this tutorial it is highly recommended to have this enable to help with debugging. This is discussed in detail in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`, but in general `CreateOpenXRDebugUtilsMessenger()` creates and `DestroyOpenXRDebugUtilsMessenger()` destroys an `XrDebugUtilsMessengerEXT`. `OpenXRMessageCallbackFunction()` is a callback function that is specified at object creation, which is called when OpenXR raises an issue. The header declares the functions and the cpp defines them.
+A header and cpp file pair that helps in setting up the DebugUtilsMessenger. `XR_EXT_debug_utils` in an OpenXR instance extension that can intercept call made to OpenXR and provide extra information or report warning and errors, if the usage of the API or the current state of OpenXR is not valid. As you go through this tutorial it is highly recommended to have this enabled to help with debugging. This is discussed in detail in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`, but in general, `CreateOpenXRDebugUtilsMessenger()` creates and `DestroyOpenXRDebugUtilsMessenger()` destroys an `XrDebugUtilsMessengerEXT`. `OpenXRMessageCallbackFunction()` is a callback function that is specified at object creation, which is called when OpenXR raises an issue. The header declares the functions and the cpp defines them.
 
 .. rubric::  OpenXRHelper
 
@@ -633,7 +633,7 @@ A header for including all the needed header files and helper functions. Looking
 
 Here, we include the main OpenXR header file `openxr.h` and the OpenXR platform header file `openxr_platform.h`. For the OpenXR platform header file, note the comment about using the preceding `XR_USE_PLATFORM_...` and `XR_USE_GRAPHICS_API_...` macros. When enabled, we gain access to functionality that interacts with the chosen graphics API and/or platform. These macros are automatically set by `GraphicsAPI.h`
 
-This header also defines the macro `OPENXR_CHECK`. Many OpenXR functions return an `XrResult`. This macro will check if the call has failed and logs a message to `std::cerr`. This can be modified to suit your needs. There are two additional functions `GetXRErrorString()` and `OpenXRDebugBreak()`, which are used to convert the `XrResult` to a string and as a breakpoint function respectively.
+This header also defines the macro `OPENXR_CHECK`. Many OpenXR functions return an `XrResult`. This macro will check if the call has failed and will log a message to `std::cerr`. This can be modified to suit your needs. There are two additional functions `GetXRErrorString()` and `OpenXRDebugBreak()`, which are used to convert the `XrResult` to a string and as a breakpoint function respectively.
 
 1.4.3 Main.cpp and the OpenXRTutorial Class
 ===========================================
@@ -682,7 +682,7 @@ Next, we add the `GraphicsAPI_....h` header to include the `GraphicsAPI` code of
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_Vulkan
 		:end-before: XR_DOCS_TAG_END_include_GraphicsAPI_Vulkan
 
-You can also include `OpenXRDebugUtils.h` to help with set up of `XrDebugUtilsMessengerEXT`.
+You can also include `OpenXRDebugUtils.h` to help with the set-up of `XrDebugUtilsMessengerEXT`.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -729,7 +729,7 @@ chosen platform. We first create a 'pseudo-main function' called `OpenXRTutorial
 	:start-at: void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 	:end-at: }
 
-Then, we create the actual platform specific main function (our entry point to the application), which will call `OpenXRTutorial_Main()` with our `GraphicsAPI_Type` parameter. This must be changed to match on your chosen graphics API, one of: `D3D11`, `D3D12`, `OPENGL`, `OPENGL_ES`, or `VULKAN`.
+Then, we create the actual platform-specific main function (our entry point to the application), which will call `OpenXRTutorial_Main()` with our `GraphicsAPI_Type` parameter. This must be changed to match on your chosen graphics API, one of: `D3D11`, `D3D12`, `OPENGL`, `OPENGL_ES`, or `VULKAN`.
 
 .. container:: windows linux
 
@@ -807,7 +807,7 @@ Then, we create the actual platform specific main function (our entry point to t
 
 .. container:: windows
 
-	In the *workspace* directory, create a `build/` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original `CMakeLists.txt` is located. Point the "Where to build the binaries" box to a subdirectory called `build`, that we have just created. Click "Configure" and "OK" to accept the default Generator, then click "Generate" to create the Visual Studio solution and project. Finally click "Open Project" to open that solution with Visual Studio.
+	In the *workspace* directory, create a `build/` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original `CMakeLists.txt` is located. Point the "Where to build the binaries" box to a subdirectory called `build`, that we have just created. Click "Configure" and "OK" to accept the default Generator, then click "Generate" to create the Visual Studio solution and project. Finally, click "Open Project" to open that solution with Visual Studio.
 
 	You can now build and run your program. It should compile and link with no errors or warnings, but it won't run correctly yet.
 
@@ -862,4 +862,4 @@ Then, we create the actual platform specific main function (our entry point to t
 1.5 Summary
 ***********
 
-In this chapter, you learned about the fundamental concepts of OpenXR, and created a project you will use to build your OpenXR application. Now that we have this basic application up and running, we will start to set up OpenXR.
+In this chapter, you learned about the fundamental concepts of OpenXR and created a project you will use to build your OpenXR application. Now that we have this basic application up and running, we will start to set up OpenXR.
