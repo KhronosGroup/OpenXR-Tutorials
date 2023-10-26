@@ -395,7 +395,6 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 
 .. code-block:: cpp
 	:emphasize-lines: 21-27, 68-70, 92, 96
-	:linenos:
 
 	class OpenXRTutorial {
 	public:
