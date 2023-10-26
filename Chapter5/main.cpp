@@ -825,6 +825,8 @@ private:
                     (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
                     (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0) {
                     m_handPose[i] = spaceLocation.pose;
+                } else {
+                    m_handPoseState[i].isActive = false;
                 }
             }
         }
@@ -1492,7 +1494,10 @@ private:
     XrSpace m_handPoseSpace[2];
     XrActionStatePose m_handPoseState[2] = {{XR_TYPE_ACTION_STATE_POSE}, {XR_TYPE_ACTION_STATE_POSE}};
     // The current poses obtained from the XrSpaces.
-    XrPosef m_handPose[2];
+    XrPosef m_handPose[2]={
+        { {1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -m_viewHeightM}},
+        { {1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -m_viewHeightM}}
+    };
     // XR_DOCS_TAG_END_Actions
     // XR_DOCS_TAG_BEGIN_HandTracking
     // The hand tracking properties, namely, is it supported?
