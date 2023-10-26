@@ -32,8 +32,7 @@ The full source code for this tutorial can also be downloaded from `here <https:
 * In Setup, we show how to initialize OpenXR and connect your program to your XR device.
 * In Graphics, we setup the swapchains and render graphics to the views.
 * In Actions, we use OpenXR's action system to bind input to application specific actions allowing the user to interactivity.
-* In Extension, we demonstrate various extension that you may find helpful.
-* In Next Step, we discuss briefly other aspects of OpenXR and related topics to act as a jumping off point to further explore the world of XR development.
+* In Extensions, we demonstrate various extension that you may find helpful.
 
 .. toctree::
 	:maxdepth: 5
@@ -44,4 +43,3 @@ The full source code for this tutorial can also be downloaded from `here <https:
 	3-graphics
 	4-actions
 	5-extensions
-	6-next-steps
