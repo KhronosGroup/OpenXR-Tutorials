@@ -530,7 +530,7 @@ private:
                     m_sessionRunning = false;
                     m_applicationRunning = false;
                 }
-                // Store state for reference across the appplication.
+                // Store state for reference across the application.
                 m_sessionState = sessionStateChanged->state;
                 break;
             }
