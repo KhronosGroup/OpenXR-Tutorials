@@ -28,7 +28,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, nav, sectio
 }
 
 section{
-  scroll-margin-top: 12px;
+  scroll-margin-top: 140px;
 }
 
 .sidebartitle
@@ -6277,7 +6277,7 @@ html
 {
     padding: 0 0 1.618em 0;
     height: 100%;
-	margin: 120px 20px 20px 40px;
+	margin: 20px 20px 20px 40px;
     z-index:-1;
     
     top:140px;
@@ -6443,6 +6443,7 @@ footer p
 
     .wy-nav-content
     {
+        margin: 0;
         background: #fcfcfc
     }
 }
