@@ -1157,7 +1157,7 @@ private:
 
     bool RenderLayer(RenderLayerInfo& renderLayerInfo) {
         // XR_DOCS_TAG_BEGIN_RenderLayer1
-        // Locate the views from the view configuration with in the (reference) space at the display time.
+        // Locate the views from the view configuration within the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
 
         XrViewState viewState{XR_TYPE_VIEW_STATE};  // Will contain information on whether the position and/or orientation is valid and/or tracked.
