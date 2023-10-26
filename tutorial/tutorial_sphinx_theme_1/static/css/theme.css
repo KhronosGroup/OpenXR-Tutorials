@@ -6275,7 +6275,7 @@ html
 
 .wy-nav-content
 {
-    padding: 0 0 1.618em 0;
+    padding: 12px 12px 6px 6px;
     height: 100%;
 	margin: 20px 20px 20px 40px;
     z-index:-1;
@@ -6443,7 +6443,7 @@ footer p
 
     .wy-nav-content
     {
-        margin: 0;
+        margin: 10px;
         background: #fcfcfc
     }
 }
