@@ -22,7 +22,7 @@
 
 	Vulkan supports rendering to both eye views with multiview, which simplifies the rendering code. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
 
-Multiview or View Instancing can be used for stereo rendering by creating one ``XrSwapchain`` that contains 2D array images. This is done by setting the ``XrSwapchainCreateInfo::arraySize`` to ``2``; similarly we also create image views that encompasses the two subresources - one layer per eye view.
+Multiview or View Instancing can be used for stereo rendering by creating one ``XrSwapchain`` that contains 2D array images. This is done by setting the ``XrSwapchainCreateInfo::arraySize`` to ``2``; similarly, we also create image views that encompass the two subresources - one layer per eye view.
 
 Remember also to update any uniform/constant buffer data types to support multiple view matrics via the use of arrays. Update any changes to shaders, shader paths and set the ``PipelineCreateInfo::viewMask`` member to ``0b11`` for two views. (Only found in Chapter6_1_Multiview).
 
@@ -61,7 +61,7 @@ Remember also to update any uniform/constant buffer data types to support multip
 
 	// Similar for depth image views
 
-When setting up the rendering code in ``RenderLayer()``, there's no need to repeat rendering code per eye view; instead we call ``xrAcquireSwapchainImage()`` and ``xrWaitSwapchainImage()`` for both the color and depth swapchains to get the next 2D array image from them. We are still required to submit an ``XrCompositionLayerProjectionView`` structure for each view in the system, but in the ``XrSwapchainSubImage`` we can set the ``imageArrayIndex`` to specify which layer of the swapchain image we wish to associate with that view. So in the case of stereo rendering, it would be ``0`` for left and ``1`` for right eye views. We attach our 2D array image as an render target/color attachment for the pixel/fragment shader to write to.
+When setting up the rendering code in ``RenderLayer()``, there's no need to repeat the rendering code per eye view; instead, we call ``xrAcquireSwapchainImage()`` and ``xrWaitSwapchainImage()`` for both the color and depth swapchains to get the next 2D array image from them. We are still required to submit an ``XrCompositionLayerProjectionView`` structure for each view in the system, but in the ``XrSwapchainSubImage`` we can set the ``imageArrayIndex`` to specify which layer of the swapchain image we wish to associate with that view. So in the case of stereo rendering, it would be ``0`` for left and ``1`` for right eye views. We attach our 2D array image as a render target/color attachment for the pixel/fragment shader to write to.
 
 .. code-block:: cpp
 	:emphasize-lines: 6-13, 21-33, 47
@@ -188,7 +188,7 @@ Shaders and Pipelines will need to be modified to support multiview rendering.
 
 	First, add the ``VK_KHR_MULTIVIEW_EXTENSION_NAME`` or ``"VK_KHR_multiview"`` string to the device extensions list when creating the ``VkDevice``.
 
-	At pipeline creation, chain via the next pointer a ``VkRenderPassMultiviewCreateInfo`` structure to the ``VkRenderPassCreateInfo`` structure when creating the ``VkRenderPass``. Note that there is similar functionality for ``VK_KHR_dynamic_rendering``. The viewMask specifies the number of views the rasterizer a will broadcast to.
+	At pipeline creation, chain via the next pointer a ``VkRenderPassMultiviewCreateInfo`` structure to the ``VkRenderPassCreateInfo`` structure when creating the ``VkRenderPass``. Note that there is similar functionality for ``VK_KHR_dynamic_rendering``. The viewMask specifies the number of views the rasterizer will broadcast to.
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Common/GraphicsAPI_Vulkan.cpp
 		:language: cpp
@@ -209,9 +209,9 @@ Shaders and Pipelines will need to be modified to support multiview rendering.
 
 Note: ``GraphicsAPI`` is by no means production-ready code or reflective of good practice with specific APIs. It is there solely to provide working samples in this tutorial, and demonstrate some basic rendering and interaction with OpenXR.
 
-This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The derived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and graphics API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. In the first code block, there's also reference to ``XR_TUTORIAL_USE_...`` which we set up the ``CMakeLists.txt`` . This tutorial demonstrates all five graphics APIs.
+This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. The derived class is based on your graphics API selection. Include both the header and cpp files for both ``GraphicsAPI`` and ``GraphicsAPI...``. ``GraphicsAPI.h`` includes the headers and macros needed to set up your platform and graphics API. Below are code snippets that show how to set up the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros for your platform along with any relevant headers. In the first code block, there's also a reference to ``XR_TUTORIAL_USE_...`` which we set up the ``CMakeLists.txt`` . This tutorial demonstrates all five graphics APIs.
 
-The code below is an example of how you might implement the inclusion and definition the relevant graphics API header along with the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros.
+The code below is an example of how you might implement the inclusion and definition of the relevant graphics API header along with the ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros.
 
 .. literalinclude:: ../Common/GraphicsAPI.h
 	:language: cpp
@@ -328,7 +328,7 @@ The code below is an example of how you might implement the inclusion and defini
 	:start-at: // OpenXR Helper
 	:end-at: #include <OpenXRHelper.h>
 
-When setting up the graphics API core obejcts, there are things that we need to know from OpenXR in order to create the objects correctly. These could include the version of the graphics API required, referencing a specific GPU, required instance and/or device extension etc. Below are code examples showing how to setup your graphics for OpenXR.
+When setting up the graphics API core objects, there are things that we need to know from OpenXR in order to create the objects correctly. These could include the version of the graphics API required, referencing a specific GPU, required instance and/or device extension etc. Below are code examples showing how to set up your graphics for OpenXR.
 
 .. container:: d3d11
 
@@ -388,7 +388,7 @@ When setting up the graphics API core obejcts, there are things that we need to 
 The OpenXR loader has a layer system that allows OpenXR API calls to pass through a number of optional layers, that add some functionality for the application. These are extremely useful for debugging.
 
 The OpenXR SDK provides two API layers for us to use:
-In the table below are the layer names and thier associated libraries and json files.
+In the table below are the layer names and their associated libraries and .json files.
 
 +------------------------------------+-----------------------------------------------+-------------------------------------+
 | XR_APILAYER_LUNARG_api_dump        | ``XrApiLayer_api_dump.dll`` or ``.so``        | ``XrApiLayer_api_dump.json``        |
