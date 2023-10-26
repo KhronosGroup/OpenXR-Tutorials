@@ -565,7 +565,7 @@ Below is a table describing the nine ``XrSessionState`` s:
 
 (*) Applications may wish to re-create objects like ``XrSystemId`` and ``XrSession`` if hardware changes are detected.
 
-Developers should also be aware of the lifecycle of an ``XrSession``. Certain ``XrSessionState``s can only lead to certain others under the correct circumstances. Below is a diagram showing the lifecycle of an ``XrSession`` within an OpenXR application.
+Developers should also be aware of the lifecycle of an ``XrSession``. Certain ``XrSessionState`` s can only lead to certain others under the correct circumstances. Below is a diagram showing the lifecycle of an ``XrSession`` within an OpenXR application.
 
 .. figure:: openxr-session-life-cycle.svg
 	:alt: OpenXR Session Life-Cycle
