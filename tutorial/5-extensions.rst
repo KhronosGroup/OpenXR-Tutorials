@@ -18,6 +18,7 @@ Many XR devices now support hand-tracking. Instead of a motion-tracked controlle
 
 		<uses-permission android:name="com.oculus.permission.HAND_TRACKING" />
 		<uses-feature android:name="oculus.software.handtracking" android:required="false" />
+		<uses-feature android:name="wave.feature.handtracking" android:required="false" />
 
 	Add this line to the <application> block:
 	
@@ -67,7 +68,18 @@ At the end of your OpenXRTutorial application class, declare the following:
 	:end-before: XR_DOCS_TAG_END_HandTracking
 	:dedent: 4
 
-`Hand` is a simple struct to encapsulate the XrHandTrackerEXT object for each hand, and the joint location structures that we'll update to track hand motion. Now, in Run(), after the call to AttachActionSet(), add:
+`Hand` is a simple struct to encapsulate the XrHandTrackerEXT object for each hand, and the joint location structures that we'll update to track hand motion.
+
+We want to query the system properties for hand tracking support. In the function ``GetSystemID()``, before the call to ``xrGetSystemProperties``, insert this:
+
+.. literalinclude:: ../Chapter5/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_SystemHandTrackingProperties
+	:end-before: XR_DOCS_TAG_END_SystemHandTrackingProperties
+	:dedent: 4
+
+
+Now, in Run(), after the call to AttachActionSet(), add:
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
@@ -91,7 +103,7 @@ The XrHandTrackerEXT object is a session-lifetime object, so in DestroySession()
 	:end-before: XR_DOCS_TAG_END_DestroyHandTracker
 	:dedent: 8
 
-Hands should be polled once per frame. At the end of PollActions(), we'll poll each hand. We'll assume to begin with that the user isn't holding the controller, so we'll use the XR_HAND_JOINTS_MOTION_RANGE_UNOBSTRUCTED_EXT motion range.
+Hands should be polled once per frame. At the end of PollActions(), we'll poll each hand. We'll assume to begin with that the user isn't holding the controller, so we'll use the motion range ``XR_HAND_JOINTS_MOTION_RANGE_UNOBSTRUCTED_EXT``.
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
@@ -121,15 +133,15 @@ Run the app: you'll now see both hands, rendered as blocks.
 5.2 Composition Layer Depth
 ***************************
 
-Composition Layer Depth is truly important for AR use cases as it allows applications to submit to the runtime a depth image that can be used in the accurate compostion of rendered graphics with in the real world. Without a submitted depth image, runtimes would be unable to composite rendered objects that are occluded by real world objects e.g. a rendering a cube partially occluded by a door frame.
+Composition Layer Depth is important for AR use cases as it allows applications to submit to the runtime a depth image that can be used in the accurate composition of rendered graphics with in the real world. Without a submitted depth image, runtimes would be unable to composite rendered objects that are occluded by real world objects e.g. a rendering a cube partially occluded by a door frame.
 
 This functionality is provided to OpenXR via the use of the XR_KHR_composition_layer_depth extension (`OpenXR Specification 12.8. XR_KHR_composition_layer_depth <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_depth>`_). The extension allows depth images from a swapchain to be submitted alongside the color images. This extension works in conjunction with projection layer type. 
 
-The ``XrCompositionLayerProjection`` structure contains a pointer an array of ``XrCompositionLayerProjectionView`` structures. Each of these structures refer to a single view in the XR system and a single image subresource from a swapchain. To submit a depth image, we employ the use of a ``XrCompositionLayerDepthInfoKHR`` structure. Like with ``XrCompositionLayerProjectionView``, ``XrCompositionLayerDepthInfoKHR`` refers to a single view in the XR system and a single image subresource from a swapchain. These structures are 'chained' together via the use of the ``const void* next`` member in ``XrCompositionLayerProjectionView``. We assigned the memory address of  a ``XrCompositionLayerDepthInfoKHR`` structure that we want to chain together. The runtime time will read the ``next`` pointer and associate the structure and ultimately the color and depth images togehter for compositing. This is same style of extensiblity used in the Vulkan API.
+The ``XrCompositionLayerProjection`` structure contains a pointer an array of ``XrCompositionLayerProjectionView`` structures. Each of these structures refer to a single view in the XR system and a single image subresource from a swapchain. To submit a depth image, we employ the use of a ``XrCompositionLayerDepthInfoKHR`` structure. Like with ``XrCompositionLayerProjectionView``, ``XrCompositionLayerDepthInfoKHR`` refers to a single view in the XR system and a single image subresource from a swapchain. These structures are 'chained' together via the use of the ``const void* next`` member in ``XrCompositionLayerProjectionView``. We assigned the memory address of  a ``XrCompositionLayerDepthInfoKHR`` structure that we want to chain together. The runtime time will read the ``next`` pointer and associate the structure and ultimately the color and depth images togehter for compositing.
 
 One thing is now very clear to the programmer - we need a depth swapchain! Seldom used in windowed graphics, but required here to allow smooth rendering of the depth image and not lock either runtime or application waiting on a single depth image to be passed back and forth between the two. In most windowed graphics application, the depth image is discarded at the end of the frame and doesn't interact with the windowing system at all.
 
-When creating a depth swapchain, we must check that the system supports a depth format for swapchain creation. You can check this with ``xrEnumerateSwapchainImages()``. Unfortunately, there are no guarantees with in the OpenXR 1.0 core specification or the XR_KHR_composition_layer_depth extension revision 6 that runtimes must support depth format for swapchains.
+When creating a depth swapchain, we must check that the system supports a depth format for swapchain creation. You can check this with ``xrEnumerateSwapchainImages()``. Unfortunately, there are no guarantees within the OpenXR 1.0 core specification or the XR_KHR_composition_layer_depth extension revision 6 that runtimes must support depth format for swapchains.
 
 To implement this in the Chapter 5 code, we first add the following memeber to the ``RenderLayerInfo`` structure:
 
@@ -172,3 +184,10 @@ After we have filled out the ``XrCompositionLayerProjectionView`` structure, we 
 	:start-after: XR_DOCS_TAG_BEGIN_SetupLeyerDepthInfos
 	:end-before: XR_DOCS_TAG_END_SetupLeyerDepthInfos
 	:dedent: 8
+
+	
+***********
+5.3 Summary
+***********
+
+In this chapter, you have learned how to extend the core OpenXR functionality with extensions. You've used the API to query the runtime for extension support, and obtained extension function pointers for use in your app.

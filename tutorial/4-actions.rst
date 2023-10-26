@@ -49,7 +49,7 @@ In this chapter, you'll learn how to create an Action Set containing multiple Ac
 
 An OpenXR application has interactions with the user which can be user input to the application, or haptic output to the user. In this chapter, we will create some interactions and show how this system works. The interaction system uses three core concepts: Spaces, Actions, and Bindings.
 
-At the end of your application class, add this code:
+At the end of your ``OpenXRTutorial`` class, add this code:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -307,8 +307,16 @@ Finally in this function, we'll add the haptic buzz behaviour, which has variabl
 	:start-after: XR_DOCS_TAG_BEGIN_PollActions4
 	:end-before: XR_DOCS_TAG_END_PollActions4
 	:dedent: 4
+	
+Now we've completed polling all the actions in the application. Let's introduce something to interact with. After your declaration of ``m_pipeline`` and before ``XrActionSet m_actionSet``, we will declare some interactable 3D blocks. Add:
 
-Now we've completed polling all the actions in the application. We will add two more functions to enable some interaction between the user and the 3D blocks:    
+.. literalinclude:: ../Chapter4/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_Objects
+	:end-before: XR_DOCS_TAG_END_Objects
+	:dedent: 4
+
+ We will add two more functions after the definition of ``PollActions`` to enable some interaction between the user and the 3D blocks:    
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -329,14 +337,6 @@ Add this after ``#include <xr_linear_algebra.h>``:
 	:start-after: XR_DOCS_TAG_BEGIN_include_algorithm_random
 	:end-before: XR_DOCS_TAG_END_include_algorithm_random
 	:dedent: 0
-
-After your declaration of ``m_pipeline`` and before ``XrActionSet m_actionSet``, we will declare some interactable 3D blocks. Add:
-
-.. literalinclude:: ../Chapter4/main.cpp
-	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_Objects
-	:end-before: XR_DOCS_TAG_END_Objects
-	:dedent: 4
 	
 Inside our ``CreateResources()`` method, locate where set the variable ``numberOfCuboids`` and update it as follows:
 
@@ -346,7 +346,7 @@ Inside our ``CreateResources()`` method, locate where set the variable ``numberO
 	:end-before: XR_DOCS_TAG_END_Update_numberOfCuboids
 	:dedent: 8
 
-We will render 64 interactable cubes, 2 cuboids representing the controllers and a further 2 for the floor and table from the previous chapter. After the call to create the graphics pipeline object, add the following coded that sets up the orientation, position and color of each interactable cube.
+We will render 64 interactable cubes, two cuboids representing the controllers and a further two for the floor and table from the previous chapter. After the call to ``m_graphicsAPI->CreatePipeline()``, add the following code that m_vertexBuffersets up the orientation, position and color of each interactable cube.
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -354,7 +354,7 @@ We will render 64 interactable cubes, 2 cuboids representing the controllers and
 	:end-before: XR_DOCS_TAG_END_Setup_Blocks
 	:dedent: 8
 
-Recall that we've already inserted a call to ``PollActions()`` in the function ``RenderFrame()``, so we're ready to render the controller position and input values. In ``RenderLayer()`` method, after we render the floor and table, render the controller positions and interactable cubes, add the following code:
+Recall that we've already inserted a call to ``PollActions()`` in the function ``RenderFrame()``, so we're ready to render the controller position and input values. In the ``RenderLayer()`` method, after we render the floor and table,(i.e. just before ``m_graphicsAPI->EndRendering()``) render the controller positions and interactable cubes, add the following code:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -368,20 +368,16 @@ Now build and run your application. You should see something like this:
 4.6 Checking for Connected Controllers
 **************************************
 
-Look again now at the function PollActions().
-
-We specify which action to look at with the ``XrActionStateGetInfo`` struct. Then we use a type-specific call. For our boolean Grab Action, we call ``xrGetActionStateBoolean()`` to retrieve an ``XrActionStateBoolean`` struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the specified button on the controller.
+Look again now at the function PollActions(). We specify which action to look at with the ``XrActionStateGetInfo`` struct. Then we use a type-specific call. For our boolean Grab Action, we call ``xrGetActionStateBoolean()`` to retrieve an ``XrActionStateBoolean`` struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the specified button on the controller.
 However, the struct ``XrActionStateBoolean`` also has a member called ``isActive``, which is true if the state of the action is actually being read. If it's false, the value of ``currentState`` is irrelevant - the polling failed. 
 
 Similarly, ``XrActionStateFloat`` has a floating-point ``currentState`` value, which is valid if ``isActive`` is true. The struct has ``changedSinceLastSync``, which is true if the value changed between the previous and current calls to xrSync(). And it has ``lastChangeTime``, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
 
-Careful use of this polling metadata will help you to create applications that are responsive and intuitive to use. Bear in mind as well that multiple physical controls could be bound to the same action, and the user could be using more than one controller at once. See the OpenXR spec for more details:
-
-https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#multiple_inputs
+Careful use of this polling metadata will help you to create applications that are responsive and intuitive to use. Bear in mind as well that multiple physical controls could be bound to the same action, and the user could be using more than one controller at once. See the `OpenXR spec <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#multiple_inputs>`_. for more details.
 
 ***********
 4.7 Summary
 ***********
 
-In this chapter, you have learned about Actions, Controller Profiles, Bindings.
+In this chapter, you have learned about Actions, Controller Profiles, Bindings. You've learned the principles and best practices of the action systm: how to specify bindings, and when to use different binding profiles. And you've created interactions for your app that demonstrate these principles in practice.
 

@@ -23,16 +23,13 @@ many had analogue controls like triggers or joysticks; many had haptic feedback.
 	OpenXR provides a common interface to reduce XR fragmentation.
 
 OpenXR aims to solve this problem by providing a common API to address XR hardware, in reading its inputs
-and outputting to its displays and haptic systems. Just as OpenGL and Vulkan provide a common API to access graphics hardware, so OpenXR
-allows you to write code that works with multiple XR platforms, with minimal adaptation.
-
+and outputting to its displays and haptic systems. Just as OpenGL and Vulkan provide a common API to access graphics hardware, so OpenXR allows you to write code that works with multiple XR platforms, with minimal adaptation.
 
 ************
 1.2 Overview
 ************
 
 We'll start with the main concepts you'll need to be familiar with around OpenXR.
-
 
 .. list-table:: OpenXR Concepts
 	:widths: 1 5
@@ -55,8 +52,15 @@ We'll start with the main concepts you'll need to be familiar with around OpenXR
 	  - The Instance is an object that allows your app to communicate with a Runtime. You'll ask OpenXR to create an Instance when initializing XR support in your app.
 	* - Graphics
 	  - OpenXR usually needs to connect to a graphics API, in order to permit rendering of headset views for example. Which Graphics API's are supported depends on the Runtime.
-	* - Input
-	  - The OpenXR Input System allows apps to query what inputs are available. These can then be bound to Actions or Poses, so the app knows what the user is doing.
+	* - Input/Output
+	  - OpenXR allows apps to query what inputs and outputs are available. These can then be bound to Actions, so the app knows what the user is doing.
+	* - Action
+	  - A semantically-defined input or output for the app, which can be bound to different hardware inputs or outputs using Bindings.
+	* - Binding
+	  - A mapping from hardware/Runtime-defined inputs and outputs to semantic Actions.
+	* - Pose
+	  - A position and orientation in 3D space.
+
 
 OpenXR provides a clear and precise common language for developers and hardware vendors to use.
 

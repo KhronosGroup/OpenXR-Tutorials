@@ -100,7 +100,7 @@ public:
         // XR_DOCS_TAG_BEGIN_CallCreateHandTracker
         if (handTrackingSystemProperties.supportsHandTracking)
             CreateHandTrackers();
-            // XR_DOCS_TAG_END_CallCreateHandTracker
+        // XR_DOCS_TAG_END_CallCreateHandTracker
 
 #if XR_DOCS_CHAPTER_VERSION >= XR_DOCS_CHAPTER_3_2
         CreateReferenceSpace();
@@ -538,8 +538,8 @@ private:
         // XR_DOCS_TAG_BEGIN_DestroyHandTracker
         for (int i = 0; i < 2; i++) {
             if (xrDestroyHandTrackerEXT) {
-            xrDestroyHandTrackerEXT(m_hands[i].m_handTracker);
-        }
+                xrDestroyHandTrackerEXT(m_hands[i].m_handTracker);
+            }
         }
         // XR_DOCS_TAG_END_DestroyHandTracker
         // XR_DOCS_TAG_BEGIN_DestroySession
@@ -1274,15 +1274,15 @@ private:
 
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid2
             // Draw some blocks at the controller positions:
-            for (int i = 0; i < 2; i++) {
-                if (m_handPoseState[i].isActive) {
-                    RenderCuboid(m_handPose[i], {0.02f, 0.04f, 0.10f}, {1.f, 1.f, 1.f});
+            for (int j = 0; j < 2; j++) {
+                if (m_handPoseState[j].isActive) {
+                    RenderCuboid(m_handPose[j], {0.02f, 0.04f, 0.10f}, {1.f, 1.f, 1.f});
                 }
             }
-            for (int i = 0; i < blocks.size(); i++) {
-                auto &thisBlock = blocks[i];
+            for (int j = 0; j < blocks.size(); j++) {
+                auto &thisBlock = blocks[j];
                 XrVector3f sc = thisBlock.scale;
-                if (i == nearBlock[0] || i == nearBlock[1])
+                if (j == nearBlock[0] || j == nearBlock[1])
                     sc = thisBlock.scale * 1.05f;
                 RenderCuboid(thisBlock.pose, sc, thisBlock.color);
             }
@@ -1290,13 +1290,13 @@ private:
 
             // XR_DOCS_TAG_BEGIN_RenderHands
             if (handTrackingSystemProperties.supportsHandTracking)
-                for (int i = 0; i < 2; i++) {
-                    auto hand = m_hands[i];
+                for (int j = 0; j < 2; j++) {
+                    auto hand = m_hands[j];
                     XrVector3f hand_color = {1.f, 1.f, 0.f};
-                    for (int j = 0; j < XR_HAND_JOINT_COUNT_EXT; j++) {
+                    for (int k= 0; k< XR_HAND_JOINT_COUNT_EXT; k++) {
                         XrVector3f sc = {1.5f, 1.5f, 2.5f};
-                        sc = sc * hand.m_jointLocations[j].radius;
-                        RenderCuboid(hand.m_jointLocations[j].pose, sc, hand_color);
+                        sc = sc * hand.m_jointLocations[k].radius;
+                        RenderCuboid(hand.m_jointLocations[k].pose, sc, hand_color);
                     }
                 }
             // XR_DOCS_TAG_END_RenderHands
@@ -1477,21 +1477,23 @@ private:
     // The realtime states of these actions.
     XrActionStateFloat m_grabState[2] = {{XR_TYPE_ACTION_STATE_FLOAT}, {XR_TYPE_ACTION_STATE_FLOAT}};
     XrActionStateBoolean m_changeColorState[2] = {{XR_TYPE_ACTION_STATE_BOOLEAN}, {XR_TYPE_ACTION_STATE_BOOLEAN}};
-    // The action haptic vibration of the right controller.
+    // The haptic output action for grabbing cubes.
     XrAction m_buzzAction;
     float buzz[2] = {0, 0};
     // The action for getting the hand or controller position and orientation.
     XrAction m_palmPoseAction;
     // The XrPaths for left and right hand hands or controllers.
     XrPath m_handPaths[2] = {0, 0};
-    // The space that represents the two hand poses.
+    // The spaces that represents the two hand poses.
     XrSpace m_handPoseSpace[2];
     XrActionStatePose m_handPoseState[2] = {{XR_TYPE_ACTION_STATE_POSE}, {XR_TYPE_ACTION_STATE_POSE}};
-    // The current poses obtained from the XrSpace.
+    // The current poses obtained from the XrSpaces.
     XrPosef m_handPose[2];
     // XR_DOCS_TAG_END_Actions
     // XR_DOCS_TAG_BEGIN_HandTracking
+    // The hand tracking properties, namely, is it supported?
     XrSystemHandTrackingPropertiesEXT handTrackingSystemProperties = {XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT};
+    // Each tracked hand has a live list of joint locations.
     struct Hand {
         XrHandJointLocationEXT m_jointLocations[XR_HAND_JOINT_COUNT_EXT];
         XrHandTrackerEXT m_handTracker = 0;

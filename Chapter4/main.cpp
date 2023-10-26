@@ -347,24 +347,26 @@ private:
         // XR_DOCS_TAG_BEGIN_SuggestBindings2
         bool any_ok = false;
         // Each Action here has two paths, one for each SubAction path.
-        any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller", {{m_changeColorAction, CreateXrPath("/user/hand/left/input/select/click")},
-                                                                                  {m_grabCubeAction, CreateXrPath("/user/hand/right/input/select/click")},
-                                                                                  {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
-                                                                                  {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
-                                                                                  {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
-                                                                                  {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
+        any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller",{
+                                    {m_changeColorAction, CreateXrPath("/user/hand/left/input/select/click")},
+                                    {m_grabCubeAction, CreateXrPath("/user/hand/right/input/select/click")},
+                                    {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
+                                    {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
+                                    {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
+                                    {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
         // XR_DOCS_TAG_END_SuggestBindings2
         // XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
         // Each Action here has two paths, one for each SubAction path.
-        any_ok |= SuggestBindings("/interaction_profiles/oculus/touch_controller", {{m_grabCubeAction, CreateXrPath("/user/hand/left/input/squeeze/value")},
-                                                                                    {m_grabCubeAction, CreateXrPath("/user/hand/right/input/squeeze/value")},
-                                                                                    {m_spawnCubeAction, CreateXrPath("/user/hand/right/input/a/click")},
-                                                                                    {m_changeColorAction, CreateXrPath("/user/hand/left/input/trigger/value")},
-                                                                                    {m_changeColorAction, CreateXrPath("/user/hand/right/input/trigger/value")},
-                                                                                    {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
-                                                                                    {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
-                                                                                    {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
-                                                                                    {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
+        any_ok |= SuggestBindings("/interaction_profiles/oculus/touch_controller", {
+                                    {m_grabCubeAction, CreateXrPath("/user/hand/left/input/squeeze/value")},
+                                    {m_grabCubeAction, CreateXrPath("/user/hand/right/input/squeeze/value")},
+                                    {m_spawnCubeAction, CreateXrPath("/user/hand/right/input/a/click")},
+                                    {m_changeColorAction, CreateXrPath("/user/hand/left/input/trigger/value")},
+                                    {m_changeColorAction, CreateXrPath("/user/hand/right/input/trigger/value")},
+                                    {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
+                                    {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
+                                    {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
+                                    {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
         // XR_DOCS_TAG_END_SuggestTouchNativeBindings
         // XR_DOCS_TAG_BEGIN_SuggestBindings3
         if (!any_ok) {
@@ -631,18 +633,23 @@ private:
         // XR_DOCS_TAG_END_CreateResources3
         
         // XR_DOCS_TAG_BEGIN_Setup_Blocks
+        // Create sixty-four cubic blocks, 20cm wide, evenly distributed,
+        // and randomly colored.
         float scale = 0.2f;
-        XrVector3f centre = {0, -0.2f, -0.7f};
+        // Center the blocks a little way from the origin.
+        XrVector3f center = {0, -0.2f, -0.7f};
         for (int i = 0; i < 4; i++) {
-            float x = scale * (float(i) - 1.5f) + centre.x;
+            float x = scale * (float(i) - 1.5f) + center.x;
             for (int j = 0; j < 4; j++) {
-                float y = scale * (float(j) - 1.5f) + centre.y;
+                float y = scale * (float(j) - 1.5f) + center.y;
                 for (int k = 0; k < 4; k++) {
                     float angleRad = 0;
-                    float z = scale * (float(k) - 1.5f) + centre.z;
+                    float z = scale * (float(k) - 1.5f) + center.z;
+                    // No rotation
                     XrQuaternionf q= {0, 0,0,1.f};
+                    // A random color.
                     XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
-                    blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, color});
+                    m_blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, color});
                 }
             }
         }
@@ -792,11 +799,11 @@ private:
     // XR_DOCS_TAG_END_PollActions3
     // XR_DOCS_TAG_BEGIN_PollActions4
         for (int i = 0; i < 2; i++) {
-            buzz[i] *= 0.5f;
-            if (buzz[i] < 0.01f)
-                buzz[i] = 0.0f;
+            m_buzz[i] *= 0.5f;
+            if (m_buzz[i] < 0.01f)
+                m_buzz[i] = 0.0f;
             XrHapticVibration vibration{XR_TYPE_HAPTIC_VIBRATION};
-            vibration.amplitude = buzz[i];
+            vibration.amplitude = m_buzz[i];
             vibration.duration = XR_MIN_HAPTIC_DURATION;
             vibration.frequency = XR_FREQUENCY_UNSPECIFIED;
 
@@ -824,30 +831,30 @@ private:
         for (int i = 0; i < 2; i++) {
             float nearest = 1.0f;
             // If not currently holding a block:
-            if (grabbedBlock[i] == -1) {
-                nearBlock[i] = -1;
+            if (m_grabbedBlock[i] == -1) {
+                m_nearBlock[i] = -1;
                 // Only if the pose was detected this frame:
                 if (m_handPoseState[i].isActive) {
                     // For each block:
-                    for (int j = 0; j < blocks.size(); j++) {
-                        auto block = blocks[j];
+                    for (int j = 0; j < m_blocks.size(); j++) {
+                        auto block = m_blocks[j];
                         // How far is it from the hand to this block?
                         XrVector3f diff = block.pose.position - m_handPose[i].position;
                         float distance = std::max(fabs(diff.x), std::max(fabs(diff.y), fabs(diff.z)));
                         if (distance < 0.05f && distance < nearest) {
-                            nearBlock[i] = j;
+                            m_nearBlock[i] = j;
                             nearest = distance;
                         }
                     }
                 }
-                if (nearBlock[i] != -1)
+                if (m_nearBlock[i] != -1)
                 {
                     if(m_grabState[i].isActive && m_grabState[i].currentState > 0.5f) {
-                        grabbedBlock[i] = nearBlock[i];
-                        buzz[i] = 1.0f;
+                        m_grabbedBlock[i] = m_nearBlock[i];
+                        m_buzz[i] = 1.0f;
                     } 
                     else if (m_changeColorState[i].isActive == XR_TRUE && m_changeColorState[i].currentState == XR_FALSE && m_changeColorState[i].changedSinceLastSync == XR_TRUE) {
-                        auto &thisBlock = blocks[nearBlock[i]];
+                        auto &thisBlock = m_blocks[m_nearBlock[i]];
                         XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                         thisBlock.color = color;
                     }
@@ -855,20 +862,20 @@ private:
                 else
                 {
                     // not near a block? We can spawn one.
-                    if (m_spawnCubeState.isActive == XR_TRUE && m_spawnCubeState.currentState == XR_FALSE && m_spawnCubeState.changedSinceLastSync == XR_TRUE && blocks.size() < MaxBlockCount) {
+                    if (m_spawnCubeState.isActive == XR_TRUE && m_spawnCubeState.currentState == XR_FALSE && m_spawnCubeState.changedSinceLastSync == XR_TRUE && m_blocks.size() < m_maxBlockCount) {
                         XrQuaternionf q = {0, 0, 0, 1.f};
                         XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
-                        blocks.push_back({{q, FixPosition(m_handPose[i].position)}, {0.095f, 0.095f, 0.095f}, color});
+                        m_blocks.push_back({{q, FixPosition(m_handPose[i].position)}, {0.095f, 0.095f, 0.095f}, color});
                     }
                 }
             } else {
-                nearBlock[i] = grabbedBlock[i];
+                m_nearBlock[i] = m_grabbedBlock[i];
                 if (m_handPoseState[i].isActive)
-                    blocks[grabbedBlock[i]].pose.position = m_handPose[i].position;
+                    m_blocks[m_grabbedBlock[i]].pose.position = m_handPose[i].position;
                 if (!m_grabState[i].isActive || m_grabState[i].currentState < 0.5f) {
-                    blocks[grabbedBlock[i]].pose.position = FixPosition(blocks[grabbedBlock[i]].pose.position);
-                    grabbedBlock[i] = -1;
-                    buzz[i] = 0.2f;
+                    m_blocks[m_grabbedBlock[i]].pose.position = FixPosition(m_blocks[m_grabbedBlock[i]].pose.position);
+                    m_grabbedBlock[i] = -1;
+                    m_buzz[i] = 0.2f;
                 }
             }
         }
@@ -1191,16 +1198,16 @@ private:
             // XR_DOCS_TAG_END_CallRenderCuboid
 
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid2
-            // Draw some blocks at the controller positions:
-            for (int i = 0; i < 2; i++) {
-                if (m_handPoseState[i].isActive) {
-                    RenderCuboid(m_handPose[i], {0.02f, 0.04f, 0.10f}, {1.f, 1.f, 1.f});
+            // Draw some m_blocks at the controller positions:
+            for (int j = 0; j < 2; j++) {
+                if (m_handPoseState[j].isActive) {
+                    RenderCuboid(m_handPose[j], {0.02f, 0.04f, 0.10f}, {1.f, 1.f, 1.f});
                 }
             }
-            for (int i = 0; i < blocks.size(); i++) {
-                auto &thisBlock = blocks[i];
+            for (int j = 0; j < m_blocks.size(); j++) {
+                auto &thisBlock = m_blocks[j];
                 XrVector3f sc = thisBlock.scale;
-                if (i == nearBlock[0] || i == nearBlock[1])
+                if (j == m_nearBlock[0] || j == m_nearBlock[1])
                     sc = thisBlock.scale * 1.05f;
                 RenderCuboid(thisBlock.pose, sc, thisBlock.color);
             }
@@ -1356,25 +1363,35 @@ private:
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
 
+    // Vertex and index buffers: geometry for our cuboids.
     void *m_vertexBuffer = nullptr;
     void *m_indexBuffer = nullptr;
+    // Camera values constant buffer for the shaders.
     void *m_uniformBuffer_Camera = nullptr;
+    // The normals are stored in a uniform buffer to simplify our vertex geometry.
     void *m_uniformBuffer_Normals = nullptr;
 
+    // We use only two shaders in this app.
     void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
+
+    // The pipeline is a graphics-API specific state object.
     void *m_pipeline = nullptr;
 
     // XR_DOCS_TAG_BEGIN_Objects
+    // An instance of a 3d colored block.
     struct Block {
         XrPosef pose;
         XrVector3f scale;
         XrVector3f color;
     };
-    std::vector<Block> blocks;
-    // Don't let too many blocks get created.
-    const size_t MaxBlockCount=100;
-    int grabbedBlock[2] = {-1, -1};
-    int nearBlock[2] = {-1, -1};
+    // The list of block instances.
+    std::vector<Block> m_blocks;
+    // Don't let too many m_blocks get created.
+    const size_t m_maxBlockCount=100;
+    // Which block, if any, is being held by each of the user's hands or controllers.
+    int m_grabbedBlock[2] = {-1, -1};
+    // Which block, if any, is nearby to each hand or controller.
+    int m_nearBlock[2] = {-1, -1};
     // XR_DOCS_TAG_END_Objects
 
     // XR_DOCS_TAG_BEGIN_Actions
@@ -1385,17 +1402,18 @@ private:
     XrActionStateFloat m_grabState[2] = {{XR_TYPE_ACTION_STATE_FLOAT}, {XR_TYPE_ACTION_STATE_FLOAT}};
     XrActionStateBoolean m_changeColorState[2] = {{XR_TYPE_ACTION_STATE_BOOLEAN}, {XR_TYPE_ACTION_STATE_BOOLEAN}};
     XrActionStateBoolean m_spawnCubeState = {XR_TYPE_ACTION_STATE_BOOLEAN};
-    // The action haptic vibration of the right controller.
+    // The haptic output action for grabbing cubes.
     XrAction m_buzzAction;
-    float buzz[2] = {0, 0};
+    // The current haptic output value for each controller.
+    float m_buzz[2] = {0, 0};
     // The action for getting the hand or controller position and orientation.
     XrAction m_palmPoseAction;
     // The XrPaths for left and right hand hands or controllers.
     XrPath m_handPaths[2] = {0, 0};
-    // The space that represents the two hand poses.
+    // The spaces that represents the two hand poses.
     XrSpace m_handPoseSpace[2];
     XrActionStatePose m_handPoseState[2] = {{XR_TYPE_ACTION_STATE_POSE}, {XR_TYPE_ACTION_STATE_POSE}};
-    // The current poses obtained from the XrSpace.
+    // The current poses obtained from the XrSpaces.
     XrPosef m_handPose[2];
     // XR_DOCS_TAG_END_Actions
 };

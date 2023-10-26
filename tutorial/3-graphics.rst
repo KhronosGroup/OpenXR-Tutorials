@@ -967,13 +967,15 @@ From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate t
 	:end-before: XR_DOCS_TAG_END_RenderLayer1
 	:dedent: 4
 
+And add the following:
+
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer2
 	:end-before: XR_DOCS_TAG_END_RenderLayer2
 	:dedent: 4
 
-Our first call is to ``xrLocateViews()``, which takes a ``XrViewLocateInfo`` structure and return a ``XrViewState`` structure and an array of ``XrView`` s. This functions tells us where the views are in relation to the reference space, as an ``XrPosef``, as well as the field of view, as an ``XrFovf``, for each view; this information is stored in the ``std::vector<XrView>``. The returned ``XrViewState`` contains a member of type ``XrViewStateFlags``, which descibes whether the position and/or orientation is valid and/or tracked.
+Our first call is to ``xrLocateViews()``, which takes a ``XrViewLocateInfo`` structure and return a ``XrViewState`` structure and an array of ``XrView``s. This functions tells us where the views are in relation to the reference space, as an ``XrPosef``, as well as the field of view, as an ``XrFovf``, for each view; this information is stored in the ``std::vector<XrView>``. The returned ``XrViewState`` contains a member of type ``XrViewStateFlags``, which descibes whether the position and/or orientation is valid and/or tracked.
 
 The ``XrViewLocateInfo`` structure takes a reference space and a display time from our ``RenderLayerInfo``, from which the view poses are calculated, and also takes our ``XrViewConfigurationType`` to locate the correct number of views for the system. If we can't locate the views, we return ``false`` from this method.
 
@@ -1245,7 +1247,7 @@ Inside ``RenderCuboid()``, add the following:
 
 From the passed-in pose and scale, we create the ``model`` matrix, and multiply that with ``CameraConstants::viewProj`` to obtain ``CameraConstants::modelViewProj``, the matrix that transforms the vertices in our unit cube from model space into projection space. We apply our ``pipeline``, which contains the shaders and render states. We update the two uniform buffers, one containing cameraConstants for the vertex shader, the other containing the normals for the cuboid. We assign our vertex and index buffers and draw 36 indices.
 
-Now moving to the ``RenderLayer()`` method and under the section where we clear the color and depth image views, add the following code:
+Now moving to the ``RenderLayer()`` method. Under the call to ``ClearDepth()``, and before the call to ``EndRendering()``:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
