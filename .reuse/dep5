@@ -23,12 +23,16 @@ Files: Chapter5/*
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 
+Files: Chapter6_1_Multiview/*
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
 Files: tutorial/*
 Copyright: 2023 The Khronos Group Inc.
 License: CC-BY-4.0 
 Comment: https://github.com/KhronosGroup/OpenXR-Tutorials/issues/12 (Text)
 
-Files: thirdparty/openxr_loader_manifest_only-1.0.27.aar
+Files: thirdparty/*
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0 
 Comment: https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/LICENSE
@@ -38,6 +42,14 @@ Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 
 Files: .gitignore
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
+Files: build-eoc-archs.bat
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
+Files: build-eoc-archs.sh
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 

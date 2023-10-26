@@ -310,7 +310,7 @@ private:
                     m_sessionRunning = false;
                     m_applicationRunning = false;
                 }
-                // Store state for reference across the appplication.
+                // Store state for reference across the application.
                 m_sessionState = sessionStateChanged->state;
                 break;
             }
@@ -324,7 +324,7 @@ private:
     }
 
 #if defined(__ANDROID__)
-    // XR_DOCS_TAG_BEGIN_Android_System_Functionality
+    // XR_DOCS_TAG_BEGIN_Android_System_Functionality1
 public:
     // Stored pointer to the android_app structure from android_main().
     static android_app *androidApp;
@@ -372,9 +372,11 @@ public:
         }
         }
     }
+    // XR_DOCS_TAG_END_Android_System_Functionality1
 
 private:
     void PollSystemEvents() {
+        // XR_DOCS_TAG_BEGIN_Android_System_Functionality2
         // Checks whether Android has requested that application should by destroyed.
         if (androidApp->destroyRequested != 0) {
             m_applicationRunning = false;
@@ -394,8 +396,8 @@ private:
                 break;
             }
         }
+        // XR_DOCS_TAG_END_Android_System_Functionality2
     }
-    // XR_DOCS_TAG_END_Android_System_Functionality
 #else
     void PollSystemEvents() {
         return;
@@ -435,12 +437,15 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 }
 
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(XR_TUTORIAL_GRAPHICS_API);
+}
+/*
 // XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
 int main(int argc, char **argv) {
     OpenXRTutorial_Main(OPENGL);
 }
 // XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
-/*
 // XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
 int main(int argc, char **argv) {
     OpenXRTutorial_Main(VULKAN);
@@ -489,12 +494,14 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
-// XR_DOCS_TAG_END_android_main___ANDROID__
+    // XR_DOCS_TAG_END_android_main___ANDROID__
+    OpenXRTutorial_Main(XR_TUTORIAL_GRAPHICS_API);
+}
+/*
 // XR_DOCS_TAG_BEGIN_android_main_OPENGL_ES
     OpenXRTutorial_Main(OPENGL_ES);
 }
 // XR_DOCS_TAG_END_android_main_OPENGL_ES
-/*
 // XR_DOCS_TAG_BEGIN_android_main_VULKAN
     OpenXRTutorial_Main(VULKAN);
 }

@@ -448,7 +448,7 @@ private:
         pipelineCI.depthStencilState = {true, true, GraphicsAPI::CompareOp::LESS_OR_EQUAL, false, false, {}, {}, 0.0f, 1.0f};
         pipelineCI.colorBlendState = {false, GraphicsAPI::LogicOp::NO_OP, {{true, GraphicsAPI::BlendFactor::SRC_ALPHA, GraphicsAPI::BlendFactor::ONE_MINUS_SRC_ALPHA, GraphicsAPI::BlendOp::ADD, GraphicsAPI::BlendFactor::ONE, GraphicsAPI::BlendFactor::ZERO, GraphicsAPI::BlendOp::ADD, (GraphicsAPI::ColorComponentBit)15}}, {0.0f, 0.0f, 0.0f, 0.0f}};
         pipelineCI.colorFormats = {m_colorSwapchainInfos[0].swapchainFormat};
-        pipelineCI.depthFormat = m_graphicsAPI->GetDepthFormat();
+        pipelineCI.depthFormat = m_depthSwapchainInfos[0].swapchainFormat;
         pipelineCI.layout = {{0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
                              {1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX},
                              {2, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT}};
@@ -530,7 +530,7 @@ private:
                     m_sessionRunning = false;
                     m_applicationRunning = false;
                 }
-                // Store state for reference across the appplication.
+                // Store state for reference across the application.
                 m_sessionState = sessionStateChanged->state;
                 break;
             }
@@ -681,7 +681,7 @@ private:
             m_graphicsAPI->FreeSwapchainImageData(colorSwapchainInfo.swapchain);
             m_graphicsAPI->FreeSwapchainImageData(depthSwapchainInfo.swapchain);
 
-            // Destory the swapchains.
+            // Destroy the swapchains.
             OPENXR_CHECK(xrDestroySwapchain(colorSwapchainInfo.swapchain), "Failed to destroy Color Swapchain");
             OPENXR_CHECK(xrDestroySwapchain(depthSwapchainInfo.swapchain), "Failed to destroy Depth Swapchain");
         }
@@ -755,7 +755,7 @@ private:
 
     bool RenderLayer(RenderLayerInfo& renderLayerInfo) {
         // XR_DOCS_TAG_BEGIN_RenderLayer1
-        // Locate the views from the view configuration with in the (reference) space at the display time.
+        // Locate the views from the view configuration within the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
 
         XrViewState viewState{XR_TYPE_VIEW_STATE};  // Will contain information on whether the position and/or orientation is valid and/or tracked.
@@ -870,7 +870,7 @@ private:
     }
 
 #if defined(__ANDROID__)
-    // XR_DOCS_TAG_BEGIN_Android_System_Functionality
+    // XR_DOCS_TAG_BEGIN_Android_System_Functionality1
 public:
     // Stored pointer to the android_app structure from android_main().
     static android_app *androidApp;
@@ -918,9 +918,11 @@ public:
         }
         }
     }
+    // XR_DOCS_TAG_END_Android_System_Functionality1
 
 private:
     void PollSystemEvents() {
+        // XR_DOCS_TAG_BEGIN_Android_System_Functionality2
         // Checks whether Android has requested that application should by destroyed.
         if (androidApp->destroyRequested != 0) {
             m_applicationRunning = false;
@@ -940,8 +942,8 @@ private:
                 break;
             }
         }
+        // XR_DOCS_TAG_END_Android_System_Functionality2
     }
-    // XR_DOCS_TAG_END_Android_System_Functionality
 #else
     void PollSystemEvents() {
         return;
@@ -986,15 +988,10 @@ private:
 
     XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
     struct RenderLayerInfo {
-        XrTime predictedDisplayTime;
+        XrTime predictedDisplayTime = 0;
         std::vector<XrCompositionLayerBaseHeader *> layers;
         XrCompositionLayerProjection layerProjection = {XR_TYPE_COMPOSITION_LAYER_PROJECTION};
         std::vector<XrCompositionLayerProjectionView> layerProjectionViews;
-#if XR_DOCS_CHAPTER_VERSION == XR_DOCS_CHAPTER_5_2
-        // XR_DOCS_TAG_BEGIN_RenderLayer_LayerDepthInfos
-        std::vector<XrCompositionLayerDepthInfoKHR> layerDepthInfos;
-        // XR_DOCS_TAG_END_RenderLayer_LayerDepthInfos
-#endif
     };
 
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
@@ -1018,12 +1015,15 @@ void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
 }
 
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(XR_TUTORIAL_GRAPHICS_API);
+}
+/*
 // XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
 int main(int argc, char **argv) {
     OpenXRTutorial_Main(OPENGL);
 }
 // XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
-/*
 // XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
 int main(int argc, char **argv) {
     OpenXRTutorial_Main(VULKAN);
@@ -1072,12 +1072,14 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
-// XR_DOCS_TAG_END_android_main___ANDROID__
+    // XR_DOCS_TAG_END_android_main___ANDROID__
+    OpenXRTutorial_Main(XR_TUTORIAL_GRAPHICS_API);
+}
+/*
 // XR_DOCS_TAG_BEGIN_android_main_OPENGL_ES
     OpenXRTutorial_Main(OPENGL_ES);
 }
 // XR_DOCS_TAG_END_android_main_OPENGL_ES
-/*
 // XR_DOCS_TAG_BEGIN_android_main_VULKAN
     OpenXRTutorial_Main(VULKAN);
 }

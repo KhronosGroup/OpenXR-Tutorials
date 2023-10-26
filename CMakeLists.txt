@@ -9,21 +9,29 @@ project(openxr-tutorial)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 
-option(TUTORIAL_BUILD_DOCUMENTATION "Build the tutorial documentation?" ON)
-option(TUTORIAL_BUILD_PROJECTS "Build the tutorial projects?" ON)
-
 # Optional override runtime
 set(XR_RUNTIME_JSON
     "$ENV{XR_RUNTIME_JSON}"
     CACHE PATH
-        "Optional location of a specific OpenXR runtime configuration file."
+    "Optional location of a specific OpenXR runtime configuration file."
 )
 # XR_DOCS_TAG_END_CMakeLists
-if(TUTORIAL_BUILD_DOCUMENTATION)
+
+option(XR_TUTORIAL_BUILD_DOCUMENTATION "Build the tutorial documentation?" ON)
+option(XR_TUTORIAL_BUILD_PROJECTS "Build the tutorial projects?" ON)
+
+if (XR_TUTORIAL_BUILD_DOCUMENTATION)
     add_subdirectory(tutorial)
+
+    #Build end of chapter archives
+    if (WIN32)
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-eoc-archs.bat" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    elseif(LINUX)
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-eoc-archs.sh" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
 endif()
 
-if(TUTORIAL_BUILD_PROJECTS)
+if (XR_TUTORIAL_BUILD_PROJECTS)
     # XR_DOCS_TAG_BEGIN_AddChapter2
     add_subdirectory(Chapter2)
     # XR_DOCS_TAG_END_AddChapter2
@@ -41,7 +49,7 @@ if(TUTORIAL_BUILD_PROJECTS)
     # XR_DOCS_TAG_END_AddChapter5
 endif()
 
-if(WIN32) # Windows only
+if (WIN32) # Windows only
     add_subdirectory(GraphicsAPI_Test)
 endif()
 

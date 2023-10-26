@@ -7,16 +7,17 @@
 #pragma once
 #ifdef _MSC_VER
 #define NOMINMAX
-#include <windows.h>
 #include <direct.h>
+#include <windows.h>
 #ifndef _MAX_PATH
 #define _MAX_PATH 500
 #endif
+#include <time.h>
+
+#include <cerrno>
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <time.h>
-#include <cerrno>
 
 #ifndef _MSC_VER
 #define __stdcall
@@ -145,9 +146,10 @@ private:
 class DebugOutput {
 public:
     AndroidStreambuf androidCout;
-
     AndroidStreambuf androidCerr;
-    DebugOutput() : androidCout(), androidCerr(ANDROID_LOG_ERROR) {
+
+    DebugOutput() 
+        : androidCout(), androidCerr(ANDROID_LOG_ERROR) {
         auto *oldout = std::cout.rdbuf(&androidCout);
         auto *olderr = std::cerr.rdbuf(&androidCerr);
         if (oldout != &androidCout) {
