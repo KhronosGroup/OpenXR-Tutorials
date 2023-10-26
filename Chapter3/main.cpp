@@ -681,7 +681,7 @@ private:
             m_graphicsAPI->FreeSwapchainImageData(colorSwapchainInfo.swapchain);
             m_graphicsAPI->FreeSwapchainImageData(depthSwapchainInfo.swapchain);
 
-            // Destory the swapchains.
+            // Destroy the swapchains.
             OPENXR_CHECK(xrDestroySwapchain(colorSwapchainInfo.swapchain), "Failed to destroy Color Swapchain");
             OPENXR_CHECK(xrDestroySwapchain(depthSwapchainInfo.swapchain), "Failed to destroy Depth Swapchain");
         }
