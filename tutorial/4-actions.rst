@@ -316,7 +316,7 @@ Now we've completed polling all the actions in the application. Let's introduce 
 	:end-before: XR_DOCS_TAG_END_Objects
 	:dedent: 4
 
- We will add two more functions after the definition of ``PollActions`` to enable some interaction between the user and the 3D blocks:    
+We will add two more functions after the definition of ``PollActions`` to enable some interaction between the user and the 3D blocks:    
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
