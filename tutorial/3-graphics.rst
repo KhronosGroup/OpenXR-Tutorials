@@ -815,7 +815,8 @@ An ``XrSpace`` is a frame of reference defined not by its instantaneous values, 
 
 .. figure:: images/ViewSpace.png
 	:alt: OpenXR Reference Space View
-	:width: 60%
+	:width: 70%
+	:align: center
 
 One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``), which is oriented with the user's head, and is useful for user interfaces and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
 
@@ -824,8 +825,9 @@ The View Reference Space uses the view origin (or the centroid of the views in t
 .. rubric:: Local Space
 
 .. figure:: images/LocalSpace.png
-		:alt: OpenXR Reference Space Local
-		:width: 60%
+	:alt: OpenXR Reference Space Local
+	:width: 70%
+	:align: center
 
 By using ``XR_REFERENCE_SPACE_TYPE_LOCAL`` we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
 
@@ -835,9 +837,10 @@ It may be used for rendering seated-scale experiences such as driving or aircraf
 
 .. rubric:: Stage Space
 
-.. figure:: OpenXR-ReferenceSpace-Stage.png
-			:alt: OpenXR Reference Space Stage
-			:width: 60%
+.. figure:: images/StageSpace.png
+	:alt: OpenXR Reference Space Stage
+	:width: 70%
+	:align: center
 
 Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this implies a roomscale space, e.g. with its origin on the floor.
 
