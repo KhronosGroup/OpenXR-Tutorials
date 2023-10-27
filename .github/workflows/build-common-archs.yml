@@ -1,0 +1,24 @@
+name: 'Build Common Folder Archives'
+on:
+  push:
+    tags:
+      - "v*.*.*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: ./build-common-archs.sh
+      - name: Upload Common Folder Archives
+        id: upload
+        uses: softprops/action-gh-release@v1
+        with:
+          files:
+            - build/common_archs/Common_D3D11.zip
+            - build/common_archs/Common_D3D12.zip
+            - build/common_archs/Common_OpenGL.zip
+            - build/common_archs/Common_OpenGL_ES.zip
+            - build/common_archs/Common_Vulkan.zip
+            - build/common_archs/Common.zip

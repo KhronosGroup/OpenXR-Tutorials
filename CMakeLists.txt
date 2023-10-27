@@ -29,6 +29,13 @@ if (XR_TUTORIAL_BUILD_DOCUMENTATION)
     elseif(LINUX)
         execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-eoc-archs.sh" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
     endif()
+
+    #Build Common folder archives
+    if (WIN32)
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-common-archs.bat D3D11 D3D12 OPENGL OPENGL_ES VULKAN" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    elseif(LINUX)
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-common-archs.sh D3D11 D3D12 OPENGL OPENGL_ES VULKAN" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
 endif()
 
 if (XR_TUTORIAL_BUILD_PROJECTS)
