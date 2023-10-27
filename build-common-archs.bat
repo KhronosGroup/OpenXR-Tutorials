@@ -1,4 +1,4 @@
-::echo off
+echo off
 
 rmdir /s /q build\common_archs
 mkdir build\common_archs

@@ -606,6 +606,28 @@ Create a folder called ``Common`` in the *workspace* directory. Download each of
 	* :download:`Common/GraphicsAPI_Vulkan.h <../Common/GraphicsAPI_Vulkan.h>`
 	* :download:`Common/GraphicsAPI_Vulkan.cpp <../Common/GraphicsAPI_Vulkan.cpp>`
 
+Or, you can download the ``zip`` archive containing all the required files. Extract the archive to get the ``Common`` folder.
+
+.. container:: d3d11
+
+	* :download:`Common_D3D11.zip <../build/common_archs/Common_D3D11.zip>`
+
+.. container:: d3d12
+
+	* :download:`Common_D3D12.zip <../build/common_archs/Common_D3D12.zip>`
+
+.. container:: opengl
+
+	* :download:`Common_OpenGL.zip <../build/common_archs/Common_OpenGL.zip>`
+
+.. container:: opengles
+
+	* :download:`Common_OpenGL_ES.zip <../build/common_archs/Common_OpenGL_ES.zip>`
+
+.. container:: vulkan
+
+	* :download:`Common_Vulkan.zip <../build/common_archs/Common_Vulkan.zip>`
+
 .. rubric::  DebugOutput
 
 ``DebugOutput`` is a class that redirects ``std::cout`` and ``std::cerr`` to the output window in your IDE.
