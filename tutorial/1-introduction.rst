@@ -221,12 +221,14 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		:start-after: XR_DOCS_TAG_BEGIN_CMakeModulePath
 		:end-before: XR_DOCS_TAG_END_CMakeModulePath
 
+	Now, we append to the ``CMAKE_MODULE_PATH`` variable an additional path for ``find_package()`` to search within. 
+	
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake
 		:start-after: XR_DOCS_TAG_BEGIN_FetchContent
 		:end-before: XR_DOCS_TAG_END_FetchContent
 
-	Now, we append to the ``CMAKE_MODULE_PATH`` variable an additional path for ``find_package()`` to search within and we include ``FetchContent`` and use it to get the OpenXR-SDK-Source from Khronos's GitHub page.
+	We include ``FetchContent`` and use it to get the OpenXR-SDK-Source from Khronos's GitHub page.
 
 	Now, we will add to ``Chapter2/CMakeLists.txt`` the source and header files by adding the following code. Here, we are including all the files needed for our project.
 
