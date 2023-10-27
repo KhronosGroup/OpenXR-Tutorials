@@ -14,11 +14,11 @@ The goal of this chapter is to build an application uses OpenXR actions to creat
 			:end-before: XR_DOCS_TAG_END_AddChapter4
 			:dedent: 4
 
-	Now, create a ``Chapter4`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter3``. For the ``CMakeLists.txt``, copy the from ``Chapter3`` and update these lines:
+	Now, create a ``Chapter4`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` and ``CMakeLists.txt`` from ``Chapter3``. In the ``Chapter4/CMakeLists.txt`` update these lines:
 
 .. container:: android
 
-	Add a ``Chapter4`` folder in the *workspace* directory and into that folder copy the whole contents of ``Chapter3`` to it. In CMakeLists.txt, update this line:
+	Add a ``Chapter4`` folder in the *workspace* directory and into that folder copy the whole contents of ``Chapter3`` to it. In ``CMakeLists.txt``, update this line:
 
 .. literalinclude:: ../Chapter4/CMakeLists.txt
 	:language: cmake

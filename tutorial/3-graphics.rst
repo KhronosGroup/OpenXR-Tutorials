@@ -14,11 +14,11 @@ The goal of this chapter is to build an application that creates and clears colo
 			:end-before: XR_DOCS_TAG_END_AddChapter3
 			:dedent: 4
 
-	Now, create a ``Chapter3`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` from ``Chapter2``. For the ``CMakeLists.txt``, copy the from ``Chapter2`` and update these lines:
+	Now, create a ``Chapter3`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` and ``CMakeLists.txt`` from ``Chapter2``. In the ``Chapter3/CMakeLists.txt`` update these lines:
 
 .. container:: android
 
-	Add a ``Chapter3`` folder in the *workspace* directory and into that folder copy the whole contents of ``Chapter2`` to it. In CMakeLists.txt, update this line:
+	Add a ``Chapter3`` folder in the *workspace* directory and into that folder copy the whole contents of ``Chapter2`` to it. In ``CMakeLists.txt``, update this line:
 
 .. literalinclude:: ../Chapter3/CMakeLists.txt
 	:language: cmake
