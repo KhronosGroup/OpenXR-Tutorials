@@ -750,8 +750,8 @@ private:
                 // XR_DOCS_TAG_END_CallRecordCurrentBindings
                 break;
             }
-            // Log that there's a reference space change pending.
             // TODO: expand on this in text.
+            // Log that there's a reference space change pending.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
