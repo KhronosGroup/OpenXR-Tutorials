@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.22.1)
 set(PROJECT_NAME OpenXRTutorialChapter6)
-project("${PROJECT_NAME}") # Needed for Android
+project("${PROJECT_NAME}")
 
 # Additional Directories for find_package() to search within.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")

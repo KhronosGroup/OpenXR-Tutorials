@@ -5,7 +5,7 @@
 # XR_DOCS_TAG_BEGIN_SetProjectName4
 cmake_minimum_required(VERSION 3.22.1)
 set(PROJECT_NAME OpenXRTutorialChapter4)
-project("${PROJECT_NAME}") # Needed for Android
+project("${PROJECT_NAME}")
 # XR_DOCS_TAG_END_SetProjectName4
 
 # XR_DOCS_TAG_BEGIN_CMakeModulePath
