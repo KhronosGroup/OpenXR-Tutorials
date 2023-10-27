@@ -3,16 +3,12 @@
 rm -rf build/common_archs
 mkdir -p build/common_archs
 
-cp -r Common build/common_archs
-
-pushd build/common_archs
-
-#for api in "$@"
-#do
-#    if [[ "$api" == "D3D11" ]]; then
-#        # D3D11
-#        echo "$api"
-        zip -r Common_D3D11.zip \
+for api in "$@"
+do
+    if [[ "$api" == "D3D11" ]]; then
+        # D3D11
+        echo "$api"
+        zip -r build/common_archs/Common_D3D11.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_D3D11.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -21,13 +17,12 @@ pushd build/common_archs
             Common/GraphicsAPI_D3D11.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h \
-            /
-    #fi
-    #if [[ "$api" == "D3D12" ]]; then
-    #    # D3D12
-    #    echo "$api"
-        zip -r Common_D3D12.zip \
+            Common/OpenXRHelper.h
+    fi
+    if [[ "$api" == "D3D12" ]]; then
+        # D3D12
+        echo "$api"
+        zip -r build/common_archs/Common_D3D12.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_D3D12.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -36,13 +31,12 @@ pushd build/common_archs
             Common/GraphicsAPI_D3D12.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h \
-            /
-    #fi
-    #if [[ "$api" == "OPENGL" ]]; then
-    #    # OPENGL
-    #    echo "$api"
-        zip -r Common_OpenGL.zip \
+            Common/OpenXRHelper.h
+    fi
+    if [[ "$api" == "OPENGL" ]]; then
+        # OPENGL
+        echo "$api"
+        zip -r build/common_archs/Common_OpenGL.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_OpenGL.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -51,13 +45,12 @@ pushd build/common_archs
             Common/GraphicsAPI_OpenGL.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h \
-            /
-    #fi
-    #if [[ "$api" == "OPENGL_ES" ]]; then
-    #    # OPENGL_ES
-    #    echo "$api"
-        zip -r Common_OpenGL_ES.zip \
+            Common/OpenXRHelper.h
+    fi
+    if [[ "$api" == "OPENGL_ES" ]]; then
+        # OPENGL_ES
+        echo "$api"
+        zip -r build/common_archs/Common_OpenGL_ES.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_OpenGL_ES.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -66,13 +59,12 @@ pushd build/common_archs
             Common/GraphicsAPI_OpenGL_ES.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h \
-            /
-    #fi
-    #if [[ "$api" == "VULKAN" ]]; then
-    #    # VULKAN
-    #    echo "$api"
-        zip -r Common_Vulkan.zip \
+            Common/OpenXRHelper.h
+    fi
+    if [[ "$api" == "VULKAN" ]]; then
+        # VULKAN
+        echo "$api"
+        zip -r build/common_archs/Common_Vulkan.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_Vulkan.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -81,13 +73,13 @@ pushd build/common_archs
             Common/GraphicsAPI_Vulkan.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h \
-            /
-#    fi
-#done
+            Common/OpenXRHelper.h
+    fi
+done
 
 # Full Folder
-zip -r Common.zip \
+echo "ALL"
+zip -r build/common_archs/Common.zip \
     Common/GraphicsAPI.cpp \
     Common/GraphicsAPI_D3D11.cpp \
     Common/GraphicsAPI_D3D12.cpp \
@@ -105,7 +97,3 @@ zip -r Common.zip \
     Common/HelperFunctions.h \
     Common/OpenXRDebugUtils.h \
     Common/OpenXRHelper.h \
-
-popd
-
-rm -rf build/common_archs/Common
