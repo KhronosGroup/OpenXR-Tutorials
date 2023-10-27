@@ -57,7 +57,7 @@ At the end of your ``OpenXRTutorial`` class, add this code:
 	:end-before: XR_DOCS_TAG_END_Actions
 	:dedent: 4
 
-Here, we have defined an Action Set: a group of related actions that are created together. The individual actions, such as `m_grabAction` and `m_palmPoseAction`, will belong to this set. For a pose action, we need an XrSpace, so `m_handPoseSpace[]` has been declared. And we'll keep a copy of the pose itself for each hand, which will change per-frame. We initialize the hand poses to a predefined pose.
+Here, we have defined an Action Set: a group of related actions that are created together. The individual actions, such as ``m_grabAction`` and ``m_palmPoseAction``, will belong to this set. For a pose action, we need an XrSpace, so ``m_handPoseSpace[]`` has been declared. And we'll keep a copy of the pose itself for each hand, which will change per-frame. We initialize the hand poses to a predefined pose.
 
 Action Sets are created before the session is initialized, so in Run(), after the call to GetSystemID(), add this line:
 
@@ -75,7 +75,7 @@ After the definition of GetSystemID(), we'll add these helper functions that con
 	:end-before: XR_DOCS_TAG_END_CreateXrPath
 	:dedent: 4
 
-Now we will define the `CreateActionSet` function. Add the first part of this function after ``FromXrPath()``:
+Now we will define the ``CreateActionSet()`` function. Add the first part of this function after ``FromXrPath()``:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -92,7 +92,7 @@ So you can create multiple Action Sets, but we only need one for this example. T
 	:end-before: XR_DOCS_TAG_END_CreateActionLambda
 	:dedent: 4
 
-Here we've created each action with a little local lambda function `CreateAction`. Each action has a name, a localized description, and the type of action it is. It also, optionally, has a list of sub-action paths. A sub-action is, essentially the same action on a different control device: left- or right-hand controllers for example.
+Here we've created each action with a little local lambda function ``CreateAction()``. Each action has a name, a localized description, and the type of action it is. It also, optionally, has a list of sub-action paths. A sub-action is, essentially the same action on a different control device: left- or right-hand controllers for example.
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -289,7 +289,7 @@ Here we enable the Action Set we're interested in (in our case we have only one)
 	:end-before: XR_DOCS_TAG_END_PollActions2
 	:dedent: 4
 
-If, and only if the action is active, we use `xrLocateSpace` to obtain the current pose of the controller. We specify that we want this relative to our reference space `localOrStageSpace`, because this is the global space we're using for rendering. If we fail to locate the current pose of the controller, we set `XrActionStatePose::isActive` to `false`. We'll use `leftGripPose` in the next section to render the controller's position.
+If, and only if the action is active, we use ``xrLocateSpace`` to obtain the current pose of the controller. We specify that we want this relative to our reference space ``localOrStageSpace``, because this is the global space we're using for rendering. If we fail to locate the current pose of the controller, we set ``XrActionStatePose::isActive`` to ``false``. We'll use ``leftGripPose`` in the next section to render the controller's position.
 
 We'll add the grabbing Action.
 
