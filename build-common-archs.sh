@@ -7,11 +7,11 @@ cp -r Common build/common_archs
 
 pushd build/common_archs
 
-for api in "$@"
-do
-    if [[ "$api" == "D3D11" ]]; then
-        # D3D11
-        echo "$api"
+#for api in "$@"
+#do
+#    if [[ "$api" == "D3D11" ]]; then
+#        # D3D11
+#        echo "$api"
         zip -r Common_D3D11.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_D3D11.cpp \
@@ -23,10 +23,10 @@ do
             Common/OpenXRDebugUtils.h \
             Common/OpenXRHelper.h \
             /
-    fi
-    if [[ "$api" == "D3D12" ]]; then
-        # D3D12
-        echo "$api"
+    #fi
+    #if [[ "$api" == "D3D12" ]]; then
+    #    # D3D12
+    #    echo "$api"
         zip -r Common_D3D12.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_D3D12.cpp \
@@ -38,10 +38,10 @@ do
             Common/OpenXRDebugUtils.h \
             Common/OpenXRHelper.h \
             /
-    fi
-    if [[ "$api" == "OPENGL" ]]; then
-        # OPENGL
-        echo "$api"
+    #fi
+    #if [[ "$api" == "OPENGL" ]]; then
+    #    # OPENGL
+    #    echo "$api"
         zip -r Common_OpenGL.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_OpenGL.cpp \
@@ -53,10 +53,10 @@ do
             Common/OpenXRDebugUtils.h \
             Common/OpenXRHelper.h \
             /
-    fi
-    if [[ "$api" == "OPENGL_ES" ]]; then
-        # OPENGL_ES
-        echo "$api"
+    #fi
+    #if [[ "$api" == "OPENGL_ES" ]]; then
+    #    # OPENGL_ES
+    #    echo "$api"
         zip -r Common_OpenGL_ES.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_OpenGL_ES.cpp \
@@ -68,10 +68,10 @@ do
             Common/OpenXRDebugUtils.h \
             Common/OpenXRHelper.h \
             /
-    fi
-    if [[ "$api" == "VULKAN" ]]; then
-        # VULKAN
-        echo "$api"
+    #fi
+    #if [[ "$api" == "VULKAN" ]]; then
+    #    # VULKAN
+    #    echo "$api"
         zip -r Common_Vulkan.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_Vulkan.cpp \
@@ -83,8 +83,8 @@ do
             Common/OpenXRDebugUtils.h \
             Common/OpenXRHelper.h \
             /
-    fi
-done
+#    fi
+#done
 
 # Full Folder
 zip -r Common.zip \
@@ -107,3 +107,5 @@ zip -r Common.zip \
     Common/OpenXRHelper.h \
 
 popd
+
+rm -rf build/common_archs/Common
