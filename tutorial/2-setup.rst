@@ -170,13 +170,13 @@ Copy the following code into ``CreateDebugMessenger()`` and ``DestroyDebugMessen
 	:end-before: XR_DOCS_TAG_END_CreateDebugMessenger
 	:dedent: 8
 
-In the above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or ``XR_EXT_debug_utils`` is in ``activeInstanceExtensions``, which we used to create the ``XrInstance``. Next, we call the ``CreateOpenXRDebugUtilsMessenger()`` function.
-
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
 	:start-after: XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
 	:end-before: XR_DOCS_TAG_END_DestroyDebugMessenger
 	:dedent: 8
+
+In the above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or ``XR_EXT_debug_utils`` is in ``activeInstanceExtensions``, which we used to create the ``XrInstance``. Next, we call the ``CreateOpenXRDebugUtilsMessenger()`` function. At the end of the application, we call ``DestroyOpenXRDebugUtilsMessenger()`` to release the resource.
 
 Another feature of OpenXR is the API Layers, which may also assist you in debugging. You can read more about them in :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`.
 
