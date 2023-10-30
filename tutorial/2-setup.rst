@@ -394,7 +394,7 @@ OpenXR uses an event-based system to describe changes within the XR system. It's
 Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add the highlighted code below. Also, add the highlighted code for the new methods and members in their separate private sections.
 
 .. code-block:: cpp
-	:emphasize-lines: 21-27, 68-70, 92, 96
+	:emphasize-lines: 21-27, 68-70, 92
 
 	class OpenXRTutorial {
 	public:
@@ -490,8 +490,6 @@ Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add t
 		XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
 		bool m_applicationRunning = true;
 		bool m_sessionRunning = false;
-
-		XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 	};
 
 2.3.1 xrPollEvent
@@ -584,9 +582,10 @@ As the application runs, if the ``XrSessionState`` changes to ``XR_SESSION_STATE
 	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
 	:dedent: 16
 
-From the code that we copied in Chapter 2.1.3, we've assigned to ``XrSessionBeginInfo::primaryViewConfigurationType`` the ``m_viewConfiguration`` from the class, which in the case of this tutorial is ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye).
 
-If the ``XrSessionState`` changes to ``XR_SESSION_STATE_STOPPING``, the application should call ``xrEndSession()``. This means that the runtime has stopped the session either from a user's input or from some other reason, our application should respond by ending the session and freeing any resources. Below is a small excerpt from the code that we copied in Chapter 2.1.3.
+From the code that we copied in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`, we've assigned to ``XrSessionBeginInfo::primaryViewConfigurationType`` the value of ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye). For the time being, we have defaulted to ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. In :ref:`Chapter 3.1.1 <3.1.1 View Configurations>`, we enumerate all the system's view configurations to pick a suitable one.
+
+If the ``XrSessionState`` changes to ``XR_SESSION_STATE_STOPPING``, the application should call ``xrEndSession()``. This means that the runtime has stopped the session either from a user's input or from some other reason, our application should respond by ending the session and freeing any resources. Below is a small excerpt from the code that we copied in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp

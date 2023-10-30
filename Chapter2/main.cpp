@@ -290,7 +290,7 @@ private:
                 if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
                     // SessionState is ready. Begin the XrSession using the XrViewConfigurationType.
                     XrSessionBeginInfo sessionBeginInfo{XR_TYPE_SESSION_BEGIN_INFO};
-                    sessionBeginInfo.primaryViewConfigurationType = m_viewConfiguration;
+                    sessionBeginInfo.primaryViewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
                     OPENXR_CHECK(xrBeginSession(m_session, &sessionBeginInfo), "Failed to begin Session.");
                     m_sessionRunning = true;
                 }
@@ -424,8 +424,6 @@ private:
     XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
     bool m_applicationRunning = true;
     bool m_sessionRunning = false;
-
-    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {

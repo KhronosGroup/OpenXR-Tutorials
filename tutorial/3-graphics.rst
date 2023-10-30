@@ -137,7 +137,7 @@ Orthogonal to multiple views is the layering of multiple images. You could, for 
 Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new methods and members. Copy the highlighted code below.
 
 .. code-block:: cpp
-	:emphasize-lines: 12, 15, 25, 35-43, 48-56
+	:emphasize-lines: 12, 15, 25, 35-43, 48-59
 
 	class OpenXRTutorial {
 	public:
@@ -186,6 +186,9 @@ Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new me
 	private:
 		// [...] Member created in previous chapters.
 
+		std::vector<XrViewConfigurationType> m_applicationViewConfigurations = {XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_MONO};
+		std::vector<XrViewConfigurationType> m_viewConfigurations;
+		XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
 		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
 		struct SwapchainInfo {
@@ -202,7 +205,16 @@ We will explore the added methods in the sub-chapters below.
 3.1.1 View Configurations
 =========================
 
-The first thing we need to do is get all of the views available to our view configuration. It is worth just parsing the name of this type: ``XrViewConfigurationView``. We can break the typename up as follows "XrViewConfiguration" - "View", where it relates to one view in the view configuration, which may contain multiple views. We call ``xrEnumerateViewConfigurationViews()`` twice, first to get the count of the views in the view configuration, and second to fill in the data to the ``std::vector<XrViewConfigurationView>``.
+The first thing we need to do is get all the view configuration types available to our XR system. A view configuration type is a 'semantically meaningful set of one or more views for which an application can render images'. (`8. View Configurations <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#view_configurations>`_.) Theres's both mono and stereo types along others provided by hardware/software vendors.
+
+.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
+	:language: cpp
+	:start-at: typedef enum XrViewConfigurationType {
+	:end-at: } XrViewConfigurationType;
+
+We call ``xrEnumerateViewConfigurations()`` twice, first to get the count of the types for our XR system, and second to fill in the data to the ``std::vector<XrViewConfigurationType>``. Next, we check against a list of view configuration types that are supported by the application and select one.
+
+Now, we need get all of the views available to our view configuration. It is worth just parsing the name of this type: ``XrViewConfigurationView``. We can break the typename up as follows "XrViewConfiguration" - "View", where it relates to one view in the view configuration, which may contain multiple views. We call ``xrEnumerateViewConfigurationViews()`` twice, first to get the count of the views in the view configuration, and second to fill in the data to the ``std::vector<XrViewConfigurationView>``.
 
 Add the following code to the ``GetViewConfigurationViews()`` method:
 
@@ -211,6 +223,14 @@ Add the following code to the ``GetViewConfigurationViews()`` method:
 	:start-after: XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
 	:end-before: XR_DOCS_TAG_END_GetViewConfigurationViews
 	:dedent: 8
+
+From the code in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`, we modify our assignment of ``XrSessionBeginInfo::primaryViewConfigurationType`` in the ``PollEvents()`` to use the class member ``m_viewConfiguration``.
+
+.. literalinclude:: ../Chapter3/main.cpp
+	:language: cpp
+	:start-at: if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
+	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
+	:dedent: 16
 
 3.1.2 Enumerate the Swapchain Formats
 =====================================
@@ -651,7 +671,7 @@ Then, with those final pieces in place, we can look to the ``RenderFrame()`` and
 Update the methods and members in the class. Copy the highlighted code:
 
 .. code-block:: cpp
-	:emphasize-lines: 2-3, 16, 19, 26, 31, 53-67, 81-91
+	:emphasize-lines: 2-3, 16, 19, 26, 31, 53-67, 84-94
 
 	class OpenXRTutorial {
 	private:
@@ -723,6 +743,9 @@ Update the methods and members in the class. Copy the highlighted code:
 	private:
 		// [...] Members created in previous chapters.
 
+		std::vector<XrViewConfigurationType> m_applicationViewConfigurations = {XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_MONO};
+		std::vector<XrViewConfigurationType> m_viewConfigurations;
+		XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
 		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
 		struct SwapchainInfo {
@@ -889,7 +912,7 @@ The primary structure in use here is the ``XrFrameState``, which contains vital 
 
 *The above code is an excerpt from openxr/openxr.h*
 
-``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()`` should wrap around all the rendering in the XR frame and thus should be called in that sequence. ``xrWaitFrame()`` provides to the application the information for the frame, which we've discussed above. Next, ``xrBeginFrame()`` should be called just before executing any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign ``XrFrameState::predictedDisplayTime`` to ``XrFrameEndInfo::displayTime``. It should be noted that we can modify this value during the frame. Next, we assign to ``XrFrameEndInfo::environmentBlendMode`` our selected blend mode. Last, we assign the size of and a pointer to an ``std::vector<XrCompositionLayerBaseHeader *>`` which is a member of our ``RenderLayerInfo`` struct. These Composition Layers are assembled by the OpenXR compositor to create the final images.
+``xrWaitFrame()``, ``xrBeginFrame()`` and ``xrEndFrame()`` should wrap around all the rendering in the XR frame and thus should be called in that sequence. ``xrWaitFrame()`` provides to the application the information for the frame, which we've discussed above. Next, ``xrBeginFrame()`` should be called just before executing any GPU work for the frame. When calling ``xrEndFrame()``, we need to pass an ``XrFrameEndInfo`` structure to that function. We assign ``XrFrameState::predictedDisplayTime`` to ``XrFrameEndInfo::displayTime``. It should be noted that we can modify this value during the frame. Next, we assign to ``XrFrameEndInfo::environmentBlendMode`` our selected blend mode. Last, we assign the count of and a pointer to an ``std::vector<XrCompositionLayerBaseHeader *>`` which is a member of our ``RenderLayerInfo`` struct. These Composition Layers are assembled by the OpenXR compositor to create the final images.
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -1008,7 +1031,8 @@ Now that we have a clear color and depth working, we can now start to render geo
 Update the methods and members in the class. Copy the highlighted code:
 
 .. code-block:: cpp
-	:emphasize-lines: 21, 31, 75-83, 110-117
+	:emphasize-lines: 21, 31, 75-83, 113-120
+	:linenos:
 
 	class OpenXRTutorial {
 	private:
@@ -1097,6 +1121,9 @@ Update the methods and members in the class. Copy the highlighted code:
 	private:
 		// [...] Members created in previous chapters.
 
+		std::vector<XrViewConfigurationType> m_applicationViewConfigurations = {XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_MONO};
+		std::vector<XrViewConfigurationType> m_viewConfigurations;
+		XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
 		std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
 		struct SwapchainInfo {
