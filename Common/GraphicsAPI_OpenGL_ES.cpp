@@ -420,6 +420,12 @@ GraphicsAPI_OpenGL_ES::~GraphicsAPI_OpenGL_ES() {
 }
 // XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES
 
+void *GraphicsAPI_OpenGL_ES::CreateDesktopSwapchain(const SwapchainCreateInfo &swapchainCI) { return nullptr; }
+void GraphicsAPI_OpenGL_ES::DestroyDesktopSwapchain(void *&swapchain) {}
+void *GraphicsAPI_OpenGL_ES::GetDesktopSwapchainImage(void *swapchain, uint32_t index) { return nullptr; }
+void GraphicsAPI_OpenGL_ES::AcquireDesktopSwapchanImage(void *swapchain, uint32_t &index) {}
+void GraphicsAPI_OpenGL_ES::PresentDesktopSwapchainImage(void *swapchain, uint32_t index) {}
+
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
 void *GraphicsAPI_OpenGL_ES::GetGraphicsBinding() {
     graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR};
@@ -429,12 +435,6 @@ void *GraphicsAPI_OpenGL_ES::GetGraphicsBinding() {
     return &graphicsBinding;
 }
 // XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
-
-void *GraphicsAPI_OpenGL_ES::CreateDesktopSwapchain(const SwapchainCreateInfo &swapchainCI) { return nullptr; }
-void GraphicsAPI_OpenGL_ES::DestroyDesktopSwapchain(void *&swapchain) {}
-void *GraphicsAPI_OpenGL_ES::GetDesktopSwapchainImage(void *swapchain, uint32_t index) { return nullptr; }
-void GraphicsAPI_OpenGL_ES::AcquireDesktopSwapchanImage(void *swapchain, uint32_t &index) {}
-void GraphicsAPI_OpenGL_ES::PresentDesktopSwapchainImage(void *swapchain, uint32_t index) {}
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_AllocateSwapchainImageData
 XrSwapchainImageBaseHeader *GraphicsAPI_OpenGL_ES::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {

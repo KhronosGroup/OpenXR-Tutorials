@@ -199,7 +199,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12() {
     }
     case D3D12_RESOURCE_BINDING_TIER_1:
     default: {
-        uint32_t maxUAVsPerStage = /*D3D_FEATURE_LEVEL_11_0*/ true ? 8 : 64;
+        uint32_t maxUAVsPerStage = (featureLevel == D3D_FEATURE_LEVEL_11_0) ? 8 : 64;
         resourceBindingCapabilities = {1000000, 14, 128, maxUAVsPerStage, 16, 2048};
         break;
     }
@@ -270,7 +270,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
     }
     case D3D12_RESOURCE_BINDING_TIER_1:
     default: {
-        uint32_t maxUAVsPerStage = /*D3D_FEATURE_LEVEL_11_0*/ true ? 8 : 64;
+        uint32_t maxUAVsPerStage = (graphicsRequirements.minFeatureLevel == D3D_FEATURE_LEVEL_11_0) ? 8 : 64;
         resourceBindingCapabilities = {1000000, 14, 128, maxUAVsPerStage, 16, 2048};
         break;
     }
