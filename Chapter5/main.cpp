@@ -287,7 +287,7 @@ private:
 
         // Get the System's properties for some general information about the hardware and the vendor.
         // XR_DOCS_TAG_BEGIN_SystemHandTrackingProperties
-	    // Check if hand tracking is supported.
+        // Check if hand tracking is supported.
         m_systemProperties.next = &handTrackingSystemProperties;
         // XR_DOCS_TAG_END_SystemHandTrackingProperties
         OPENXR_CHECK(xrGetSystemProperties(m_xrInstance, m_systemID, &m_systemProperties), "Failed to get SystemProperties.");
@@ -917,8 +917,8 @@ private:
                 }
                 if (nearBlock[i] != -1) {
                     if (m_grabState[i].isActive && m_grabState[i].currentState > 0.5f) {
-                    grabbedBlock[i] = nearBlock[i];
-                    buzz[i] = 1.0f;
+                        grabbedBlock[i] = nearBlock[i];
+                        buzz[i] = 1.0f;
                     } else if (m_changeColorState[i].isActive == XR_TRUE && m_changeColorState[i].currentState == XR_FALSE && m_changeColorState[i].changedSinceLastSync == XR_TRUE) {
                         auto &thisBlock = blocks[nearBlock[i]];
                         XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
@@ -1019,7 +1019,7 @@ private:
             OPENXR_CHECK(xrEnumerateSwapchainImages(colorSwapchainInfo.swapchain, 0, &colorSwapchainImageCount, nullptr), "Failed to enumerate Color Swapchain Images.");
             XrSwapchainImageBaseHeader *colorSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(colorSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::COLOR, colorSwapchainImageCount);
             OPENXR_CHECK(xrEnumerateSwapchainImages(colorSwapchainInfo.swapchain, colorSwapchainImageCount, &colorSwapchainImageCount, colorSwapchainImages), "Failed to enumerate Color Swapchain Images.");
-            
+
             uint32_t depthSwapchainImageCount = 0;
             OPENXR_CHECK(xrEnumerateSwapchainImages(depthSwapchainInfo.swapchain, 0, &depthSwapchainImageCount, nullptr), "Failed to enumerate Depth Swapchain Images.");
             XrSwapchainImageBaseHeader *depthSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(depthSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::DEPTH, depthSwapchainImageCount);
@@ -1157,7 +1157,7 @@ private:
 #endif
     }
 
-    bool RenderLayer(RenderLayerInfo& renderLayerInfo) {
+    bool RenderLayer(RenderLayerInfo &renderLayerInfo) {
         // XR_DOCS_TAG_BEGIN_RenderLayer1
         // Locate the views from the view configuration with in the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
@@ -1211,30 +1211,30 @@ private:
 
             // Fill out the XrCompositionLayerProjectionView structure specifying the pose and fov from the view.
             // This also associates the swapchain image with this layer projection view.
-           renderLayerInfo.layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
-           renderLayerInfo.layerProjectionViews[i].pose = views[i].pose;
-           renderLayerInfo.layerProjectionViews[i].fov = views[i].fov;
-           renderLayerInfo.layerProjectionViews[i].subImage.swapchain = colorSwapchainInfo.swapchain;
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.x = 0;
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.y = 0;
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
-           renderLayerInfo.layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
+            renderLayerInfo.layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+            renderLayerInfo.layerProjectionViews[i].pose = views[i].pose;
+            renderLayerInfo.layerProjectionViews[i].fov = views[i].fov;
+            renderLayerInfo.layerProjectionViews[i].subImage.swapchain = colorSwapchainInfo.swapchain;
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.x = 0;
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.y = 0;
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
+            renderLayerInfo.layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
 #if XR_DOCS_CHAPTER_VERSION == XR_DOCS_CHAPTER_5_2
-           // XR_DOCS_TAG_BEGIN_SetupLeyerDepthInfos
-           renderLayerInfo.layerProjectionViews[i].next = &renderLayerInfo.layerDepthInfos[i];
+            // XR_DOCS_TAG_BEGIN_SetupLeyerDepthInfos
+            renderLayerInfo.layerProjectionViews[i].next = &renderLayerInfo.layerDepthInfos[i];
 
-           renderLayerInfo.layerDepthInfos[i] = {XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR};
-           renderLayerInfo.layerDepthInfos[i].subImage.swapchain = depthSwapchainInfo.swapchain;
-           renderLayerInfo.layerDepthInfos[i].subImage.imageRect.offset.x = 0;
-           renderLayerInfo.layerDepthInfos[i].subImage.imageRect.offset.y = 0;
-           renderLayerInfo.layerDepthInfos[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
-           renderLayerInfo.layerDepthInfos[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
-           renderLayerInfo.layerDepthInfos[i].minDepth = viewport.minDepth;
-           renderLayerInfo.layerDepthInfos[i].maxDepth = viewport.maxDepth;
-           renderLayerInfo.layerDepthInfos[i].nearZ = nearZ;
-           renderLayerInfo.layerDepthInfos[i].farZ = farZ;
-           // XR_DOCS_TAG_END_SetupLeyerDepthInfos
+            renderLayerInfo.layerDepthInfos[i] = {XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR};
+            renderLayerInfo.layerDepthInfos[i].subImage.swapchain = depthSwapchainInfo.swapchain;
+            renderLayerInfo.layerDepthInfos[i].subImage.imageRect.offset.x = 0;
+            renderLayerInfo.layerDepthInfos[i].subImage.imageRect.offset.y = 0;
+            renderLayerInfo.layerDepthInfos[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
+            renderLayerInfo.layerDepthInfos[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
+            renderLayerInfo.layerDepthInfos[i].minDepth = viewport.minDepth;
+            renderLayerInfo.layerDepthInfos[i].maxDepth = viewport.maxDepth;
+            renderLayerInfo.layerDepthInfos[i].nearZ = nearZ;
+            renderLayerInfo.layerDepthInfos[i].farZ = farZ;
+            // XR_DOCS_TAG_END_SetupLeyerDepthInfos
 #endif
 
             // Rendering code to clear the color and depth image views.
@@ -1296,7 +1296,7 @@ private:
                 for (int j = 0; j < 2; j++) {
                     auto hand = m_hands[j];
                     XrVector3f hand_color = {1.f, 1.f, 0.f};
-                    for (int k= 0; k< XR_HAND_JOINT_COUNT_EXT; k++) {
+                    for (int k = 0; k < XR_HAND_JOINT_COUNT_EXT; k++) {
                         XrVector3f sc = {1.5f, 1.5f, 2.5f};
                         sc = sc * hand.m_jointLocations[k].radius;
                         RenderCuboid(hand.m_jointLocations[k].pose, sc, hand_color);
@@ -1494,10 +1494,9 @@ private:
     XrSpace m_handPoseSpace[2];
     XrActionStatePose m_handPoseState[2] = {{XR_TYPE_ACTION_STATE_POSE}, {XR_TYPE_ACTION_STATE_POSE}};
     // The current poses obtained from the XrSpaces.
-    XrPosef m_handPose[2]={
-        { {1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -m_viewHeightM}},
-        { {1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -m_viewHeightM}}
-    };
+    XrPosef m_handPose[2] = {
+        {{1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -m_viewHeightM}},
+        {{1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -m_viewHeightM}}};
     // XR_DOCS_TAG_END_Actions
     // XR_DOCS_TAG_BEGIN_HandTracking
     // The hand tracking properties, namely, is it supported?
@@ -1512,7 +1511,7 @@ private:
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
-    DebugOutput debugOutput; // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
+    DebugOutput debugOutput;  // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
     std::cout << "OpenXR Tutorial Chapter 5." << std::endl;
     OpenXRTutorial app(apiType);
     app.Run();
@@ -1576,7 +1575,7 @@ void android_main(struct android_app *app) {
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
-// XR_DOCS_TAG_END_android_main___ANDROID__
+    // XR_DOCS_TAG_END_android_main___ANDROID__
     OpenXRTutorial_Main(XR_TUTORIAL_GRAPHICS_API);
 }
 /*

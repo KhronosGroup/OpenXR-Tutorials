@@ -623,7 +623,7 @@ private:
             OPENXR_CHECK(xrEnumerateSwapchainImages(colorSwapchainInfo.swapchain, 0, &colorSwapchainImageCount, nullptr), "Failed to enumerate Color Swapchain Images.");
             XrSwapchainImageBaseHeader *colorSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(colorSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::COLOR, colorSwapchainImageCount);
             OPENXR_CHECK(xrEnumerateSwapchainImages(colorSwapchainInfo.swapchain, colorSwapchainImageCount, &colorSwapchainImageCount, colorSwapchainImages), "Failed to enumerate Color Swapchain Images.");
-            
+
             uint32_t depthSwapchainImageCount = 0;
             OPENXR_CHECK(xrEnumerateSwapchainImages(depthSwapchainInfo.swapchain, 0, &depthSwapchainImageCount, nullptr), "Failed to enumerate Depth Swapchain Images.");
             XrSwapchainImageBaseHeader *depthSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(depthSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::DEPTH, depthSwapchainImageCount);
@@ -753,7 +753,7 @@ private:
 #endif
     }
 
-    bool RenderLayer(RenderLayerInfo& renderLayerInfo) {
+    bool RenderLayer(RenderLayerInfo &renderLayerInfo) {
         // XR_DOCS_TAG_BEGIN_RenderLayer1
         // Locate the views from the view configuration within the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
@@ -802,15 +802,15 @@ private:
 
             // Fill out the XrCompositionLayerProjectionView structure specifying the pose and fov from the view.
             // This also associates the swapchain image with this layer projection view.
-           renderLayerInfo.layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
-           renderLayerInfo.layerProjectionViews[i].pose = views[i].pose;
-           renderLayerInfo.layerProjectionViews[i].fov = views[i].fov;
-           renderLayerInfo.layerProjectionViews[i].subImage.swapchain = colorSwapchainInfo.swapchain;
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.x = 0;
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.y = 0;
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
-           renderLayerInfo.layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
+            renderLayerInfo.layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+            renderLayerInfo.layerProjectionViews[i].pose = views[i].pose;
+            renderLayerInfo.layerProjectionViews[i].fov = views[i].fov;
+            renderLayerInfo.layerProjectionViews[i].subImage.swapchain = colorSwapchainInfo.swapchain;
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.x = 0;
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.y = 0;
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
+            renderLayerInfo.layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
 
             // Rendering code to clear the color and depth image views.
             m_graphicsAPI->BeginRendering();

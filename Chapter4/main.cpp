@@ -293,10 +293,10 @@ private:
         strncpy(actionSetCI.localizedActionSetName, "OpenXR Tutorial ActionSet", XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE);
         OPENXR_CHECK(xrCreateActionSet(m_xrInstance, &actionSetCI, &m_actionSet), "Failed to create ActionSet.");
         // Set a priority: this comes into play when we have multiple Action Sets, and determines which Action takes priority in binding to a specific input.
-        actionSetCI.priority=0;
-    // XR_DOCS_TAG_END_CreateActionSet
+        actionSetCI.priority = 0;
+        // XR_DOCS_TAG_END_CreateActionSet
 
-    // XR_DOCS_TAG_BEGIN_CreateActionLambda
+        // XR_DOCS_TAG_BEGIN_CreateActionLambda
         auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType, std::vector<const char *> subaction_paths = {}) -> void {
             XrActionCreateInfo actionCI{XR_TYPE_ACTION_CREATE_INFO};
             // The type of action: float input, pose, haptic output etc.
@@ -314,11 +314,11 @@ private:
             strncpy(actionCI.localizedActionName, name, XR_MAX_LOCALIZED_ACTION_NAME_SIZE);
             OPENXR_CHECK(xrCreateAction(m_actionSet, &actionCI, &xrAction), "Failed to create Action.");
         };
-    // XR_DOCS_TAG_END_CreateActionLambda
-    // XR_DOCS_TAG_BEGIN_CreateActions
+        // XR_DOCS_TAG_END_CreateActionLambda
+        // XR_DOCS_TAG_BEGIN_CreateActions
         // An Action for grabbing cubes.
         CreateAction(m_grabCubeAction, "grab-cube", XR_ACTION_TYPE_FLOAT_INPUT, {"/user/hand/left", "/user/hand/right"});
-        CreateAction(m_spawnCubeAction, "spawn-cube", XR_ACTION_TYPE_BOOLEAN_INPUT );
+        CreateAction(m_spawnCubeAction, "spawn-cube", XR_ACTION_TYPE_BOOLEAN_INPUT);
         CreateAction(m_changeColorAction, "change-color", XR_ACTION_TYPE_BOOLEAN_INPUT, {"/user/hand/left", "/user/hand/right"});
         // An Action for the position of the palm of the user's hand - appropriate for the location of a grabbing Actions.
         CreateAction(m_palmPoseAction, "palm-pose", XR_ACTION_TYPE_POSE_INPUT, {"/user/hand/left", "/user/hand/right"});
@@ -631,7 +631,7 @@ private:
                              {2, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT}};
         m_pipeline = m_graphicsAPI->CreatePipeline(pipelineCI);
         // XR_DOCS_TAG_END_CreateResources3
-        
+
         // XR_DOCS_TAG_BEGIN_Setup_Blocks
         // Create sixty-four cubic blocks, 20cm wide, evenly distributed,
         // and randomly colored.
@@ -646,7 +646,7 @@ private:
                     float angleRad = 0;
                     float z = scale * (float(k) - 1.5f) + center.z;
                     // No rotation
-                    XrQuaternionf q= {0, 0,0,1.f};
+                    XrQuaternionf q = {0.0f, 0.0f, 0.0f, 1.0f};
                     // A random color.
                     XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                     m_blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, color});
@@ -757,8 +757,8 @@ private:
         actionsSyncInfo.countActiveActionSets = 1;
         actionsSyncInfo.activeActionSets = &activeActionSet;
         OPENXR_CHECK(xrSyncActions(m_session, &actionsSyncInfo), "Failed to sync Actions.");
-    // XR_DOCS_TAG_END_PollActions
-    // XR_DOCS_TAG_BEGIN_PollActions2
+        // XR_DOCS_TAG_END_PollActions
+        // XR_DOCS_TAG_BEGIN_PollActions2
         XrActionStateGetInfo actionStateGetInfo{XR_TYPE_ACTION_STATE_GET_INFO};
         // We pose a single Action, twice - once for each subAction Path.
         actionStateGetInfo.action = m_palmPoseAction;
@@ -779,8 +779,8 @@ private:
                 }
             }
         }
-    // XR_DOCS_TAG_END_PollActions2
-    // XR_DOCS_TAG_BEGIN_PollActions3
+        // XR_DOCS_TAG_END_PollActions2
+        // XR_DOCS_TAG_BEGIN_PollActions3
         for (int i = 0; i < 2; i++) {
             actionStateGetInfo.action = m_grabCubeAction;
             actionStateGetInfo.subactionPath = m_handPaths[i];
@@ -796,10 +796,9 @@ private:
             actionStateGetInfo.action = m_spawnCubeAction;
             actionStateGetInfo.subactionPath = 0;
             OPENXR_CHECK(xrGetActionStateBoolean(m_session, &actionStateGetInfo, &m_spawnCubeState), "Failed to get Boolean State of Spawn Cube action.");
-            
         }
-    // XR_DOCS_TAG_END_PollActions3
-    // XR_DOCS_TAG_BEGIN_PollActions4
+        // XR_DOCS_TAG_END_PollActions3
+        // XR_DOCS_TAG_BEGIN_PollActions4
         for (int i = 0; i < 2; i++) {
             m_buzz[i] *= 0.5f;
             if (m_buzz[i] < 0.01f)
@@ -849,23 +848,19 @@ private:
                         }
                     }
                 }
-                if (m_nearBlock[i] != -1)
-                {
-                    if(m_grabState[i].isActive && m_grabState[i].currentState > 0.5f) {
+                if (m_nearBlock[i] != -1) {
+                    if (m_grabState[i].isActive && m_grabState[i].currentState > 0.5f) {
                         m_grabbedBlock[i] = m_nearBlock[i];
                         m_buzz[i] = 1.0f;
-                    } 
-                    else if (m_changeColorState[i].isActive == XR_TRUE && m_changeColorState[i].currentState == XR_FALSE && m_changeColorState[i].changedSinceLastSync == XR_TRUE) {
+                    } else if (m_changeColorState[i].isActive == XR_TRUE && m_changeColorState[i].currentState == XR_FALSE && m_changeColorState[i].changedSinceLastSync == XR_TRUE) {
                         auto &thisBlock = m_blocks[m_nearBlock[i]];
                         XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                         thisBlock.color = color;
                     }
-                }
-                else
-                {
+                } else {
                     // not near a block? We can spawn one.
                     if (m_spawnCubeState.isActive == XR_TRUE && m_spawnCubeState.currentState == XR_FALSE && m_spawnCubeState.changedSinceLastSync == XR_TRUE && m_blocks.size() < m_maxBlockCount) {
-                        XrQuaternionf q = {0, 0, 0, 1.f};
+                        XrQuaternionf q = {0.0f, 0.0f, 0.0f, 1.0f};
                         XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                         m_blocks.push_back({{q, FixPosition(m_handPose[i].position)}, {0.095f, 0.095f, 0.095f}, color});
                     }
@@ -964,7 +959,7 @@ private:
             OPENXR_CHECK(xrEnumerateSwapchainImages(colorSwapchainInfo.swapchain, 0, &colorSwapchainImageCount, nullptr), "Failed to enumerate Color Swapchain Images.");
             XrSwapchainImageBaseHeader *colorSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(colorSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::COLOR, colorSwapchainImageCount);
             OPENXR_CHECK(xrEnumerateSwapchainImages(colorSwapchainInfo.swapchain, colorSwapchainImageCount, &colorSwapchainImageCount, colorSwapchainImages), "Failed to enumerate Color Swapchain Images.");
-            
+
             uint32_t depthSwapchainImageCount = 0;
             OPENXR_CHECK(xrEnumerateSwapchainImages(depthSwapchainInfo.swapchain, 0, &depthSwapchainImageCount, nullptr), "Failed to enumerate Depth Swapchain Images.");
             XrSwapchainImageBaseHeader *depthSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(depthSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::DEPTH, depthSwapchainImageCount);
@@ -1102,7 +1097,7 @@ private:
 #endif
     }
 
-    bool RenderLayer(RenderLayerInfo& renderLayerInfo) {
+    bool RenderLayer(RenderLayerInfo &renderLayerInfo) {
         // XR_DOCS_TAG_BEGIN_RenderLayer1
         // Locate the views from the view configuration within the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
@@ -1151,15 +1146,15 @@ private:
 
             // Fill out the XrCompositionLayerProjectionView structure specifying the pose and fov from the view.
             // This also associates the swapchain image with this layer projection view.
-           renderLayerInfo.layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
-           renderLayerInfo.layerProjectionViews[i].pose = views[i].pose;
-           renderLayerInfo.layerProjectionViews[i].fov = views[i].fov;
-           renderLayerInfo.layerProjectionViews[i].subImage.swapchain = colorSwapchainInfo.swapchain;
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.x = 0;
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.y = 0;
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
-           renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
-           renderLayerInfo.layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
+            renderLayerInfo.layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+            renderLayerInfo.layerProjectionViews[i].pose = views[i].pose;
+            renderLayerInfo.layerProjectionViews[i].fov = views[i].fov;
+            renderLayerInfo.layerProjectionViews[i].subImage.swapchain = colorSwapchainInfo.swapchain;
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.x = 0;
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.offset.y = 0;
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.width = static_cast<int32_t>(width);
+            renderLayerInfo.layerProjectionViews[i].subImage.imageRect.extent.height = static_cast<int32_t>(height);
+            renderLayerInfo.layerProjectionViews[i].subImage.imageArrayIndex = 0;  // Useful for multiview rendering.
 
             // Rendering code to clear the color and depth image views.
             m_graphicsAPI->BeginRendering();
@@ -1386,7 +1381,7 @@ private:
     // The list of block instances.
     std::vector<Block> m_blocks;
     // Don't let too many m_blocks get created.
-    const size_t m_maxBlockCount=100;
+    const size_t m_maxBlockCount = 100;
     // Which block, if any, is being held by each of the user's hands or controllers.
     int m_grabbedBlock[2] = {-1, -1};
     // Which block, if any, is nearby to each hand or controller.
@@ -1420,7 +1415,7 @@ private:
 };
 
 void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
-    DebugOutput debugOutput; // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
+    DebugOutput debugOutput;  // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
     std::cout << "OpenXR Tutorial Chapter 4." << std::endl;
 
     OpenXRTutorial app(apiType);
