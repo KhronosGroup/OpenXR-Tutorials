@@ -20,7 +20,9 @@ public:
     virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) override;
     virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
 
+    // XR_DOCS_TAG_BEGIN_GetDepthFormat_OpenGL
     virtual int64_t GetDepthFormat() override { return (int64_t)GL_DEPTH_COMPONENT32F; }
+    // XR_DOCS_TAG_END_GetDepthFormat_OpenGL
     virtual size_t AlignSizeForUniformBuffer(size_t size) override;
 
     virtual void* GetGraphicsBinding() override;
@@ -30,7 +32,9 @@ public:
         swapchainImagesMap.erase(swapchain);
     }
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
+    // XR_DOCS_TAG_BEGIN_GetSwapchainImage_OpenGL
     virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override { return (void*)(uint64_t)swapchainImagesMap[swapchain].second[index].image; }
+    // XR_DOCS_TAG_END_GetSwapchainImage_OpenGL
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;

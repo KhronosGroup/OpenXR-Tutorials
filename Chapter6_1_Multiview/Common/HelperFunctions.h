@@ -24,6 +24,7 @@
 #define DEBUG_BREAK raise(SIGTRAP)
 #endif
 
+// XR_DOCS_TAG_BEGIN_Helper_Functions1
 inline bool IsStringInVector(std::vector<const char *> list, const char *name) {
     bool found = false;
     for (auto &item : list) {
@@ -90,6 +91,7 @@ inline std::vector<char> ReadBinaryFile(const std::string &filepath) {
 }
 
 #if defined(__ANDROID__)
+// XR_DOCS_TAG_BEGIN_ReadFiles_Android
 #include <android/asset_manager.h>
 inline std::string ReadTextFile(const std::string &filepath, AAssetManager *assetManager) {
     AAsset *file = AAssetManager_open(assetManager, filepath.c_str(), AASSET_MODE_BUFFER);
@@ -109,12 +111,14 @@ inline std::vector<char> ReadBinaryFile(const std::string &filepath, AAssetManag
     AAsset_close(file);
     return binary;
 }
+// XR_DOCS_TAG_END_ReadFiles_Android
 #endif
 
 #ifdef _MSC_VER
 #define strncpy(dst, src, count) strcpy_s(dst, count, src);
 #endif
 
+// XR_DOCS_TAG_END_Helper_Functions1
 
 #define XR_DOCS_CHAPTER_2_1 0x21
 #define XR_DOCS_CHAPTER_2_2 0x22

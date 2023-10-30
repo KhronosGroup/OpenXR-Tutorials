@@ -20,7 +20,9 @@ public:
     virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) override;
     virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
 
+    // XR_DOCS_TAG_BEGIN_GetDepthFormat_Vulkan
     virtual int64_t GetDepthFormat() override { return (int64_t)VK_FORMAT_D32_SFLOAT; }
+    // XR_DOCS_TAG_END_GetDepthFormat_Vulkan
     virtual size_t AlignSizeForUniformBuffer(size_t size) override;
 
     virtual void* GetGraphicsBinding() override;
@@ -30,12 +32,14 @@ public:
         swapchainImagesMap.erase(swapchain);
     }
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
+    // XR_DOCS_TAG_BEGIN_GetSwapchainImage_Vulkan
     virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override {
         VkImage image = swapchainImagesMap[swapchain].second[index].image;
         VkImageLayout layout = swapchainImagesMap[swapchain].first == SwapchainType::COLOR ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         imageStates[image] = layout;
         return (void *)image;
     }
+    // XR_DOCS_TAG_END_GetSwapchainImage_Vulkan
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;

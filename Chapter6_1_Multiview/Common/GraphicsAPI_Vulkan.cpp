@@ -208,6 +208,7 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan() {
     VULKAN_CHECK(vkCreateDevice(physicalDevice, &deviceCI, nullptr, &device), "Failed to create Device.");
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan
 GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance m_xrInstance, XrSystemId systemId) {
     // Instance
     LoadPFN_XrFunctions(m_xrInstance);
@@ -345,6 +346,7 @@ GraphicsAPI_Vulkan::~GraphicsAPI_Vulkan() {
     vkDestroyDevice(device, nullptr);
     vkDestroyInstance(instance, nullptr);
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan
 
 void *GraphicsAPI_Vulkan::CreateDesktopSwapchain(const SwapchainCreateInfo &swapchainCI) {
     VkSurfaceKHR surface{};
@@ -495,6 +497,7 @@ size_t GraphicsAPI_Vulkan::AlignSizeForUniformBuffer(size_t size) {
     return Align<size_t>(size, align);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetGraphicsBinding
 void *GraphicsAPI_Vulkan::GetGraphicsBinding() {
     graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR};
     graphicsBinding.instance = instance;
@@ -504,12 +507,15 @@ void *GraphicsAPI_Vulkan::GetGraphicsBinding() {
     graphicsBinding.queueIndex = queueIndex;
     return &graphicsBinding;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetGraphicsBinding
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_AllocateSwapchainImageData
 XrSwapchainImageBaseHeader *GraphicsAPI_Vulkan::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
     swapchainImagesMap[swapchain].first = type;
     swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR});
     return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_AllocateSwapchainImageData
 
 void *GraphicsAPI_Vulkan::CreateImage(const ImageCreateInfo &imageCI) {
     VkImage image{};
@@ -1403,13 +1409,16 @@ void GraphicsAPI_Vulkan::Draw(uint32_t vertexCount, uint32_t instanceCount, uint
     vkCmdDraw(cmdBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 void GraphicsAPI_Vulkan::LoadPFN_XrFunctions(XrInstance m_xrInstance) {
     OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsRequirementsKHR), "Failed to get InstanceProcAddr for xrGetVulkanGraphicsRequirementsKHR.");
     OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanInstanceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanInstanceExtensionsKHR), "Failed to get InstanceProcAddr for xrGetVulkanInstanceExtensionsKHR.");
     OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanDeviceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanDeviceExtensionsKHR), "Failed to get InstanceProcAddr for xrGetVulkanDeviceExtensionsKHR.");
     OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanGraphicsDeviceKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsDeviceKHR), "Failed to get InstanceProcAddr for xrGetVulkanGraphicsDeviceKHR.");
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
 std::vector<std::string> GraphicsAPI_Vulkan::GetInstanceExtensionsForOpenXR(XrInstance m_xrInstance, XrSystemId systemId) {
     uint32_t extensionNamesSize = 0;
     OPENXR_CHECK(xrGetVulkanInstanceExtensionsKHR(m_xrInstance, systemId, 0, &extensionNamesSize, nullptr), "Failed to get Vulkan Instance Extensions.");
@@ -1425,7 +1434,9 @@ std::vector<std::string> GraphicsAPI_Vulkan::GetInstanceExtensionsForOpenXR(XrIn
     }
     return extensions;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetInstanceExtensionsForOpenXR
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 std::vector<std::string> GraphicsAPI_Vulkan::GetDeviceExtensionsForOpenXR(XrInstance m_xrInstance, XrSystemId systemId) {
     uint32_t extensionNamesSize = 0;
     OPENXR_CHECK(xrGetVulkanDeviceExtensionsKHR(m_xrInstance, systemId, 0, &extensionNamesSize, nullptr), "Failed to get Vulkan Device Extensions.");
@@ -1441,7 +1452,9 @@ std::vector<std::string> GraphicsAPI_Vulkan::GetDeviceExtensionsForOpenXR(XrInst
     }
     return extensions;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
 const std::vector<int64_t> GraphicsAPI_Vulkan::GetSupportedColorSwapchainFormats() {
     return {
         VK_FORMAT_B8G8R8A8_SRGB,
@@ -1454,4 +1467,5 @@ const std::vector<int64_t> GraphicsAPI_Vulkan::GetSupportedDepthSwapchainFormats
         VK_FORMAT_D32_SFLOAT,
         VK_FORMAT_D16_UNORM};
 }
+// XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
 #endif

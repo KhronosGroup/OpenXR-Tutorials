@@ -14,7 +14,9 @@ public:
     GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemId);
     ~GraphicsAPI_D3D12();
 
+    // XR_DOCS_TAG_BEGIN_GetDepthFormat_D3D12
     virtual int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }
+    // XR_DOCS_TAG_END_GetDepthFormat_D3D12
     virtual size_t AlignSizeForUniformBuffer(size_t size) override { return Align<size_t>(size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT); }
 
     virtual void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) override;
@@ -30,12 +32,14 @@ public:
         swapchainImagesMap.erase(swapchain);
     }
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
+    // XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D12
     virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override { 
         ID3D12Resource* image = swapchainImagesMap[swapchain].second[index].texture;
         D3D12_RESOURCE_STATES state = swapchainImagesMap[swapchain].first == SwapchainType::COLOR ? D3D12_RESOURCE_STATE_RENDER_TARGET : D3D12_RESOURCE_STATE_DEPTH_WRITE;
         imageStates[image] = state;
         return image;
     }
+    // XR_DOCS_TAG_END_GetSwapchainImage_D3D12
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;

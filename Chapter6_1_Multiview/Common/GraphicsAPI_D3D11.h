@@ -20,7 +20,9 @@ public:
     virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) override;
     virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
 
+    // XR_DOCS_TAG_BEGIN_GetDepthFormat_D3D11
     virtual int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }
+    // XR_DOCS_TAG_END_GetDepthFormat_D3D11
     // https://developer.nvidia.com/content/constant-buffers-without-constant-pain-0
     // "All constant buffer data that is passed to XXSetConstantBuffers1() needs to be aligned to 256 byte boundaries."
     virtual size_t AlignSizeForUniformBuffer(size_t size) override { return Align<size_t>(size, 256); }
@@ -32,7 +34,9 @@ public:
         swapchainImagesMap.erase(swapchain);
     }
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
+    // XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D11
     virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override { return swapchainImagesMap[swapchain].second[index].texture; }
+    // XR_DOCS_TAG_END_GetSwapchainImage_D3D11
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;

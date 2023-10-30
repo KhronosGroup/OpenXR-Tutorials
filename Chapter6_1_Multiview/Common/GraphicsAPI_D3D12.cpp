@@ -161,7 +161,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12() {
 
     D3D12_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
     UINT i = 0;
-    IDXGIAdapter1* adapter = nullptr;
+    IDXGIAdapter1 *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
     while (factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND) {
         break;
@@ -353,18 +353,22 @@ void GraphicsAPI_D3D12::PresentDesktopSwapchainImage(void *swapchain, uint32_t i
     }
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_GetGraphicsBinding
 void *GraphicsAPI_D3D12::GetGraphicsBinding() {
     graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_D3D12_KHR};
     graphicsBinding.device = device;
     graphicsBinding.queue = queue;
     return &graphicsBinding;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetGraphicsBinding
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_AllocateSwapchainImageData
 XrSwapchainImageBaseHeader *GraphicsAPI_D3D12::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
     swapchainImagesMap[swapchain].first = type;
     swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D12_KHR});
     return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D12_AllocateSwapchainImageData
 
 void *GraphicsAPI_D3D12::CreateImage(const ImageCreateInfo &imageCI) {
     ID3D12Resource *texture = nullptr;
@@ -1313,6 +1317,7 @@ void GraphicsAPI_D3D12::Draw(uint32_t vertexCount, uint32_t instanceCount, uint3
     cmdList->DrawInstanced(vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_GetSupportedSwapchainFormats
 const std::vector<int64_t> GraphicsAPI_D3D12::GetSupportedColorSwapchainFormats() {
     return {
         DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -1325,4 +1330,5 @@ const std::vector<int64_t> GraphicsAPI_D3D12::GetSupportedDepthSwapchainFormats(
         DXGI_FORMAT_D32_FLOAT,
         DXGI_FORMAT_D16_UNORM};
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetSupportedSwapchainFormats
 #endif

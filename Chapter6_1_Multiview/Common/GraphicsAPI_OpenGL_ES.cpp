@@ -379,6 +379,7 @@ GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES() {
     glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_ERROR, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES
 GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES(XrInstance m_xrInstance, XrSystemId systemId) {
     OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetOpenGLESGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetOpenGLESGraphicsRequirementsKHR), "Failed to get InstanceProcAddr for xrGetOpenGLESGraphicsRequirementsKHR.");
     XrGraphicsRequirementsOpenGLESKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
@@ -426,6 +427,7 @@ GraphicsAPI_OpenGL_ES::GraphicsAPI_OpenGL_ES(XrInstance m_xrInstance, XrSystemId
 GraphicsAPI_OpenGL_ES::~GraphicsAPI_OpenGL_ES() {
     ksGpuWindow_Destroy(&window);
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES
 
 void *GraphicsAPI_OpenGL_ES::CreateDesktopSwapchain(const SwapchainCreateInfo &swapchainCI) { return nullptr; }
 void GraphicsAPI_OpenGL_ES::DestroyDesktopSwapchain(void *&swapchain) {}
@@ -441,6 +443,7 @@ size_t GraphicsAPI_OpenGL_ES::AlignSizeForUniformBuffer(size_t size) {
     return Align<size_t>(size, align);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
 void *GraphicsAPI_OpenGL_ES::GetGraphicsBinding() {
     graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR};
     graphicsBinding.display = window.display;
@@ -448,12 +451,15 @@ void *GraphicsAPI_OpenGL_ES::GetGraphicsBinding() {
     graphicsBinding.context = window.context.context;
     return &graphicsBinding;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetGraphicsBinding
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_AllocateSwapchainImageData
 XrSwapchainImageBaseHeader *GraphicsAPI_OpenGL_ES::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
     swapchainImagesMap[swapchain].first = type;
     swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR});
     return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_AllocateSwapchainImageData
 
 void *GraphicsAPI_OpenGL_ES::CreateImage(const ImageCreateInfo &imageCI) {
     GLuint texture = 0;
@@ -1068,6 +1074,7 @@ void GraphicsAPI_OpenGL_ES::Draw(uint32_t vertexCount, uint32_t instanceCount, u
     glDrawArraysInstanced(ToGLTopology(pipelines[setPipeline].inputAssemblyState.topology), firstVertex, vertexCount, instanceCount);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
 const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedColorSwapchainFormats() {
     // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengles.cpp#L208-L216
     GLint glMajorVersion = 0;
@@ -1084,4 +1091,5 @@ const std::vector<int64_t> GraphicsAPI_OpenGL_ES::GetSupportedDepthSwapchainForm
         GL_DEPTH_COMPONENT24,
         GL_DEPTH_COMPONENT16};
 }
+// XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES_GetSupportedSwapchainFormats
 #endif

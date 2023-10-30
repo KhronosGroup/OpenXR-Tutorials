@@ -195,6 +195,7 @@ GraphicsAPI_D3D11::GraphicsAPI_D3D11() {
     D3D11_CHECK(D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, 0, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &immediateContext), "Failed to create D3D11 Device.");
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11
 GraphicsAPI_D3D11::GraphicsAPI_D3D11(XrInstance m_xrInstance, XrSystemId systemId) {
     OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetD3D11GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D11GraphicsRequirementsKHR), "Failed to get InstanceProcAddr xrGetD3D11GraphicsRequirementsKHR.");
     XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
@@ -234,6 +235,7 @@ GraphicsAPI_D3D11::~GraphicsAPI_D3D11() {
     D3D11_SAFE_RELEASE(device);
     D3D11_SAFE_RELEASE(factory);
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D11
 static bool DesktopSwapchainVsync = false;
 void *GraphicsAPI_D3D11::CreateDesktopSwapchain(const SwapchainCreateInfo &swapchainCI) {
     DesktopSwapchainVsync = swapchainCI.vsync;
@@ -281,17 +283,21 @@ void GraphicsAPI_D3D11::PresentDesktopSwapchainImage(void *swapchain, uint32_t i
     }
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetGraphicsBinding
 void *GraphicsAPI_D3D11::GetGraphicsBinding() {
     graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
     graphicsBinding.device = device;
     return &graphicsBinding;
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetGraphicsBinding
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_AllocateSwapchainImageData
 XrSwapchainImageBaseHeader *GraphicsAPI_D3D11::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
     swapchainImagesMap[swapchain].first = type;
     swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
     return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D11_AllocateSwapchainImageData
 
 void *GraphicsAPI_D3D11::CreateImage(const ImageCreateInfo &imageCI) {
     if (imageCI.dimension == 1) {
@@ -1001,6 +1007,7 @@ void GraphicsAPI_D3D11::Draw(uint32_t vertexCount, uint32_t instanceCount, uint3
     immediateContext->DrawInstanced(vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedColorSwapchainFormats() {
     return {
         DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -1013,4 +1020,5 @@ const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedDepthSwapchainFormats(
         DXGI_FORMAT_D32_FLOAT,
         DXGI_FORMAT_D16_UNORM};
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 #endif
