@@ -727,15 +727,17 @@ void *GraphicsAPI_D3D12::CreateBuffer(const BufferCreateInfo &bufferCI) {
     heapDesc.Flags = D3D12_HEAP_FLAG_NONE;
     D3D12_CHECK(device->CreateHeap(&heapDesc, IID_PPV_ARGS(&heap)), "Failed to create Heap.")
 
-    D3D12_RESOURCE_STATES initState = D3D12_RESOURCE_STATE_COMMON;
-    if (bufferCI.type == BufferCreateInfo::Type::VERTEX) {
-        initState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-    } else if (bufferCI.type == BufferCreateInfo::Type::INDEX) {
-        initState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
-    } else if (bufferCI.type == BufferCreateInfo::Type::UNIFORM) {
-        initState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-    } else {
-        std::cout << "ERROR: D3D12: Unknown Buffer Type." << std::endl;
+    D3D12_RESOURCE_STATES initState = D3D12_RESOURCE_STATE_GENERIC_READ;
+    if (heapDesc.Properties.Type == D3D12_HEAP_TYPE_DEFAULT) {
+        if (bufferCI.type == BufferCreateInfo::Type::VERTEX) {
+            initState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+        } else if (bufferCI.type == BufferCreateInfo::Type::INDEX) {
+            initState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+        } else if (bufferCI.type == BufferCreateInfo::Type::UNIFORM) {
+            initState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+        } else {
+            std::cout << "ERROR: D3D12: Unknown Buffer Type." << std::endl;
+        }
     }
 
     D3D12_CHECK(device->CreatePlacedResource(heap, 0, &desc, initState, clear, IID_PPV_ARGS(&buffer)), "Failed to create Buffer.");
