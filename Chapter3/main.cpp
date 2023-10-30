@@ -569,8 +569,6 @@ private:
         OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
         if (m_graphicsAPI->SelectDepthSwapchainFormat(formats) == 0) {
             std::cerr << "Failed to find depth format for Swapchain." << std::endl;
-            std::cerr << "For systems that don't support this feature, they should use a depth image." << std::endl;
-            std::cerr << "They will be no support for XR_KHR_composition_layer_depth." << std::endl;
             DEBUG_BREAK;
         }
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
