@@ -66,7 +66,6 @@ The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on t
 API Layers are additional code layers that are inserted by the loader between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or for checking that the function calls made to OpenXR are compatible with the OpenXR specification. See :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`. 
 
 OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of absolving the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensible nature of OpenXR allows revisions of existing APIs and new graphics APIs to be integrated with ease. See :ref:`Chapter 5 <5 Extensions>`.
-OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of absolving the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensible nature of OpenXR allows revisions of existing APIs and new graphics APIs to be integrated with ease. See :ref:`Chapter 5 <5 Extensions>`.
 	
 OpenXR recognizes that there is a vast and ever-changing array of hardware and configurations in the XR space. With new headsets and controllers coming to the market, an abstraction of the input system was needed so that the same applications can target different and newer hardware with minimal change. This is the core reasoning behind the OpenXR Actions System.
 
@@ -841,6 +840,14 @@ Then, we create the actual platform-specific main function (our entry point to t
 
 	In the *workspace* directory, create a ``build/`` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``, that we have just created. Click "Configure" and "OK" to accept the default Generator, then click "Generate" to create the Visual Studio solution and project. Finally, click "Open Project" to open that solution with Visual Studio.
 
+	If you wish to build the project with CMake at the terminal, use the following commands to configure and generate the project:
+
+	.. code-block:: batch
+
+		mkdir build
+		cd build
+		cmake -G "<your_visual_studio_version>" ../
+
 	You can now build and run your program. It should compile and link with no errors or warnings, but it won't run correctly yet.
 
 .. container:: linux
@@ -856,6 +863,14 @@ Then, we create the actual platform-specific main function (our entry point to t
 	.. figure:: linux-vscode-cmake-configure.png
 		:alt: Select
 		:scale: 55%
+
+	If you wish to build the project with CMake at the terminal, use the following commands to configure and generate the project:
+
+	.. code-block:: bash
+
+		mkdir build
+		cd build
+		cmake -G "<your_generator>" ../
 		
 	If you haven't previously done so, install the gdb extension for VS Code: select the "Extensions" tab, and type "gdb" in the search box. To enable debugging, select the Run/Debug panel in Visual Studio Code. You will now need to create a debugging configuration.
 	Click the link "create a launch.json file" to and enter the following in launch.json:
@@ -874,6 +889,18 @@ Then, we create the actual platform-specific main function (our entry point to t
 				}
 			]
 		}
+
+.. container:: windows linux
+
+	If you wish to run the application outside of you IDE, you will need to be aware of the working directory for the application to run correctly.	For example, To run the debug varinat of the Chapter2 application, use this:
+
+.. container:: windows
+
+	``[...]/<workspaceFolder>/build/Chapter2>"Debug/OpenXRTutorialChapter2"``
+
+.. container:: linux
+
+	``[...]/<workspaceFolder>/Chapter2 $ "../build/Chapter2/OpenXRTutorialChapter2"``
 
 .. container:: android
 

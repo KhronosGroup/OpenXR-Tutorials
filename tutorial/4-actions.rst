@@ -2,7 +2,7 @@
 4 Interactions
 ##############
 
-The goal of this chapter is to build an application uses OpenXR actions to create interactivity. We will render numerous colored cubes for the user play with and build stuctures. First, we will update our build files and folders.
+The goal of this chapter is to build an application that uses OpenXR actions to create interactivity. We will render numerous colored cubes for the user play with and build stuctures. First, we will update our build files and folders.
 
 .. container:: windows linux
 
