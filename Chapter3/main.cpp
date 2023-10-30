@@ -514,7 +514,6 @@ private:
                 std::cout << "OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
                 break;
             }
-            // TODO: expand on this in text.
             // Log that there's a reference space change pending.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
@@ -1015,12 +1014,18 @@ private:
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
 
+    // Vertex and index buffers: geometry for our cuboids.
     void *m_vertexBuffer = nullptr;
     void *m_indexBuffer = nullptr;
+    // Camera values constant buffer for the shaders.
     void *m_uniformBuffer_Camera = nullptr;
+    // The normals are stored in a uniform buffer to simplify our vertex geometry.
     void *m_uniformBuffer_Normals = nullptr;
 
+    // We use only two shaders in this app.
     void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
+
+    // The pipeline is a graphics-API specific state object.
     void *m_pipeline = nullptr;
 };
 

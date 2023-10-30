@@ -347,26 +347,24 @@ private:
         // XR_DOCS_TAG_BEGIN_SuggestBindings2
         bool any_ok = false;
         // Each Action here has two paths, one for each SubAction path.
-        any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller",{
-                                    {m_changeColorAction, CreateXrPath("/user/hand/left/input/select/click")},
-                                    {m_grabCubeAction, CreateXrPath("/user/hand/right/input/select/click")},
-                                    {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
-                                    {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
-                                    {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
-                                    {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
+        any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller", {{m_changeColorAction, CreateXrPath("/user/hand/left/input/select/click")},
+                                                                                  {m_grabCubeAction, CreateXrPath("/user/hand/right/input/select/click")},
+                                                                                  {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
+                                                                                  {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
+                                                                                  {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
+                                                                                  {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
         // XR_DOCS_TAG_END_SuggestBindings2
         // XR_DOCS_TAG_BEGIN_SuggestTouchNativeBindings
         // Each Action here has two paths, one for each SubAction path.
-        any_ok |= SuggestBindings("/interaction_profiles/oculus/touch_controller", {
-                                    {m_grabCubeAction, CreateXrPath("/user/hand/left/input/squeeze/value")},
-                                    {m_grabCubeAction, CreateXrPath("/user/hand/right/input/squeeze/value")},
-                                    {m_spawnCubeAction, CreateXrPath("/user/hand/right/input/a/click")},
-                                    {m_changeColorAction, CreateXrPath("/user/hand/left/input/trigger/value")},
-                                    {m_changeColorAction, CreateXrPath("/user/hand/right/input/trigger/value")},
-                                    {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
-                                    {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
-                                    {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
-                                    {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
+        any_ok |= SuggestBindings("/interaction_profiles/oculus/touch_controller", {{m_grabCubeAction, CreateXrPath("/user/hand/left/input/squeeze/value")},
+                                                                                    {m_grabCubeAction, CreateXrPath("/user/hand/right/input/squeeze/value")},
+                                                                                    {m_spawnCubeAction, CreateXrPath("/user/hand/right/input/a/click")},
+                                                                                    {m_changeColorAction, CreateXrPath("/user/hand/left/input/trigger/value")},
+                                                                                    {m_changeColorAction, CreateXrPath("/user/hand/right/input/trigger/value")},
+                                                                                    {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
+                                                                                    {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
+                                                                                    {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
+                                                                                    {m_buzzAction, CreateXrPath("/user/hand/right/output/haptic")}});
         // XR_DOCS_TAG_END_SuggestTouchNativeBindings
         // XR_DOCS_TAG_BEGIN_SuggestBindings3
         if (!any_ok) {
@@ -418,11 +416,11 @@ private:
 
     void GetEnvironmentBlendModes() {
         // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
-        // Retrieves the available blend modes. The first call gets the size of the array that will be returned. The next call fills out the array.
-        uint32_t environmentBlendModeSize = 0;
-        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
-        m_environmentBlendModes.resize(environmentBlendModeSize);
-        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, m_environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
+        // Retrieves the available blend modes. The first call gets the count of the array that will be returned. The next call fills out the array.
+        uint32_t environmentBlendModeCount = 0;
+        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, 0, &environmentBlendModeCount, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
+        m_environmentBlendModes.resize(environmentBlendModeCount);
+        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeCount, &environmentBlendModeCount, m_environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
 
         // Pick the first application supported blend mode supported by the hardware.
         for (const XrEnvironmentBlendMode &environmentBlendMode : m_applicationEnvironmentBlendModes) {
@@ -440,11 +438,29 @@ private:
 
     void GetViewConfigurationViews() {
         // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
-        // Gets the View Configuration Views. The first call gets the size of the array that will be returned. The next call fills out the array.
-        uint32_t viewConfigurationViewSize = 0;
-        OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, 0, &viewConfigurationViewSize, nullptr), "Failed to enumerate ViewConfiguration Views.");
-        m_viewConfigurationViews.resize(viewConfigurationViewSize, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
-        OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, viewConfigurationViewSize, &viewConfigurationViewSize, m_viewConfigurationViews.data()), "Failed to enumerate ViewConfiguration Views.");
+        // Gets the View Configuration Types. The first call gets the count of the array that will be returned. The next call fills out the array.
+        uint32_t viewConfigurationCount = 0;
+        OPENXR_CHECK(xrEnumerateViewConfigurations(m_xrInstance, m_systemID, 0, &viewConfigurationCount, nullptr), "Failed to enumerate View Configurations.");
+        m_viewConfigurations.resize(viewConfigurationCount);
+        OPENXR_CHECK(xrEnumerateViewConfigurations(m_xrInstance, m_systemID, viewConfigurationCount, &viewConfigurationCount, m_viewConfigurations.data()), "Failed to enumerate View Configurations.");
+
+        // Pick the first application supported View Configuration Type con supported by the hardware.
+        for (const XrViewConfigurationType &viewConfiguration : m_applicationViewConfigurations) {
+            if (std::find(m_viewConfigurations.begin(), m_viewConfigurations.end(), viewConfiguration) != m_viewConfigurations.end()) {
+                m_viewConfiguration = viewConfiguration;
+                break;
+            }
+        }
+        if (m_viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM) {
+            std::cerr << "Failed to find a view configuration type. Defaulting to XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO." << std::endl;
+            m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+        }
+
+        // Gets the View Configuration Views. The first call gets the count of the array that will be returned. The next call fills out the array.
+        uint32_t viewConfigurationViewCount = 0;
+        OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, 0, &viewConfigurationViewCount, nullptr), "Failed to enumerate ViewConfiguration Views.");
+        m_viewConfigurationViews.resize(viewConfigurationViewCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
+        OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, viewConfigurationViewCount, &viewConfigurationViewCount, m_viewConfigurationViews.data()), "Failed to enumerate ViewConfiguration Views.");
         // XR_DOCS_TAG_END_GetViewConfigurationViews
     }
 
@@ -699,7 +715,6 @@ private:
                 // XR_DOCS_TAG_END_CallRecordCurrentBindings
                 break;
             }
-            // TODO: expand on this in text.
             // Log that there's a reference space change pending.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
@@ -899,10 +914,10 @@ private:
     void CreateSwapchains() {
         // XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
         // Get the supported swapchain formats as an array of int64_t and ordered by runtime preference.
-        uint32_t formatSize = 0;
-        OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, 0, &formatSize, nullptr), "Failed to enumerate Swapchain Formats");
-        std::vector<int64_t> formats(formatSize);
-        OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
+        uint32_t formatCount = 0;
+        OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, 0, &formatCount, nullptr), "Failed to enumerate Swapchain Formats");
+        std::vector<int64_t> formats(formatCount);
+        OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatCount, &formatCount, formats.data()), "Failed to enumerate Swapchain Formats");
         if (m_graphicsAPI->SelectDepthSwapchainFormat(formats) == 0) {
             std::cerr << "Failed to find depth format for Swapchain." << std::endl;
             DEBUG_BREAK;
@@ -1329,7 +1344,9 @@ private:
     bool m_applicationRunning = true;
     bool m_sessionRunning = false;
 
-    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+    std::vector<XrViewConfigurationType> m_applicationViewConfigurations = {XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_MONO};
+    std::vector<XrViewConfigurationType> m_viewConfigurations;
+    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
     struct SwapchainInfo {

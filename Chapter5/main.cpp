@@ -462,11 +462,11 @@ private:
 
     void GetEnvironmentBlendModes() {
         // XR_DOCS_TAG_BEGIN_GetEnvironmentBlendModes
-        // Retrieves the available blend modes. The first call gets the size of the array that will be returned. The next call fills out the array.
-        uint32_t environmentBlendModeSize = 0;
-        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, 0, &environmentBlendModeSize, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
-        m_environmentBlendModes.resize(environmentBlendModeSize);
-        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeSize, &environmentBlendModeSize, m_environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
+        // Retrieves the available blend modes. The first call gets the count of the array that will be returned. The next call fills out the array.
+        uint32_t environmentBlendModeCount = 0;
+        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, 0, &environmentBlendModeCount, nullptr), "Failed to enumerate EnvironmentBlend Modes.");
+        m_environmentBlendModes.resize(environmentBlendModeCount);
+        OPENXR_CHECK(xrEnumerateEnvironmentBlendModes(m_xrInstance, m_systemID, m_viewConfiguration, environmentBlendModeCount, &environmentBlendModeCount, m_environmentBlendModes.data()), "Failed to enumerate EnvironmentBlend Modes.");
 
         // Pick the first application supported blend mode supported by the hardware.
         for (const XrEnvironmentBlendMode &environmentBlendMode : m_applicationEnvironmentBlendModes) {
@@ -484,11 +484,29 @@ private:
 
     void GetViewConfigurationViews() {
         // XR_DOCS_TAG_BEGIN_GetViewConfigurationViews
-        // Gets the View Configuration Views. The first call gets the size of the array that will be returned. The next call fills out the array.
-        uint32_t viewConfigurationViewSize = 0;
-        OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, 0, &viewConfigurationViewSize, nullptr), "Failed to enumerate ViewConfiguration Views.");
-        m_viewConfigurationViews.resize(viewConfigurationViewSize, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
-        OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, viewConfigurationViewSize, &viewConfigurationViewSize, m_viewConfigurationViews.data()), "Failed to enumerate ViewConfiguration Views.");
+        // Gets the View Configuration Types. The first call gets the count of the array that will be returned. The next call fills out the array.
+        uint32_t viewConfigurationCount = 0;
+        OPENXR_CHECK(xrEnumerateViewConfigurations(m_xrInstance, m_systemID, 0, &viewConfigurationCount, nullptr), "Failed to enumerate View Configurations.");
+        m_viewConfigurations.resize(viewConfigurationCount);
+        OPENXR_CHECK(xrEnumerateViewConfigurations(m_xrInstance, m_systemID, viewConfigurationCount, &viewConfigurationCount, m_viewConfigurations.data()), "Failed to enumerate View Configurations.");
+
+        // Pick the first application supported View Configuration Type con supported by the hardware.
+        for (const XrViewConfigurationType &viewConfiguration : m_applicationViewConfigurations) {
+            if (std::find(m_viewConfigurations.begin(), m_viewConfigurations.end(), viewConfiguration) != m_viewConfigurations.end()) {
+                m_viewConfiguration = viewConfiguration;
+                break;
+            }
+        }
+        if (m_viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM) {
+            std::cerr << "Failed to find a view configuration type. Defaulting to XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO." << std::endl;
+            m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+        }
+
+        // Gets the View Configuration Views. The first call gets the count of the array that will be returned. The next call fills out the array.
+        uint32_t viewConfigurationViewCount = 0;
+        OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, 0, &viewConfigurationViewCount, nullptr), "Failed to enumerate ViewConfiguration Views.");
+        m_viewConfigurationViews.resize(viewConfigurationViewCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
+        OPENXR_CHECK(xrEnumerateViewConfigurationViews(m_xrInstance, m_systemID, m_viewConfiguration, viewConfigurationViewCount, &viewConfigurationViewCount, m_viewConfigurationViews.data()), "Failed to enumerate ViewConfiguration Views.");
         // XR_DOCS_TAG_END_GetViewConfigurationViews
     }
 
@@ -750,7 +768,6 @@ private:
                 // XR_DOCS_TAG_END_CallRecordCurrentBindings
                 break;
             }
-            // TODO: expand on this in text.
             // Log that there's a reference space change pending.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
@@ -959,10 +976,10 @@ private:
     void CreateSwapchains() {
         // XR_DOCS_TAG_BEGIN_EnumerateSwapchainFormats
         // Get the supported swapchain formats as an array of int64_t and ordered by runtime preference.
-        uint32_t formatSize = 0;
-        OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, 0, &formatSize, nullptr), "Failed to enumerate Swapchain Formats");
-        std::vector<int64_t> formats(formatSize);
-        OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatSize, &formatSize, formats.data()), "Failed to enumerate Swapchain Formats");
+        uint32_t formatCount = 0;
+        OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, 0, &formatCount, nullptr), "Failed to enumerate Swapchain Formats");
+        std::vector<int64_t> formats(formatCount);
+        OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatCount, &formatCount, formats.data()), "Failed to enumerate Swapchain Formats");
         if (m_graphicsAPI->SelectDepthSwapchainFormat(formats) == 0) {
             std::cerr << "Failed to find depth format for Swapchain." << std::endl;
             DEBUG_BREAK;
@@ -1157,7 +1174,7 @@ private:
 
     bool RenderLayer(RenderLayerInfo &renderLayerInfo) {
         // XR_DOCS_TAG_BEGIN_RenderLayer1
-        // Locate the views from the view configuration with in the (reference) space at the display time.
+        // Locate the views from the view configuration within the (reference) space at the display time.
         std::vector<XrView> views(m_viewConfigurationViews.size(), {XR_TYPE_VIEW});
 
         XrViewState viewState{XR_TYPE_VIEW_STATE};  // Will contain information on whether the position and/or orientation is valid and/or tracked.
@@ -1424,7 +1441,9 @@ private:
     bool m_applicationRunning = true;
     bool m_sessionRunning = false;
 
-    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+    std::vector<XrViewConfigurationType> m_applicationViewConfigurations = {XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_MONO};
+    std::vector<XrViewConfigurationType> m_viewConfigurations;
+    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
     std::vector<XrViewConfigurationView> m_viewConfigurationViews;
 
     struct SwapchainInfo {
@@ -1455,15 +1474,22 @@ private:
     // In STAGE space, viewHeightM should be 0. In LOCAL space, it should be offset downwards, below the viewer's initial position.
     float m_viewHeightM = 1.5f;
 
+    // Vertex and index buffers: geometry for our cuboids.
     void *m_vertexBuffer = nullptr;
     void *m_indexBuffer = nullptr;
+    // Camera values constant buffer for the shaders.
     void *m_uniformBuffer_Camera = nullptr;
+    // The normals are stored in a uniform buffer to simplify our vertex geometry.
     void *m_uniformBuffer_Normals = nullptr;
 
+    // We use only two shaders in this app.
     void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
+
+    // The pipeline is a graphics-API specific state object.
     void *m_pipeline = nullptr;
 
     // XR_DOCS_TAG_BEGIN_Objects
+    // An instance of a 3d colored block.
     struct Block {
         XrPosef pose;
         XrVector3f scale;
