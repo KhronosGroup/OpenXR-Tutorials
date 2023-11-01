@@ -120,6 +120,8 @@ inline std::vector<char> ReadBinaryFile(const std::string &filepath, AAssetManag
 
 // XR_DOCS_TAG_END_Helper_Functions1
 
+#define XR_DOCS_CHAPTER_1_4 0x14
+
 #define XR_DOCS_CHAPTER_2_1 0x21
 #define XR_DOCS_CHAPTER_2_2 0x22
 #define XR_DOCS_CHAPTER_2_3 0x23

@@ -922,3 +922,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 ***********
 
 In this chapter, you learned about the fundamental concepts of OpenXR and created a project you will use to build your OpenXR application. Now that we have this basic application up and running, we will start to set up OpenXR.
+
+Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs. Note that Chapter2 is renamed to Chapter1 is the archive and repository folder.
+
+:download:`Chapter1.zip <../build/eoc_archs/Chapter1.zip>`

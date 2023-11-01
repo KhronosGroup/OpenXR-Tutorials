@@ -1,6 +1,7 @@
 echo off
 
 rem Make destination folders
+mkdir build\eoc_archs\Chapter1
 mkdir build\eoc_archs\Chapter2
 mkdir build\eoc_archs\Chapter3
 mkdir build\eoc_archs\Chapter4
@@ -10,6 +11,8 @@ mkdir build\eoc_archs\Common
 mkdir build\eoc_archs\Shaders
 
 rem Copy the required files and folder to the eoc-archs folder
+copy Chapter1\main.cpp       build\eoc_archs\Chapter1
+copy Chapter1\CMakeLists.txt build\eoc_archs\Chapter1
 copy Chapter2\main.cpp       build\eoc_archs\Chapter2
 copy Chapter2\CMakeLists.txt build\eoc_archs\Chapter2
 copy Chapter3\main.cpp       build\eoc_archs\Chapter3
@@ -23,10 +26,12 @@ copy Common                  build\eoc_archs\Common
 copy Shaders                 build\eoc_archs\Shaders
 
 rem Remove XR_DOCS_TAG_ lines from files
+python eoc-archs-rm-tags.py -f build\eoc_archs\Chapter1\main.cpp
 python eoc-archs-rm-tags.py -f build\eoc_archs\Chapter2\main.cpp
 python eoc-archs-rm-tags.py -f build\eoc_archs\Chapter3\main.cpp
 python eoc-archs-rm-tags.py -f build\eoc_archs\Chapter4\main.cpp
 python eoc-archs-rm-tags.py -f build\eoc_archs\Chapter5\main.cpp
+python eoc-archs-rm-tags.py -f build\eoc_archs\Chapter1\CMakeLists.txt
 python eoc-archs-rm-tags.py -f build\eoc_archs\Chapter2\CMakeLists.txt
 python eoc-archs-rm-tags.py -f build\eoc_archs\Chapter3\CMakeLists.txt
 python eoc-archs-rm-tags.py -f build\eoc_archs\Chapter4\CMakeLists.txt
@@ -49,6 +54,9 @@ python eoc-archs-rm-tags.py -f build\eoc_archs\Common\OpenXRHelper.h
 
 rem Copy in custom CMakeLists.txt file and create zip archives
 pushd build\eoc_archs
+copy /y .\..\..\thirdparty\CMakeLists_Ch1_Main.txt CMakeLists.txt
+tar -a -cf Chapter1.zip Chapter1 CMakeLists.txt cmake Common
+
 copy /y .\..\..\thirdparty\CMakeLists_Ch2_Main.txt CMakeLists.txt
 tar -a -cf Chapter2.zip Chapter2 CMakeLists.txt cmake Common
 
@@ -63,6 +71,7 @@ tar -a -cf Chapter5.zip Chapter5 CMakeLists.txt cmake Common Shaders
 popd
 
 rem Remove destination file and folders
+rmdir /s /q build\eoc_archs\Chapter1
 rmdir /s /q build\eoc_archs\Chapter2
 rmdir /s /q build\eoc_archs\Chapter3
 rmdir /s /q build\eoc_archs\Chapter4

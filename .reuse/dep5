@@ -7,6 +7,10 @@ Files: .github/*
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 
+Files: Chapter1/*
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
 Files: Chapter2/*
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0

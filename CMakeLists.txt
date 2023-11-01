@@ -39,6 +39,10 @@ if (XR_TUTORIAL_BUILD_DOCUMENTATION)
 endif()
 
 if (XR_TUTORIAL_BUILD_PROJECTS)
+    # XR_DOCS_TAG_BEGIN_AddChapter1
+    add_subdirectory(Chapter1)
+    # XR_DOCS_TAG_END_AddChapter1
+
     # XR_DOCS_TAG_BEGIN_AddChapter2
     add_subdirectory(Chapter2)
     # XR_DOCS_TAG_END_AddChapter2
