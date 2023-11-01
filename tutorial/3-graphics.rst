@@ -241,7 +241,10 @@ Both Linear and sRGB color spaces are supported and one may have preference over
 
 If you wish to use an sRGB color format, you *must* use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB`` for the OpenXR runtime to automatically do sRGB-to-linear color space conversions when reading the image. 
 
-We also check that the runtime has a supported depth format so that we can create a depth swapchain. This will be useful for :openxr_ref:`XR_KHR_composition_layer_depth` and AR applications. See :ref:`Chapter 5.2<5.2 Composition Layer Depth>`.
+We also check that the runtime has a supported depth format so that we can create a depth swapchain. You can check this with :openxr_ref:`xrEnumerateSwapchainFormats`. Unfortunately, there are no guarantees with in the OpenXR 1.0 core specification or the :openxr_ref:`XR_KHR_composition_layer_depth` extension revision 6 that states runtimes must support depth format for swapchains. Most XR systems and/or run support depth swapchain formats. This will be useful for :openxr_ref:`XR_KHR_composition_layer_depth` and AR applications. See :ref:`Chapter 5.2<5.2 Composition Layer Depth>`.
+
+If no swapchain depth format is found, applications should use a depth buffer/texture to render graphics. This depth buffer/texture can not be used with :openxr_ref:`XR_KHR_composition_layer_depth`.
+
 
 Copy the code below into the ``CreateSwapchains()`` method:
 
