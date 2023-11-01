@@ -75,6 +75,10 @@ OpenXR recognizes that there is a vast and ever-changing array of hardware and c
 
 This section will help you set up your development environment. Here your choice of platform makes a difference, but afterwards, things will be much more consistent. You can change platform and graphics API at any time by clicking the tabs at the top of the page. Select the platform you want to develop for now, by clicking the appropriate tab above.
 
+.. container:: windows linux
+
+	You should make sure that the XR runtime that you wish to use is made the default for the XR loader to recognize and load for your application.
+
 .. container:: windows
 
 	.. rubric:: Visual Studio
@@ -96,7 +100,7 @@ This section will help you set up your development environment. Here your choice
 		You will need GPU that supports ``D3D_FEATURE_LEVEL_11_0`` for this tutorial.
 	
 	.. container:: d3d11
-		
+
 		You will need at least Direct3D 11.1 Feature for this tutorial.
 		
 	.. container:: opengl
