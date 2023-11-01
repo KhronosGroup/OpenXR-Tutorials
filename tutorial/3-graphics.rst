@@ -763,7 +763,7 @@ Update the methods and members in the class. Copy the highlighted code:
 		std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
 		XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
-		XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
+		XrSpace m_localSpace = XR_NULL_HANDLE;
 		struct RenderLayerInfo {
 			XrTime predictedDisplayTime;
 			std::vector<XrCompositionLayerBaseHeader *> layers;
@@ -1141,7 +1141,7 @@ Update the methods and members in the class. Copy the highlighted code:
 		std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
 		XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
-		XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
+		XrSpace m_localSpace = XR_NULL_HANDLE;
 		struct RenderLayerInfo {
 			XrTime predictedDisplayTime;
 			std::vector<XrCompositionLayerBaseHeader *> layers;

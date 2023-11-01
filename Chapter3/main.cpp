@@ -566,14 +566,14 @@ private:
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
-        OPENXR_CHECK(xrCreateReferenceSpace(m_session, &referenceSpaceCI, &m_localOrStageSpace), "Failed to create ReferenceSpace.");
+        OPENXR_CHECK(xrCreateReferenceSpace(m_session, &referenceSpaceCI, &m_localSpace), "Failed to create ReferenceSpace.");
         // XR_DOCS_TAG_END_CreateReferenceSpace
     }
 
     void DestroyReferenceSpace() {
         // XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
         // Destroy the reference XrSpace.
-        OPENXR_CHECK(xrDestroySpace(m_localOrStageSpace), "Failed to destroy Space.")
+        OPENXR_CHECK(xrDestroySpace(m_localSpace), "Failed to destroy Space.")
         // XR_DOCS_TAG_END_DestroyReferenceSpace
     }
 
@@ -777,7 +777,7 @@ private:
         XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = m_viewConfiguration;
         viewLocateInfo.displayTime = renderLayerInfo.predictedDisplayTime;
-        viewLocateInfo.space = m_localOrStageSpace;
+        viewLocateInfo.space = m_localSpace;
         uint32_t viewCount = 0;
         XrResult result = xrLocateViews(m_session, &viewLocateInfo, &viewState, static_cast<uint32_t>(views.size()), &viewCount, views.data());
         if (result != XR_SUCCESS) {
@@ -876,7 +876,7 @@ private:
 
         // Fill out the XrCompositionLayerProjection structure for usage with xrEndFrame().
         renderLayerInfo.layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
-        renderLayerInfo.layerProjection.space = m_localOrStageSpace;
+        renderLayerInfo.layerProjection.space = m_localSpace;
         renderLayerInfo.layerProjection.viewCount = static_cast<uint32_t>(renderLayerInfo.layerProjectionViews.size());
         renderLayerInfo.layerProjection.views = renderLayerInfo.layerProjectionViews.data();
 
@@ -1003,7 +1003,7 @@ private:
     std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
-    XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
+    XrSpace m_localSpace = XR_NULL_HANDLE;
     struct RenderLayerInfo {
         XrTime predictedDisplayTime = 0;
         std::vector<XrCompositionLayerBaseHeader *> layers;

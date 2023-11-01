@@ -785,7 +785,7 @@ private:
             OPENXR_CHECK(xrGetActionStatePose(m_session, &actionStateGetInfo, &m_handPoseState[i]), "Failed to get Pose State.");
             if (m_handPoseState[i].isActive) {
                 XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-                XrResult res = xrLocateSpace(m_handPoseSpace[i], m_localOrStageSpace, predictedTime, &spaceLocation);
+                XrResult res = xrLocateSpace(m_handPoseSpace[i], m_localSpace, predictedTime, &spaceLocation);
                 if (XR_UNQUALIFIED_SUCCESS(res) &&
                     (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
                     (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0) {
@@ -901,14 +901,14 @@ private:
         XrReferenceSpaceCreateInfo referenceSpaceCI{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         referenceSpaceCI.poseInReferenceSpace = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}};
-        OPENXR_CHECK(xrCreateReferenceSpace(m_session, &referenceSpaceCI, &m_localOrStageSpace), "Failed to create ReferenceSpace.");
+        OPENXR_CHECK(xrCreateReferenceSpace(m_session, &referenceSpaceCI, &m_localSpace), "Failed to create ReferenceSpace.");
         // XR_DOCS_TAG_END_CreateReferenceSpace
     }
 
     void DestroyReferenceSpace() {
         // XR_DOCS_TAG_BEGIN_DestroyReferenceSpace
         // Destroy the reference XrSpace.
-        OPENXR_CHECK(xrDestroySpace(m_localOrStageSpace), "Failed to destroy Space.")
+        OPENXR_CHECK(xrDestroySpace(m_localSpace), "Failed to destroy Space.")
         // XR_DOCS_TAG_END_DestroyReferenceSpace
     }
 
@@ -1103,7 +1103,7 @@ private:
         XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = m_viewConfiguration;
         viewLocateInfo.displayTime = renderLayerInfo.predictedDisplayTime;
-        viewLocateInfo.space = m_localOrStageSpace;
+        viewLocateInfo.space = m_localSpace;
         uint32_t viewCount = 0;
         XrResult result = xrLocateViews(m_session, &viewLocateInfo, &viewState, static_cast<uint32_t>(views.size()), &viewCount, views.data());
         if (result != XR_SUCCESS) {
@@ -1216,7 +1216,7 @@ private:
 
         // Fill out the XrCompositionLayerProjection structure for usage with xrEndFrame().
         renderLayerInfo.layerProjection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
-        renderLayerInfo.layerProjection.space = m_localOrStageSpace;
+        renderLayerInfo.layerProjection.space = m_localSpace;
         renderLayerInfo.layerProjection.viewCount = static_cast<uint32_t>(renderLayerInfo.layerProjectionViews.size());
         renderLayerInfo.layerProjection.views = renderLayerInfo.layerProjectionViews.data();
 
@@ -1343,7 +1343,7 @@ private:
     std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
     XrEnvironmentBlendMode m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM;
 
-    XrSpace m_localOrStageSpace = XR_NULL_HANDLE;
+    XrSpace m_localSpace = XR_NULL_HANDLE;
     struct RenderLayerInfo {
         XrTime predictedDisplayTime = 0;
         std::vector<XrCompositionLayerBaseHeader *> layers;
