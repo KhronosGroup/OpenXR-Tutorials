@@ -109,9 +109,11 @@ Not all API layers and extensions are available to use, so we must check which o
 
 These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures - this is called the "two-call idiom". Before the second call, we need to set :openxr_ref:`XrApiLayerProperties` ``::type`` or :openxr_ref:`XrExtensionProperties` ``::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layer and extension, we use a nested loop to check to see whether an API layers or extensions is available and add it to the ``m_activeAPILayers`` and/or ``m_activeInstanceExtensions`` respectively. 
 
+In OpenXR, we provide an explicit input capacity to both :openxr_ref:`xrEnumerateApiLayerProperties` and :openxr_ref:`xrEnumerateInstanceExtensionProperties`, which provides an additional layer of memory-safety.
+
 .. container:: vulkan
 
-	There is a subtle difference here from the two-call idiom in the Vulkan API. In OpenXR, we provide an explicit capacity in the first argument, which provides an additional layer of memory-safety.
+	This is a subtle difference here from the two-call idiom in the Vulkan API.
 
 Note the ``m_activeAPILayers`` and ``m_activeInstanceExtensions`` are of type ``std::vector<const char *>``. This will help us when fill out the next structure :openxr_ref:`XrInstanceCreateInfo`.
 
