@@ -109,7 +109,7 @@ Not all API layers and extensions are available to use, so we must check which o
 
 These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures - this is called the "two-call idiom". Before the second call, we need to set :openxr_ref:`XrApiLayerProperties` ``::type`` or :openxr_ref:`XrExtensionProperties` ``::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layer and extension, we use a nested loop to check to see whether an API layers or extensions is available and add it to the ``m_activeAPILayers`` and/or ``m_activeInstanceExtensions`` respectively. 
 
-In OpenXR, we provide an explicit input capacity to both :openxr_ref:`xrEnumerateApiLayerProperties` and :openxr_ref:`xrEnumerateInstanceExtensionProperties`, which provides an additional layer of memory-safety.
+In OpenXR, we provide an explicit input capacity to both :openxr_ref:`xrEnumerateApiLayerProperties` and :openxr_ref:`xrEnumerateInstanceExtensionProperties`, which provides an additional layer of memory-safety. :openxr_ref:`xrEnumerateInstanceExtensionProperties` also allows you to query instance extensions by API layer name. In this tutorial, we just query the non-layer extensions that are implicitly loaded by the runtime. 
 
 .. container:: vulkan
 
