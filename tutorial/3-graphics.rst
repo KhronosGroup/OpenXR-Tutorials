@@ -25,7 +25,7 @@ The goal of this chapter is to build an application that creates and clears colo
 	:start-after: XR_DOCS_TAG_BEGIN_SetProjectName3
 	:end-before: XR_DOCS_TAG_END_SetProjectName3
 
-Create a ``Shaders`` folder in your root workspace folder, download and put these files in it:
+Create a ``Shaders`` folder in your root *workspace* folder, download and put these files in it:
 
 .. container:: d3d11 d3d12
 
