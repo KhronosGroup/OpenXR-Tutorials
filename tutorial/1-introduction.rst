@@ -92,15 +92,25 @@ This section will help you set up your development environment. Here your choice
 		Direct3D 11 and Direct3D 12 are built into the Windows SDK. If you're using Direct3D, D3D12 is recommended, because of it support for `View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_. Essentially, it allows you to draw both eye views in one draw call.
 
 		In both cases, download and install the latest `Windows SDK <https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/>`_.
+
+		You will need GPU that supports ``D3D_FEATURE_LEVEL_11_0`` for this tutorial.
+	
+	.. container:: d3d11
+		
+		You will need at least Direct3D 11.1 Feature for this tutorial.
 		
 	.. container:: opengl
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``.
 		If you want to use OpenGL stand-alone, you will need to use WGL to create a valid OpenGL Context for Microsoft Windows - `Creating an OpenGL Context WGL <https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_.
 
+		You will need GPU that supports at least OpenGL 4.3 for this tutorial.
+
 	.. container:: vulkan
 
 		If you're using Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_.
+
+		You will need GPU that supports at least Vulkan 1.0 for this tutorial.
 
 .. container:: linux
 
@@ -119,9 +129,13 @@ This section will help you set up your development environment. Here your choice
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``.
 		If you want to use OpenGL stand-alone, you will need to use GLX to create a valid OpenGL Context for Linux - `Tutorial: OpenGL 3.0 Context Creation (GLX) <Tutorial:_OpenGL_3.0_Context_Creation_(GLX)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_.
 
+		You will need GPU that supports at least OpenGL 4.3 for this tutorial.
+
 	.. container:: vulkan
 
 		If you want to use Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_.
+
+		You will need GPU that supports at least Vulkan 1.0 for this tutorial.
 
 	.. rubric Install Monado
 
@@ -140,9 +154,13 @@ This section will help you set up your development environment. Here your choice
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL ES API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. 
 		If you want to use OpenGL ES stand-alone, you will need to use EGL to create a valid OpenGL ES Context for Android - `EGL Overview <https://www.khronos.org/egl>`_. You will also need to use a function loader like GLAD to access functions for OpenGL ES - `GLAD <https://glad.dav1d.de/>`_.
 
+		You will need an Android device that supports at least OpenGL ES 3.1 for this tutorial.
+
 	.. container:: vulkan
 
 		Vulkan is included as part of the NDK provided by Google and is supported on Android 7.0 (Nougat), API level 24 or higher (see `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_).
+
+		You will need an Android device that supports at least Vulkan 1.0 for this tutorial.
 
 *****************
 1.4 Project Setup
