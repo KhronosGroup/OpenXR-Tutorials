@@ -61,7 +61,7 @@ OpenXR provides a clear and precise common language for developers and hardware 
 
 An OpenXR Runtime implements the OpenXR API. The runtime translates the OpenXR function calls into something that the vendor's software/hardware can understand.
 
-The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as ``XR_EXT_debug_utils``, any functions associated with that extension will need to be loaded in with ``xrGetInstanceProcAddr()``. Some platforms like Android require extra work and information to initialize the loader.
+The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as :openxr_ref:`XR_EXT_debug_utils`, any functions associated with that extension will need to be loaded in with :openxr_ref:`xrGetInstanceProcAddr`. Some platforms like Android require extra work and information to initialize the loader.
 
 API Layers are additional code layers that are inserted by the loader between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or for checking that the function calls made to OpenXR are compatible with the OpenXR specification. See :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`. 
 
@@ -650,7 +650,7 @@ This is a simple header file for boilerplate code for the various platforms. It 
 
 .. rubric::  OpenXRDebugUtils
 
-A header and cpp file pair that helps in setting up the DebugUtilsMessenger. ``XR_EXT_debug_utils`` in an OpenXR instance extension that can intercept call made to OpenXR and provide extra information or report warning and errors, if the usage of the API or the current state of OpenXR is not valid. As you go through this tutorial it is highly recommended to have this enabled to help with debugging. This is discussed in detail in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`, but in general, ``CreateOpenXRDebugUtilsMessenger()`` creates and ``DestroyOpenXRDebugUtilsMessenger()`` destroys an ``XrDebugUtilsMessengerEXT``. ``OpenXRMessageCallbackFunction()`` is a callback function that is specified at object creation, which is called when OpenXR raises an issue. The header declares the functions and the cpp defines them.
+A header and cpp file pair that helps in setting up the DebugUtilsMessenger. :openxr_ref:`XR_EXT_debug_utils` in an OpenXR instance extension that can intercept call made to OpenXR and provide extra information or report warning and errors, if the usage of the API or the current state of OpenXR is not valid. As you go through this tutorial it is highly recommended to have this enabled to help with debugging. This is discussed in detail in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`, but in general, ``CreateOpenXRDebugUtilsMessenger()`` creates and ``DestroyOpenXRDebugUtilsMessenger()`` destroys an :openxr_ref:`XrDebugUtilsMessengerEXT`. ``OpenXRMessageCallbackFunction()`` is a callback function that is specified at object creation, which is called when OpenXR raises an issue. The header declares the functions and the cpp defines them.
 
 .. rubric::  OpenXRHelper
 
@@ -664,7 +664,7 @@ A header for including all the needed header files and helper functions. Looking
 
 Here, we include the main OpenXR header file ``openxr.h`` and the OpenXR platform header file ``openxr_platform.h``. For the OpenXR platform header file, note the comment about using the preceding ``XR_USE_PLATFORM_...`` and ``XR_USE_GRAPHICS_API_...`` macros. When enabled, we gain access to functionality that interacts with the chosen graphics API and/or platform. These macros are automatically set by ``GraphicsAPI.h``
 
-This header also defines the macro ``OPENXR_CHECK``. Many OpenXR functions return an ``XrResult``. This macro will check if the call has failed and will log a message to ``std::cerr``. This can be modified to suit your needs. There are two additional functions ``GetXRErrorString()`` and ``OpenXRDebugBreak()``, which are used to convert the ``XrResult`` to a string and as a breakpoint function respectively.
+This header also defines the macro ``OPENXR_CHECK``. Many OpenXR functions return an :openxr_ref:`XrResult`. This macro will check if the call has failed and will log a message to ``std::cerr``. This can be modified to suit your needs. There are two additional functions ``GetXRErrorString()`` and ``OpenXRDebugBreak()``, which are used to convert the :openxr_ref:`XrResult` to a string and as a breakpoint function respectively.
 
 1.4.3 Main.cpp and the OpenXRTutorial Class
 ===========================================
@@ -713,7 +713,7 @@ Next, we add the ``GraphicsAPI_....h`` header to include the ``GraphicsAPI`` cod
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_Vulkan
 		:end-before: XR_DOCS_TAG_END_include_GraphicsAPI_Vulkan
 
-You can also include ``OpenXRDebugUtils.h`` to help with the set-up of ``XrDebugUtilsMessengerEXT``.
+You can also include ``OpenXRDebugUtils.h`` to help with the set-up of :openxr_ref:`XrDebugUtilsMessengerEXT`.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -815,7 +815,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 			:start-after: XR_DOCS_TAG_BEGIN_android_main_VULKAN
 			:end-before: XR_DOCS_TAG_END_android_main_VULKAN
 	
-	Before we can use OpenXR for Android, we need to initialize the loader based the application's context and virtual machine. We retrieve the function pointer to ``xrInitializeLoaderKHR``, and with the ``XrLoaderInitInfoAndroidKHR`` filled out, call that function to initialize OpenXR for our use. At this point, we also attach the current thread to the Java Virtual Machine. We assign our ``AndroidAppState`` static member and our ``AndroidAppHandleCmd()`` static method to the ``android_app *`` and save it to a static member in the class.
+	Before we can use OpenXR for Android, we need to initialize the loader based the application's context and virtual machine. We retrieve the function pointer to :openxr_ref:`xrInitializeLoaderKHR`, and with the :openxr_ref:`XrLoaderInitInfoAndroidKHR` filled out, call that function to initialize OpenXR for our use. At this point, we also attach the current thread to the Java Virtual Machine. We assign our ``AndroidAppState`` static member and our ``AndroidAppHandleCmd()`` static method to the ``android_app *`` and save it to a static member in the class.
 
 	Android requires a few extra additions to the OpenXRTutorial class. Namely, ``android_app *``, ``AndroidAppState`` and ``AndroidAppHandleCmd``, which are used in getting updates from the Android Operating System and keep our application functioning. Add the following code after the definition of ``Run()`` in your ``OpenXRTutorial`` class declaration:
 

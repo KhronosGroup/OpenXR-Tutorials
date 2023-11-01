@@ -38,7 +38,7 @@ author = 'Simul Software Ltd'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["myst_parser","sphinx.ext.autosectionlabel","sphinxcontrib.mermaid","sphinxcontrib.jquery","sphinx_copybutton"]
+extensions = ["myst_parser","sphinx.ext.autosectionlabel","sphinxcontrib.mermaid","sphinxcontrib.jquery","sphinx_copybutton","sphinx.ext.extlinks"]
 mermaid_output_format='png'
 source_suffix = {'.rst': 'restructuredtext'}
 # Add any paths that contain templates here, relative to this directory.
@@ -79,3 +79,6 @@ html_sidebars = {
    '**': ['globaltoc.html', 'sourcelink.html', 'searchbox.html']
 }
 mermaid_cmd='mmdc.cmd'
+
+# -- Definitions for sphinx.ext.extlinks -------------------------------------
+extlinks = {'openxr_ref' : ('https://registry.khronos.org/OpenXR/specs/1.0/man/html/%s.html', '%s') } # :openxr_ref:

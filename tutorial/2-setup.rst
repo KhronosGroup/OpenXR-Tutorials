@@ -2,7 +2,7 @@
 2 OpenXR Setup
 ##############
 
-With your project created and your application building and running, we can start to use OpenXR. The goal of this chapter is to create an ``XrInstance`` and an ``XrSession``, and setup the OpenXR event loop. This OpenXR code is needed to setup the core functionality of an OpenXR application to have that application interact with the OpenXR runtime and your graphics API correctly.
+With your project created and your application building and running, we can start to use OpenXR. The goal of this chapter is to create an :openxr_ref:`XrInstance` and an :openxr_ref:`XrSession`, and setup the OpenXR event loop. This OpenXR code is needed to setup the core functionality of an OpenXR application to have that application interact with the OpenXR runtime and your graphics API correctly.
 
 ****************************************
 2.1 Creating an XrInstance / xrGetSystem
@@ -73,7 +73,7 @@ First, we updated ``OpenXRTutorial::Run()`` to call the new methods ``CreateInst
 2.1.1 XrInstance
 ================
 
-The ``XrInstance`` is the foundational object that we need to create first. The ``XrInstance`` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the ``CreateInstance()`` method, we will first add the code for the ``XrApplicationInfo``.
+The :openxr_ref:`XrInstance` is the foundational object that we need to create first. The :openxr_ref:`XrInstance` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the ``CreateInstance()`` method, we will first add the code for the :openxr_ref:`XrApplicationInfo`.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -81,11 +81,11 @@ The ``XrInstance`` is the foundational object that we need to create first. The 
 	:end-before: XR_DOCS_TAG_END_XrApplicationInfo
 	:dedent: 8
 
-This structure allows you to specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the ``XrApplicationInfo::apiVersion``. Here we use the ``XR_CURRENT_API_VERSION`` macro to specify the OpenXR version that we want to run. Also, note here the use of ``strncpy()`` to set the name strings. If you look at ``XrApplicationInfo::applicationName`` and ``XrApplicationInfo::engineName`` members, they are of type ``char[]``, so you must copy your string into that buffer. Also, be aware of the allowable length. ``XrApplicationInfo`` will be used later when we will fill out ``XrInstanceCreateInfo``.
+This structure allows you to specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the :openxr_ref:`XrApplicationInfo` ``::apiVersion``. Here we use the :openxr_ref:`XR_CURRENT_API_VERSION` macro to specify the OpenXR version that we want to run. Also, note here the use of ``strncpy()`` to set the name strings. If you look at :openxr_ref:`XrApplicationInfo` ``::applicationName`` and :openxr_ref:`XrApplicationInfo` ``::engineName`` members, they are of type ``char[]``, so you must copy your string into that buffer. Also, be aware of the allowable length. :openxr_ref:`XrApplicationInfo` will be used later when we will fill out :openxr_ref:`XrInstanceCreateInfo`.
 
 .. container:: vulkan
 
-	Note the slight difference in the approach the OpenXR API takes compared to the Vulkan API. In OpenXR, name strings are explicitly copied into structures like ``XrApplicationInfo``, which contain fixed-size string buffers, whereas in Vulkan, structures such as ``VkApplicationInfo`` take pointers to C strings of arbitrary size.
+	Note the slight difference in the approach the OpenXR API takes compared to the Vulkan API. In OpenXR, name strings are explicitly copied into structures like :openxr_ref:`XrApplicationInfo`, which contain fixed-size string buffers, whereas in Vulkan, structures such as ``VkApplicationInfo`` take pointers to C strings of arbitrary size.
 
 .. _instanceextensions:
 
@@ -99,7 +99,7 @@ Similarly to Vulkan, OpenXR allows applications to extend functionality past wha
 
 Here, we store in a vector of strings the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is an extension that checks the validity of calls made to OpenXR and can use a callback function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro you defined, this code will add the relevant extension.
 
-Not all API layers and extensions are available to use, so we must check which ones are available when OpenXR is initialized. We will use ``xrEnumerateApiLayerProperties()`` and ``xrEnumerateInstanceExtensionProperties()`` to check which ones the runtime can provide. Let's do this now by adding the following code to the ``CreateInstance()`` method:
+Not all API layers and extensions are available to use, so we must check which ones are available when OpenXR is initialized. We will use :openxr_ref:`xrEnumerateApiLayerProperties` and :openxr_ref:`xrEnumerateInstanceExtensionProperties` to check which ones the runtime can provide. Let's do this now by adding the following code to the ``CreateInstance()`` method:
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -107,15 +107,15 @@ Not all API layers and extensions are available to use, so we must check which o
 	:end-before: XR_DOCS_TAG_END_find_apiLayer_extension
 	:dedent: 8
 
-These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures - this is called the "two-call idiom". Before the second call, we need to set ``XrApiLayerProperties::type`` or ``XrExtensionProperties::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layer and extension, we use a nested loop to check to see whether an API layers or extensions is available and add it to the ``m_activeAPILayers`` and/or ``m_activeInstanceExtensions`` respectively. 
+These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures - this is called the "two-call idiom". Before the second call, we need to set :openxr_ref:`XrApiLayerProperties` ``::type`` or :openxr_ref:`XrExtensionProperties` ``::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layer and extension, we use a nested loop to check to see whether an API layers or extensions is available and add it to the ``m_activeAPILayers`` and/or ``m_activeInstanceExtensions`` respectively. 
 
 .. container:: vulkan
 
 	There is a subtle difference here from the two-call idiom in the Vulkan API. In OpenXR, we provide an explicit capacity in the first argument, which provides an additional layer of memory-safety.
 
-Note the ``m_activeAPILayers`` and ``m_activeInstanceExtensions`` are of type ``std::vector<const char *>``. This will help us when fill out the next structure ``XrInstanceCreateInfo``.
+Note the ``m_activeAPILayers`` and ``m_activeInstanceExtensions`` are of type ``std::vector<const char *>``. This will help us when fill out the next structure :openxr_ref:`XrInstanceCreateInfo`.
 
-Now that we've assembled all of the information needed we will fill the ``XrInstanceCreateInfo`` structure, and add the following to the ``CreateInstance()`` method.
+Now that we've assembled all of the information needed we will fill the :openxr_ref:`XrInstanceCreateInfo` structure, and add the following to the ``CreateInstance()`` method.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -123,9 +123,9 @@ Now that we've assembled all of the information needed we will fill the ``XrInst
 	:end-before: XR_DOCS_TAG_END_XrInstanceCreateInfo
 	:dedent: 8
 
-This section is fairly simple: we have used the previously collected data and assigned it to the members in the ``XrInstanceCreateInfo`` structure. Then, we called ``xrCreateInstance()`` where we took pointers to the ``XrInstanceCreateInfo`` and ``XrInstance`` objects. When the function is called, if successful, it returns ``XR_SUCCESS`` and ``XrInstance`` will be non-null (i.e. not equal to ``XR_NULL_HANDLE``).
+This section is fairly simple: we have used the previously collected data and assigned it to the members in the :openxr_ref:`XrInstanceCreateInfo` structure. Then, we called :openxr_ref:`xrCreateInstance` where we took pointers to the :openxr_ref:`XrInstanceCreateInfo` and :openxr_ref:`XrInstance` objects. When the function is called, if successful, it returns ``XR_SUCCESS`` and :openxr_ref:`XrInstance` will be non-null (i.e. not equal to :openxr_ref:`XR_NULL_HANDLE`).
 
-At the end of the app, we should destroy the ``XrInstance`` with ``xrDestroyInstance()``. Add the following to the ``DestroyInstance()`` method:
+At the end of the app, we should destroy the :openxr_ref:`XrInstance` with :openxr_ref:`xrDestroyInstance`. Add the following to the ``DestroyInstance()`` method:
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -133,7 +133,7 @@ At the end of the app, we should destroy the ``XrInstance`` with ``xrDestroyInst
 	:end-before: XR_DOCS_TAG_END_XrInstanceDestroy
 	:dedent: 8
 
-While we do have an ``XrInstance``, let's check its properties. Add the following code to the ``GetInstanceProperties()`` method:
+While we do have an :openxr_ref:`XrInstance`, let's check its properties. Add the following code to the ``GetInstanceProperties()`` method:
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -141,12 +141,12 @@ While we do have an ``XrInstance``, let's check its properties. Add the followin
 	:end-before: XR_DOCS_TAG_END_GetInstanceProperties
 	:dedent: 8
 
-Here, we have initialized the ``XrInstanceProperties`` with the correct ``XrStructureType`` and passed it along with the ``XrInstance`` to ``xrGetInstanceProperties()``. This will fill the rest of that structure. Next, we logged out the runtime's name, and using the ``XR_VERSION_...`` macros, we parsed and logged the runtime version.
+Here, we have initialized the :openxr_ref:`XrInstanceProperties` with the correct :openxr_ref:`XrStructureType` and passed it along with the :openxr_ref:`XrInstance` to :openxr_ref:`xrGetInstanceProperties`. This will fill the rest of that structure. Next, we logged out the runtime's name, and using the ``XR_VERSION_...`` macros, we parsed and logged the runtime version.
 
 2.1.2 XR_EXT_debug_utils
 ========================
 
-XR_EXT_debug_utils is an instance extension for OpenXR, which allows the application to get more information on errors, warnings and messages raised by the runtime. You can specify which message severities and types will checked. If a debug message is raised, it is passed to the callback function, which can optionally use the user data pointer provided in the ``XrDebugUtilsMessengerCreateInfoEXT`` structure.
+XR_EXT_debug_utils is an instance extension for OpenXR, which allows the application to get more information on errors, warnings and messages raised by the runtime. You can specify which message severities and types will checked. If a debug message is raised, it is passed to the callback function, which can optionally use the user data pointer provided in the :openxr_ref:`XrDebugUtilsMessengerCreateInfoEXT` structure.
 
 The message severities are:
  * Verbose: Output all messages.
@@ -176,14 +176,14 @@ Copy the following code into ``CreateDebugMessenger()`` and ``DestroyDebugMessen
 	:end-before: XR_DOCS_TAG_END_DestroyDebugMessenger
 	:dedent: 8
 
-In the above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or ``XR_EXT_debug_utils`` is in ``activeInstanceExtensions``, which we used to create the ``XrInstance``. Next, we call the ``CreateOpenXRDebugUtilsMessenger()`` function. At the end of the application, we call ``DestroyOpenXRDebugUtilsMessenger()`` to release the resource.
+In the above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or :openxr_ref:`XR_EXT_debug_utils` is in ``activeInstanceExtensions``, which we used to create the :openxr_ref:`XrInstance`. Next, we call the ``CreateOpenXRDebugUtilsMessenger()`` function. At the end of the application, we call ``DestroyOpenXRDebugUtilsMessenger()`` to release the resource.
 
 Another feature of OpenXR is the API Layers, which may also assist you in debugging. You can read more about them in :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`.
 
 2.1.3 XrSystemId
 ================
 
-The next object we want to get is the ``XrSystemId``. According to `System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_ in the OpenXR spec, OpenXR 'separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences. So, an ``XrSystemId`` could represent a VR headset and a pair of controllers, or perhaps a mobile device with video pass-through for AR. So we need to decide what type of ``XrFormFactor`` we want to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``. OpenXR currently offers two options for the ``XrFormFactor``:
+The next object we want to get is the :openxr_ref:`XrSystemId`. According to `System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_ in the OpenXR spec, OpenXR 'separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences. So, an :openxr_ref:`XrSystemId` could represent a VR headset and a pair of controllers, or perhaps a mobile device with video pass-through for AR. So we need to decide what type of :openxr_ref:`XrFormFactor` we want to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``. OpenXR currently offers two options for the :openxr_ref:`XrFormFactor`:
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -200,9 +200,9 @@ Add the following code to the ``GetSystemID()`` method:
 	:end-before: XR_DOCS_TAG_END_GetSystemID
 	:dedent: 8
 
-Here, we have filled out the ``XrSystemGetInfo`` structure with the desired ``XrFormFactor`` and passed it as a pointer along with the ``XrInstance`` and a pointer to the ``XrSystemId`` to the ``xrGetSystem()`` function. When the function is called, if successful, ``XrSystemId`` will be non-null.
+Here, we have filled out the :openxr_ref:`XrSystemGetInfo` structure with the desired :openxr_ref:`XrFormFactor` and passed it as a pointer along with the :openxr_ref:`XrInstance` and a pointer to the :openxr_ref:`XrSystemId` to the :openxr_ref:`xrGetSystem` function. When the function is called, if successful, :openxr_ref:`XrSystemId` will be non-null.
 
-With the above code, we have also got the system's properties. We partially filled out a ``XrSystemProperties`` structure and passed it as a pointer along with the ``XrInstance`` and the ``XrSystemId`` to the ``xrGetSystemProperties()`` function. This function will fill out the rest of the ``XrSystemProperties`` structure; detailing the vendor's ID, the system's name and the system's graphics and tracking properties.
+With the above code, we have also got the system's properties. We partially filled out a :openxr_ref:`XrSystemProperties` structure and passed it as a pointer along with the :openxr_ref:`XrInstance` and the :openxr_ref:`XrSystemId` to the :openxr_ref:`xrGetSystemProperties` function. This function will fill out the rest of the :openxr_ref:`XrSystemProperties` structure; detailing the vendor's ID, the system's name and the system's graphics and tracking properties.
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -211,7 +211,7 @@ With the above code, we have also got the system's properties. We partially fill
 
 *The above code is an excerpt from openxr/openxr.h*
 
-You can now run the application to check that you have a valid ``XrInstance`` and ``XrSystemId``.
+You can now run the application to check that you have a valid :openxr_ref:`XrInstance` and :openxr_ref:`XrSystemId`.
 
 .. container:: linux
 
@@ -221,9 +221,9 @@ You can now run the application to check that you have a valid ``XrInstance`` an
 2.2 Creating an XrSession
 *************************
 
-The next major component of OpenXR that needs to be created in an ``XrSession``. An ``XrSession`` encapsulates the state of the application from the perspective of OpenXR. When an ``XrSession`` is created, it starts in the ``XR_SESSION_STATE_IDLE``. It is up to the runtime to provide any updates to the ``XrSessionState`` and for the application to query them and react to them. We will explore this in :ref:`Chapter 2.3<2.3 Polling the Event Loop>`.
+The next major component of OpenXR that needs to be created in an :openxr_ref:`XrSession`. An :openxr_ref:`XrSession` encapsulates the state of the application from the perspective of OpenXR. When an :openxr_ref:`XrSession` is created, it starts in the :openxr_ref:`XR_SESSION_STATE_IDLE`. It is up to the runtime to provide any updates to the :openxr_ref:`XrSessionState` and for the application to query them and react to them. We will explore this in :ref:`Chapter 2.3<2.3 Polling the Event Loop>`.
 
-For now, we are just going to create an ``XrSession``. At this point, you'll need to select which Graphics API you wish to use. Only one Graphics API can be used with an ``XrSession``. This tutorial demonstrates how to use D3D11, D3D12, OpenGL, OpenGL ES and Vulkan in conjunction with OpenXR to render graphics to the provided views. Ultimately, you will most likely be bringing your own rendering solution to this tutorial, therefore the code examples provided for the Graphics APIs are `placeholders` for your own code base; demonstrating in this sub-chapter what objects are needed from your Graphics API to create an ``XrSession``. This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. There are both compile and runtime checks to select the requested Graphics API, and we construct an appropriate derived class through the use of ``std::unique_ptr<>``. 
+For now, we are just going to create an :openxr_ref:`XrSession`. At this point, you'll need to select which Graphics API you wish to use. Only one Graphics API can be used with an :openxr_ref:`XrSession`. This tutorial demonstrates how to use D3D11, D3D12, OpenGL, OpenGL ES and Vulkan in conjunction with OpenXR to render graphics to the provided views. Ultimately, you will most likely be bringing your own rendering solution to this tutorial, therefore the code examples provided for the Graphics APIs are `placeholders` for your own code base; demonstrating in this sub-chapter what objects are needed from your Graphics API to create an :openxr_ref:`XrSession`. This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. There are both compile and runtime checks to select the requested Graphics API, and we construct an appropriate derived class through the use of ``std::unique_ptr<>``. 
 
 Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Run()`` method and also add the definitions of the new methods and the members to their separate private sections. All the new code is highlighted code below.
 
@@ -380,16 +380,16 @@ For the ``DestroySession()`` method, add the following code:
 	:end-before: XR_DOCS_TAG_END_DestroySession
 	:dedent: 8
 
-Above is the code for creating and destroying an ``XrSession``. ``xrDestroySession()`` will destroy the ``XrSession`` when we are finished and shutting down the application. ``xrCreateSession()`` takes the ``XrInstance``, ``XrSessionCreateInfo`` and a ``XrSession`` return. If the function call is successful, ``xrCreateSession()`` will return ``XR_SUCCESS`` and ``m_session`` will be non-null. 
+Above is the code for creating and destroying an :openxr_ref:`XrSession`. :openxr_ref:`xrDestroySession` will destroy the :openxr_ref:`XrSession` when we are finished and shutting down the application. :openxr_ref:`xrCreateSession` takes the :openxr_ref:`XrInstance`, :openxr_ref:`XrSessionCreateInfo` and a :openxr_ref:`XrSession` return. If the function call is successful, :openxr_ref:`xrCreateSession` will return ``XR_SUCCESS`` and ``m_session`` will be non-null. 
 
-In the ``XrSessionCreateInfo`` structure, ``createFlags`` and ``systemId`` are specified, and we need to specify which Graphics API we wish to use. This is achieved via the use of the ``XrSessionCreateInfo::next`` void pointer. Following the Vulkan style of extensibility, structures for creating objects can be extended to enable extra functionality. In our case, the extension is required and thus ``XrSessionCreateInfo::next`` can not be a nullptr. That pointer must point to 'exactly one graphics API binding structure (a structure whose name begins with "XrGraphicsBinding")' (`XrSessionCreateInfo(3) Manual Page <https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSessionCreateInfo.html>`_). We get a pointer to the correct *Graphics Binding* structure by calling ``GraphicsAPI::GetGraphicsBinding();``.
+In the :openxr_ref:`XrSessionCreateInfo` structure, ``createFlags`` and ``systemId`` are specified, and we need to specify which Graphics API we wish to use. This is achieved via the use of the :openxr_ref:`XrSessionCreateInfo` ``::next`` void pointer. Following the Vulkan style of extensibility, structures for creating objects can be extended to enable extra functionality. In our case, the extension is required and thus :openxr_ref:`XrSessionCreateInfo` ``::next`` can not be a nullptr. That pointer must point to 'exactly one graphics API binding structure (a structure whose name begins with "XrGraphicsBinding")' (`XrSessionCreateInfo(3) Manual Page <https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSessionCreateInfo.html>`_). We get a pointer to the correct *Graphics Binding* structure by calling ``GraphicsAPI::GetGraphicsBinding();``.
 
 
 **************************
 2.3 Polling the Event Loop
 **************************
 
-OpenXR uses an event-based system to describe changes within the XR system. It's the application's responsibility to poll these events and react to them. The polling of events is done by the function ``xrPollEvent()``. The application should continually call this function throughout its lifetime. Within a single XR frame, the application should continuously call ``xrPollEvent()`` until the internal event queue is 'drained'; multiple events can occur across the XR frame and the application needs to handle and respond to each accordingly.
+OpenXR uses an event-based system to describe changes within the XR system. It's the application's responsibility to poll these events and react to them. The polling of events is done by the function :openxr_ref:`xrPollEvent`. The application should continually call this function throughout its lifetime. Within a single XR frame, the application should continuously call :openxr_ref:`xrPollEvent` until the internal event queue is 'drained'; multiple events can occur across the XR frame and the application needs to handle and respond to each accordingly.
 
 Firstly, we will update the class. In the ``OpenXRTutorial::Run()`` method add the highlighted code below. Also, add the highlighted code for the new methods and members in their separate private sections.
 
@@ -503,7 +503,7 @@ Copy the following code into the ``PollEvents()`` method:
 	:end-before: XR_DOCS_TAG_END_PollEvents
 	:dedent: 8
 
-Above, we have defined the ``PollEvents()`` method. Here, we use a do-while loop to check the result of ``xrPollEvent()`` - whilst that function returns ``XR_SUCCESS``, there are events for us to process. ``xrPollEvent()`` will fill in the ``XrEventDataBuffer`` structure that we pass to the function call. ``xrPollEvent()`` will update the member variable ``type`` and from this, we use a switch statement to select the appropriate code path. Depending on the updated type, we use a ``reinterpret_cast<>()`` to get the actual data that ``xrPollEvent()`` returned.
+Above, we have defined the ``PollEvents()`` method. Here, we use a do-while loop to check the result of :openxr_ref:`xrPollEvent` - whilst that function returns ``XR_SUCCESS``, there are events for us to process. :openxr_ref:`xrPollEvent` will fill in the :openxr_ref:`XrEventDataBuffer` structure that we pass to the function call. :openxr_ref:`xrPollEvent` will update the member variable ``type`` and from this, we use a switch statement to select the appropriate code path. Depending on the updated type, we use a ``reinterpret_cast<>()`` to get the actual data that :openxr_ref:`xrPollEvent` returned.
 
 The description of the events comes from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_xrpollevent>`_.
 
@@ -521,7 +521,7 @@ The description of the events comes from `2.22.1. Event Polling of the OpenXR sp
 | XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED          | The application has changed its lifecycle state.                               |
 +---------------------------------------------------+--------------------------------------------------------------------------------+
 
-As described in the table above, most events are transparent in their intentions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the ``XrInstance`` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully.
+As described in the table above, most events are transparent in their intentions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the :openxr_ref:`XrInstance` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully.
 ``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
 
 2.3.2 XrSessionState
@@ -536,7 +536,7 @@ The final event type, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, in the above
 
 *The above code is an excerpt from openxr/openxr.h*
 
-Below is a table describing the nine ``XrSessionState`` s:
+Below is a table describing the nine :openxr_ref:`XrSessionState` s:
 
 +-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
 | Event Type                    | Description                                                                                                             |
@@ -560,9 +560,9 @@ Below is a table describing the nine ``XrSessionState`` s:
 | XR_SESSION_STATE_EXITING      | The runtime is requesting that the application to destroy the session, usually from the user's request.                 |
 +-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
 
-(*) Applications may wish to re-create objects like ``XrSystemId`` and ``XrSession`` if hardware changes are detected.
+(*) Applications may wish to re-create objects like :openxr_ref:`XrSystemId` and :openxr_ref:`XrSession` if hardware changes are detected.
 
-Developers should also be aware of the lifecycle of an ``XrSession``. Certain ``XrSessionState`` s can only lead to certain others under the correct circumstances. Below is a diagram showing the lifecycle of an ``XrSession`` within an OpenXR application.
+Developers should also be aware of the lifecycle of an :openxr_ref:`XrSession`. Certain :openxr_ref:`XrSessionState` s can only lead to certain others under the correct circumstances. Below is a diagram showing the lifecycle of an :openxr_ref:`XrSession` within an OpenXR application.
 
 .. figure:: openxr-session-life-cycle.svg
 	:alt: OpenXR Session Life-Cycle
@@ -574,7 +574,7 @@ Developers should also be aware of the lifecycle of an ``XrSession``. Certain ``
 2.3.3 xrBeginSession and xrEndSession
 =====================================
 
-As the application runs, if the ``XrSessionState`` changes to ``XR_SESSION_STATE_READY``, the application can call ``xrBeginSession()`` to begin the session and synchronize the application with the runtime's frame hook.
+As the application runs, if the :openxr_ref:`XrSessionState` changes to ``XR_SESSION_STATE_READY``, the application can call :openxr_ref:`xrBeginSession` to begin the session and synchronize the application with the runtime's frame hook.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -583,9 +583,9 @@ As the application runs, if the ``XrSessionState`` changes to ``XR_SESSION_STATE
 	:dedent: 16
 
 
-From the code that we copied in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`, we've assigned to ``XrSessionBeginInfo::primaryViewConfigurationType`` the value of ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye). For the time being, we have defaulted to ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. In :ref:`Chapter 3.1.1 <3.1.1 View Configurations>`, we enumerate all the system's view configurations to pick a suitable one.
+From the code that we copied in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`, we've assigned to :openxr_ref:`XrSessionBeginInfo` ``::primaryViewConfigurationType`` the value of ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye). For the time being, we have defaulted to ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. In :ref:`Chapter 3.1.1 <3.1.1 View Configurations>`, we enumerate all the system's view configurations to pick a suitable one.
 
-If the ``XrSessionState`` changes to ``XR_SESSION_STATE_STOPPING``, the application should call ``xrEndSession()``. This means that the runtime has stopped the session either from a user's input or from some other reason, our application should respond by ending the session and freeing any resources. Below is a small excerpt from the code that we copied in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`.
+If the :openxr_ref:`XrSessionState` changes to ``XR_SESSION_STATE_STOPPING``, the application should call :openxr_ref:`xrEndSession`. This means that the runtime has stopped the session either from a user's input or from some other reason, our application should respond by ending the session and freeing any resources. Below is a small excerpt from the code that we copied in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`.
 
 .. literalinclude:: ../Chapter2/main.cpp
 	:language: cpp
@@ -597,7 +597,7 @@ If the ``XrSessionState`` changes to ``XR_SESSION_STATE_STOPPING``, the applicat
 2.4 Summary
 ***********
 
-We have now created an XR application that can begin and stop an ``XrSession``, next we will look to add graphics to our application!
+We have now created an XR application that can begin and stop an :openxr_ref:`XrSession`, next we will look to add graphics to our application!
 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 

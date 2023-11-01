@@ -174,7 +174,7 @@ Using the lambda function ``SuggestBindings``, we call into OpenXR with a given 
 	:end-before: XR_DOCS_TAG_END_SuggestBindings2
 	:dedent: 4
 
-Here, we create a proposed match-up between our app-specific actions and XrPaths which refer to specific controls as interpreted by the Runtime. We call ``xrSuggestInteractionProfileBindings()``. If the user's device supports the given profile ( and ``"/interaction_profiles/khr/simple_controller"`` should usually be supported in any OpenXR runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
+Here, we create a proposed match-up between our app-specific actions and XrPaths which refer to specific controls as interpreted by the Runtime. We call :openxr_ref:`xrSuggestInteractionProfileBindings`. If the user's device supports the given profile ( and ``"/interaction_profiles/khr/simple_controller"`` should usually be supported in any OpenXR runtime), it will recognize these paths and can map them to its own controls. If the user's device does not support a profile, the bindings will be ignored.
 The suggested bindings are not guaranteed to be used: that's up to the runtime. Some runtimes allow users to override the default bindings, and OpenXR expects this.
 
 
@@ -253,7 +253,7 @@ Now after the definition of SuggestBindings(), add:
 	:end-before: XR_DOCS_TAG_END_CreateActionPoses
 	:dedent: 4
 
-Here, we're creating the XrSpace that represents the hand pose actions. As with the reference space, we use an identity ``XrPosef`` to indicate that we'll take the pose as-is, without offsets.
+Here, we're creating the XrSpace that represents the hand pose actions. As with the reference space, we use an identity :openxr_ref:`XrPosef` to indicate that we'll take the pose as-is, without offsets.
 
 Finally, as far as action setup goes, we will attach the Action Set to the session. Add this function:
 
@@ -263,7 +263,7 @@ Finally, as far as action setup goes, we will attach the Action Set to the sessi
 	:end-before: XR_DOCS_TAG_END_AttachActionSet
 	:dedent: 4
 
-As you can see, it's possible here to attach multiple Action Sets. But ``xrAttachSessionActionSets`` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the application is ready to proceed.
+As you can see, it's possible here to attach multiple Action Sets. But :openxr_ref:`xrAttachSessionActionSets` can only be called *once* per session. You have to know what Action Sets you will be using before the session can start - xrBeginSession() is called from PollEvents() once all setup is complete and the application is ready to proceed.
 
 Now, we must poll the actions, once per-frame. Add these two calls in RenderFrame() just before the call to RenderLayer():
 
@@ -289,7 +289,7 @@ Here we enable the Action Set we're interested in (in our case we have only one)
 	:end-before: XR_DOCS_TAG_END_PollActions2
 	:dedent: 4
 
-If, and only if the action is active, we use ``xrLocateSpace`` to obtain the current pose of the controller. We specify that we want this relative to our reference space ``localOrStageSpace``, because this is the global space we're using for rendering. If we fail to locate the current pose of the controller, we set ``XrActionStatePose::isActive`` to ``false``. We'll use ``leftGripPose`` in the next section to render the controller's position.
+If, and only if the action is active, we use :openxr_ref:`xrLocateSpace` to obtain the current pose of the controller. We specify that we want this relative to our reference space ``localOrStageSpace``, because this is the global space we're using for rendering. If we fail to locate the current pose of the controller, we set :openxr_ref:`XrActionStatePose` ``::isActive`` to ``false``. We'll use ``leftGripPose`` in the next section to render the controller's position.
 
 We'll add the grabbing Action.
 
@@ -374,10 +374,10 @@ You should also be able to grab and move the cubes with the controllers.
 4.6 Checking for Connected Controllers
 **************************************
 
-Look again now at the function PollActions(). We specify which action to look at with the ``XrActionStateGetInfo`` struct. Then we use a type-specific call. For our boolean Grab Action, we call ``xrGetActionStateBoolean()`` to retrieve an ``XrActionStateBoolean`` struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the specified button on the controller.
-However, the struct ``XrActionStateBoolean`` also has a member called ``isActive``, which is true if the state of the action is actually being read. If it's false, the value of ``currentState`` is irrelevant - the polling failed. 
+Look again now at the function PollActions(). We specify which action to look at with the :openxr_ref:`XrActionStateGetInfo` struct. Then we use a type-specific call. For our boolean Grab Action, we call :openxr_ref:`xrGetActionStateBoolean` to retrieve an :openxr_ref:`XrActionStateBoolean` struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the specified button on the controller.
+However, the struct :openxr_ref:`XrActionStateBoolean` also has a member called ``isActive``, which is true if the state of the action is actually being read. If it's false, the value of ``currentState`` is irrelevant - the polling failed. 
 
-Similarly, ``XrActionStateFloat`` has a floating-point ``currentState`` value, which is valid if ``isActive`` is true. The struct has ``changedSinceLastSync``, which is true if the value changed between the previous and current calls to xrSync(). And it has ``lastChangeTime``, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
+Similarly, :openxr_ref:`XrActionStateFloat` has a floating-point ``currentState`` value, which is valid if ``isActive`` is true. The struct has ``changedSinceLastSync``, which is true if the value changed between the previous and current calls to :openxr_ref:`xrSync`. And it has ``lastChangeTime``, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
 
 Careful use of this polling metadata will help you to create applications that are responsive and intuitive to use. Bear in mind as well that multiple physical controls could be bound to the same action, and the user could be using more than one controller at once. See the `OpenXR spec <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#multiple_inputs>`_. for more details.
 

@@ -22,7 +22,7 @@
 
 	Vulkan supports rendering to both eye views with multiview, which simplifies the rendering code. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
 
-Multiview or View Instancing can be used for stereo rendering by creating one ``XrSwapchain`` that contains 2D array images. This is done by setting the ``XrSwapchainCreateInfo::arraySize`` to ``2``; similarly, we also create image views that encompass the two subresources - one layer per eye view.
+Multiview or View Instancing can be used for stereo rendering by creating one :openxr_ref:`XrSwapchain` that contains 2D array images. This is done by setting the :openxr_ref:`XrSwapchainCreateInfo` ``::arraySize`` to ``2``; similarly, we also create image views that encompass the two subresources - one layer per eye view.
 
 Remember also to update any uniform/constant buffer data types to support multiple view matrics via the use of arrays. Update any changes to shaders, shader paths and set the ``PipelineCreateInfo::viewMask`` member to ``0b11`` for two views. (Only found in Chapter6_1_Multiview).
 
@@ -61,7 +61,7 @@ Remember also to update any uniform/constant buffer data types to support multip
 
 	// Similar for depth image views
 
-When setting up the rendering code in ``RenderLayer()``, there's no need to repeat the rendering code per eye view; instead, we call ``xrAcquireSwapchainImage()`` and ``xrWaitSwapchainImage()`` for both the color and depth swapchains to get the next 2D array image from them. We are still required to submit an ``XrCompositionLayerProjectionView`` structure for each view in the system, but in the ``XrSwapchainSubImage`` we can set the ``imageArrayIndex`` to specify which layer of the swapchain image we wish to associate with that view. So in the case of stereo rendering, it would be ``0`` for left and ``1`` for right eye views. We attach our 2D array image as a render target/color attachment for the pixel/fragment shader to write to.
+When setting up the rendering code in ``RenderLayer()``, there's no need to repeat the rendering code per eye view; instead, we call :openxr_ref:`xrAcquireSwapchainImage` and :openxr_ref:`xrWaitSwapchainImage` for both the color and depth swapchains to get the next 2D array image from them. We are still required to submit an :openxr_ref:`XrCompositionLayerProjectionView` structure for each view in the system, but in the :openxr_ref:`XrSwapchainSubImage` we can set the ``imageArrayIndex`` to specify which layer of the swapchain image we wish to associate with that view. So in the case of stereo rendering, it would be ``0`` for left and ``1`` for right eye views. We attach our 2D array image as a render target/color attachment for the pixel/fragment shader to write to.
 
 .. code-block:: cpp
 	:emphasize-lines: 6-13, 21-33, 47
@@ -418,11 +418,11 @@ The path must point to a folder containing a ``.json`` file similar to the one f
 
 This file points to the library that the loader should use for this API layer.
 
-Calls to ``xrEnumerateApiLayerProperties()`` should now return a pointer to an array of structs and the count of all API layers available to the application.
+Calls to :openxr_ref:`xrEnumerateApiLayerProperties` should now return a pointer to an array of structs and the count of all API layers available to the application.
 
 To select which API layers we want to use, there are two ways to do this:
  1. Add the ``XR_ENABLE_API_LAYERS=<layer_name>`` environment variable to your project or your system. Something like this: ``XR_ENABLE_API_LAYERS=XR_APILAYER_LUNARG_test1;XR_APILAYER_LUNARG_test2``.
- 2. When creating the ``XrInstance``, specify the requested API layers in the ``XrInstanceCreateInfo`` structure.
+ 2. When creating the :openxr_ref:`XrInstance`, specify the requested API layers in the :openxr_ref:`XrInstanceCreateInfo` structure.
 
 For more details, please see `API Layers README <https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/src/api_layers/README.md>`_ and see `OpenXR API Layers <https://registry.khronos.org/OpenXR/specs/1.0/loader.html#openxr-api-layers>`_.
 

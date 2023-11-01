@@ -2,11 +2,11 @@
 5 Extensions
 ############
 
-OpenXR is designed to be an extensible API. As we've seen before, the call to ``xrCreateInstance()`` can include one or more extension names, and we can query them by using ``xrEnumerateInstanceExtensionProperties()`` to find out which extensions are supported by the runtime. 
+OpenXR is designed to be an extensible API. As we've seen before, the call to :openxr_ref:`xrCreateInstance` can include one or more extension names, and we can query them by using :openxr_ref:`xrEnumerateInstanceExtensionProperties` to find out which extensions are supported by the runtime. 
 
 All functions, types and constants for an extension are found in OpenXR headers. There are two ways to access the function(s) relating to an extension: functions pointers and function prototypes. 
 
-* The first one is more portable, as at runtime the application queries and loads the function pointers with ``xrGetInstanceProcAddr()``.
+* The first one is more portable, as at runtime the application queries and loads the function pointers with :openxr_ref:`xrGetInstanceProcAddr`.
 
 * The second requires build time linking to resolve the symbols created by the declared function prototypes. 
 
@@ -72,7 +72,7 @@ Next, we'll need to get the function pointers at runtime, so at the end of ``Cre
 	:end-before: XR_DOCS_TAG_END_ExtensionFunctions
 	:dedent: 8
 
-These calls require an ``XrInstance``, so we must initialize these after ``XrCreateInstance()`` has successfully returned. If hand tracking is not supported (or not enabled), we'll get a warning, and these functions will be ``nullptr``. You can run your application now to check this.
+These calls require an :openxr_ref:`XrInstance`, so we must initialize these after :openxr_ref:`xrCreateInstance` has successfully returned. If hand tracking is not supported (or not enabled), we'll get a warning, and these functions will be ``nullptr``. You can run your application now to check this.
 
 At the end of your ``OpenXRTutorial`` application class, declare the following:
 
@@ -84,7 +84,7 @@ At the end of your ``OpenXRTutorial`` application class, declare the following:
 
 `Hand` is a simple struct to encapsulate the XrHandTrackerEXT object for each hand, and the joint location structures that we'll update to track hand motion.
 
-We want to query the system properties for hand tracking support. In the function ``GetSystemID()``, before the call to ``xrGetSystemProperties``, insert this:
+We want to query the system properties for hand tracking support. In the function ``GetSystemID()``, before the call to :openxr_ref:`xrGetSystemProperties`, insert this:
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
@@ -101,7 +101,7 @@ Now, in Run(), after the call to AttachActionSet(), add:
 	:end-before: XR_DOCS_TAG_END_CallCreateHandTracker
 	:dedent: 1
 
-Add this method after the definition of ``AttachActionSet()``. For each of the two hands, we'll call ``xrCreateHandTrackerEXT()`` and fill in the ``m_handTracker`` object.
+Add this method after the definition of ``AttachActionSet()``. For each of the two hands, we'll call :openxr_ref:`xrCreateHandTrackerEXT` and fill in the ``m_handTracker`` object.
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
@@ -109,7 +109,7 @@ Add this method after the definition of ``AttachActionSet()``. For each of the t
 	:end-before: XR_DOCS_TAG_END_CreateHandTracker
 	:dedent: 4
 
-The ``XrHandTrackerEXT`` object is a session-lifetime object, so in ``DestroySession()``, at the top of the method we'll add:
+The :openxr_ref:`XrHandTrackerEXT` object is a session-lifetime object, so in ``DestroySession()``, at the top of the method we'll add:
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
@@ -151,11 +151,11 @@ Composition Layer Depth is truly important for AR use cases as it allows applica
 
 This functionality is provided to OpenXR via the use of the XR_KHR_composition_layer_depth extension (`OpenXR Specification 12.8. XR_KHR_composition_layer_depth <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_depth>`_). This is a Khronos-approved extension and as such it's aligned with the standards used in the core specification. The extension allows depth images from a swapchain to be submitted alongside the color images. This extension works in conjunction with the projection layer type. 
 
-The ``XrCompositionLayerProjection`` structure contains a pointer to an array of ``XrCompositionLayerProjectionView`` structures. Each of these structures refers to a single view in the XR system and a single image subresource from a swapchain. To submit a depth image, we employ the use of a ``XrCompositionLayerDepthInfoKHR`` structure. Like with ``XrCompositionLayerProjectionView``, ``XrCompositionLayerDepthInfoKHR`` refers to a single view in the XR system and a single image subresource from a swapchain. These structures are 'chained' together via the use of the ``const void* next`` member in ``XrCompositionLayerProjectionView``. We assign the memory address of a ``XrCompositionLayerDepthInfoKHR`` structure that we want to chain together. The runtime time will read the ``next`` pointer and associate the structures and ultimately the color and depth images together for compositing. This is the same style of extensibility used in the Vulkan API.
+The :openxr_ref:`XrCompositionLayerProjection` structure contains a pointer to an array of :openxr_ref:`XrCompositionLayerProjectionView` structures. Each of these structures refers to a single view in the XR system and a single image subresource from a swapchain. To submit a depth image, we employ the use of a :openxr_ref:`XrCompositionLayerDepthInfoKHR` structure. Like with :openxr_ref:`XrCompositionLayerProjectionView`, :openxr_ref:`XrCompositionLayerDepthInfoKHR` refers to a single view in the XR system and a single image subresource from a swapchain. These structures are 'chained' together via the use of the ``const void* next`` member in :openxr_ref:`XrCompositionLayerProjectionView`. We assign the memory address of a :openxr_ref:`XrCompositionLayerDepthInfoKHR` structure that we want to chain together. The runtime time will read the ``next`` pointer and associate the structures and ultimately the color and depth images together for compositing. This is the same style of extensibility used in the Vulkan API.
 
 One thing is now very clear to the programmer - we need a depth swapchain! Seldom used in windowed graphics, but required here to allow smooth rendering of the depth image and to not lock either the runtime or the application by waiting on a single depth image to be passed back and forth between them. In most windowed graphics applications, the depth image is 'discarded' at the end of the frame and it doesn't interact with the windowing system at all.
 
-When creating a depth swapchain, we must check that the system supports a depth format for swapchain creation. You can check this with ``xrEnumerateSwapchainFormats()``. Unfortunately, there are no guarantees with in the OpenXR 1.0 core specification or the XR_KHR_composition_layer_depth extension revision 6 that states runtimes must support depth format for swapchains.
+When creating a depth swapchain, we must check that the system supports a depth format for swapchain creation. You can check this with :openxr_ref:`xrEnumerateSwapchainFormats`. Unfortunately, there are no guarantees with in the OpenXR 1.0 core specification or the XR_KHR_composition_layer_depth extension revision 6 that states runtimes must support depth format for swapchains.
 
 To implement this extension in the Chapter 5 code, we first add the following member to the ``RenderLayerInfo`` structure:
 
@@ -191,7 +191,7 @@ In the ``RenderLayer()`` method after we've resized the ``std::vector<XrComposit
 	:end-before: XR_DOCS_TAG_END_ResizeLeyerDepthInfos
 	:dedent: 8
 
-After we have filled out the ``XrCompositionLayerProjectionView`` structure, we fill out the ``XrCompositionLayerDepthInfoKHR`` structure and by using the ``XrCompositionLayerProjectionView::next`` pointer we chain the two structures together. This submits the depth and the color image together for use by the XR compositor.
+After we have filled out the :openxr_ref:`XrCompositionLayerProjectionView` structure, we fill out the :openxr_ref:`XrCompositionLayerDepthInfoKHR` structure and by using the :openxr_ref:`XrCompositionLayerProjectionView` ``::next`` pointer we chain the two structures together. This submits the depth and the color image together for use by the XR compositor.
 
 .. literalinclude:: ../Chapter5/main.cpp
 	:language: cpp
