@@ -345,7 +345,7 @@ Inside our ``CreateResources()`` method, locate where we set the variable ``numb
 	:end-before: XR_DOCS_TAG_END_Update_numberOfCuboids
 	:dedent: 8
 
-We will render 64 interactable cubes, two cuboids representing the controllers and a further two for the floor and table from the previous chapter. After the call to ``m_graphicsAPI->CreatePipeline()``, add the following code that m_vertexBuffersets up the orientation, position and color of each interactable cube.
+We will render 64 interactable cubes, two cuboids representing the controllers and a further two for the floor and table from the previous chapter. Inside our ``CreateResources()`` method and after the call to ``m_graphicsAPI->CreatePipeline()``, add the following code that m_vertexBuffersets up the orientation, position and color of each interactable cube.
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
