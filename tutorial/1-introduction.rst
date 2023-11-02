@@ -407,7 +407,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	**For a quick setup download this ``.zip`` archive:**
 
-	:download:`AndroidBuildFolder.zip <../thirdparty/AndroidBuildFolder.zip>`
+	:download:`AndroidBuildFolder.zip <../build/android_archs/AndroidBuildFolder.zip>`
 
 	First, create a *workspace* folder and copy the downloaded zip archive into that folder. Unzip the archive in place and rename the ``AndroidBuildFolder`` folder to ``Chapter2``. You can delete the used zip archive as it's no longer needed. Open Android Studio and then open the ``Chapter2`` foler that was created.
 

@@ -14,7 +14,6 @@ copy           Chapter2\build.gradle                     build\android_archs\bui
 copy           Chapter2\gradle.properties                build\android_archs\gradle.properties
 copy           Chapter2\gradlew                          build\android_archs\gradlew
 copy           Chapter2\gradlew.bat                      build\android_archs\gradlew.bat
-copy           Chapter2\local.properties                 build\android_archs\local.properties
 copy           Chapter2\settings.gradle                  build\android_archs\settings.gradle
 
 rem Zip the folders
@@ -26,7 +25,6 @@ tar -a -cf AndroidBuildFolder.zip ^
     gradle.properties ^
     gradlew ^
     gradlew.bat ^
-    local.properties ^
     settings.gradle
 popd
 
@@ -37,5 +35,4 @@ del build\android_archs\build.gradle
 del build\android_archs\gradle.properties
 del build\android_archs\gradlew
 del build\android_archs\gradlew.bat
-del build\android_archs\local.properties
 del build\android_archs\settings.gradle
