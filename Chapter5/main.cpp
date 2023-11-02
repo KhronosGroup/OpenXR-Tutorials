@@ -705,20 +705,23 @@ private:
         // XR_DOCS_TAG_END_CreateResources3
 
         // XR_DOCS_TAG_BEGIN_Setup_Blocks
+        // Create sixty-four cubic blocks, 20cm wide, evenly distributed,
+        // and randomly colored.
         float scale = 0.2f;
-        XrVector3f centre = {0, -0.2f, -0.7f};
+        // Center the blocks a little way from the origin.
+        XrVector3f center = {0.0f, -0.2f, -0.7f};
         for (int i = 0; i < 4; i++) {
-            float x = scale * (float(i) - 1.5f) + centre.x;
+            float x = scale * (float(i) - 1.5f) + center.x;
             for (int j = 0; j < 4; j++) {
-                float y = scale * (float(j) - 1.5f) + centre.y;
+                float y = scale * (float(j) - 1.5f) + center.y;
                 for (int k = 0; k < 4; k++) {
                     float angleRad = 0;
-                    float z = scale * (float(k) - 1.5f) + centre.z;
+                    float z = scale * (float(k) - 1.5f) + center.z;
                     XrQuaternionf q;
-                    XrVector3f axis = {0, 0.707f, 0.707f};
+                    XrVector3f axis = {0.0f, 0.707f, 0.707f};
                     XrQuaternionf_CreateFromAxisAngle(&q, &axis, angleRad);
                     XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
-                    blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, color});
+                    m_blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, color});
                 }
             }
         }
@@ -862,11 +865,11 @@ private:
         // XR_DOCS_TAG_END_PollActions3
         // XR_DOCS_TAG_BEGIN_PollActions4
         for (int i = 0; i < 2; i++) {
-            buzz[i] *= 0.5f;
-            if (buzz[i] < 0.01f)
-                buzz[i] = 0.0f;
+            m_buzz[i] *= 0.5f;
+            if (m_buzz[i] < 0.01f)
+                m_buzz[i] = 0.0f;
             XrHapticVibration vibration{XR_TYPE_HAPTIC_VIBRATION};
-            vibration.amplitude = buzz[i];
+            vibration.amplitude = m_buzz[i];
             vibration.duration = XR_MIN_HAPTIC_DURATION;
             vibration.frequency = XR_FREQUENCY_UNSPECIFIED;
 
@@ -897,7 +900,6 @@ private:
         }
         // XR_DOCS_TAG_END_PollHands
     }
-
     // XR_DOCS_TAG_END_PollActions4
     // XR_DOCS_TAG_BEGIN_BlockInteraction
     // Helper function to snap a 3D position to the nearest 10cm
@@ -916,40 +918,40 @@ private:
         for (int i = 0; i < 2; i++) {
             float nearest = 1.0f;
             // If not currently holding a block:
-            if (grabbedBlock[i] == -1) {
-                nearBlock[i] = -1;
+            if (m_grabbedBlock[i] == -1) {
+                m_nearBlock[i] = -1;
                 // Only if the pose was detected this frame:
                 if (m_handPoseState[i].isActive) {
                     // For each block:
-                    for (int j = 0; j < blocks.size(); j++) {
-                        auto block = blocks[j];
+                    for (int j = 0; j < m_blocks.size(); j++) {
+                        auto block = m_blocks[j];
                         // How far is it from the hand to this block?
                         XrVector3f diff = block.pose.position - m_handPose[i].position;
                         float distance = std::max(fabs(diff.x), std::max(fabs(diff.y), fabs(diff.z)));
                         if (distance < 0.1f && distance < nearest) {
-                            nearBlock[i] = j;
+                            m_nearBlock[i] = j;
                             nearest = distance;
                         }
                     }
                 }
-                if (nearBlock[i] != -1) {
+                if (m_nearBlock[i] != -1) {
                     if (m_grabState[i].isActive && m_grabState[i].currentState > 0.5f) {
-                        grabbedBlock[i] = nearBlock[i];
-                        buzz[i] = 1.0f;
+                        m_grabbedBlock[i] = m_nearBlock[i];
+                        m_buzz[i] = 1.0f;
                     } else if (m_changeColorState[i].isActive == XR_TRUE && m_changeColorState[i].currentState == XR_FALSE && m_changeColorState[i].changedSinceLastSync == XR_TRUE) {
-                        auto &thisBlock = blocks[nearBlock[i]];
+                        auto &thisBlock = m_blocks[m_nearBlock[i]];
                         XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                         thisBlock.color = color;
                     }
                 }
             } else {
-                nearBlock[i] = grabbedBlock[i];
+                m_nearBlock[i] = m_grabbedBlock[i];
                 if (m_handPoseState[i].isActive)
-                    blocks[grabbedBlock[i]].pose.position = m_handPose[i].position;
+                    m_blocks[m_grabbedBlock[i]].pose.position = m_handPose[i].position;
                 if (!m_grabState[i].isActive || m_grabState[i].currentState < 0.5f) {
-                    blocks[grabbedBlock[i]].pose.position = FixPosition(blocks[grabbedBlock[i]].pose.position);
-                    grabbedBlock[i] = -1;
-                    buzz[i] = 0.2f;
+                    m_blocks[m_grabbedBlock[i]].pose.position = FixPosition(m_blocks[m_grabbedBlock[i]].pose.position);
+                    m_grabbedBlock[i] = -1;
+                    m_buzz[i] = 0.2f;
                 }
             }
         }
@@ -1297,10 +1299,10 @@ private:
                     RenderCuboid(m_handPose[j], {0.02f, 0.04f, 0.10f}, {1.f, 1.f, 1.f});
                 }
             }
-            for (int j = 0; j < blocks.size(); j++) {
-                auto &thisBlock = blocks[j];
+            for (int j = 0; j < m_blocks.size(); j++) {
+                auto &thisBlock = m_blocks[j];
                 XrVector3f sc = thisBlock.scale;
-                if (j == nearBlock[0] || j == nearBlock[1])
+                if (j == m_nearBlock[0] || j == m_nearBlock[1])
                     sc = thisBlock.scale * 1.05f;
                 RenderCuboid(thisBlock.pose, sc, thisBlock.color);
             }
@@ -1495,21 +1497,27 @@ private:
         XrVector3f scale;
         XrVector3f color;
     };
-    std::vector<Block> blocks;
-    int grabbedBlock[2] = {-1, -1};
-    int nearBlock[2] = {-1, -1};
+    // The list of block instances.
+    std::vector<Block> m_blocks;
+    // Don't let too many m_blocks get created.
+    const size_t m_maxBlockCount = 100;
+    // Which block, if any, is being held by each of the user's hands or controllers.
+    int m_grabbedBlock[2] = {-1, -1};
+    // Which block, if any, is nearby to each hand or controller.
+    int m_nearBlock[2] = {-1, -1};
     // XR_DOCS_TAG_END_Objects
 
     // XR_DOCS_TAG_BEGIN_Actions
     XrActionSet m_actionSet;
     // An action for grabbing blocks, and an action to change the color of a block.
-    XrAction m_grabCubeAction, m_changeColorAction;
+    XrAction m_grabCubeAction, m_spawnCubeAction, m_changeColorAction;
     // The realtime states of these actions.
     XrActionStateFloat m_grabState[2] = {{XR_TYPE_ACTION_STATE_FLOAT}, {XR_TYPE_ACTION_STATE_FLOAT}};
     XrActionStateBoolean m_changeColorState[2] = {{XR_TYPE_ACTION_STATE_BOOLEAN}, {XR_TYPE_ACTION_STATE_BOOLEAN}};
     // The haptic output action for grabbing cubes.
     XrAction m_buzzAction;
-    float buzz[2] = {0, 0};
+    // The current haptic output value for each controller.
+    float m_buzz[2] = {0, 0};
     // The action for getting the hand or controller position and orientation.
     XrAction m_palmPoseAction;
     // The XrPaths for left and right hand hands or controllers.
@@ -1537,6 +1545,7 @@ private:
 void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
     DebugOutput debugOutput;  // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
     std::cout << "OpenXR Tutorial Chapter 5." << std::endl;
+
     OpenXRTutorial app(apiType);
     app.Run();
 }

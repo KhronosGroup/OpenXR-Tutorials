@@ -653,7 +653,7 @@ private:
         // and randomly colored.
         float scale = 0.2f;
         // Center the blocks a little way from the origin.
-        XrVector3f center = {0, -0.2f, -0.7f};
+        XrVector3f center = {0.0f, -0.2f, -0.7f};
         for (int i = 0; i < 4; i++) {
             float x = scale * (float(i) - 1.5f) + center.x;
             for (int j = 0; j < 4; j++) {
@@ -1208,7 +1208,7 @@ private:
             // XR_DOCS_TAG_END_CallRenderCuboid
 
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid2
-            // Draw some m_blocks at the controller positions:
+            // Draw some blocks at the controller positions:
             for (int j = 0; j < 2; j++) {
                 if (m_handPoseState[j].isActive) {
                     RenderCuboid(m_handPose[j], {0.02f, 0.04f, 0.10f}, {1.f, 1.f, 1.f});
