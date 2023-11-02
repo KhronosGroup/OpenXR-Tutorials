@@ -1012,8 +1012,7 @@ void GraphicsAPI_OpenGL_ES::SetDescriptor(const DescriptorInfo &descriptorInfo) 
     if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
         size_t offset = AlignSizeForUniformBuffer(descriptorInfo.bufferOffset);
         glBindBufferRange(GL_UNIFORM_BUFFER, bindingIndex, glResource, (GLintptr)offset, (GLsizeiptr)descriptorInfo.bufferSize);
-    }
-    else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
+    } else if (descriptorInfo.type == DescriptorInfo::Type::IMAGE) {
         glActiveTexture(GL_TEXTURE0 + bindingIndex);
         glBindTexture(GetGLTextureTarget(images[glResource]), glResource);
     } else if (descriptorInfo.type == DescriptorInfo::Type::SAMPLER) {

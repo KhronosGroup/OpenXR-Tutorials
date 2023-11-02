@@ -225,6 +225,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12() {
     device->CreateDescriptorHeap(&DescriptorHeapDesc, IID_PPV_ARGS(&SAMPLER_DescriptorHeap));
 }
 
+// XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
 GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemId) {
     OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetD3D12GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D12GraphicsRequirementsKHR), "Failed to get InstanceProcAddr for xrGetD3D12GraphicsRequirementsKHR.");
     XrGraphicsRequirementsD3D12KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR};
@@ -301,6 +302,7 @@ GraphicsAPI_D3D12 ::~GraphicsAPI_D3D12() {
     D3D12_SAFE_RELEASE(queue);
     D3D12_SAFE_RELEASE(device);
 }
+// XR_DOCS_TAG_END_GraphicsAPI_D3D12
 
 static bool DesktopSwapchainVsync = false;
 void *GraphicsAPI_D3D12::CreateDesktopSwapchain(const SwapchainCreateInfo &swapchainCI) {

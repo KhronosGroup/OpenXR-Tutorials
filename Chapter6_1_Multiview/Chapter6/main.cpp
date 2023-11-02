@@ -654,7 +654,7 @@ private:
         // and randomly colored.
         float scale = 0.2f;
         // Center the blocks a little way from the origin.
-        XrVector3f center = {0, -0.2f, -0.7f};
+        XrVector3f center = {0.0f, -0.2f, -0.7f};
         for (int i = 0; i < 4; i++) {
             float x = scale * (float(i) - 1.5f) + center.x;
             for (int j = 0; j < 4; j++) {
