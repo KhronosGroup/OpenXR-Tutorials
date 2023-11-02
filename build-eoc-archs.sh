@@ -10,7 +10,7 @@ mkdir -p build/eoc_archs/cmake
 mkdir -p build/eoc_archs/Common
 mkdir -p build/eoc_archs/Shaders
 
-#Copy the required files and folder to the eoc-archs folder
+#Copy the required files and folder to the eoc_archs folder
 cp Chapter1/main.cpp Chapter1/CMakeLists.txt build/eoc_archs/Chapter1
 cp Chapter2/main.cpp Chapter2/CMakeLists.txt build/eoc_archs/Chapter2
 cp Chapter3/main.cpp Chapter3/CMakeLists.txt build/eoc_archs/Chapter3

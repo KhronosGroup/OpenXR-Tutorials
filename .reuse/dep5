@@ -49,6 +49,14 @@ Files: .gitignore
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 
+Files: build-android-arch.bat
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
+Files: build-android-arch.sh
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
 Files: build-common-archs.bat
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
