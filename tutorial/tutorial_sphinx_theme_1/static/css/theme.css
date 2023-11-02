@@ -19,7 +19,7 @@ p
 
 *, :after, :before
 {
-    box-sizing: inherit
+    box-sizing: inherit;
 }
 
 article, aside, details, figcaption, figure, footer, header, hgroup, nav, section
@@ -28,7 +28,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, nav, sectio
 }
 
 section{
-  scroll-margin-top: 140px;
+  scroll-margin-top: 10px;
 }
 
 .sidebartitle
@@ -52,7 +52,7 @@ audio, canvas, video
 {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 html
@@ -6123,11 +6123,12 @@ html
 
 .sticky-breadcrumb-ribbon
 {
-	position: sticky;
+	/* position: absolute; */
     background-color: #782B90;
 	color:white;
     width: 100%;
     top: 0px;
+    right:0px;
     padding:0px 20px 0px 20px;
     z-index:1;
 }
@@ -6188,7 +6189,7 @@ html
 
 .wy-grid-for-nav
 {
-    height: 100%
+    height: 100%;
 }
 
 .wy-nav-side
@@ -6269,19 +6270,19 @@ html
 {
     margin-left: 300px;
     min-height: 100%;
-	height:100%;
+	height:100vh;
     overflow:hidden;
+    display:grid;
 }
 
 .wy-nav-content
 {
     padding: 12px 12px 6px 6px;
-    height: 100%;
+    /* height: 100%; */
 	margin: 20px 20px 20px 40px;
-    z-index:-1;
-    
-    top:140px;
-    left:140px;
+    /* z-index:-1; */
+
+
 }
 
 .wy-body-mask
@@ -6302,7 +6303,7 @@ html
 footer
 {
     color: #000;
-    margin-bottom: 160px;
+    margin-bottom: 12px;
 }
 
 footer p
@@ -6625,7 +6626,7 @@ footer p
 
 .wy-nav-content
 {
-        overflow:       auto;
+    overflow:       scroll;
 }
 
 .rst-content .toctree-wrapper > p.caption, .rst-content h1, .rst-content h2, .rst-content h3, .rst-content h4, .rst-content h5, .rst-content h6
