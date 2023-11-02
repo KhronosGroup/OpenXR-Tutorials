@@ -655,15 +655,15 @@ Or, you can download the ``zip`` archive containing all the required files. Extr
 
 .. container:: windows
 
-	``DebugOutput`` inherits from ``vsBufferedStringStreamBuf``, which inherits from ``std::streambuf``. ``vsBufferedStringStreamBuf`` queues the data from the redirected ``std::streambuf`` and calls ``virtual void writeString(const std::string &)``, which ``DebugOutput`` implements as a call to ``OutputDebugStringA()``.
+	``DebugOutput`` uses ``OutputDebugStringA()`` to log the message to the Visual Studio Output window.
 
 .. container:: linux
 
-	No functionality is currently provided.
+	``DebugOutput`` will not redirect the output a Visual Studio Code window. The output will remain in the terminal.
 
 .. container:: android
 
-	``DebugOutput`` has a memeber ``AndroidStreambuf``, which inherits from ``std::streambuf``. ``AndroidStreambuf`` queues the data from the redirected ``std::streambuf`` and calls ``__android_log_write()`` to log the message to Android Logcat.
+	``DebugOutput`` uses ``__android_log_write()`` to log the message to Android Logcat.
 
 .. rubric::  HelperFunctions
 
