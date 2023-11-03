@@ -7804,6 +7804,12 @@ section >h1:before{
     background-repeat: no-repeat;
 }
 
+#next-steps > h1:before{
+    background: url(icons/Compass.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
 #toc_introduction>a:before{
     background: url(icons/Trumpet.svg);
     background-size: contain;
@@ -7818,6 +7824,12 @@ section >h1:before{
 
 #toc_graphics>a:before{
     background: url(icons/Graphics.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#toc_nextsteps>a:before{
+    background: url(icons/Compass.svg);
     background-size: contain;
     background-repeat: no-repeat;
 }

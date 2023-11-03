@@ -43,3 +43,4 @@ The full source code for this tutorial can also be downloaded from `here <https:
 	3-graphics
 	4-actions
 	5-extensions
+	6-next-steps
