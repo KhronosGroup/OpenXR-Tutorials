@@ -953,6 +953,7 @@ private:
         uint32_t viewCount = static_cast<uint32_t>(m_viewConfigurationViews.size());
         // XR_DOCS_TAG_END_CreateViewConfigurationView
 
+        // XR_DOCS_TAG_BEGIN_CreateSwapchains
         // Create a color and depth swapchain, and their associated image views.
         // Fill out an XrSwapchainCreateInfo structure and create an XrSwapchain.
         // Color.
@@ -981,18 +982,22 @@ private:
         swapchainCI.mipCount = 1;
         OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &m_depthSwapchainInfo.swapchain), "Failed to create Depth Swapchain");
         m_depthSwapchainInfo.swapchainFormat = swapchainCI.format;  // Save the swapchain format for later use.
-
+        // XR_DOCS_TAG_END_CreateSwapchains
+        
+        // XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
         // Get the number of images in the color/depth swapchain and allocate Swapchain image data via GraphicsAPI to store the returned array.
         uint32_t colorSwapchainImageCount = 0;
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_colorSwapchainInfo.swapchain, 0, &colorSwapchainImageCount, nullptr), "Failed to enumerate Color Swapchain Images.");
         XrSwapchainImageBaseHeader *colorSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(m_colorSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::COLOR, colorSwapchainImageCount);
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_colorSwapchainInfo.swapchain, colorSwapchainImageCount, &colorSwapchainImageCount, colorSwapchainImages), "Failed to enumerate Color Swapchain Images.");
+        // XR_DOCS_TAG_END_EnumerateSwapchainImages
         
         uint32_t depthSwapchainImageCount = 0;
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_depthSwapchainInfo.swapchain, 0, &depthSwapchainImageCount, nullptr), "Failed to enumerate Depth Swapchain Images.");
         XrSwapchainImageBaseHeader *depthSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(m_depthSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::DEPTH, depthSwapchainImageCount);
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_depthSwapchainInfo.swapchain, depthSwapchainImageCount, &depthSwapchainImageCount, depthSwapchainImages), "Failed to enumerate Depth Swapchain Images.");
 
+        // XR_DOCS_TAG_BEGIN_CreateImageViews
         // Per image in the swapchains, fill out a GraphicsAPI::ImageViewCreateInfo structure and create a color/depth image view.
         for (uint32_t j = 0; j < colorSwapchainImageCount; j++) {
             GraphicsAPI::ImageViewCreateInfo imageViewCI;
@@ -1020,9 +1025,11 @@ private:
             imageViewCI.layerCount = viewCount;
             m_depthSwapchainInfo.imageViews.push_back(m_graphicsAPI->CreateImageView(imageViewCI));
         }
+        // XR_DOCS_TAG_END_CreateImageViews
     }
 
     void DestroySwapchains() {
+        // XR_DOCS_TAG_BEGIN_DestroySwapchains
         // Destroy the color and depth image views from GraphicsAPI.
         for (void*& imageView : m_colorSwapchainInfo.imageViews) {
             m_graphicsAPI->DestroyImageView(imageView);
@@ -1038,6 +1045,7 @@ private:
         // Destroy the swapchains.
         OPENXR_CHECK(xrDestroySwapchain(m_colorSwapchainInfo.swapchain), "Failed to destroy Color Swapchain");
         OPENXR_CHECK(xrDestroySwapchain(m_depthSwapchainInfo.swapchain), "Failed to destroy Depth Swapchain");
+        // XR_DOCS_TAG_END_DestroySwapchains
     }
 
     // XR_DOCS_TAG_BEGIN_RenderCuboid1
@@ -1358,8 +1366,10 @@ private:
         int64_t swapchainFormat = 0;
         std::vector<void *> imageViews;
     };
+    // XR_DOCS_TAG_BEGIN_SingleSwapchainInfo
     SwapchainInfo m_colorSwapchainInfo = {};
     SwapchainInfo m_depthSwapchainInfo = {};
+    // XR_DOCS_TAG_END_SingleSwapchainInfo
 
     std::vector<XrEnvironmentBlendMode> m_applicationEnvironmentBlendModes = {XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE};
     std::vector<XrEnvironmentBlendMode> m_environmentBlendModes = {};
