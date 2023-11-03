@@ -686,12 +686,14 @@ private:
 
     void PollEvents() {
         // XR_DOCS_TAG_BEGIN_PollEvents
-        XrResult result = XR_SUCCESS;
-        do {
-            // Poll OpenXR for a new event.
-            XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
-            result = xrPollEvent(m_xrInstance, &eventData);
+        // Poll OpenXR for a new event.
+        XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
+        auto XrPollEvents = [&]() -> bool {
+            eventData = {XR_TYPE_EVENT_DATA_BUFFER};
+            return xrPollEvent(m_xrInstance, &eventData) == XR_SUCCESS;
+        };
 
+        while (XrPollEvents()) {
             switch (eventData.type) {
             // Log the number of lost events from the runtime.
             case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
@@ -711,6 +713,10 @@ private:
             case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
                 XrEventDataInteractionProfileChanged *interactionProfileChanged = reinterpret_cast<XrEventDataInteractionProfileChanged *>(&eventData);
                 std::cout << "OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
+                if (interactionProfileChanged->session != m_session) {
+                    std::cout << "XrEventDataInteractionProfileChanged for unknown Session" << std::endl;
+                    break;
+                }
                 // XR_DOCS_TAG_BEGIN_CallRecordCurrentBindings
                 RecordCurrentBindings();
                 // XR_DOCS_TAG_END_CallRecordCurrentBindings
@@ -720,11 +726,19 @@ private:
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
+                if (referenceSpaceChangePending->session != m_session) {
+                    std::cout << "XrEventDataReferenceSpaceChangePending for unknown Session" << std::endl;
+                    break;
+                }
                 break;
             }
             // Session State changes:
             case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
                 XrEventDataSessionStateChanged *sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged *>(&eventData);
+                if (sessionStateChanged->session != m_session) {
+                    std::cout << "XrEventDataSessionStateChanged for unknown Session" << std::endl;
+                    break;
+                }
 
                 if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
                     // SessionState is ready. Begin the XrSession using the XrViewConfigurationType.
@@ -757,8 +771,7 @@ private:
                 break;
             }
             }
-
-        } while (result == XR_SUCCESS);
+        }
         // XR_DOCS_TAG_END_PollEvents
     }
     // XR_DOCS_TAG_BEGIN_PollActions

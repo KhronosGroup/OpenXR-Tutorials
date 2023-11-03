@@ -231,6 +231,7 @@ From the code in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`, we modify our assignm
 	:start-at: if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
 	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
 	:dedent: 16
+	:emphasize-lines: 4
 
 3.1.2 Enumerate the Swapchain Formats
 =====================================
