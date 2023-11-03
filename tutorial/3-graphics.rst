@@ -1,4 +1,4 @@
-##########
+﻿##########
 3 Graphics
 ##########
 
@@ -930,25 +930,28 @@ The primary structure in use here is the :openxr_ref:`XrFrameState`, which conta
 
 Below is a table of the ``XrCompositionLayer...`` types provided by the OpenXR 1.0 Core Specification and ``XR_KHR_composition_layer_...`` extensions.
 
-+---------------------------------------------------------+---------------------------------------------------+
-| Extension                                               | Structure                                         |
-+---------------------------------------------------------+---------------------------------------------------+
-| OpenXR 1.0 Core Specification                           | :openxr_ref:`XrCompositionLayerProjection`        |
-+---------------------------------------------------------+---------------------------------------------------+
-| OpenXR 1.0 Core Specification                           | :openxr_ref:`XrCompositionLayerQuad`              |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_cube`             | :openxr_ref:`XrCompositionLayerCubeKHR`           |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_depth`            | :openxr_ref:`XrCompositionLayerDepthInfoKHR`      |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_cylinder`         | :openxr_ref:`XrCompositionLayerCylinderKHR`       |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_equirect`         | :openxr_ref:`XrCompositionLayerEquirectKHR`       |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_color_scale_bias` | :openxr_ref:`XrCompositionLayerColorScaleBiasKHR` |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_equirect2`        | :openxr_ref:`XrCompositionLayerEquirect2KHR`      |
-+---------------------------------------------------------+---------------------------------------------------+
+.. table::
+	:widths: grid
+	
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| Extension                                               | Structure                                         | Description                                                                                                                                 |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| OpenXR 1.0 Core Specification                           | :openxr_ref:`XrCompositionLayerProjection`        | It's used for rendering 3D Graphical elements.                                                                                              |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| OpenXR 1.0 Core Specification                           | :openxr_ref:`XrCompositionLayerQuad`              | It's used for rendering 2D or GUI elements.                                                                                                 |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_cube`             | :openxr_ref:`XrCompositionLayerCubeKHR`           | It's used for rendering Environment Cubemps.                                                                                                |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_depth`            | :openxr_ref:`XrCompositionLayerDepthInfoKHR`      | It allows the submission of a depth image with the projection layer for more accurate reprojections.                                        |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_cylinder`         | :openxr_ref:`XrCompositionLayerCylinderKHR`       | It allows a flat texture to be rendered on inside of a cylinder section - like a curved display.                                            |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_equirect`         | :openxr_ref:`XrCompositionLayerEquirectKHR`       | It's used for rendering an equirectangular image onto the inside of sphere - like a cubemap.                                                |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_color_scale_bias` | :openxr_ref:`XrCompositionLayerColorScaleBiasKHR` | A color transform applied to an existing composition layer. It could be used to highlight something to the user.                            |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_equirect2`        | :openxr_ref:`XrCompositionLayerEquirect2KHR`      | Like :openxr_ref:`XrCompositionLayerEquirectKHR`, but uses different parameters similar to :openxr_ref:`XR_KHR_composition_layer_cylinder`. |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 
 Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` are also in the OpenXR 1.0 specification. 
 
