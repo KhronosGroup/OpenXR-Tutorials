@@ -22,108 +22,131 @@
 
 	Vulkan supports rendering to both eye views with multiview, which simplifies the rendering code. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
 
-Multiview or View Instancing can be used for stereo rendering by creating one :openxr_ref:`XrSwapchain` that contains 2D array images. This is done by setting the :openxr_ref:`XrSwapchainCreateInfo` ``::arraySize`` to ``2``; similarly, we also create image views that encompass the two subresources - one layer per eye view.
+Multiview or View Instancing can be used for stereo rendering by creating one :openxr_ref:`XrSwapchain` that contains 2D array images. This is done by setting the :openxr_ref:`XrSwapchainCreateInfo` ``::arraySize`` to ``2``; similarly, we also create image views that encompass the two subresources - one layer per eye view. Update SwapchainInfo members.
 
-Remember also to update any uniform/constant buffer data types to support multiple view matrics via the use of arrays. Update any changes to shaders, shader paths and set the ``PipelineCreateInfo::viewMask`` member to ``0b11`` for two views. (Only found in Chapter6_1_Multiview).
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_SingleSwapchainInfo
+	:end-before: XR_DOCS_TAG_END_SingleSwapchainInfo
+	:dedent: 4
 
-.. code-block:: cpp
-	:emphasize-lines: 11, 21, 27
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateViewConfigurationView
+	:end-before: XR_DOCS_TAG_END_CreateViewConfigurationView
+	:dedent: 8
 
-	uint32_t viewCount = static_cast<uint32_t>(m_viewConfigurationViews.size());
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateSwapchains
+	:end-before: XR_DOCS_TAG_END_CreateSwapchains
+	:dedent: 8
+	:emphasize-lines: 12, 25
 
-	XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
-	swapchainCI.createFlags = 0;
-	swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-	swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);          // Use GraphicsAPI to select the first compatible format.
-	swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
-	swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
-	swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
-	swapchainCI.faceCount = 1;
-	swapchainCI.arraySize = viewCount;
-	swapchainCI.mipCount = 1;
-	OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &m_colorSwapchainInfo.swapchain), "Failed to create Color Swapchain");
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
+	:end-before: XR_DOCS_TAG_END_EnumerateSwapchainImages
+	:dedent: 8
 
-	// Similar for depth swapchain
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateImageViews
+	:end-before: XR_DOCS_TAG_END_CreateImageViews
+	:dedent: 8
+	:emphasize-lines: 6, 12, 19, 25
 
-	for (uint32_t i = 0; i < swapchainImageCount; i++) {
-		GraphicsAPI::ImageViewCreateInfo imageViewCI;
-		imageViewCI.image = m_graphicsAPI->GetSwapchainImage(m_colorSwapchainInfo.swapchain, j);
-		imageViewCI.type = GraphicsAPI::ImageViewCreateInfo::Type::RTV;
-		imageViewCI.view = GraphicsAPI::ImageViewCreateInfo::View::TYPE_2D_ARRAY;
-		imageViewCI.format = m_colorSwapchainInfo.swapchainFormat;
-		imageViewCI.aspect = GraphicsAPI::ImageViewCreateInfo::Aspect::COLOR_BIT;
-		imageViewCI.baseMipLevel = 0;
-		imageViewCI.levelCount = 1;
-		imageViewCI.baseArrayLayer = 0;
-		imageViewCI.layerCount = viewCount;
-		m_colorSwapchainInfo.imageViews.push_back(m_graphicsAPI->CreateImageView(imageViewCI));
-	}
 
-	// Similar for depth image views
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_DestroySwapchains
+	:end-before: XR_DOCS_TAG_END_DestroySwapchains
+	:dedent: 8
+
+Remember also to update any uniform/constant buffer data types to support multiple view matrics via the use of arrays. Update any changes to shaders, shader paths and set the ``PipelineCreateInfo::viewMask`` member to ``0b11`` for two views. (Only found in Chapter6_1_Multiview). Note use of AlignSizeForUniformBuffer().
+
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateResources1
+	:end-before: XR_DOCS_TAG_END_CreateResources1
+	:dedent: 4
+	:emphasize-lines: 2, 3
+
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_END_Update_numberOfCuboids
+	:end-before: XR_DOCS_TAG_END_CreateResources1_1
+	:dedent: 4
+	:emphasize-lines: 1
+
+.. container:: d3d11 d3d12
+
+	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_D3D
+		:end-before: XR_DOCS_TAG_END_CreateResources2_D3D
+		:dedent: 8
+		:emphasize-lines: 2, 5, 9, 12
+
+.. container:: opengl
+
+	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGL
+		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL
+		:dedent: 8
+		:emphasize-lines: 2, 5
+
+.. container:: opengles
+
+	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_OpenGLES
+		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGLES
+		:dedent: 8
+		:emphasize-lines: 2, 4
+
+.. container:: vulkan
+
+	.. container:: windows linux
+
+		.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_VulkanWindowsLinux
+			:end-before: XR_DOCS_TAG_END_CreateResources2_VulkanWindowsLinux
+			:dedent: 8
+			:emphasize-lines: 2, 5
+
+	.. container:: android
+
+		.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+			:language: cpp
+			:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_VulkanAndroid
+			:end-before: XR_DOCS_TAG_END_CreateResources2_VulkanAndroid
+			:dedent: 8
+			:emphasize-lines: 2, 4
+
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_CreateResources3
+	:end-before: XR_DOCS_TAG_END_CreateResources3
+	:dedent: 8
+	:emphasize-lines: 10, 11, 15
 
 When setting up the rendering code in ``RenderLayer()``, there's no need to repeat the rendering code per eye view; instead, we call :openxr_ref:`xrAcquireSwapchainImage` and :openxr_ref:`xrWaitSwapchainImage` for both the color and depth swapchains to get the next 2D array image from them. We are still required to submit an :openxr_ref:`XrCompositionLayerProjectionView` structure for each view in the system, but in the :openxr_ref:`XrSwapchainSubImage` we can set the ``imageArrayIndex`` to specify which layer of the swapchain image we wish to associate with that view. So in the case of stereo rendering, it would be ``0`` for left and ``1`` for right eye views. We attach our 2D array image as a render target/color attachment for the pixel/fragment shader to write to.
 
-.. code-block:: cpp
-	:emphasize-lines: 6-13, 21-33, 47
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderCuboid2
+	:end-before: XR_DOCS_TAG_END_RenderCuboid2
+	:dedent: 8
+	:emphasize-lines: 4 - 7, 9, 21
 
-	// Acquire and wait for an image from the swapchain.
-	// Get the image index of an image in the swapchain.
-	// The timeout is infinite.
-	uint32_t colorImageIndex = 0;
-	uint32_t depthImageIndex = 0;
-	XrSwapchainImageAcquireInfo acquireInfo{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
-	OPENXR_CHECK(xrAcquireSwapchainImage(m_colorSwapchainInfo.swapchain, &acquireInfo, &colorImageIndex), "Failed to acquire Image from the Color Swapchian");
-	OPENXR_CHECK(xrAcquireSwapchainImage(m_depthSwapchainInfo.swapchain, &acquireInfo, &depthImageIndex), "Failed to acquire Image from the Depth Swapchian");	
-	
-	XrSwapchainImageWaitInfo waitInfo = {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
-	waitInfo.timeout = XR_INFINITE_DURATION;
-	OPENXR_CHECK(xrWaitSwapchainImage(m_colorSwapchainInfo.swapchain, &waitInfo), "Failed to wait for Image from the Color Swapchain");
-	OPENXR_CHECK(xrWaitSwapchainImage(m_depthSwapchainInfo.swapchain, &waitInfo), "Failed to wait for Image from the Depth Swapchain");
-	
-	// Get the width and height and construct the viewport and scissors.
-	const uint32_t &width = m_viewConfigurationViews[0].recommendedImageRectWidth;
-	const uint32_t &height = m_viewConfigurationViews[0].recommendedImageRectHeight;
-	GraphicsAPI::Viewport viewport = {0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f};
-	GraphicsAPI::Rect2D scissor = {{(int32_t)0, (int32_t)0}, {width, height}};
-
-	// Fill out the XrCompositionLayerProjectionView structure specifying the pose and fov from the view.
-	// This also associates the swapchain image with this layer projection view.
-	for (uint32_t i = 0; i < viewCount; i++) {
-		layerProjectionViews = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
-		layerProjectionViews.pose = views.pose;
-		layerProjectionViews.fov = views.fov;
-		layerProjectionViews.subImage.swapchain = m_swapchainAndDepthImages.swapchain;
-		layerProjectionViews.subImage.imageRect.offset.x = 0;
-		layerProjectionViews.subImage.imageRect.offset.y = 0;
-		layerProjectionViews.subImage.imageRect.extent.width = static_cast<int32_t>(width);
-		layerProjectionViews.subImage.imageRect.extent.height = static_cast<int32_t>(height);
-		layerProjectionViews.subImage.imageArrayIndex = i;  // Select the layer for this view. Left = 0, Right = 1.
-	}
-
-	// Rendering code to clear the color and depth image views.
-	m_graphicsAPI->BeginRendering();
-
-	if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE) {
-		// VR mode use a background color.
-		m_graphicsAPI->ClearColor(m_colorSwapchainInfo.imageViews[colorImageIndex], 0.17f, 0.17f, 0.17f, 1.00f);
-	} else {
-		// In AR mode make the background color black.
-		m_graphicsAPI->ClearColor(m_colorSwapchainInfo.imageViews[colorImageIndex], 0.00f, 0.00f, 0.00f, 1.00f);
-	}
-	m_graphicsAPI->ClearDepth(m_depthSwapchainInfo.imageViews[depthImageIndex], 1.0f);
-
-	m_graphicsAPI->SetRenderAttachments(&m_swapchainAndDepthImage.colorImageViews[imageIndex], 1, m_swapchainAndDepthImage.depthImageView, width, eight, m_pipeline);
-	
-	// [...]
-
-	m_graphicsAPI->EndRendering();
-
-	// Give the swapchain image back to OpenXR, allowing the compositor to use the image.
-	XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
-	OPENXR_CHECK(xrReleaseSwapchainImage(m_colorSwapchainInfo.swapchain, &releaseInfo), "Failed to release Image back to the Color Swapchain");
-	OPENXR_CHECK(xrReleaseSwapchainImage(m_depthSwapchainInfo.swapchain, &releaseInfo), "Failed to release Image back to the Depth Swapchain");
-
-Shaders and Pipelines will need to be modified to support multiview rendering.
+.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer1
+	:end-before: XR_DOCS_TAG_END_RenderLayer2
+	:dedent: 8
 
 .. container:: d3d11
 	
@@ -161,6 +184,10 @@ Shaders and Pipelines will need to be modified to support multiview rendering.
 	.. literalinclude:: ../Chapter6_1_Multiview/ShadersMultiview/VertexShader_DX12_MV.hlsl
 		:diff: ../Shaders/VertexShader.hlsl
 		:language: hlsl
+
+	Downloads:
+		* :download:`dxc_shader.cmake <../Chapter6_1_Multiview/cmake/dxc_shader.cmake>`
+		* :download:`d3dx12.h <../Chapter6_1_Multiview/Common/d3dx12.h>`
 
 .. container:: opengl
 

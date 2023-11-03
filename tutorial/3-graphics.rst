@@ -132,7 +132,7 @@ All graphics APIs have the concept of a swapchain with varying levels of exposur
 	* 1 view  - Viewer on a phone, tablet or monitor.
 	* 2 views - Stereoscopic headset.
 
-Orthogonal to multiple views is the layering of multiple images. You could, for example, have a background that is a pass-through of your environment, a stereoscopic view of rendered graphics and a quadrilateral overlay of a HUD (Head-up display) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
+Orthogonal to multiple views is the layering of multiple images. You could, for example, have a background that is a pass-through of your environment, a stereoscopic view of rendered graphics and a quadrilateral overlay of a HUD (Head-up display) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views. Composition layers will be discussed later in :ref:`Chapter 3.2.3<3.2.3 RenderFrame>`.
 
 Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new methods and members. Copy the highlighted code below.
 
@@ -910,7 +910,7 @@ The primary structure in use here is the :openxr_ref:`XrFrameState`, which conta
 
 *The above code is an excerpt from openxr/openxr.h*
 
-:openxr_ref:`xrWaitFrame`, :openxr_ref:`xrBeginFrame` and :openxr_ref:`xrEndFrame` should wrap around all the rendering in the XR frame and thus should be called in that sequence. :openxr_ref:`xrWaitFrame` provides to the application the information for the frame, which we've discussed above. Next, :openxr_ref:`xrBeginFrame` should be called just before executing any GPU work for the frame. When calling :openxr_ref:`xrEndFrame`, we need to pass an :openxr_ref:`XrFrameEndInfo` structure to that function. We assign :openxr_ref:`XrFrameState` ``::predictedDisplayTime`` to :openxr_ref:`XrFrameEndInfo` ``::displayTime``. It should be noted that we can modify this value during the frame. Next, we assign to :openxr_ref:`XrFrameEndInfo` ``::environmentBlendMode`` our selected blend mode. Last, we assign the count of and a pointer to an ``std::vector<XrCompositionLayerBaseHeader *>`` which is a member of our ``RenderLayerInfo`` struct. Reference: :openxr_ref:`XrCompositionLayerBaseHeader`. These Composition Layers are assembled by the OpenXR compositor to create the final images.
+:openxr_ref:`xrWaitFrame`, :openxr_ref:`xrBeginFrame` and :openxr_ref:`xrEndFrame` *must* wrap around all the rendering in the XR frame and *must* be called in that sequence. :openxr_ref:`xrWaitFrame` provides to the application the information for the frame, which we've discussed above. :openxr_ref:`xrWaitFrame` will throttle the frame loop to synchronize the frame submissions with the display. Next, :openxr_ref:`xrBeginFrame` should be called just before executing any GPU work for the frame. When calling :openxr_ref:`xrEndFrame`, we need to pass an :openxr_ref:`XrFrameEndInfo` structure to that function. We assign :openxr_ref:`XrFrameState` ``::predictedDisplayTime`` to :openxr_ref:`XrFrameEndInfo` ``::displayTime``. It should be noted that we can modify this value during the frame. Next, we assign to :openxr_ref:`XrFrameEndInfo` ``::environmentBlendMode`` our selected blend mode. Last, we assign the count of and a pointer to an ``std::vector<XrCompositionLayerBaseHeader *>`` which is a member of our ``RenderLayerInfo`` struct. Reference: :openxr_ref:`XrCompositionLayerBaseHeader`. These Composition Layers are assembled by the OpenXR compositor to create the final images.
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -930,25 +930,28 @@ The primary structure in use here is the :openxr_ref:`XrFrameState`, which conta
 
 Below is a table of the ``XrCompositionLayer...`` types provided by the OpenXR 1.0 Core Specification and ``XR_KHR_composition_layer_...`` extensions.
 
-+---------------------------------------------------------+---------------------------------------------------+
-| Extension                                               | Structure                                         |
-+---------------------------------------------------------+---------------------------------------------------+
-| OpenXR 1.0 Core Specification                           | :openxr_ref:`XrCompositionLayerProjection`        |
-+---------------------------------------------------------+---------------------------------------------------+
-| OpenXR 1.0 Core Specification                           | :openxr_ref:`XrCompositionLayerQuad`              |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_cube`             | :openxr_ref:`XrCompositionLayerCubeKHR`           |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_depth`            | :openxr_ref:`XrCompositionLayerDepthInfoKHR`      |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_cylinder`         | :openxr_ref:`XrCompositionLayerCylinderKHR`       |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_equirect`         | :openxr_ref:`XrCompositionLayerEquirectKHR`       |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_color_scale_bias` | :openxr_ref:`XrCompositionLayerColorScaleBiasKHR` |
-+---------------------------------------------------------+---------------------------------------------------+
-| :openxr_ref:`XR_KHR_composition_layer_equirect2`        | :openxr_ref:`XrCompositionLayerEquirect2KHR`      |
-+---------------------------------------------------------+---------------------------------------------------+
+.. table::
+	:widths: grid
+	
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| Extension                                               | Structure                                         | Description                                                                                                                                 |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| OpenXR 1.0 Core Specification                           | :openxr_ref:`XrCompositionLayerProjection`        | It's used for rendering 3D Graphical elements.                                                                                              |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| OpenXR 1.0 Core Specification                           | :openxr_ref:`XrCompositionLayerQuad`              | It's used for rendering 2D or GUI elements.                                                                                                 |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_cube`             | :openxr_ref:`XrCompositionLayerCubeKHR`           | It's used for rendering Environment Cubemps.                                                                                                |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_depth`            | :openxr_ref:`XrCompositionLayerDepthInfoKHR`      | It allows the submission of a depth image with the projection layer for more accurate reprojections.                                        |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_cylinder`         | :openxr_ref:`XrCompositionLayerCylinderKHR`       | It allows a flat texture to be rendered on inside of a cylinder section - like a curved display.                                            |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_equirect`         | :openxr_ref:`XrCompositionLayerEquirectKHR`       | It's used for rendering an equirectangular image onto the inside of sphere - like a cubemap.                                                |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_color_scale_bias` | :openxr_ref:`XrCompositionLayerColorScaleBiasKHR` | A color transform applied to an existing composition layer. It could be used to highlight something to the user.                            |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+	| :openxr_ref:`XR_KHR_composition_layer_equirect2`        | :openxr_ref:`XrCompositionLayerEquirect2KHR`      | Like :openxr_ref:`XrCompositionLayerEquirectKHR`, but uses different parameters similar to :openxr_ref:`XR_KHR_composition_layer_cylinder`. |
+	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 
 Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` are also in the OpenXR 1.0 specification. 
 
@@ -998,7 +1001,7 @@ And add the following:
 	:end-before: XR_DOCS_TAG_END_RenderLayer2
 	:dedent: 4
 
-Our first call is to :openxr_ref:`xrLocateViews`, which takes a :openxr_ref:`XrViewLocateInfo` structure and return an :openxr_ref:`XrViewState` structure and an array of :openxr_ref:`XrView` s. This function tells us where the views are in relation to the reference space, as an :openxr_ref:`XrPosef`, as well as the field of view, as an :openxr_ref:`XrFovf`, for each view; this information is stored in the ``std::vector<XrView>``. The returned :openxr_ref:`XrViewState` contains a member of type :openxr_ref:`XrViewStateFlags`, which describes whether the position and/or orientation is valid and/or tracked.
+Our first call is to :openxr_ref:`xrLocateViews`, which takes a :openxr_ref:`XrViewLocateInfo` structure and return an :openxr_ref:`XrViewState` structure and an array of :openxr_ref:`XrView` s. This function tells us where the views are in relation to the reference space, as an :openxr_ref:`XrPosef`, as well as the field of view, as an :openxr_ref:`XrFovf`, for each view; this information is stored in the ``std::vector<XrView>``. The returned :openxr_ref:`XrViewState` contains a member of type :openxr_ref:`XrViewStateFlags`, which describes whether the position and/or orientation is valid and/or tracked. An :openxr_ref:`XrPosef` contain both a vector 3 position and a quaternion orientation, which together describe a transform in 3D space. An :openxr_ref:`XrFovf` contain four angles (left, right, up and down), which describe the angular extent of the view's frustum about the view's central axis.
 
 The :openxr_ref:`XrViewLocateInfo` structure takes a reference space and a display time from our ``RenderLayerInfo``, from which the view poses are calculated, and also takes our :openxr_ref:`XrViewConfigurationType` to locate the correct number of views for the system. If we can't locate the views, we return ``false`` from this method.
 
