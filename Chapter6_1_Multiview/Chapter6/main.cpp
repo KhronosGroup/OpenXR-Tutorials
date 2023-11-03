@@ -938,8 +938,17 @@ private:
         }
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
-        // TODO: Don't like this, just use a for(int loop and use the correct one in the list.
         // XR_DOCS_TAG_BEGIN_CreateViewConfigurationView
+        bool coherentViews = m_viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+        for (const XrViewConfigurationView &viewConfigurationView : m_viewConfigurationViews) {
+            // Check the current view size against the first view.
+            coherentViews |= m_viewConfigurationViews[0].recommendedImageRectWidth == viewConfigurationView.recommendedImageRectWidth;
+            coherentViews |= m_viewConfigurationViews[0].recommendedImageRectHeight == viewConfigurationView.recommendedImageRectHeight;
+        }
+        if (!coherentViews) {
+            std::cerr << "The views are not coherent. Unable to create a single Swapchain." << std::endl;
+            DEBUG_BREAK;
+        }
         const XrViewConfigurationView &viewConfigurationView = m_viewConfigurationViews[0];
         uint32_t viewCount = static_cast<uint32_t>(m_viewConfigurationViews.size());
         // XR_DOCS_TAG_END_CreateViewConfigurationView
