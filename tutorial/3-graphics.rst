@@ -1,4 +1,4 @@
-﻿##########
+##########
 3 Graphics
 ##########
 
@@ -132,7 +132,7 @@ All graphics APIs have the concept of a swapchain with varying levels of exposur
 	* 1 view  - Viewer on a phone, tablet or monitor.
 	* 2 views - Stereoscopic headset.
 
-Orthogonal to multiple views is the layering of multiple images. You could, for example, have a background that is a pass-through of your environment, a stereoscopic view of rendered graphics and a quadrilateral overlay of a HUD (Head-up display) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views.
+Orthogonal to multiple views is the layering of multiple images. You could, for example, have a background that is a pass-through of your environment, a stereoscopic view of rendered graphics and a quadrilateral overlay of a HUD (Head-up display) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views. Composition layers will be discussed later in :ref:`Chapter 3.2.3<3.2.3 RenderFrame>`.
 
 Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new methods and members. Copy the highlighted code below.
 
