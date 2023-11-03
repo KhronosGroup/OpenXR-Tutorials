@@ -653,7 +653,7 @@ private:
         // and randomly colored.
         float scale = 0.2f;
         // Center the blocks a little way from the origin.
-        XrVector3f center = {0, -0.2f, -0.7f};
+        XrVector3f center = {0.0f, -0.2f, -0.7f};
         for (int i = 0; i < 4; i++) {
             float x = scale * (float(i) - 1.5f) + center.x;
             for (int j = 0; j < 4; j++) {
@@ -685,12 +685,14 @@ private:
 
     void PollEvents() {
         // XR_DOCS_TAG_BEGIN_PollEvents
-        XrResult result = XR_SUCCESS;
-        do {
-            // Poll OpenXR for a new event.
-            XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
-            result = xrPollEvent(m_xrInstance, &eventData);
+        // Poll OpenXR for a new event.
+        XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
+        auto XrPollEvents = [&]() -> bool {
+            eventData = {XR_TYPE_EVENT_DATA_BUFFER};
+            return xrPollEvent(m_xrInstance, &eventData) == XR_SUCCESS;
+        };
 
+        while (XrPollEvents()) {
             switch (eventData.type) {
             // Log the number of lost events from the runtime.
             case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
@@ -710,6 +712,10 @@ private:
             case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
                 XrEventDataInteractionProfileChanged *interactionProfileChanged = reinterpret_cast<XrEventDataInteractionProfileChanged *>(&eventData);
                 std::cout << "OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
+                if (interactionProfileChanged->session != m_session) {
+                    std::cout << "XrEventDataInteractionProfileChanged for unknown Session" << std::endl;
+                    break;
+                }
                 // XR_DOCS_TAG_BEGIN_CallRecordCurrentBindings
                 RecordCurrentBindings();
                 // XR_DOCS_TAG_END_CallRecordCurrentBindings
@@ -719,11 +725,19 @@ private:
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
+                if (referenceSpaceChangePending->session != m_session) {
+                    std::cout << "XrEventDataReferenceSpaceChangePending for unknown Session" << std::endl;
+                    break;
+                }
                 break;
             }
             // Session State changes:
             case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
                 XrEventDataSessionStateChanged *sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged *>(&eventData);
+                if (sessionStateChanged->session != m_session) {
+                    std::cout << "XrEventDataSessionStateChanged for unknown Session" << std::endl;
+                    break;
+                }
 
                 if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
                     // SessionState is ready. Begin the XrSession using the XrViewConfigurationType.
@@ -756,8 +770,7 @@ private:
                 break;
             }
             }
-
-        } while (result == XR_SUCCESS);
+        }
         // XR_DOCS_TAG_END_PollEvents
     }
     // XR_DOCS_TAG_BEGIN_PollActions
@@ -924,14 +937,13 @@ private:
         }
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
-        // TODO: Don't like this, just use a for(int loop and use the correct one in the list.
-        // XR_DOCS_TAG_BEGIN_CreateViewConfigurationView
-        const XrViewConfigurationView &viewConfigurationView = m_viewConfigurationViews[0];
-        // XR_DOCS_TAG_END_CreateViewConfigurationView
-
-        // Per view, create a color and depth swapchain, and their associated image views.
+        // XR_DOCS_TAG_BEGIN_ResizeSwapchainInfos
+        //Resize the SwapchainInfo to match the number of view in the View Configuration.
         m_colorSwapchainInfos.resize(m_viewConfigurationViews.size());
         m_depthSwapchainInfos.resize(m_viewConfigurationViews.size());
+        // XR_DOCS_TAG_END_ResizeSwapchainInfos
+
+        // Per view, create a color and depth swapchain, and their associated image views.
         for (size_t i = 0; i < m_viewConfigurationViews.size(); i++) {
             // XR_DOCS_TAG_BEGIN_CreateSwapchains
             SwapchainInfo &colorSwapchainInfo = m_colorSwapchainInfos[i];
@@ -942,10 +954,10 @@ private:
             XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-            swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);          // Use GraphicsAPI to select the first compatible format.
-            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
-            swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
-            swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
+            swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);                // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.sampleCount = m_viewConfigurationViews[i].recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
+            swapchainCI.width = m_viewConfigurationViews[i].recommendedImageRectWidth;
+            swapchainCI.height = m_viewConfigurationViews[i].recommendedImageRectHeight;
             swapchainCI.faceCount = 1;
             swapchainCI.arraySize = 1;
             swapchainCI.mipCount = 1;
@@ -955,10 +967,10 @@ private:
             // Depth.
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-            swapchainCI.format = m_graphicsAPI->SelectDepthSwapchainFormat(formats);          // Use GraphicsAPI to select the first compatible format.
-            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
-            swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
-            swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
+            swapchainCI.format = m_graphicsAPI->SelectDepthSwapchainFormat(formats);                // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.sampleCount = m_viewConfigurationViews[i].recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
+            swapchainCI.width = m_viewConfigurationViews[i].recommendedImageRectWidth;
+            swapchainCI.height = m_viewConfigurationViews[i].recommendedImageRectHeight;
             swapchainCI.faceCount = 1;
             swapchainCI.arraySize = 1;
             swapchainCI.mipCount = 1;
@@ -1208,7 +1220,7 @@ private:
             // XR_DOCS_TAG_END_CallRenderCuboid
 
             // XR_DOCS_TAG_BEGIN_CallRenderCuboid2
-            // Draw some m_blocks at the controller positions:
+            // Draw some blocks at the controller positions:
             for (int j = 0; j < 2; j++) {
                 if (m_handPoseState[j].isActive) {
                     RenderCuboid(m_handPose[j], {0.02f, 0.04f, 0.10f}, {1.f, 1.f, 1.f});

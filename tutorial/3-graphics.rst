@@ -231,6 +231,7 @@ From the code in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`, we modify our assignm
 	:start-at: if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
 	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
 	:dedent: 16
+	:emphasize-lines: 4
 
 3.1.2 Enumerate the Swapchain Formats
 =====================================
@@ -257,23 +258,17 @@ Copy the code below into the ``CreateSwapchains()`` method:
 3.1.3 Create the Swapchains
 ===========================
 
-Append the following code to the ``CreateSwapchains()`` method:
+We will create an :openxr_ref:`XrSwapchain` for each view in the system. First, we will resize our color and depth ``std::vector<SwapchainInfo>`` s to match the number of views in the system. Next, we set up a loop to iterate through and create the swapchains and all the image views.
+Append the following two code blocks to the ``CreateSwapchains()`` method:
 
 .. literalinclude:: ../Chapter3/main.cpp
 	:language: cpp
-	:start-after: XR_DOCS_TAG_BEGIN_CreateViewConfigurationView
-	:end-before: XR_DOCS_TAG_END_CreateViewConfigurationView
+	:start-after: XR_DOCS_TAG_BEGIN_ResizeSwapchainInfos
+	:end-before: XR_DOCS_TAG_END_ResizeSwapchainInfos
 	:dedent: 8
-
-As we are rendering in stereo in this tutorial, the two views are the same.
-
-We will create an :openxr_ref:`XrSwapchain` for each view in the system. First, we will resize our color and depth ``std::vector<SwapchainInfo>`` s to match the number of views in the system. Next, we set up a loop to iterate through and create the swapchains and all the image views.
-Append the following this code to the ``CreateSwapchains()`` method:
 
 .. code-block:: cpp
 
-	m_colorSwapchainInfos.resize(m_viewConfigurationViews.size());
-	m_depthSwapchainInfos.resize(m_viewConfigurationViews.size());
 	for (size_t i = 0; i < m_viewConfigurationViews.size(); i++) {
 	}
 
@@ -285,7 +280,7 @@ Inside the for loop of the ``CreateSwapchains()`` method, add the following code
 	:end-before: XR_DOCS_TAG_END_CreateSwapchains
 	:dedent: 12
 
-Here, we've filled out the :openxr_ref:`XrSwapchainCreateInfo` structure. The ``sampleCount``, ``width`` and ``height`` members were assigned from the :openxr_ref:`XrViewConfigurationView`. We set the ``createFlags`` to ``0`` as we require no constraints or additional functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the images are suitable to be read in a shader and to be used as a render target/color attachment. For the depth swapchain, we set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` as these images will be used as a depth stencil attachments.
+Here, we've filled out the :openxr_ref:`XrSwapchainCreateInfo` structure. The ``sampleCount``, ``width`` and ``height`` members were assigned from the related :openxr_ref:`XrViewConfigurationView`. We set the ``createFlags`` to ``0`` as we require no constraints or additional functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the images are suitable to be read in a shader and to be used as a render target/color attachment. For the depth swapchain, we set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` as these images will be used as a depth stencil attachments.
 
 .. container:: d3d11
 

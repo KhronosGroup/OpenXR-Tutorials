@@ -49,6 +49,9 @@ sphinx
 local.properties
 
 # Android Shader output sources/binaries
+Chapter6_1_Multiview/Chapter6/app/src/main/assets/shaders/*.spv
+Chapter6_1_Multiview/Chapter6/app/src/main/assets/shaders/*.glsl
+
 Chapter5/app/src/main/assets/shaders/*.spv
 Chapter5/app/src/main/assets/shaders/*.glsl
 

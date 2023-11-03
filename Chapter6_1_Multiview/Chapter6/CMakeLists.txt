@@ -193,6 +193,7 @@ else() # Windows / Linux
     target_link_libraries(${PROJECT_NAME} openxr_loader)
     # XR_DOCS_TAG_END_WindowsLinux
     AddGraphicsAPIDefine(${PROJECT_NAME})
+    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_ENABLE_MULTIVIEW)
 
     if (WIN32) # Windows 
         # XR_DOCS_TAG_BEGIN_D3D11

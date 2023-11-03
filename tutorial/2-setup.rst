@@ -505,7 +505,7 @@ Copy the following code into the ``PollEvents()`` method:
 	:end-before: XR_DOCS_TAG_END_PollEvents
 	:dedent: 8
 
-Above, we have defined the ``PollEvents()`` method. Here, we use a do-while loop to check the result of :openxr_ref:`xrPollEvent` - whilst that function returns ``XR_SUCCESS``, there are events for us to process. :openxr_ref:`xrPollEvent` will fill in the :openxr_ref:`XrEventDataBuffer` structure that we pass to the function call. :openxr_ref:`xrPollEvent` will update the member variable ``type`` and from this, we use a switch statement to select the appropriate code path. Depending on the updated type, we use a ``reinterpret_cast<>()`` to get the actual data that :openxr_ref:`xrPollEvent` returned.
+Above, we have defined the ``PollEvents()`` method. Here, we use a lambda to call :openxr_ref:`xrPollEvent`. This call will fill in the :openxr_ref:`XrEventDataBuffer` structure that we pass to the function call, which we use later in this method. We also check that returned :openxr_ref:`XrResult` is ``XR_SUCCESS``. Whilst that function returns ``XR_SUCCESS``, there are events for us to process, and therefore we use a while loop to continually check for new events. :openxr_ref:`xrPollEvent` will update the member variable ``type`` and from this, we use a switch statement to select the appropriate code path. Depending on the updated type, we use a ``reinterpret_cast<>()`` to get the actual data that :openxr_ref:`xrPollEvent` returned. In certain cases, we also check that the returned :openxr_ref:`XrSession` matches the one we created.
 
 The description of the events comes from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_xrpollevent>`_.
 
@@ -524,7 +524,7 @@ The description of the events comes from `2.22.1. Event Polling of the OpenXR sp
 +---------------------------------------------------+--------------------------------------------------------------------------------+
 
 As described in the table above, most events are transparent in their intentions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the :openxr_ref:`XrInstance` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully.
-``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
+``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively. :openxr_ref:`XrSpace` s are discussed in detail in :ref:`Chapter 3.2.2<3.2.2 xrCreateReferenceSpace>`
 
 2.3.2 XrSessionState
 ====================
@@ -583,7 +583,7 @@ As the application runs, if the :openxr_ref:`XrSessionState` changes to ``XR_SES
 	:start-at: if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
 	:end-before: if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
 	:dedent: 16
-
+	:emphasize-lines: 4
 
 From the code that we copied in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`, we've assigned to :openxr_ref:`XrSessionBeginInfo` ``::primaryViewConfigurationType`` the value of ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. This specifies the view configuration of the form factor's primary display - For Head Mounted Displays, it is two views (one per eye). For the time being, we have defaulted to ``XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO``. In :ref:`Chapter 3.1.1 <3.1.1 View Configurations>`, we enumerate all the system's view configurations to pick a suitable one.
 

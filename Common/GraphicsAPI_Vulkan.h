@@ -92,9 +92,12 @@ private:
     VkDevice device{};
     uint32_t queueFamilyIndex = 0xFFFFFFFF;
     uint32_t queueIndex = 0xFFFFFFFF;
+    VkQueue queue{};
+    VkFence fence{};
 
     VkCommandPool cmdPool{};
     VkCommandBuffer cmdBuffer{};
+    VkDescriptorPool descriptorPool;
 
     std::vector<const char*> activeInstanceLayers{};
     std::vector<const char*> activeInstanceExtensions{};
@@ -128,7 +131,7 @@ private:
     bool inRenderPass = false;
 
     VkPipeline setPipeline = VK_NULL_HANDLE;
-    std::unordered_map<VkCommandBuffer, std::vector<std::pair<VkDescriptorPool, VkDescriptorSet>>> cmdBufferDescriptorSets;
+    std::unordered_map<VkCommandBuffer, std::vector<VkDescriptorSet>> cmdBufferDescriptorSets;
     std::vector<std::tuple<VkWriteDescriptorSet, VkDescriptorBufferInfo, VkDescriptorImageInfo>> writeDescSets;
 
 };
