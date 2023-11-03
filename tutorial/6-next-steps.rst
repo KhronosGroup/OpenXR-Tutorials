@@ -185,6 +185,10 @@ When setting up the rendering code in ``RenderLayer()``, there's no need to repe
 		:diff: ../Shaders/VertexShader.hlsl
 		:language: hlsl
 
+	Downloads:
+		* :download:`dxc_shader.cmake <../Chapter6_1_Multiview/cmake/dxc_shader.cmake>`
+		* :download:`d3dx12.h <../Chapter6_1_Multiview/Common/d3dx12.h>`
+
 .. container:: opengl
 
 	Enusre you have support for ``GL_OVR_multiview`` by checking the extensions and that you have loaded the ``glFramebufferTextureMultiviewOVR()`` function pointer, if you need to do so. You will use this to create a framebuffer that supports rendering to multiple layers.
