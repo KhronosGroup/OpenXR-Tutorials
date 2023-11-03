@@ -603,14 +603,13 @@ private:
         }
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
-        // TODO: Don't like this, just use a for(int loop and use the correct one in the list.
-        // XR_DOCS_TAG_BEGIN_CreateViewConfigurationView
-        const XrViewConfigurationView &viewConfigurationView = m_viewConfigurationViews[0];
-        // XR_DOCS_TAG_END_CreateViewConfigurationView
-
-        // Per view, create a color and depth swapchain, and their associated image views.
+        // XR_DOCS_TAG_BEGIN_ResizeSwapchainInfos
+        //Resize the SwapchainInfo to match the number of view in the View Configuration.
         m_colorSwapchainInfos.resize(m_viewConfigurationViews.size());
         m_depthSwapchainInfos.resize(m_viewConfigurationViews.size());
+        // XR_DOCS_TAG_END_ResizeSwapchainInfos
+
+        // Per view, create a color and depth swapchain, and their associated image views.
         for (size_t i = 0; i < m_viewConfigurationViews.size(); i++) {
             // XR_DOCS_TAG_BEGIN_CreateSwapchains
             SwapchainInfo &colorSwapchainInfo = m_colorSwapchainInfos[i];
@@ -621,10 +620,10 @@ private:
             XrSwapchainCreateInfo swapchainCI{XR_TYPE_SWAPCHAIN_CREATE_INFO};
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
-            swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);          // Use GraphicsAPI to select the first compatible format.
-            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
-            swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
-            swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
+            swapchainCI.format = m_graphicsAPI->SelectColorSwapchainFormat(formats);                // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.sampleCount = m_viewConfigurationViews[i].recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
+            swapchainCI.width = m_viewConfigurationViews[i].recommendedImageRectWidth;
+            swapchainCI.height = m_viewConfigurationViews[i].recommendedImageRectHeight;
             swapchainCI.faceCount = 1;
             swapchainCI.arraySize = 1;
             swapchainCI.mipCount = 1;
@@ -634,10 +633,10 @@ private:
             // Depth.
             swapchainCI.createFlags = 0;
             swapchainCI.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-            swapchainCI.format = m_graphicsAPI->SelectDepthSwapchainFormat(formats);          // Use GraphicsAPI to select the first compatible format.
-            swapchainCI.sampleCount = viewConfigurationView.recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
-            swapchainCI.width = viewConfigurationView.recommendedImageRectWidth;
-            swapchainCI.height = viewConfigurationView.recommendedImageRectHeight;
+            swapchainCI.format = m_graphicsAPI->SelectDepthSwapchainFormat(formats);                // Use GraphicsAPI to select the first compatible format.
+            swapchainCI.sampleCount = m_viewConfigurationViews[i].recommendedSwapchainSampleCount;  // Use the recommended values from the XrViewConfigurationView.
+            swapchainCI.width = m_viewConfigurationViews[i].recommendedImageRectWidth;
+            swapchainCI.height = m_viewConfigurationViews[i].recommendedImageRectHeight;
             swapchainCI.faceCount = 1;
             swapchainCI.arraySize = 1;
             swapchainCI.mipCount = 1;
