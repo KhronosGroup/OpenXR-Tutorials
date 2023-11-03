@@ -524,7 +524,7 @@ The description of the events comes from `2.22.1. Event Polling of the OpenXR sp
 +---------------------------------------------------+--------------------------------------------------------------------------------+
 
 As described in the table above, most events are transparent in their intentions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the :openxr_ref:`XrInstance` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully.
-``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively.
+``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively. :openxr_ref:`XrSpace` s are discussed in detail in :ref:`Chapter 3.2.2<3.2.2 xrCreateReferenceSpace>`
 
 2.3.2 XrSessionState
 ====================
