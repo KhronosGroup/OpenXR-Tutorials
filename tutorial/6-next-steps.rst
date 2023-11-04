@@ -2,9 +2,13 @@
 6 Next Steps
 ############
 
+So far, you've learned how to create a basic OpenXR application: how to initialize and shut down an OpenXR instance and session, how to connect a graphics API to receive rendering events, and how to poll your runtime for interactions. The next steps are up to you but in these chapter you'll find a few suggestions.
+
 ***********************
 6.1 Multiview rendering
 ***********************
+
+Stereoscopic rendering usually involves drawing two very similar views of the same scene, with only a slight difference in perspective due to the separation of the left and right eye positions. It's a great saving - particularly of CPU time - if we can use only one set of draw calls to render both views.
 
 .. container:: d3d11
 
@@ -12,17 +16,17 @@
 
 .. container:: d3d12
 
-	D3D12 supports rendering to both eye views with View Instancing, which simplifies the rendering code. `D3D12 View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_.
+	D3D12 supports rendering to both eye views with View Instancing - see `D3D12 View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_.
 
 .. container:: opengl opengles
 
-	OpenGL and OpenGL ES supports rendering to both eye views with multiview, which simplifies the rendering code. `OpenGL and OpenGL ES Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
+	OpenGL and OpenGL ES supports rendering to both eye views with multiview - see `OpenGL and OpenGL ES Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
 
 .. container:: Vulkan
 
-	Vulkan supports rendering to both eye views with multiview, which simplifies the rendering code. `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
+	Vulkan supports rendering to both eye views with multiview - see `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
 
-Multiview or View Instancing can be used for stereo rendering by creating one :openxr_ref:`XrSwapchain` that contains 2D array images. This is done by setting the :openxr_ref:`XrSwapchainCreateInfo` ``::arraySize`` to ``2``; similarly, we also create image views that encompass the two subresources - one layer per eye view. Update SwapchainInfo members.
+Multiview or View Instancing can be used for stereo rendering by creating one :openxr_ref:`XrSwapchain` that contains two array images. This is done by setting the ``arraySize`` of our :openxr_ref:`XrSwapchainCreateInfo` to ``2``; similarly, we create image views that encompass the two subresources - one layer per eye view.
 
 .. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
 	:language: cpp
@@ -133,7 +137,7 @@ Remember also to update any uniform/constant buffer data types to support multip
 	:dedent: 8
 	:emphasize-lines: 10, 11, 15
 
-When setting up the rendering code in ``RenderLayer()``, there's no need to repeat the rendering code per eye view; instead, we call :openxr_ref:`xrAcquireSwapchainImage` and :openxr_ref:`xrWaitSwapchainImage` for both the color and depth swapchains to get the next 2D array image from them. We are still required to submit an :openxr_ref:`XrCompositionLayerProjectionView` structure for each view in the system, but in the :openxr_ref:`XrSwapchainSubImage` we can set the ``imageArrayIndex`` to specify which layer of the swapchain image we wish to associate with that view. So in the case of stereo rendering, it would be ``0`` for left and ``1`` for right eye views. We attach our 2D array image as a render target/color attachment for the pixel/fragment shader to write to.
+In ``RenderLayer()``, there's no need to repeat the rendering code per eye view; instead, we call :openxr_ref:`xrAcquireSwapchainImage` and :openxr_ref:`xrWaitSwapchainImage` for both the color and depth swapchains to get the next 2D array image from them. We are still required to submit an :openxr_ref:`XrCompositionLayerProjectionView` structure for each view in the system, but in the :openxr_ref:`XrSwapchainSubImage` we can set the ``imageArrayIndex`` to specify which layer of the swapchain image we wish to associate with that view. So in the case of stereo rendering, it would be ``0`` for left and ``1`` for right eye views. We attach our 2D array image as a render target/color attachment for the pixel/fragment shader to write to.
 
 .. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
 	:language: cpp
@@ -460,3 +464,12 @@ For more details, please see `API Layers README <https://github.com/KhronosGroup
 As OpenXR support both linear and sRGB color spaces for compositing. It is helpful to have a deeper knowledge of color science; especially if you are planning to use sRGB formats and have the OpenXR runtime/compositor do automatic conversions for you.
 
 For more information on color spaces and gamma encoding, see J. Guy Davidson's `video presentation <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_ on the subject.
+
+**************
+6.5 Conclusion
+**************
+
+In this chapter, we discussed a few of the possible next steps in your OpenXR journey. Be sure to refer back to the `OpenXR Specification <https://registry.khronos.org/OpenXR/specs/1.0>`_ and look out for updates, both there and here, as the specification develops.
+
+The text of the OpenXR Tutorial is by Andrew Richards and Roderick Kennedy of Simul Software Ltd. The design of the site is by Calland Creative Ltd. The site is overseen by the Khronos OpenXR Working Group.
+
