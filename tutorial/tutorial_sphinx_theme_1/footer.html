@@ -20,7 +20,8 @@
           {%- if hasdoc('copyright') %}
           {%- trans path=pathto('copyright'), copyright=copyright|e %}&#169; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}
           {%- else %}
-          {%- trans copyright=copyright|e %}&#169; Copyright {{ copyright }}.{% endtrans %}
+          {%- trans copyright=copyright|e %}&#169; {{ copyright }}. Text is licensed as Creative Commons International 4.0 BY Attribution.
+          All code is licensed as Apache 2.0.{% endtrans %}
           {%- endif %}
           {%- endif %}
 <p dir="auto">The OpenXR Tutorial is owned and operated by The Khronos Group Inc. Khronos <a href="https://www.khronos.org/legal/" rel="nofollow">Legal Notices</a>, <a href="https://www.khronos.org/legal/privacy" rel="nofollow">Privacy Policy</a>, and <a href="https://www.khronos.org/about/code-of-conduct" rel="nofollow">Code of Conduct</a> apply.</p>
