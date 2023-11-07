@@ -34,14 +34,21 @@ if (XR_TUTORIAL_BUILD_DOCUMENTATION)
     if (WIN32)
         execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-common-archs.bat" "D3D11" "D3D12" "OPENGL" "OPENGL_ES" "VULKAN" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
     elseif(LINUX)
-        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-common-archs.bat" "D3D11" "D3D12" "OPENGL" "OPENGL_ES" "VULKAN" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-common-archs.sh" "D3D11" "D3D12" "OPENGL" "OPENGL_ES" "VULKAN" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
+
+    #Build Common folder archives - Chapter 6
+    if (WIN32)
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/Chapter6_1_Multiview/build-common-archs.bat" "D3D11" "D3D12" "OPENGL" "OPENGL_ES" "VULKAN" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Chapter6_1_Multiview/")
+    elseif(LINUX)
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/Chapter6_1_Multiview/build-common-archs.sh" "D3D11" "D3D12" "OPENGL" "OPENGL_ES" "VULKAN" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Chapter6_1_Multiview/")
     endif()
 
     #Build Android Build Folder Archives
     if (WIN32)
         execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-android-arch.bat" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
     elseif(LINUX)
-        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-android-arch.bat" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build-android-arch.sh" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
     endif()
 endif()
 
