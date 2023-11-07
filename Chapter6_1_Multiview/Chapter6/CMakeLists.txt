@@ -74,16 +74,16 @@ set(GL_SHADERS
     "../ShadersMultiview/VertexShader_GL_MV.glsl"
     "../ShadersMultiview/PixelShader_GL_MV.glsl")
 # XR_DOCS_TAG_END_GL_SHADERS
-# XR_DOCS_TAG_BEGIN_VK_SHADERS
-set(VK_SHADERS
-    "../ShadersMultiview/VertexShader_VK_MV.glsl"
-    "../ShadersMultiview/PixelShader_VK_MV.glsl")
-# XR_DOCS_TAG_END_VK_SHADERS
 # XR_DOCS_TAG_BEGIN_ES_GLSL_SHADERS
 set(ES_GLSL_SHADERS
     "../ShadersMultiview/VertexShader_GLES_MV.glsl"
     "../ShadersMultiview/PixelShader_GLES_MV.glsl")
 # XR_DOCS_TAG_END_ES_GLSL_SHADERS
+# XR_DOCS_TAG_BEGIN_VK_SHADERS
+set(VK_SHADERS
+    "../ShadersMultiview/VertexShader_VK_MV.glsl"
+    "../ShadersMultiview/PixelShader_VK_MV.glsl")
+# XR_DOCS_TAG_END_VK_SHADERS
 
 if (ANDROID) # Android
     # XR_DOCS_TAG_BEGIN_Android
@@ -111,7 +111,9 @@ if (ANDROID) # Android
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-cast-calling-convention)
     # XR_DOCS_TAG_END_Android
     AddGraphicsAPIDefine(${PROJECT_NAME})
+    # XR_DOCS_TAG_BEGIN_AndroidEnableMultiview
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_ENABLE_MULTIVIEW)
+    # XR_DOCS_TAG_END_AndroidEnableMultiview
 
     # XR_DOCS_TAG_BEGIN_VulkanNDK
     # VulkanNDK
@@ -193,7 +195,9 @@ else() # Windows / Linux
     target_link_libraries(${PROJECT_NAME} openxr_loader)
     # XR_DOCS_TAG_END_WindowsLinux
     AddGraphicsAPIDefine(${PROJECT_NAME})
+    # XR_DOCS_TAG_BEGIN_WindowsLinuxEnableMultiview
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_ENABLE_MULTIVIEW)
+    # XR_DOCS_TAG_END_WindowsLinuxEnableMultiview
 
     if (WIN32) # Windows 
         # XR_DOCS_TAG_BEGIN_D3D11
@@ -238,17 +242,12 @@ else() # Windows / Linux
     # XR_DOCS_TAG_BEGIN_BuildShadersWindows
     # D3D11 and D3D12 HLSL
     if(WIN32)
+        # D3D11: Using Shader Model 5.0
         include(fxc_shader)
         set_property(SOURCE ${DX11_SHADERS} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
         set_source_files_properties(../ShadersMultiview/VertexShader_DX11_MV.hlsl PROPERTIES ShaderType "vs")
         set_source_files_properties(../ShadersMultiview/PixelShader_DX11_MV.hlsl PROPERTIES ShaderType "ps")
-        
-        include(dxc_shader)
-        set_property(SOURCE ${DX12_SHADERS} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
-        set_source_files_properties(../ShadersMultiview/VertexShader_DX12_MV.hlsl PROPERTIES ShaderType "vs")
-        set_source_files_properties(../ShadersMultiview/PixelShader_DX12_MV.hlsl PROPERTIES ShaderType "ps")
 
-        # D3D11: Using Shader Model 5.0
         set(shadermodel 5_0)
         foreach(FILE ${DX11_SHADERS})
             get_filename_component(FILE_WE ${FILE} NAME_WE)
@@ -265,6 +264,11 @@ else() # Windows / Linux
         endforeach()
 
         # D3D12: Using Shader Model 6.1 for SV_ViewID
+        include(dxc_shader)
+        set_property(SOURCE ${DX12_SHADERS} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
+        set_source_files_properties(../ShadersMultiview/VertexShader_DX12_MV.hlsl PROPERTIES ShaderType "vs")
+        set_source_files_properties(../ShadersMultiview/PixelShader_DX12_MV.hlsl PROPERTIES ShaderType "ps")
+
         set(shadermodel 6_1)
         foreach(FILE ${DX12_SHADERS})
             get_filename_component(FILE_WE ${FILE} NAME_WE)
@@ -289,7 +293,7 @@ else() # Windows / Linux
         include(glsl_shader)
         set_source_files_properties(../ShadersMultiview/VertexShader_VK_MV.glsl PROPERTIES ShaderType "vert")
         set_source_files_properties(../ShadersMultiview/PixelShader_VK_MV.glsl PROPERTIES ShaderType "frag")
-    
+
         foreach(FILE ${VK_SHADERS})
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)

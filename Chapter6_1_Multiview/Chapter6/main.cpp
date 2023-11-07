@@ -613,7 +613,7 @@ private:
         }
         // XR_DOCS_TAG_END_CreateResources2_OpenGLES
 #endif
-        // XR_DOCS_TAG_BEGIN_CreateResources2_D3D
+        // XR_DOCS_TAG_BEGIN_CreateResources2_D3D11
         if (m_apiType == D3D11) {
             std::vector<char> vertexSource = ReadBinaryFile("VertexShader_DX11_MV_5_0.cso");
             m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
@@ -621,6 +621,8 @@ private:
             std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_DX11_MV_5_0.cso");
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         }
+        // XR_DOCS_TAG_END_CreateResources2_D3D11
+        // XR_DOCS_TAG_BEGIN_CreateResources2_D3D12
         if (m_apiType == D3D12) {
             std::vector<char> vertexSource = ReadBinaryFile("VertexShader_DX12_MV_6_1.cso");
             m_vertexShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
@@ -628,7 +630,7 @@ private:
             std::vector<char> fragmentSource = ReadBinaryFile("PixelShader_DX12_MV_6_1.cso");
             m_fragmentShader = m_graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::FRAGMENT, fragmentSource.data(), fragmentSource.size()});
         }
-        // XR_DOCS_TAG_END_CreateResources2_D3D
+        // XR_DOCS_TAG_END_CreateResources2_D3D12
 
         // XR_DOCS_TAG_BEGIN_CreateResources3
         GraphicsAPI::PipelineCreateInfo pipelineCI;
@@ -990,12 +992,12 @@ private:
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_colorSwapchainInfo.swapchain, 0, &colorSwapchainImageCount, nullptr), "Failed to enumerate Color Swapchain Images.");
         XrSwapchainImageBaseHeader *colorSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(m_colorSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::COLOR, colorSwapchainImageCount);
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_colorSwapchainInfo.swapchain, colorSwapchainImageCount, &colorSwapchainImageCount, colorSwapchainImages), "Failed to enumerate Color Swapchain Images.");
-        // XR_DOCS_TAG_END_EnumerateSwapchainImages
         
         uint32_t depthSwapchainImageCount = 0;
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_depthSwapchainInfo.swapchain, 0, &depthSwapchainImageCount, nullptr), "Failed to enumerate Depth Swapchain Images.");
         XrSwapchainImageBaseHeader *depthSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(m_depthSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::DEPTH, depthSwapchainImageCount);
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_depthSwapchainInfo.swapchain, depthSwapchainImageCount, &depthSwapchainImageCount, depthSwapchainImages), "Failed to enumerate Depth Swapchain Images.");
+        // XR_DOCS_TAG_END_EnumerateSwapchainImages
 
         // XR_DOCS_TAG_BEGIN_CreateImageViews
         // Per image in the swapchains, fill out a GraphicsAPI::ImageViewCreateInfo structure and create a color/depth image view.
