@@ -438,7 +438,7 @@ Lastly, we called :openxr_ref:`xrCreateSwapchain` to create our :openxr_ref:`XrS
 
 The same process is repeated for the depth swapchain.
 
-3.1.4 xrEnumerateSwapchainImages
+3.1.4 Enumerate Swapchain Images
 ================================
 
 Now that we have created the swapchain, we need to get access to its images. We first call :openxr_ref:`xrEnumerateSwapchainImages` to get the count of the images in the swapchain. Next, we set up an array of structures to store the images from the :openxr_ref:`XrSwapchain`. In this tutorial, this array of structures, which stores the swapchains images, is stored in the ``GraphicsAPI_...`` class. We use the :openxr_ref:`XrSwapchain` handle as the key to an ``std::unordered_map`` to get the type and the images relating to the swapchain. They are stored inside the ``GraphicsAPI_...`` class, because OpenXR will return to the application an array of structures that contain the API-specific handles to the swapchain images. ``GraphicsAPI::AllocateSwapchainImageData()`` is a virtual method implemented by each graphics API, which stores the type and resizes an API-specific ``std::vector<XrSwapchainImage...KHR>`` and returns a pointer to the first element in that array casting it to a :openxr_ref:`XrSwapchainImageBaseHeader` pointer.
@@ -645,8 +645,8 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 For the color and depth image views, we use the previously stored color/depth image format, that we used when creating their respective swapchains. We store our newly created color and depth image views for the swapchains in separate ``SwapchainInfo::imageViews`` instantiations.
 
-3.1.6 xrDestroySwapchain
-========================
+3.1.6 Destroy the Swapchain
+===========================
 
 When the main render loop has finished and the application is shutting down, we need to destroy our created :openxr_ref:`XrSwapchain` s. This is done by calling :openxr_ref:`xrDestroySwapchain` passing the :openxr_ref:`XrSwapchain` as a parameter. It will return ``XR_SUCCESS`` if successful. At the same time, we destroy all of the image views (both color and depth) by calling ``GraphicsAPI::DestroyImageView()`` and freeing all the allocated swapchain image data with ``GraphicsAPI::FreeSwapchainImageData()``.
 
@@ -767,7 +767,7 @@ Update the methods and members in the class. Copy the highlighted code:
 		};
 	};
 
-3.2.1 xrEnumerateEnvironmentBlendModes
+3.2.1 Environment Blend Modes
 ======================================
 
 Some XR experiences rely on blending the real world and rendered graphics together. Choosing the correct environment blend mode is vital for creating immersion in both virtual and augmented realities.
@@ -813,7 +813,7 @@ Copy the following code into the ``GetEnvironmentBlendModes()`` method:
 
 We enumerated the environment blend modes as shown above. This function took a pointer to the first element in an array of :openxr_ref:`XrEnvironmentBlendMode` s as multiple environment blend modes could be available to the system. The runtime returned an array ordered by its preference for the system. After we enumerated all the :openxr_ref:`XrEnvironmentBlendMode` s,  we looped through all of our ``m_applicationEnvironmentBlendModes`` to try and find one in our ``m_environmentBlendModes``, if we can't find one, we default to ``XR_ENVIRONMENT_BLEND_MODE_OPAQUE``, assigning the result to ``m_environmentBlendMode``.
 
-3.2.2 xrCreateReferenceSpace
+3.2.2 Reference Spaces
 ============================
 
 Now that OpenXR knows what the user should see, we need to tell OpenXR about the user's viewpoint. This is where the reference space comes in. Copy the following code into the ``CreateReferenceSpace()`` method:
@@ -832,22 +832,18 @@ If we specify a different pose, the origin received when we poll the space would
 
 An :openxr_ref:`XrSpace` is a frame of reference defined not by its instantaneous values, but semantically by its purpose and relationship to other spaces. The actual, instantaneous position and orientation of an :openxr_ref:`XrSpace` is called its *pose*.
 
-.. rubric:: View Space
-
 .. figure:: images/ViewSpace.png
 	:alt: OpenXR Reference Space View
-	:width: 70%
+	:width: 50%
 	:align: center
 
 One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``), which is oriented with the user's head, and is useful for user interfaces and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
 
 The View Reference Space uses the view origin (or the centroid of the views in the case of stereo) as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The space is aligned in front of the viewer and it is not gravity aligned. It is most often used for rendering small head-locked content like a HUD (Head-up display).
 	
-.. rubric:: Local Space
-
 .. figure:: images/LocalSpace.png
 	:alt: OpenXR Reference Space Local
-	:width: 70%
+	:width: 50%
 	:align: center
 
 By using ``XR_REFERENCE_SPACE_TYPE_LOCAL`` we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
@@ -856,11 +852,9 @@ The Local Reference Space uses an initial location to establish a world-locked, 
   
 It may be used for rendering seated-scale experiences such as driving or aircraft simulation, where a virtual floor is not required. When recentering, the runtime will queue a :openxr_ref:`XrEventDataReferenceSpaceChangePending` structure for the application to process.
 
-.. rubric:: Stage Space
-
 .. figure:: images/StageSpace.png
 	:alt: OpenXR Reference Space Stage
-	:width: 70%
+	:width: 80%
 	:align: center
 
 Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this implies a roomscale space, e.g. with its origin on the floor.
@@ -890,8 +884,8 @@ At the end of the application, we should destroy the :openxr_ref:`XrSpace` by ca
 	:end-before: XR_DOCS_TAG_END_DestroyReferenceSpace
 	:dedent: 8
 
-3.2.3 RenderFrame
-=================
+3.2.3 Rendering a Frame
+=======================
 
 Below is the code needed for rendering a frame in OpenXR. For each frame, we sequence through the three primary functions: :openxr_ref:`xrWaitFrame`, :openxr_ref:`xrBeginFrame` and :openxr_ref:`xrEndFrame`. These functions wrap around our rendering code and communicate to the OpenXR runtime that we are rendering and that we need to synchronize with the XR compositor. Copy the following code into ``RenderFrame()``:
 
@@ -982,8 +976,8 @@ See more here: `10.6.1. Composition Layer Flags <https://registry.khronos.org/Op
 
 Before we call ``RenderLayer()``, we check that the :openxr_ref:`XrSession` is active, as we don't want to needlessly render graphics, and we also check whether OpenXR wants us to render via the use of :openxr_ref:`XrFrameState` ``::shouldRender``.
 
-3.2.4 RenderLayer
-=================
+3.2.4 Rendering Layers
+======================
 
 From the ``RenderFrame()`` function we call ``RenderLayer()``. Here, we locate the views within the reference space, render to our swapchain images and fill out the :openxr_ref:`XrCompositionLayerProjection` and ``std::vector<XrCompositionLayerProjectionView>`` members in the ``RenderLayerInfo`` parameter. Copy the two following blocks of code into the ``RenderLayer()`` method:
 

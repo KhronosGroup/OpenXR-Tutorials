@@ -4,9 +4,9 @@
 
 With your project created and your application building and running, we can start to use OpenXR. The goal of this chapter is to create an :openxr_ref:`XrInstance` and an :openxr_ref:`XrSession`, and setup the OpenXR event loop. This OpenXR code is needed to setup the core functionality of an OpenXR application to have that application interact with the OpenXR runtime and your graphics API correctly.
 
-****************************************
-2.1 Creating an XrInstance / xrGetSystem
-****************************************
+************************
+2.1 Creating an Instance
+************************
 
 We will continue to use the ``OpenXRTutorial`` class in ``Chapter2/main.cpp`` that we created in :ref:`Chapter 1.4 <1.4 Project Setup>`.
 
@@ -70,8 +70,8 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 
 First, we updated ``OpenXRTutorial::Run()`` to call the new methods ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()`` and ``DestroyInstance()`` in that order. Finally, we added those methods and the following members to the class within their separate private sections.
 
-2.1.1 XrInstance
-================
+2.1.1 The OpenXR Instance
+===========================
 
 The :openxr_ref:`XrInstance` is the foundational object that we need to create first. The :openxr_ref:`XrInstance` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the ``CreateInstance()`` method, we will first add the code for the :openxr_ref:`XrApplicationInfo`.
 
@@ -182,8 +182,8 @@ In the above, we first check that ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` or :open
 
 Another feature of OpenXR is the API Layers, which may also assist you in debugging. You can read more about them in :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`.
 
-2.1.3 XrSystemId
-================
+2.1.3 Obtaining the System Id
+=============================
 
 The next object we want to get is the :openxr_ref:`XrSystemId`. According to `System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_ in the OpenXR spec, OpenXR 'separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences. So, an :openxr_ref:`XrSystemId` could represent a VR headset and a pair of controllers, or perhaps a mobile device with video pass-through for AR. So we need to decide what type of :openxr_ref:`XrFormFactor` we want to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``. OpenXR currently offers two options for the :openxr_ref:`XrFormFactor`:
 
@@ -219,11 +219,11 @@ You can now run the application to check that you have a valid :openxr_ref:`XrIn
 
 	Make sure your Monado service is running prior to running your app.
 
-*************************
-2.2 Creating an XrSession
-*************************
+**********************
+2.2 Creating a Session
+**********************
 
-The next major component of OpenXR that needs to be created in an :openxr_ref:`XrSession`. An :openxr_ref:`XrSession` encapsulates the state of the application from the perspective of OpenXR. When an :openxr_ref:`XrSession` is created, it starts in the :openxr_ref:`XR_SESSION_STATE_IDLE`. It is up to the runtime to provide any updates to the :openxr_ref:`XrSessionState` and for the application to query them and react to them. We will explore this in :ref:`Chapter 2.3<2.3 Polling the Event Loop>`.
+The next major component of OpenXR that needs to be created in an :openxr_ref:`XrSession`. An :openxr_ref:`XrSession` encapsulates the state of the application from the perspective of OpenXR. When an :openxr_ref:`XrSession` is created, it starts in the :openxr_ref:`XrSessionState` ``XR_SESSION_STATE_IDLE``. It is up to the runtime to provide any updates to the :openxr_ref:`XrSessionState` and for the application to query them and react to them. We will explore this in :ref:`Chapter 2.3<2.3 Polling the Event Loop>`.
 
 For now, we are just going to create an :openxr_ref:`XrSession`. At this point, you'll need to select which Graphics API you wish to use. Only one Graphics API can be used with an :openxr_ref:`XrSession`. This tutorial demonstrates how to use D3D11, D3D12, OpenGL, OpenGL ES and Vulkan in conjunction with OpenXR to render graphics to the provided views. Ultimately, you will most likely be bringing your own rendering solution to this tutorial, therefore the code examples provided for the Graphics APIs are `placeholders` for your own code base; demonstrating in this sub-chapter what objects are needed from your Graphics API to create an :openxr_ref:`XrSession`. This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. There are both compile and runtime checks to select the requested Graphics API, and we construct an appropriate derived class through the use of ``std::unique_ptr<>``. 
 
@@ -538,7 +538,7 @@ The final event type, ``XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED``, in the above
 
 *The above code is an excerpt from openxr/openxr.h*
 
-Below is a table describing the nine :openxr_ref:`XrSessionState` s:
+Below is a table describing the states of :openxr_ref:`XrSessionState`:
 
 +-------------------------------+-------------------------------------------------------------------------------------------------------------------------+
 | Event Type                    | Description                                                                                                             |
