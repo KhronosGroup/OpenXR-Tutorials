@@ -26,7 +26,7 @@ Explantions of key concepts are given throughout the chapters to provide deeper 
 
 At the end of each chapter there is a link to download the full example source code up to that point.
 
-The full source code for this tutorial can also be downloaded from `here <https://github.com/KhronosGroup/OpenXR-Tutorials>`_.
+The full source code for this tutorial can also be downloaded from `https://github.com/KhronosGroup/OpenXR-Tutorials <https://github.com/KhronosGroup/OpenXR-Tutorials>`_.
 
 * In the Introduction, we describe the basic concepts underpinning OpenXR, and show you how to set up a PC or Android development environment to build the code.
 * In Setup, we show how to initialize OpenXR and connect your program to your XR device.
