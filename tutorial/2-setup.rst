@@ -568,8 +568,6 @@ Developers should also be aware of the lifecycle of an :openxr_ref:`XrSession`. 
 
 .. figure:: openxr-session-life-cycle.svg
 	:alt: OpenXR Session Life-Cycle
-	:align: center
-	:width: 99%
 
 	OpenXR Session Life-Cycle
 
