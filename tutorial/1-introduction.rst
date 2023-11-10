@@ -170,7 +170,7 @@ This section will help you set up your development environment. Here your choice
 1.4 Project Setup
 *****************
 
-This section explains how to set up your project ready for :ref:`Chapter 2<2.1 Creating an XrInstance / xrGetSystem>` and will make references to the ``/Chapter2`` folder. It explains how to include the OpenXR headers, link the ``openxr_loader`` library, graphics API integration, and other boilerplate code and finally create a simple stub application which will be expanded on in later chapters.
+This section explains how to set up your project ready for :ref:`Chapter 2<2.1 Creating an Instance>` and will make references to the ``/Chapter2`` folder. It explains how to include the OpenXR headers, link the ``openxr_loader`` library, graphics API integration, and other boilerplate code and finally create a simple stub application which will be expanded on in later chapters.
 
 1.4.1 CMake and Project Files
 =============================

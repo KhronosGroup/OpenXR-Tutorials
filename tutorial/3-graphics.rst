@@ -132,7 +132,7 @@ All graphics APIs have the concept of a swapchain with varying levels of exposur
 	* 1 view  - Viewer on a phone, tablet or monitor.
 	* 2 views - Stereoscopic headset.
 
-Orthogonal to multiple views is the layering of multiple images. You could, for example, have a background that is a pass-through of your environment, a stereoscopic view of rendered graphics and a quadrilateral overlay of a HUD (Head-up display) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views. Composition layers will be discussed later in :ref:`Chapter 3.2.3<3.2.3 RenderFrame>`.
+Orthogonal to multiple views is the layering of multiple images. You could, for example, have a background that is a pass-through of your environment, a stereoscopic view of rendered graphics and a quadrilateral overlay of a HUD (Head-up display) or UI elements; all of of which could have different spatial orientations. This layering of views is handled by the XR compositor to composite correctly the layers for each view - that quad overlay might be behind the user, and thus shouldn't be rendered to the eye views. Composition layers will be discussed later in :ref:`Chapter 3.2.3<3.2.3 Rendering a Frame>`.
 
 Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new methods and members. Copy the highlighted code below.
 
@@ -768,7 +768,7 @@ Update the methods and members in the class. Copy the highlighted code:
 	};
 
 3.2.1 Environment Blend Modes
-======================================
+=============================
 
 Some XR experiences rely on blending the real world and rendered graphics together. Choosing the correct environment blend mode is vital for creating immersion in both virtual and augmented realities.
 
@@ -814,7 +814,7 @@ Copy the following code into the ``GetEnvironmentBlendModes()`` method:
 We enumerated the environment blend modes as shown above. This function took a pointer to the first element in an array of :openxr_ref:`XrEnvironmentBlendMode` s as multiple environment blend modes could be available to the system. The runtime returned an array ordered by its preference for the system. After we enumerated all the :openxr_ref:`XrEnvironmentBlendMode` s,  we looped through all of our ``m_applicationEnvironmentBlendModes`` to try and find one in our ``m_environmentBlendModes``, if we can't find one, we default to ``XR_ENVIRONMENT_BLEND_MODE_OPAQUE``, assigning the result to ``m_environmentBlendMode``.
 
 3.2.2 Reference Spaces
-============================
+======================
 
 Now that OpenXR knows what the user should see, we need to tell OpenXR about the user's viewpoint. This is where the reference space comes in. Copy the following code into the ``CreateReferenceSpace()`` method:
 
