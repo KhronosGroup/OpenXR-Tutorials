@@ -1003,14 +1003,14 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
         D3D12_VIEW_INSTANCING_DESC viewInstancingDesc;
         std::vector<D3D12_VIEW_INSTANCE_LOCATION> viewInstanceLocations;
 
-        uint32_t viewIndex = 1, index = 0;
+        uint32_t viewIndex = 1, viewCount = 0;
         while (viewIndex != 0)
         {
-            viewIndex = (pipelineCI.viewMask >> index & 0x00000001);
-            index += viewIndex;
+            viewIndex = (pipelineCI.viewMask >> viewCount & 0x00000001);
+            viewCount += viewIndex;
         }
 
-        viewInstancingDesc.ViewInstanceCount = index;
+        viewInstancingDesc.ViewInstanceCount = viewCount;
         viewInstanceLocations.resize(viewInstancingDesc.ViewInstanceCount);
         for (size_t i = 0; i < viewInstanceLocations.size(); i++)
         {
