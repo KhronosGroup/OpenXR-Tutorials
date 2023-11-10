@@ -131,7 +131,7 @@ This section will help you set up your development environment. Here your choice
 	.. container:: opengl
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``.
-		If you want to use OpenGL stand-alone, you will need to use GLX to create a valid OpenGL Context for Linux - `Tutorial: OpenGL 3.0 Context Creation (GLX) <Tutorial:_OpenGL_3.0_Context_Creation_(GLX)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_.
+		If you want to use OpenGL stand-alone, you will need to use GLX to create a valid OpenGL Context for Linux - see `Tutorial: OpenGL 3.0 Context Creation (GLX) <https://www.khronos.org/opengl/wiki/Tutorial:_OpenGL_3.0_Context_Creation_(GLX)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - see `https://glad.dav1d.de <https://glad.dav1d.de/>`_.
 
 		You will need GPU that supports at least OpenGL 4.3 for this tutorial.
 

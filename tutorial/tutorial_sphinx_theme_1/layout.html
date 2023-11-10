@@ -126,7 +126,7 @@
 	function updatePlatform()
 	{
 	var platform = Cookies.get("platform");
-	console.log("updatePlatform(), platform = " + platform);
+	//console.log("updatePlatform(), platform = " + platform);
 	if (typeof platform == 'undefined')
 	{
 	platform = "linux"; // Set default here.
@@ -162,29 +162,29 @@
 	$(".selectopengl").disabled = true;
 	}
 	var oldelements = document.querySelectorAll(".selected-platform");
-	console.log("selected-platform on "+oldelements.length+" elements.");
+	//console.log("selected-platform on "+oldelements.length+" elements.");
 	while (oldelements.length > 0)
 	{
 	var el=oldelements.item(0);
 	el.classList.remove('selected-platform');
-	console.log("Removing selected-platform from "+el.id);
+	//console.log("Removing selected-platform from "+el.id);
 	oldelements = document.querySelectorAll(".selected-platform");
 	}
 	var element = document.getElementById('select' + platform);
 	if(element)
 	{
 	element.classList.add('selected-platform');
-	console.log("Adding selected-platform to "+element.id);
+	//console.log("Adding selected-platform to "+element.id);
 	}
 	var element2 = document.getElementById('select' + platform + "-inline");
 	if(element2)
 	{
 	element2.classList.add('selected-platform');
-	console.log("Adding selected-platform to "+element2.id);
+	//console.log("Adding selected-platform to "+element2.id);
 	}
 	else
 	{
-	console.log('select' + platform + "-inline not found");
+	//console.log('select' + platform + "-inline not found");
 	}
 	if(limitAPIChoice())
 	updateGraphicsAPI();
@@ -195,7 +195,7 @@
 	{
 	var platform = Cookies.get("platform");
 	var graphicsApi = Cookies.get("graphicsapi")
-	console.log("limitAPIChoice(), platform = " + platform+", graphicsApi = "+graphicsApi);
+	//console.log("limitAPIChoice(), platform = " + platform+", graphicsApi = "+graphicsApi);
 	window.limitAPIChoice=limitAPIChoice;
 	var newApi=graphicsApi;
 	if (platform == "windows")
@@ -213,10 +213,10 @@
 	if (graphicsApi != "opengles"&&graphicsApi!="vulkan")
 	newApi="vulkan";
 	}
-	console.log("newApi = "+newApi);
+	//console.log("newApi = "+newApi);
 	if (newApi != graphicsApi)
 	{
-	console.log("setting graphicsapi = "+newApi);
+	//console.log("setting graphicsapi = "+newApi);
 	Cookies.set('graphicsapi', newApi,{ expires: 365})
 	graphicsApi=newApi;
 	return true;
@@ -225,16 +225,16 @@
 	}
 	function makeLinksOpenInNewWindow()
 	{
-	console.log("makeLinksOpenInNewWindow ");
+	//console.log("makeLinksOpenInNewWindow ");
 	var download_hrefs = document.getElementsByClassName('reference download internal');
 	[].forEach.call(download_hrefs, function(el) {
 	el.setAttribute('target', "_blank");
-	console.log("Adding target blank to "+el.id);
+	//console.log("Adding target blank to "+el.id);
 	});
 	link_hrefs = document.getElementsByClassName('reference external');
 	[].forEach.call(link_hrefs, function(el) {
 	el.setAttribute('target', "_blank");
-	console.log("Adding target blank to "+el.id);
+	//console.log("Adding target blank to "+el.id);
 	});
 	window.makeLinksOpenInNewWindow=makeLinksOpenInNewWindow;
 	}
@@ -248,13 +248,13 @@
 	el.id =heading_ids[i];
 	el.children[0].href=el.children[0].href.replace('#','')+"#"+heading_anchors[i];
 	i++;
-	console.log("Adding id "+heading_ids[i]+" to toctree heading "+i);
+	//console.log("Adding id "+heading_ids[i]+" to toctree heading "+i);
 	});
 	}
 	function updateGraphicsAPI()
 	{
 	var graphicsApi = Cookies.get("graphicsapi")
-	console.log("graphicsapi = " + graphicsApi);
+	//console.log("graphicsapi = " + graphicsApi);
 	if (typeof graphicsApi == 'undefined')
 	{
 	graphicsApi = "vulkan"; // Set default here.
@@ -282,12 +282,12 @@
 	$(".vulkan").show();
 	}
 	var oldelements = document.querySelectorAll(".selected-graphics-api");
-	console.log("selected-platform on "+oldelements.length+" elements.");
+	//console.log("selected-platform on "+oldelements.length+" elements.");
 	while (oldelements.length > 0)
 	{
 	var el=oldelements.item(0);
 	el.classList.remove('selected-graphics-api');
-	console.log("Removing selected-graphics-api from "+el.id);
+	//console.log("Removing selected-graphics-api from "+el.id);
 	oldelements = document.querySelectorAll(".selected-graphics-api");
 	}
 	var element = document.getElementById('select' + graphicsApi);

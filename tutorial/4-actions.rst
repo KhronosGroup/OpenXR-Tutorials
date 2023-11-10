@@ -324,7 +324,7 @@ We will add two more functions after the definition of ``PollActions`` to enable
 	:dedent: 4
 
 *************************************
-4.5 Rendering the Controller Posiiton
+4.5 Rendering the Controller Position
 *************************************
 
 We will now draw some geometry to represent the controller poses. We already have a mathematics library from a previous chapter, but we will need a couple more headers for ``std::min()``, ``std::max()`` and for generating pseudo-random colors.
@@ -377,7 +377,7 @@ You should also be able to grab and move the cubes with the controllers.
 Look again now at the function PollActions(). We specify which action to look at with the :openxr_ref:`XrActionStateGetInfo` struct. Then we use a type-specific call. For our boolean Grab Action, we call :openxr_ref:`xrGetActionStateBoolean` to retrieve an :openxr_ref:`XrActionStateBoolean` struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the specified button on the controller.
 However, the struct :openxr_ref:`XrActionStateBoolean` also has a member called ``isActive``, which is true if the state of the action is actually being read. If it's false, the value of ``currentState`` is irrelevant - the polling failed. 
 
-Similarly, :openxr_ref:`XrActionStateFloat` has a floating-point ``currentState`` value, which is valid if ``isActive`` is true. The struct has ``changedSinceLastSync``, which is true if the value changed between the previous and current calls to :openxr_ref:`xrSync`. And it has ``lastChangeTime``, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
+Similarly, :openxr_ref:`XrActionStateFloat` has a floating-point ``currentState`` value, which is valid if ``isActive`` is true. The struct has ``changedSinceLastSync``, which is true if the value changed between the previous and current calls to :openxr_ref:`xrSyncActions`. And it has ``lastChangeTime``, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
 
 Careful use of this polling metadata will help you to create applications that are responsive and intuitive to use. Bear in mind as well that multiple physical controls could be bound to the same action, and the user could be using more than one controller at once. See the `OpenXR spec <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#multiple_inputs>`_. for more details.
 

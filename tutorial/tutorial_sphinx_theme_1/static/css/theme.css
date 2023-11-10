@@ -6657,7 +6657,8 @@ footer p
 
 .rst-content div.figure.align-center, .rst-content figure.align-center
 {
-    text-align: center
+    text-align: center;
+    margin: 0px;
 }
 
 .rst-content .section > a > img, .rst-content .section > img, .rst-content section > a > img, .rst-content section > img

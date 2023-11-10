@@ -29,7 +29,7 @@ def configureDoxyfile(input_dir, output_dir):
 # -- Project information -----------------------------------------------------
 
 project = 'OpenXR Tutorial'
-copyright = '"OpenXR" and the OpenXR logo are trademarks owned by The Khronos Group Inc. and are registered as a trademark in China, the European Union, Japan and the United Kingdom'
+copyright = ''
 author = 'Simul Software Ltd'
 
 
