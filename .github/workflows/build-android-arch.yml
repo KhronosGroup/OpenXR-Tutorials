@@ -15,5 +15,4 @@ jobs:
         id: upload
         uses: softprops/action-gh-release@v1
         with:
-          files:
-            - build/android_archs/AndroidBuildFolder.zip
+          files: ./build/android_archs/AndroidBuildFolder.zip
