@@ -63,7 +63,9 @@ There are some changes in Chapter 6 to the implementation of ``GraphicsAPI``. Up
 
 .. container:: d3d12
 
-	For Direct3D 12, you will need to an additional download. This goes into the ``cmake`` folder. This locates and allow CMake to use dxc for shader compilation.:download:`dxc_shader.cmake <../Chapter6_1_Multiview/cmake/dxc_shader.cmake>`.
+	For Direct3D 12, you will need to an additional download. This goes into the ``cmake`` folder. This locates and allow CMake to use dxc for shader compilation.
+	
+	:download:`dxc_shader.cmake <../Chapter6_1_Multiview/cmake/dxc_shader.cmake>`.
 
 For multiview there are some changes to the shaders. Create a new ``ShaderMultiview`` folder in the *workspace* directory and download the new shaders.
 

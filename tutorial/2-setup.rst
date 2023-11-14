@@ -71,7 +71,7 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 First, we updated ``OpenXRTutorial::Run()`` to call the new methods ``CreateInstance()``, ``GetInstanceProperties()``, ``GetSystemID()`` and ``DestroyInstance()`` in that order. Finally, we added those methods and the following members to the class within their separate private sections.
 
 2.1.1 The OpenXR Instance
-===========================
+=========================
 
 The :openxr_ref:`XrInstance` is the foundational object that we need to create first. The :openxr_ref:`XrInstance` encompasses the application setup state, OpenXR API version and any layers and extensions. So inside the ``CreateInstance()`` method, we will first add the code for the :openxr_ref:`XrApplicationInfo`.
 
@@ -524,7 +524,7 @@ The description of the events comes from `2.22.1. Event Polling of the OpenXR sp
 +---------------------------------------------------+--------------------------------------------------------------------------------+
 
 As described in the table above, most events are transparent in their intentions and how the application should react to them. For the ``XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING`` state, the application may want to try re-creating the :openxr_ref:`XrInstance` in a loop, and after the specified ``lossTime``, until it can create a new instance successfully.
-``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively. :openxr_ref:`XrSpace` s are discussed in detail in :ref:`Chapter 3.2.2<3.2.2 xrCreateReferenceSpace>`
+``XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED`` and ``XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING`` are used for updating how the user interacts with the application and whether a new space change has been detected respectively. :openxr_ref:`XrSpace` s are discussed in detail in :ref:`Chapter 3.2.2<3.2.2 Reference Spaces>`
 
 2.3.2 XrSessionState
 ====================
