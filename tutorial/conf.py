@@ -82,8 +82,9 @@ mermaid_cmd='mmdc.cmd'
 
 # -- Get and parse the OPENXR_TUTORIALS_GIT_TAG environment variable ---------
 openxr_tutorials_git_tag_py = os.getenv("OPENXR_TUTORIALS_GIT_TAG")
-openxr_tutorials_git_tag_py = openxr_tutorials_git_tag_py.strip('\"')
-if openxr_tutorials_git_tag_py == None:
+if openxr_tutorials_git_tag_py != None:
+    openxr_tutorials_git_tag_py = openxr_tutorials_git_tag_py.strip('\"')
+else:
     openxr_tutorials_git_tag_py = 'v0.0.0'
 
 print('openxr_tutorials_git_tag_py is ' + openxr_tutorials_git_tag_py)
