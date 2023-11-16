@@ -80,5 +80,20 @@ html_sidebars = {
 }
 mermaid_cmd='mmdc.cmd'
 
+# -- Get and parse the OPENXR_TUTORIALS_GIT_TAG environment variable ---------
+openxr_tutorials_git_tag_py = os.getenv("OPENXR_TUTORIALS_GIT_TAG")
+openxr_tutorials_git_tag_py = openxr_tutorials_git_tag_py.strip('\"')
+if openxr_tutorials_git_tag_py == None:
+    openxr_tutorials_git_tag_py = 'v0.0.0'
+
+print('openxr_tutorials_git_tag_py is ' + openxr_tutorials_git_tag_py)
+
 # -- Definitions for sphinx.ext.extlinks -------------------------------------
-extlinks = {'openxr_ref' : ('https://registry.khronos.org/OpenXR/specs/1.0/man/html/%s.html', '%s') } # :openxr_ref:
+extlinks = {
+    'openxr_ref' : ('https://registry.khronos.org/OpenXR/specs/1.0/man/html/%s.html', '%s'), # :openxr_ref:
+    'git_release' : ('https://github.com/KhronosGroup/OpenXR-Tutorials/releases/tag/' + openxr_tutorials_git_tag_py + '/%s', '%s') # :git_release:
+}
+
+# -- Substitutions for sphinx.ext.extlinks -----------------------------------
+rst_epilog = 'Version: %s' % openxr_tutorials_git_tag_py # Appears at the end of the page
+rst_prolog = '.. |openxr_tutorials_git_tag| replace:: %s' % openxr_tutorials_git_tag_py

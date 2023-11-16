@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
-        run: ./build-common-archs.sh
+        run: bash ./build-common-archs.sh D3D11 D3D12 OPENGL OPENGL_ES VULKAN
       - name: Upload Common Folder Archives
         id: upload
         uses: softprops/action-gh-release@v1

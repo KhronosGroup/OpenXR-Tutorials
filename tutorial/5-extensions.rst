@@ -207,4 +207,4 @@ In this chapter, you have learned how to extend the core OpenXR functionality wi
 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 
-:download:`Chapter5.zip <../build/eoc_archs/Chapter5.zip>`
+:git_release:`Chapter5.zip`

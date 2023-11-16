@@ -407,7 +407,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	**For a quick setup download this ``.zip`` archive:**
 
-	:download:`AndroidBuildFolder.zip <../build/android_archs/AndroidBuildFolder.zip>`
+	:git_release:`AndroidBuildFolder.zip`
 
 	First, create a *workspace* folder and copy the downloaded zip archive into that folder. Unzip the archive in place and rename the ``AndroidBuildFolder`` folder to ``Chapter2``. You can delete the used zip archive as it's no longer needed. Open Android Studio and then open the ``Chapter2`` foler that was created.
 
@@ -631,23 +631,23 @@ Or, you can download the ``zip`` archive containing all the required files. Extr
 
 .. container:: d3d11
 
-	* :download:`Common_D3D11.zip <../build/common_archs/Common_D3D11.zip>`
+	* :git_release:`Common_D3D11.zip`
 
 .. container:: d3d12
 
-	* :download:`Common_D3D12.zip <../build/common_archs/Common_D3D12.zip>`
+	* :git_release:`Common_D3D12.zip`
 
 .. container:: opengl
 
-	* :download:`Common_OpenGL.zip <../build/common_archs/Common_OpenGL.zip>`
+	* :git_release:`Common_OpenGL.zip`
 
 .. container:: opengles
 
-	* :download:`Common_OpenGL_ES.zip <../build/common_archs/Common_OpenGL_ES.zip>`
+	* :git_release:`Common_OpenGL_ES.zip`
 
 .. container:: vulkan
 
-	* :download:`Common_Vulkan.zip <../build/common_archs/Common_Vulkan.zip>`
+	* :git_release:`Common_Vulkan.zip`
 
 .. rubric::  DebugOutput
 
@@ -947,4 +947,4 @@ In this chapter, you learned about the fundamental concepts of OpenXR and create
 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs. Note that Chapter2 is renamed to Chapter1 is the archive and repository folder.
 
-:download:`Chapter1.zip <../build/eoc_archs/Chapter1.zip>`
+:git_release:`Chapter1.zip`
