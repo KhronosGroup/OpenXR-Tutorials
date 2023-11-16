@@ -6308,7 +6308,8 @@ footer
 
 footer p
 {
-    margin-bottom: 12px
+    margin-bottom: 12px;
+    font-size: 80%;
 }
 
 .rst-content footer span.commit tt, footer span.commit .rst-content tt, footer span.commit code

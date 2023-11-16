@@ -12,7 +12,10 @@
   {%- endif %}
 
   <hr>
-
+  
+  <b>Legal Notice</b>
+  <br>
+  <br>
   <div role="contentinfo">
       {%- block contentinfo %}
       <p>
@@ -20,11 +23,19 @@
           {%- if hasdoc('copyright') %}
           {%- trans path=pathto('copyright'), copyright=copyright|e %}&#169; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}
           {%- else %}
-          {%- trans copyright=copyright|e %}&#169; "OpenXR" and the OpenXR logo are trademarks owned by The Khronos Group Inc. and are registered as a trademark in China, the European Union, Japan and the United Kingdom. Vulkan and the Vulkan logo are registered trademarks of the Khronos Group Inc. OpenGL&reg; and the oval logo are trademarks or registered trademarks of Hewlett Packard Enterprise in the United States and/or other countries worldwide. OpenGL is a registered trademark and the OpenGL ES logo is a trademark of Hewlett Packard Enterprise used by permission by Khronos. Microsoft DirectX, Microsoft DirectX11, and Microsoft DirectX12 are trademarks owned by Microsoft. Text is licensed as <a href="https://creativecommons.org/licenses/by/4.0/deed.en">Creative Commons International 4.0 BY Attribution</a>.
-          All code is licensed as <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>.{% endtrans %}
+          {%- trans copyright=copyright|e %}
+          &#169; 2023, The Khronos Group. <a href="https://creativecommons.org/licenses/by/4.0/deed.en">Creative Commons International 4.0 BY Attribution</a>. Code is licensed as <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>.
+          <br>
+          <br>"OpenXR" and the OpenXR logo are trademarks owned by The Khronos Group Inc. and are registered as a trademark in China, the European Union, Japan and the United Kingdom. Vulkan and the Vulkan logo are registered trademarks of the Khronos Group Inc.
+          <br>
+          <br>OpenGL&reg; and the oval logo are trademarks or registered trademarks of Hewlett Packard Enterprise in the United States and/or other countries worldwide. OpenGL is a registered trademark and the OpenGL ES logo is a trademark of Hewlett Packard Enterprise used by permission by Khronos.
+          <br>
+          <br>Microsoft DirectX, Microsoft DirectX11, and Microsoft DirectX12 are trademarks owned by Microsoft.
+          {% endtrans %}
           {%- endif %}
           {%- endif %}
-          The OpenXR Tutorial is owned and operated by The Khronos Group Inc. Khronos <a href="https://www.khronos.org/legal/" rel="nofollow">Legal Notices</a>, <a href="https://www.khronos.org/legal/privacy" rel="nofollow">Privacy Policy</a>, and <a href="https://www.khronos.org/about/code-of-conduct" rel="nofollow">Code of Conduct</a> apply.
+          <br>
+          <br>The OpenXR Tutorial is owned and operated by The Khronos Group Inc. Khronos <a href="https://www.khronos.org/legal/" rel="nofollow">Legal Notices</a>, <a href="https://www.khronos.org/legal/privacy" rel="nofollow">Privacy Policy</a>, and <a href="https://www.khronos.org/about/code-of-conduct" rel="nofollow">Code of Conduct</a> apply.
           {%- if build_id and build_url %}
           <span class="build">
               {#- Translators: Build is a noun, not a verb -#}
