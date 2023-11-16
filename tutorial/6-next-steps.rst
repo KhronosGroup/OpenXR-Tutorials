@@ -43,23 +43,23 @@ There are some changes in Chapter 6 to the implementation of ``GraphicsAPI``. Up
 
 .. container:: d3d11
 
-	:download:`Common_D3D11.zip <../Chapter6_1_Multiview/build/common_archs/Common_D3D11.zip>`
+	:download:`Chapter6_1_Multiview_Common_D3D11.zip <../Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_D3D11.zip>`
 
 .. container:: d3d12
 
-	:download:`Common_D3D12.zip <../Chapter6_1_Multiview/build/common_archs/Common_D3D12.zip>`
+	:download:`Chapter6_1_Multiview_Common_D3D12.zip <../Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_D3D12.zip>`
 
 .. container:: opengl
 
-	:download:`Common_OpenGL.zip <../Chapter6_1_Multiview/build/common_archs/Common_OpenGL.zip>`
+	:download:`Chapter6_1_Multiview_Common_OpenGL.zip <../Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_OpenGL.zip>`
 
 .. container:: opengles
 
-	:download:`Common_OpenGL_ES.zip <../Chapter6_1_Multiview/build/common_archs/Common_OpenGL_ES.zip>`
+	:download:`Chapter6_1_Multiview_Common_OpenGL_ES.zip <../Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_OpenGL_ES.zip>`
 
 .. container:: vulkan
 
-	:download:`Common_Vulkan.zip <../Chapter6_1_Multiview/build/common_archs/Common_Vulkan.zip>`
+	:download:`Chapter6_1_Multiview_Common_Vulkan.zip <../Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_Vulkan.zip>`
 
 .. container:: d3d12
 

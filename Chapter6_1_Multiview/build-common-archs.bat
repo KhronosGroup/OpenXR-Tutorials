@@ -13,7 +13,7 @@ IF "%~1"=="" GOTO END
 
 rem D3D11
 :D3D11
-tar -a -cf build\common_archs\Common_D3D11.zip ^
+tar -a -cf build\common_archs\Chapter6_1_Multiview_Common_D3D11.zip ^
     Common/GraphicsAPI.cpp ^
     Common/GraphicsAPI_D3D11.cpp ^
     Common/OpenXRDebugUtils.cpp ^
@@ -30,7 +30,7 @@ GOTO LOOP
 
 rem D3D12
 :D3D12
-tar -a -cf build\common_archs\Common_D3D12.zip ^
+tar -a -cf build\common_archs\Chapter6_1_Multiview_Common_D3D12.zip ^
     Common/GraphicsAPI.cpp ^
     Common/GraphicsAPI_D3D12.cpp ^
     Common/OpenXRDebugUtils.cpp ^
@@ -48,7 +48,7 @@ GOTO LOOP
 
 rem OPENGL
 :OPENGL
-tar -a -cf build\common_archs\Common_OpenGL.zip ^
+tar -a -cf build\common_archs\Chapter6_1_Multiview_Common_OpenGL.zip ^
     Common/GraphicsAPI.cpp ^
     Common/GraphicsAPI_OpenGL.cpp ^
     Common/OpenXRDebugUtils.cpp ^
@@ -65,7 +65,7 @@ GOTO LOOP
 
 rem OPENGL_ES
 :OPENGL_ES
-tar -a -cf build\common_archs\Common_OpenGL_ES.zip ^
+tar -a -cf build\common_archs\Chapter6_1_Multiview_Common_OpenGL_ES.zip ^
     Common/GraphicsAPI.cpp ^
     Common/GraphicsAPI_OpenGL_ES.cpp ^
     Common/OpenXRDebugUtils.cpp ^
@@ -82,7 +82,7 @@ GOTO LOOP
 
 rem VULKAN
 :VULKAN
-tar -a -cf build\common_archs\Common_Vulkan.zip ^
+tar -a -cf build\common_archs\Chapter6_1_Multiview_Common_Vulkan.zip ^
     Common/GraphicsAPI.cpp ^
     Common/GraphicsAPI_Vulkan.cpp ^
     Common/OpenXRDebugUtils.cpp ^
@@ -99,7 +99,7 @@ GOTO LOOP
 
 rem Full Folder
 :END
-tar -a -cf build\common_archs\Common.zip ^
+tar -a -cf build\common_archs\Chapter6_1_Multiview_Common.zip ^
     Common/GraphicsAPI.cpp ^
     Common/GraphicsAPI_D3D11.cpp ^
     Common/GraphicsAPI_D3D12.cpp ^
