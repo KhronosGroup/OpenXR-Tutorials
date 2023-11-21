@@ -6,7 +6,7 @@
 1.1 Goal of OpenXR
 ******************
 
-OpenXR aims to help solve the fragmentation of the XR ecosystem. Before the advent of OpenXR, software developers working with multiple hardware platforms had to write different code paths for each platform to address the different hardware. Each platform had its own, often proprietary, API, and deploying an existing application to a new platform required a lot of adaptation. Developing a new application for a new platform was even more challenging. Documentation for the OpenXR 1.0 Core Specification can be found `here <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html>`.
+OpenXR aims to help solve the fragmentation of the XR ecosystem. Before the advent of OpenXR, software developers working with multiple hardware platforms had to write different code paths for each platform to address the different hardware. Each platform had its own, often proprietary, API, and deploying an existing application to a new platform required a lot of adaptation. Developing a new application for a new platform was even more challenging. Documentation for the OpenXR 1.0 Core Specification can be found `<https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html>`_.
 
 Despite of their unique features, the platforms had a great deal in common. For example, most headsets had a main view seen from two slightly different perspectives. Most had a way to track the user's head and hands or hand controllers. Most had buttons, many had analogue controls like triggers or joysticks and many had haptic feedback.
 
@@ -61,7 +61,7 @@ OpenXR provides a clear and precise common language for developers and hardware 
 
 An OpenXR Runtime implements the OpenXR API. The runtime translates the OpenXR function calls into something that the vendor's software/hardware can understand.
 
-The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as :openxr_ref:`XR_EXT_debug_utils`, any functions associated with that extension will need to be loaded in with :openxr_ref:`xrGetInstanceProcAddr`. Some platforms like Android require extra work and information to initialize the loader. Documentation for the OpenXR Loader can be found `here <https://registry.khronos.org/OpenXR/specs/1.0/loader.html>`.
+The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as :openxr_ref:`XR_EXT_debug_utils`, any functions associated with that extension will need to be loaded in with :openxr_ref:`xrGetInstanceProcAddr`. Some platforms like Android require extra work and information to initialize the loader. Documentation for the OpenXR Loader can be found `<https://registry.khronos.org/OpenXR/specs/1.0/loader.html>`_.
 
 API Layers are additional code layers that are inserted by the loader between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or for checking that the function calls made to OpenXR are compatible with the OpenXR specification. See :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`. 
 
@@ -83,7 +83,7 @@ This section will help you set up your development environment. Here your choice
 
 	.. rubric:: Visual Studio
 
-	If you'll be building an OpenXR project for Microsoft Windows PC-based devices, we'll assume you'll be using Microsoft Visual Studio. The free Community Edition of Visual Studio is available to download `here <https://visualstudio.microsoft.com/vs/community/>`_.
+	If you'll be building an OpenXR project for Microsoft Windows PC-based devices, we'll assume you'll be using Microsoft Visual Studio. The free Community Edition of Visual Studio is available to download `<https://visualstudio.microsoft.com/vs/community/>`_.
 
 	.. rubric:: CMake
 
@@ -143,7 +143,7 @@ This section will help you set up your development environment. Here your choice
 
 	.. rubric Install Monado
 
-		XR support for Linux is provided by `Monado <https://monado.freedesktop.org/>`_, an open source runtime. Monado supports a selection of XR devices and can also run in a device emulation mode. Follow the instructions `here <https://monado.freedesktop.org/getting-started.html>`_ to set up the runtime.
+		XR support for Linux is provided by `Monado <https://monado.freedesktop.org/>`_, an open source runtime. Monado supports a selection of XR devices and can also run in a device emulation mode. Follow the instructions `<https://monado.freedesktop.org/getting-started.html>`_ to set up the runtime.
 	
 .. container:: android
 	
@@ -407,7 +407,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	**For a quick setup download this ``.zip`` archive:**
 
-	:download:`AndroidBuildFolder.zip <../build/android_archs/AndroidBuildFolder.zip>`
+	:git_release:`AndroidBuildFolder.zip`
 
 	First, create a *workspace* folder and copy the downloaded zip archive into that folder. Unzip the archive in place and rename the ``AndroidBuildFolder`` folder to ``Chapter2``. You can delete the used zip archive as it's no longer needed. Open Android Studio and then open the ``Chapter2`` foler that was created.
 
@@ -631,23 +631,23 @@ Or, you can download the ``zip`` archive containing all the required files. Extr
 
 .. container:: d3d11
 
-	* :download:`Common_D3D11.zip <../build/common_archs/Common_D3D11.zip>`
+	* :git_release:`Common_D3D11.zip`
 
 .. container:: d3d12
 
-	* :download:`Common_D3D12.zip <../build/common_archs/Common_D3D12.zip>`
+	* :git_release:`Common_D3D12.zip`
 
 .. container:: opengl
 
-	* :download:`Common_OpenGL.zip <../build/common_archs/Common_OpenGL.zip>`
+	* :git_release:`Common_OpenGL.zip`
 
 .. container:: opengles
 
-	* :download:`Common_OpenGL_ES.zip <../build/common_archs/Common_OpenGL_ES.zip>`
+	* :git_release:`Common_OpenGL_ES.zip`
 
 .. container:: vulkan
 
-	* :download:`Common_Vulkan.zip <../build/common_archs/Common_Vulkan.zip>`
+	* :git_release:`Common_Vulkan.zip`
 
 .. rubric::  DebugOutput
 
@@ -947,4 +947,4 @@ In this chapter, you learned about the fundamental concepts of OpenXR and create
 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs. Note that Chapter2 is renamed to Chapter1 is the archive and repository folder.
 
-:download:`Chapter1.zip <../build/eoc_archs/Chapter1.zip>`
+:git_release:`Chapter1.zip`

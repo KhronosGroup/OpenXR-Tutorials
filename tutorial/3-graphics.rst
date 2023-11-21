@@ -1298,4 +1298,4 @@ In the next chapter, we will discuss how to use OpenXR to interact with your XR 
 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 
-:download:`Chapter3.zip <../build/eoc_archs/Chapter3.zip>`
+:git_release:`Chapter3.zip`

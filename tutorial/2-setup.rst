@@ -601,4 +601,4 @@ We have now created an XR application that can begin and stop an :openxr_ref:`Xr
 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 
-:download:`Chapter2.zip <../build/eoc_archs/Chapter2.zip>`
+:git_release:`Chapter2.zip`

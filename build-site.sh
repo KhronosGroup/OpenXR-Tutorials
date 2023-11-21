@@ -7,6 +7,8 @@ popd
 
 python3 -m pip install -r requirements.txt
 
+export OPENXR_TUTORIALS_GIT_TAG=$1
 sphinx-build -M html tutorial build
+unset OPENXR_TUTORIALS_GIT_TAG
 
 tar -czvf site.tar.gz build/html

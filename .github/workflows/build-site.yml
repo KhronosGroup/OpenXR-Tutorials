@@ -12,7 +12,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
-        run: ./build-site.sh
+        run: |
+          echo "Building version ${{github.ref_name}}"
+          bash ./build-site.sh ${{github.ref_name}}
       - name: Upload Release Artifact
         id: upload
         uses: softprops/action-gh-release@v1

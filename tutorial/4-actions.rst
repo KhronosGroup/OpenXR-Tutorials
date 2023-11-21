@@ -389,4 +389,4 @@ In this chapter, you have learned about Actions, Controller Profiles, Bindings. 
 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 
-:download:`Chapter4.zip <../build/eoc_archs/Chapter4.zip>`
+:git_release:`Chapter4.zip`

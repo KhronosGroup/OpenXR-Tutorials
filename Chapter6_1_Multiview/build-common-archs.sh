@@ -8,7 +8,7 @@ do
     if [[ "$api" == "D3D11" ]]; then
         # D3D11
         echo "$api"
-        zip -r build/common_archs/Common_D3D11.zip \
+        zip -r build/common_archs/Chapter6_1_Multiview_Common_D3D11.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_D3D11.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -23,7 +23,7 @@ do
     if [[ "$api" == "D3D12" ]]; then
         # D3D12
         echo "$api"
-        zip -r build/common_archs/Common_D3D12.zip \
+        zip -r build/common_archs/Chapter6_1_Multiview_Common_D3D12.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_D3D12.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -39,7 +39,7 @@ do
     if [[ "$api" == "OPENGL" ]]; then
         # OPENGL
         echo "$api"
-        zip -r build/common_archs/Common_OpenGL.zip \
+        zip -r build/common_archs/Chapter6_1_Multiview_Common_OpenGL.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_OpenGL.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -54,7 +54,7 @@ do
     if [[ "$api" == "OPENGL_ES" ]]; then
         # OPENGL_ES
         echo "$api"
-        zip -r build/common_archs/Common_OpenGL_ES.zip \
+        zip -r build/common_archs/Chapter6_1_Multiview_Common_OpenGL_ES.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_OpenGL_ES.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -69,7 +69,7 @@ do
     if [[ "$api" == "VULKAN" ]]; then
         # VULKAN
         echo "$api"
-        zip -r build/common_archs/Common_Vulkan.zip \
+        zip -r build/common_archs/Chapter6_1_Multiview_Common_Vulkan.zip \
             Common/GraphicsAPI.cpp \
             Common/GraphicsAPI_Vulkan.cpp \
             Common/OpenXRDebugUtils.cpp \
@@ -85,7 +85,7 @@ done
 
 # Full Folder
 echo "ALL"
-zip -r build/common_archs/Common.zip \
+zip -r build/common_archs/Chapter6_1_Multiview_Common.zip \
     Common/GraphicsAPI.cpp \
     Common/GraphicsAPI_D3D11.cpp \
     Common/GraphicsAPI_D3D12.cpp \
