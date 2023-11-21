@@ -40,7 +40,6 @@ audio, canvas, video
 {
     display: inline-block;
     *display: inline;
-    *zoom: 1
 }
 
 [hidden], audio:not([controls])
@@ -386,7 +385,6 @@ big, small
 
 .clearfix
 {
-    *zoom: 1
 }
 
 .clearfix:after, .clearfix:before
@@ -4293,7 +4291,6 @@ button[disabled]
     outline-none: false;
     vertical-align: middle;
     *display: inline;
-    zoom: 1;
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -4448,7 +4445,6 @@ button[disabled]
 .wy-btn-group
 {
     margin-bottom: 24px;
-    *zoom: 1
 }
 
 .wy-btn-group:after, .wy-btn-group:before
@@ -4598,7 +4594,6 @@ button[disabled]
 {
     display: inline-block;
     *display: inline;
-    *zoom: 1;
     vertical-align: middle
 }
 
@@ -4672,7 +4667,6 @@ input, select, textarea
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
-    *zoom: 1
 }
 
 .wy-control-group:after, .wy-control-group:before
@@ -4962,7 +4956,6 @@ input[type=checkbox][disabled], input[type=radio][disabled]
 {
     display: inline-block;
     *display: inline;
-    *zoom: 1;
     vertical-align: middle
 }
 
@@ -5631,7 +5624,6 @@ hr
 
 .wy-breadcrumbs
 {
-    *zoom: 1
 }
 
 .wy-breadcrumbs:after, .wy-breadcrumbs:before
@@ -5712,7 +5704,6 @@ html
 
 .wy-menu-horiz
 {
-    *zoom: 1
 }
 
 .wy-menu-horiz:after, .wy-menu-horiz:before
@@ -6228,7 +6219,6 @@ html
     line-height: 50px;
     text-align: center;
     font-size: 100%;
-    *zoom: 1
 }
 
 .wy-nav-top:after, .wy-nav-top:before
@@ -6329,7 +6319,6 @@ footer p
 
 .rst-footer-buttons
 {
-    *zoom: 1;
 	max-width:800px;
 }
 
@@ -6348,7 +6337,6 @@ footer p
 .rst-breadcrumbs-buttons
 {
     margin-top: 12px;
-    *zoom: 1
 }
 
 .rst-breadcrumbs-buttons:after, .rst-breadcrumbs-buttons:before
@@ -6500,7 +6488,6 @@ footer p
     font-size: 90%;
     cursor: pointer;
     color: #27ae60;
-    *zoom: 1
 }
 
 .rst-versions .rst-current-version:after, .rst-versions .rst-current-version:before
@@ -7575,7 +7562,6 @@ span[id*=MathJax-Span]
 	padding: 4px 20px 4px 20px;
 	display: inline-block;
 	*display: inline;
-	zoom: 1;
 	vertical-align: top;
     width:30%;
 	color:black;
@@ -7626,7 +7612,6 @@ span[id*=MathJax-Span]
 {
 	display: inline-block;
 	*display: inline;
-	zoom: 1;
 	vertical-align: top;
 	width:20%;
 	min-width:80px;
@@ -7681,6 +7666,7 @@ button.select-graphics-api-inline > img
 }
 button.select-graphics-api:disabled > img
 {
+    opacity:50%;
 }
 button.select-graphics-api-inline:disabled > img
 {
@@ -7700,7 +7686,6 @@ button.selected-graphics-api > img
 {
 	display: inline-block;
 	*display: inline;
-	zoom: 1;
 	vertical-align: top;
 	width:20%;
 	min-width:80px;

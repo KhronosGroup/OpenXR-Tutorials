@@ -137,32 +137,32 @@
 	if (platform == "windows")
 	{
 	$(".windows").show();
-	$(".selectd3d11").disabled = false;
-	$(".selectd3d12").disabled = false;
-	$(".selectopengles").disabled = true;
-	$(".selectvulkan").disabled = false;
-	$(".selectopengl").disabled = false;
+	$(".selectd3d11").removeAttr("disabled");
+	$(".selectd3d12").removeAttr("disabled");
+	$(".selectopengles").attr("disabled", true);
+	$(".selectvulkan").removeAttr("disabled");
+	$(".selectopengl").removeAttr("disabled");
 	}
 	if (platform == "linux")
 	{
 	$(".linux").show();
-	$(".selectd3d11").disabled = true;
-	$(".selectd3d12").disabled = true;
-	$(".selectopengles").disabled = true;
-	$(".selectvulkan").disabled = false;
-	$(".selectopengl").disabled = false;
+	$(".selectd3d11").attr("disabled", true);
+	$(".selectd3d12").attr("disabled", true);
+	$(".selectopengles").attr("disabled", true);
+	$(".selectvulkan").removeAttr("disabled");
+	$(".selectopengl").removeAttr("disabled");
 	}
 	if (platform == "android")
 	{
+		console.log("platform  " + platform + ".");
 	$(".android").show();
-	$(".selectd3d11").disabled = true;
-	$(".selectd3d12").disabled = true;
-	$(".selectopengles").disabled = false;
-	$(".selectvulkan").disabled = false;
-	$(".selectopengl").disabled = true;
+	$(".selectd3d11").attr("disabled", true);
+	$(".selectd3d12").attr("disabled", true);
+	$(".selectopengles").removeAttr("disabled");
+	$(".selectvulkan").removeAttr("disabled");
+	$(".selectopengl").attr("disabled", true);
 	}
 	var oldelements = document.querySelectorAll(".selected-platform");
-	//console.log("selected-platform on "+oldelements.length+" elements.");
 	while (oldelements.length > 0)
 	{
 	var el=oldelements.item(0);
