@@ -4,7 +4,6 @@
 
 // OpenXR Tutorial for Khronos Group
 
-#include <DebugOutput.h>
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D11
 #include <GraphicsAPI_D3D11.h>
 // XR_DOCS_TAG_END_include_GraphicsAPI_D3D11
@@ -23,6 +22,8 @@
 // XR_DOCS_TAG_BEGIN_include_OpenXRDebugUtils
 #include <OpenXRDebugUtils.h>
 // XR_DOCS_TAG_END_include_OpenXRDebugUtils
+#include <LogMacros.h>
+#include <memory>
 
 #define XR_DOCS_CHAPTER_VERSION XR_DOCS_CHAPTER_2_3
 
@@ -32,7 +33,7 @@ public:
         : m_apiType(apiType) {
         // Check API compatibility with Platform.
         if (!CheckGraphicsAPI_TypeIsValidForPlatform(m_apiType)) {
-            std::cout << "ERROR: The provided Graphics API is not valid for this platform." << std::endl;
+            LOG_ERROR("ERROR: The provided Graphics API is not valid for this platform.");
             DEBUG_BREAK;
         }
     }
@@ -131,7 +132,7 @@ private:
                 }
             }
             if (!found) {
-                std::cerr << "Failed to find OpenXR instance extension: " << requestedInstanceExtension << std::endl;
+                LOG_ERROR("Failed to find OpenXR instance extension: " << requestedInstanceExtension);
             }
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension
@@ -179,10 +180,10 @@ private:
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
-        std::cout << "OpenXR Runtime: " << instanceProperties.runtimeName << " - ";
-        std::cout << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << ".";
-        std::cout << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << ".";
-        std::cout << XR_VERSION_PATCH(instanceProperties.runtimeVersion) << std::endl;
+        LOG_INFO("OpenXR Runtime: " << instanceProperties.runtimeName << " - "
+                                    << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << "."
+                                    << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << "."
+                                    << XR_VERSION_PATCH(instanceProperties.runtimeVersion));
         // XR_DOCS_TAG_END_GetInstanceProperties
     }
 
@@ -227,7 +228,7 @@ private:
             m_graphicsAPI = std::make_unique<GraphicsAPI_Vulkan>(m_xrInstance, m_systemID);
 #endif
         } else {
-            std::cout << "ERROR: Unknown Graphics API." << std::endl;
+            LOG_ERROR("ERROR: Unknown Graphics API.");
             DEBUG_BREAK;
         }
         // Fill out the XrSessionCreateInfo structure and create an XrSession.
@@ -261,13 +262,13 @@ private:
             // Log the number of lost events from the runtime.
             case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
                 XrEventDataEventsLost *eventsLost = reinterpret_cast<XrEventDataEventsLost *>(&eventData);
-                std::cout << "OPENXR: Events Lost: " << eventsLost->lostEventCount << std::endl;
+                LOG_INFO("OPENXR: Events Lost: " << eventsLost->lostEventCount);
                 break;
             }
             // Log that an instance loss is pending and shutdown the application.
             case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING: {
                 XrEventDataInstanceLossPending *instanceLossPending = reinterpret_cast<XrEventDataInstanceLossPending *>(&eventData);
-                std::cout << "OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime << std::endl;
+                LOG_INFO("OPENXR: Instance Loss Pending at: " << instanceLossPending->lossTime);
                 m_sessionRunning = false;
                 m_applicationRunning = false;
                 break;
@@ -275,9 +276,9 @@ private:
             // Log that the interaction profile has changed.
             case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
                 XrEventDataInteractionProfileChanged *interactionProfileChanged = reinterpret_cast<XrEventDataInteractionProfileChanged *>(&eventData);
-                std::cout << "OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session << std::endl;
+                LOG_INFO("OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session);
                 if (interactionProfileChanged->session != m_session) {
-                    std::cout << "XrEventDataInteractionProfileChanged for unknown Session" << std::endl;
+                    LOG_INFO("XrEventDataInteractionProfileChanged for unknown Session");
                     break;
                 }
                 break;
@@ -285,9 +286,9 @@ private:
             // Log that there's a reference space change pending.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
-                std::cout << "OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session << std::endl;
+                LOG_INFO("OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session);
                 if (referenceSpaceChangePending->session != m_session) {
-                    std::cout << "XrEventDataReferenceSpaceChangePending for unknown Session" << std::endl;
+                   LOG_INFO("XrEventDataReferenceSpaceChangePending for unknown Session");
                     break;
                 }
                 break;
@@ -440,8 +441,7 @@ private:
 
 void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
     DebugOutput debugOutput;  // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
-    std::cout << "OpenXR Tutorial Chapter 2." << std::endl;
-
+    LOG_INFO("OpenXR Tutorial Chapter 2");
     OpenXRTutorial app(apiType);
     app.Run();
 }
