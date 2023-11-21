@@ -13,13 +13,11 @@
 
   <hr>
 
-  <b>Legal Notice</b>
-  <br>
   <div role="contentinfo">
       {%- block contentinfo %}
       <div class="legal-notice">
-          <h3>Legal</h3>
-          <p>
+      <h3>Legal Notice</h3>
+      <p>
         {%- if show_copyright %}
         {%- if hasdoc('copyright') %}
         {%- trans path=pathto('copyright'), copyright=copyright|e %}&#169; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}
