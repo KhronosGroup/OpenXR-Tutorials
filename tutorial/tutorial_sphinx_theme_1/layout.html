@@ -123,14 +123,50 @@
 	{%- block extrahead %} {% endblock %}
 	<script  src="_static/js/js.cookie.min.js"></script>
 	<script >
+	
+	//https://stackoverflow.com/questions/8562613/how-to-add-url-parameter-to-the-current-url
+	function addUrlParameter(name, value)
+	{
+		var searchParams = new URLSearchParams(window.location.search)
+		if (searchParams.get(name) != value)
+		{
+			searchParams.set(name, value)
+			window.location.search = searchParams.toString()
+		}
+	}
+
+	function getUrlParameter(name)
+	{
+		console.log(window.location)
+		const urlParams = new Proxy(new URLSearchParams(window.location.search),
+		{
+			get: (searchParams, prop) => searchParams.get(prop),
+		});
+		return urlParams.name;
+	}
+
+	function getUrlParameterWithCheck(name, checkValues)
+	{
+		const urlParameter = getUrlParameter(name);
+		console.log("getUrlParameter()" + urlParameter)
+		ok = false;
+		for (i = 0; i < checkValues.length; i++)
+		{
+			ok |= (urlParameter == checkValues[i]);
+		}
+		return ok ? urlParameter : undefined;
+	}
+
 	function updatePlatform()
 	{
 	var platform = Cookies.get("platform");
-	//console.log("updatePlatform(), platform = " + platform);
+	platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android']);
 	if (typeof platform == 'undefined')
 	{
-	platform = "linux"; // Set default here.
+		platform = "linux"; // Set default here.
 	}
+	addUrlParameter('platform', platform);
+
 	$(".linux").hide();
 	$(".android").hide();
 	$(".windows").hide();
