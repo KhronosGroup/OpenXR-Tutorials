@@ -82,3 +82,9 @@ mermaid_cmd='mmdc.cmd'
 
 # -- Definitions for sphinx.ext.extlinks -------------------------------------
 extlinks = {'openxr_ref' : ('https://registry.khronos.org/OpenXR/specs/1.0/man/html/%s.html', '%s') } # :openxr_ref:
+
+my_config_value = 42
+rst_epilog = '.. |my_conf_val| replace:: %d' % my_config_value
+
+#In your .rst source:
+    #My config value is |my_conf_val|!

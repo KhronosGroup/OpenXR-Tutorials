@@ -624,54 +624,55 @@ When setting up the graphics API core objects, there are things that we need to 
 		:start-after: // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 		:end-before: // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 	
+..
 
-*********************
-6.3 OpenXR API Layers
-*********************
+	*********************
+	6.3 OpenXR API Layers
+	*********************
 
-The OpenXR loader has a layer system that allows OpenXR API calls to pass through a number of optional layers, that add some functionality for the application. These are extremely useful for debugging.
+	The OpenXR loader has a layer system that allows OpenXR API calls to pass through a number of optional layers, that add some functionality for the application. These are extremely useful for debugging.
 
-The OpenXR SDK provides two API layers for us to use:
-In the table below are the layer names and their associated libraries and .json files.
+	The OpenXR SDK provides two API layers for us to use:
+	In the table below are the layer names and their associated libraries and .json files.
 
-+------------------------------------+-----------------------------------------------+-------------------------------------+
-| XR_APILAYER_LUNARG_api_dump        | ``XrApiLayer_api_dump.dll`` or ``.so``        | ``XrApiLayer_api_dump.json``        |
-+------------------------------------+-----------------------------------------------+-------------------------------------+
-| XR_APILAYER_LUNARG_core_validation | ``XrApiLayer_core_validation.dll`` or ``.so`` | ``XrApiLayer_core_validation.json`` |
-+------------------------------------+-----------------------------------------------+-------------------------------------+
+	+------------------------------------+-----------------------------------------------+-------------------------------------+
+	| XR_APILAYER_LUNARG_api_dump        | ``XrApiLayer_api_dump.dll`` or ``.so``        | ``XrApiLayer_api_dump.json``        |
+	+------------------------------------+-----------------------------------------------+-------------------------------------+
+	| XR_APILAYER_LUNARG_core_validation | ``XrApiLayer_core_validation.dll`` or ``.so`` | ``XrApiLayer_core_validation.json`` |
+	+------------------------------------+-----------------------------------------------+-------------------------------------+
 
-XR_APILAYER_LUNARG_api_dump simply logs extra/verbose information to ``std::cout`` describing in more detail what has happened during that API call. XR_APILAYER_LUNARG_core_validation acts similarly to VK_LAYER_KHRONOS_validation in Vulkan, where the layer intercepts the API call and performs validation to ensure conformance with the specification.
+	XR_APILAYER_LUNARG_api_dump simply logs extra/verbose information to ``std::cout`` describing in more detail what has happened during that API call. XR_APILAYER_LUNARG_core_validation acts similarly to VK_LAYER_KHRONOS_validation in Vulkan, where the layer intercepts the API call and performs validation to ensure conformance with the specification.
 
-Other runtimes and hardware vendors may provide layers that are useful for debugging your XR system and/or application.
+	Other runtimes and hardware vendors may provide layers that are useful for debugging your XR system and/or application.
 
-To enable API layers, add the ``XR_API_LAYER_PATH=<path>`` environment variable to your project or your system. Something like this: ``XR_API_LAYER_PATH=<openxr_base>/<build_folder>/src/api_layers/;<another_path>``. 
+	To enable API layers, add the ``XR_API_LAYER_PATH=<path>`` environment variable to your project or your system. Something like this: ``XR_API_LAYER_PATH=<openxr_base>/<build_folder>/src/api_layers/;<another_path>``. 
 
-The path must point to a folder containing a ``.json`` file similar to the one for XR_APILAYER_LUNARG_core_validation, shown below:
+	The path must point to a folder containing a ``.json`` file similar to the one for XR_APILAYER_LUNARG_core_validation, shown below:
 
-.. code-block::json
-	{
-		"file_format_version": "1.0.0",
-		"api_layer": {
-			"name": "XR_APILAYER_LUNARG_core_validation",
-			"library_path": "./XrApiLayer_core_validation.dll",
-			"api_version": "1.0",
-			"implementation_version": "1",
-			"description": "API Layer to perform validation of api calls and parameters as they occur"
+	.. code-block::json
+		{
+			"file_format_version": "1.0.0",
+			"api_layer": {
+				"name": "XR_APILAYER_LUNARG_core_validation",
+				"library_path": "./XrApiLayer_core_validation.dll",
+				"api_version": "1.0",
+				"implementation_version": "1",
+				"description": "API Layer to perform validation of api calls and parameters as they occur"
+			}
 		}
-	}
 
-This file points to the library that the loader should use for this API layer.
+	This file points to the library that the loader should use for this API layer.
 
-Calls to :openxr_ref:`xrEnumerateApiLayerProperties` should now return a pointer to an array of structs and the count of all API layers available to the application.
+	Calls to :openxr_ref:`xrEnumerateApiLayerProperties` should now return a pointer to an array of structs and the count of all API layers available to the application.
 
-To select which API layers we want to use, there are two ways to do this:
- 1. Add the ``XR_ENABLE_API_LAYERS=<layer_name>`` environment variable to your project or your system. Something like this: ``XR_ENABLE_API_LAYERS=XR_APILAYER_LUNARG_test1;XR_APILAYER_LUNARG_test2``.
- 2. When creating the :openxr_ref:`XrInstance`, specify the requested API layers in the :openxr_ref:`XrInstanceCreateInfo` structure.
+	To select which API layers we want to use, there are two ways to do this:
+	 1. Add the ``XR_ENABLE_API_LAYERS=<layer_name>`` environment variable to your project or your system. Something like this: ``XR_ENABLE_API_LAYERS=XR_APILAYER_LUNARG_test1;XR_APILAYER_LUNARG_test2``.
+	 2. When creating the :openxr_ref:`XrInstance`, specify the requested API layers in the :openxr_ref:`XrInstanceCreateInfo` structure.
 
-For more details, please see `API Layers README <https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/src/api_layers/README.md>`_ and see `OpenXR API Layers <https://registry.khronos.org/OpenXR/specs/1.0/loader.html#openxr-api-layers>`_.
+	For more details, please see `API Layers README <https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/src/api_layers/README.md>`_ and see `OpenXR API Layers <https://registry.khronos.org/OpenXR/specs/1.0/loader.html#openxr-api-layers>`_.
 
 *****************
-6.4 Color Science
+6.3 Color Science
 *****************
 
 As OpenXR support both linear and sRGB color spaces for compositing. It is helpful to have a deeper knowledge of color science; especially if you are planning to use sRGB formats and have the OpenXR runtime/compositor do automatic conversions for you.
@@ -679,7 +680,7 @@ As OpenXR support both linear and sRGB color spaces for compositing. It is helpf
 For more information on color spaces and gamma encoding, see J. Guy Davidson's `video presentation <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_ on the subject.
 
 ***************************
-6.5 Multithreaded Rendering
+6.4 Multithreaded Rendering
 ***************************
 
 Multithreaded rendering with OpenXR is supported and it allows for simple and complex cases ranging from stand-alone application to game/rendering engines. In this tutorial, we have used a single thread to simulate and render our XR application, but modern desktops and mobile devices have multiple cores and thus threads for us to use. Effective use of multiple CPU threads in combination with parallel GPU work can deliver higher performance for the application.
@@ -708,7 +709,7 @@ Here's a link to the PDF to download and a link to the video recording of the pr
 Note: This talk was given before the release of the OpenXR 1.0 Specification; therefore details may vary or be inaccurate.
 
 **************
-6.6 Conclusion
+6.5 Conclusion
 **************
 
 In this chapter, we discussed a few of the possible next steps in your OpenXR journey. Be sure to refer back to the `OpenXR Specification <https://registry.khronos.org/OpenXR/specs/1.0>`_ and look out for updates, both there and here, as the specification develops.

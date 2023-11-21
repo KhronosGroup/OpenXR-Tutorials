@@ -6308,7 +6308,13 @@ footer
 
 footer p
 {
-    margin-bottom: 12px
+    margin-bottom: 12px;
+    font-size:75%;
+}
+
+.legal-notice
+{
+
 }
 
 .rst-content footer span.commit tt, footer span.commit .rst-content tt, footer span.commit code
@@ -7751,6 +7757,12 @@ section >h1:before{
     vertical-align: -25%;
 }
 
+#openxr-tutorial > h1{
+    padding-left:0px;
+}
+#openxr-tutorial >h1:before{
+display:none;
+}
 #interactions > h1{
 }
 
