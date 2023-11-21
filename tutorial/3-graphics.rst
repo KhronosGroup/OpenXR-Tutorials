@@ -42,7 +42,7 @@ Create a ``Shaders`` folder in your root *workspace* folder, download and put th
 	* :download:`Shaders/VertexShader_GLES.glsl <../Shaders/VertexShader_GLES.glsl>`
 	* :download:`Shaders/PixelShader_GLES.glsl <../Shaders/PixelShader_GLES.glsl>`
 
-Underneath ``SOURCES`` ``HEADERS`` section, add the following CMake code specifying the location of the shaders:
+Underneath the ``SOURCES`` and ``HEADERS`` section, add the following CMake code specifying the location of the shaders:
 
 .. container:: d3d11 d3d12
 
