@@ -137,7 +137,7 @@
 
 	function getUrlParameter(name)
 	{
-		console.log(window.location)
+		//console.log(window.location)
 		const urlParams = new Proxy(new URLSearchParams(window.location.search),
 		{
 			get: (searchParams, prop) => searchParams.get(prop),
@@ -145,7 +145,7 @@
 		return urlParams.name;
 	}
 
-	function getUrlParameterWithCheck(name, checkValues)
+	function getUrlParameterWithCheck(name, checkValues, defaultValue)
 	{
 		const urlParameter = getUrlParameter(name);
 		console.log("getUrlParameter()" + urlParameter)
@@ -154,13 +154,13 @@
 		{
 			ok |= (urlParameter == checkValues[i]);
 		}
-		return ok ? urlParameter : undefined;
+		return ok ? urlParameter : defaultValue;
 	}
 
 	function updatePlatform()
 	{
 	var platform = Cookies.get("platform");
-	platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android']);
+	platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android'], platform);
 	if (typeof platform == 'undefined')
 	{
 		platform = "linux"; // Set default here.
@@ -290,11 +290,13 @@
 	function updateGraphicsAPI()
 	{
 	var graphicsApi = Cookies.get("graphicsapi")
-	//console.log("graphicsapi = " + graphicsApi);
+	graphicsApi = getUrlParameterWithCheck('graphicsapi', ['d3d11', 'd3d12', 'opengl', 'opengles', 'vulkan'], graphicsApi);
 	if (typeof graphicsApi == 'undefined')
 	{
-	graphicsApi = "vulkan"; // Set default here.
+		graphicsApi = "vulkan"; // Set default here.
 	}
+	addUrlParameter('graphicsapi', graphicsApi)
+
 	// first, hide all the api's
 	$(".d3d11").hide();
 	$(".d3d12").hide();
