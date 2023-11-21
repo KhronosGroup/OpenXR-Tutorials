@@ -1,0 +1,20 @@
+name: 'Build Android Build Folder Archives'
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: ./build-android-arch.sh
+      - name: Upload Android Build Folder Archives
+        id: upload
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./build/android_archs/AndroidBuildFolder.zip

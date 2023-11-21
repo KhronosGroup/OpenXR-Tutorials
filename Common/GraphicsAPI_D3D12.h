@@ -1,3 +1,9 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+// OpenXR Tutorial for Khronos Group
+
 #pragma once
 #include <GraphicsAPI.h>
 
@@ -8,7 +14,9 @@ public:
     GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemId);
     ~GraphicsAPI_D3D12();
 
+    // XR_DOCS_TAG_BEGIN_GetDepthFormat_D3D12
     virtual int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }
+    // XR_DOCS_TAG_END_GetDepthFormat_D3D12
 
     virtual void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) override;
     virtual void DestroyDesktopSwapchain(void*& swapchain) override;
@@ -17,13 +25,20 @@ public:
     virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
 
     virtual void* GetGraphicsBinding() override;
-    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) override;
-    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImages[index]; }
-    virtual void* GetSwapchainImage(uint32_t index) override { 
-        ID3D12Resource* image = swapchainImages[index].texture;
-        imageStates[image] = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) override;
+    virtual void FreeSwapchainImageData(XrSwapchain swapchain) override {
+        swapchainImagesMap[swapchain].second.clear();
+        swapchainImagesMap.erase(swapchain);
+    }
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
+    // XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D12
+    virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override { 
+        ID3D12Resource* image = swapchainImagesMap[swapchain].second[index].texture;
+        D3D12_RESOURCE_STATES state = swapchainImagesMap[swapchain].first == SwapchainType::COLOR ? D3D12_RESOURCE_STATE_RENDER_TARGET : D3D12_RESOURCE_STATE_DEPTH_WRITE;
+        imageStates[image] = state;
         return image;
     }
+    // XR_DOCS_TAG_END_GetSwapchainImage_D3D12
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
     virtual void DestroyImage(void*& image) override;
@@ -64,7 +79,8 @@ public:
     virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) override;
 
 private:
-    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() override;
+    virtual const std::vector<int64_t> GetSupportedColorSwapchainFormats() override;
+    virtual const std::vector<int64_t> GetSupportedDepthSwapchainFormats() override;
 
 private:
     ID3D12Debug* debug = nullptr;
@@ -78,7 +94,7 @@ private:
     PFN_xrGetD3D12GraphicsRequirementsKHR xrGetD3D12GraphicsRequirementsKHR = nullptr;
     XrGraphicsBindingD3D12KHR graphicsBinding{};
 
-    std::vector<XrSwapchainImageD3D12KHR> swapchainImages{};
+    std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageD3D12KHR>>> swapchainImagesMap{};
 
     ID3D12Resource* currentDesktopSwapchainImage = nullptr;
 

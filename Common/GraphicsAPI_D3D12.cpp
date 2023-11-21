@@ -1,3 +1,9 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+// OpenXR Tutorial for Khronos Group
+
 #include <GraphicsAPI_D3D12.h>
 
 #if defined(XR_USE_GRAPHICS_API_D3D12)
@@ -72,13 +78,13 @@ static D3D12_BLEND ToD3D12_BLEND(GraphicsAPI::BlendFactor blend) {
         return D3D12_BLEND_ZERO;
     case GraphicsAPI::BlendFactor::ONE:
         return D3D12_BLEND_ONE;
-    case GraphicsAPI::BlendFactor::SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::SRC_COLOR:
         return D3D12_BLEND_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOR:
         return D3D12_BLEND_INV_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::DST_COLOUR:
+    case GraphicsAPI::BlendFactor::DST_COLOR:
         return D3D12_BLEND_DEST_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOR:
         return D3D12_BLEND_INV_DEST_COLOR;
     case GraphicsAPI::BlendFactor::SRC_ALPHA:
         return D3D12_BLEND_SRC_ALPHA;
@@ -193,7 +199,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12() {
     }
     case D3D12_RESOURCE_BINDING_TIER_1:
     default: {
-        uint32_t maxUAVsPerStage = /*D3D_FEATURE_LEVEL_11_0*/ true ? 8 : 64;
+        uint32_t maxUAVsPerStage = (featureLevel == D3D_FEATURE_LEVEL_11_0) ? 8 : 64;
         resourceBindingCapabilities = {1000000, 14, 128, maxUAVsPerStage, 16, 2048};
         break;
     }
@@ -212,15 +218,14 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12() {
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
 GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemId) {
-    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetD3D12GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D12GraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetD3D12GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D12GraphicsRequirementsKHR), "Failed to get InstanceProcAddr for xrGetD3D12GraphicsRequirementsKHR.");
     XrGraphicsRequirementsD3D12KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR};
     OPENXR_CHECK(xrGetD3D12GraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for D3D12.");
-	if(debugAPI)
-	{
-		D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
-		debug->EnableDebugLayer();
-		reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);
-	}
+    if (debugAPI) {
+        D3D12_CHECK(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)), "Failed to get DebugInterface.");
+        debug->EnableDebugLayer();
+        reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);
+    }
     D3D12_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
 
     UINT i = 0;
@@ -265,7 +270,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
     }
     case D3D12_RESOURCE_BINDING_TIER_1:
     default: {
-        uint32_t maxUAVsPerStage = /*D3D_FEATURE_LEVEL_11_0*/ true ? 8 : 64;
+        uint32_t maxUAVsPerStage = (graphicsRequirements.minFeatureLevel == D3D_FEATURE_LEVEL_11_0) ? 8 : 64;
         resourceBindingCapabilities = {1000000, 14, 128, maxUAVsPerStage, 16, 2048};
         break;
     }
@@ -351,9 +356,10 @@ void *GraphicsAPI_D3D12::GetGraphicsBinding() {
 // XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetGraphicsBinding
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_AllocateSwapchainImageData
-XrSwapchainImageBaseHeader *GraphicsAPI_D3D12::AllocateSwapchainImageData(uint32_t count) {
-    swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D12_KHR});
-    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImages.data());
+XrSwapchainImageBaseHeader *GraphicsAPI_D3D12::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
+    swapchainImagesMap[swapchain].first = type;
+    swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D12_KHR});
+    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
 // XR_DOCS_TAG_END_GraphicsAPI_D3D12_AllocateSwapchainImageData
 
@@ -373,14 +379,16 @@ void *GraphicsAPI_D3D12::CreateImage(const ImageCreateInfo &imageCI) {
 
     D3D12_CLEAR_VALUE clear = {};
     bool useClear = false;
-    if (useClear = BitwiseCheck(desc.Flags, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)) {
+    if (BitwiseCheck(desc.Flags, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)) {
+        useClear = true;
         clear.Format = desc.Format;
         clear.Color[0] = 0.0f;
         clear.Color[1] = 0.0f;
         clear.Color[2] = 0.0f;
         clear.Color[3] = 0.0f;
     }
-    if (useClear = BitwiseCheck(desc.Flags, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) {
+    if (BitwiseCheck(desc.Flags, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) {
+        useClear = true;
         clear.Format = desc.Format;
         clear.DepthStencil = {0.0f, 0};
     }
@@ -716,15 +724,17 @@ void *GraphicsAPI_D3D12::CreateBuffer(const BufferCreateInfo &bufferCI) {
     heapDesc.Flags = D3D12_HEAP_FLAG_NONE;
     D3D12_CHECK(device->CreateHeap(&heapDesc, IID_PPV_ARGS(&heap)), "Failed to create Heap.")
 
-    D3D12_RESOURCE_STATES initState = D3D12_RESOURCE_STATE_COMMON;
-    if (bufferCI.type == BufferCreateInfo::Type::VERTEX) {
-        initState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-    } else if (bufferCI.type == BufferCreateInfo::Type::INDEX) {
-        initState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
-    } else if (bufferCI.type == BufferCreateInfo::Type::UNIFORM) {
-        initState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-    } else {
-        std::cout << "ERROR: D3D12: Unknown Buffer Type." << std::endl;
+    D3D12_RESOURCE_STATES initState = D3D12_RESOURCE_STATE_GENERIC_READ;
+    if (heapDesc.Properties.Type == D3D12_HEAP_TYPE_DEFAULT) {
+        if (bufferCI.type == BufferCreateInfo::Type::VERTEX) {
+            initState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+        } else if (bufferCI.type == BufferCreateInfo::Type::INDEX) {
+            initState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+        } else if (bufferCI.type == BufferCreateInfo::Type::UNIFORM) {
+            initState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+        } else {
+            std::cout << "ERROR: D3D12: Unknown Buffer Type." << std::endl;
+        }
     }
 
     D3D12_CHECK(device->CreatePlacedResource(heap, 0, &desc, initState, clear, IID_PPV_ARGS(&buffer)), "Failed to create Buffer.");
@@ -864,21 +874,21 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     GPSD.DepthStencilState.BackFace.StencilPassOp = static_cast<D3D12_STENCIL_OP>(static_cast<uint32_t>(pipelineCI.depthStencilState.back.passOp) + 1);
     GPSD.DepthStencilState.BackFace.StencilFunc = static_cast<D3D12_COMPARISON_FUNC>(static_cast<uint32_t>(pipelineCI.depthStencilState.back.compareOp) + 1);
 
-    // ColourBlend
+    // ColorBlend
     GPSD.BlendState.AlphaToCoverageEnable = pipelineCI.multisampleState.alphaToCoverageEnable;
     GPSD.BlendState.IndependentBlendEnable = true;
     size_t i = 0;
-    for (auto &blend : pipelineCI.colourBlendState.attachments) {
+    for (auto &blend : pipelineCI.colorBlendState.attachments) {
         GPSD.BlendState.RenderTarget[i].BlendEnable = blend.blendEnable;
-        GPSD.BlendState.RenderTarget[i].LogicOpEnable = pipelineCI.colourBlendState.logicOpEnable;
-        GPSD.BlendState.RenderTarget[i].SrcBlend = ToD3D12_BLEND(blend.srcColourBlendFactor);
-        GPSD.BlendState.RenderTarget[i].DestBlend = ToD3D12_BLEND(blend.dstColourBlendFactor);
-        GPSD.BlendState.RenderTarget[i].BlendOp = static_cast<D3D12_BLEND_OP>(static_cast<uint32_t>(blend.colourBlendOp) + 1);
+        GPSD.BlendState.RenderTarget[i].LogicOpEnable = pipelineCI.colorBlendState.logicOpEnable;
+        GPSD.BlendState.RenderTarget[i].SrcBlend = ToD3D12_BLEND(blend.srcColorBlendFactor);
+        GPSD.BlendState.RenderTarget[i].DestBlend = ToD3D12_BLEND(blend.dstColorBlendFactor);
+        GPSD.BlendState.RenderTarget[i].BlendOp = static_cast<D3D12_BLEND_OP>(static_cast<uint32_t>(blend.colorBlendOp) + 1);
         GPSD.BlendState.RenderTarget[i].SrcBlendAlpha = ToD3D12_BLEND(blend.srcAlphaBlendFactor);
         GPSD.BlendState.RenderTarget[i].DestBlendAlpha = ToD3D12_BLEND(blend.dstAlphaBlendFactor);
         GPSD.BlendState.RenderTarget[i].BlendOpAlpha = static_cast<D3D12_BLEND_OP>(static_cast<uint32_t>(blend.alphaBlendOp) + 1);
-        GPSD.BlendState.RenderTarget[i].LogicOp = ToD3D12_LOGIC_OP(pipelineCI.colourBlendState.logicOp);
-        GPSD.BlendState.RenderTarget[i].RenderTargetWriteMask = static_cast<UINT8>(blend.colourWriteMask);
+        GPSD.BlendState.RenderTarget[i].LogicOp = ToD3D12_LOGIC_OP(pipelineCI.colorBlendState.logicOp);
+        GPSD.BlendState.RenderTarget[i].RenderTargetWriteMask = static_cast<UINT8>(blend.colorWriteMask);
 
         i++;
         if (i >= 8)
@@ -1257,12 +1267,17 @@ void GraphicsAPI_D3D12::Draw(uint32_t vertexCount, uint32_t instanceCount, uint3
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12_GetSupportedSwapchainFormats
-const std::vector<int64_t> GraphicsAPI_D3D12::GetSupportedSwapchainFormats() {
+const std::vector<int64_t> GraphicsAPI_D3D12::GetSupportedColorSwapchainFormats() {
     return {
         DXGI_FORMAT_R8G8B8A8_UNORM,
         DXGI_FORMAT_B8G8R8A8_UNORM,
         DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
         DXGI_FORMAT_B8G8R8A8_UNORM_SRGB};
+}
+const std::vector<int64_t> GraphicsAPI_D3D12::GetSupportedDepthSwapchainFormats() {
+    return {
+        DXGI_FORMAT_D32_FLOAT,
+        DXGI_FORMAT_D16_UNORM};
 }
 // XR_DOCS_TAG_END_GraphicsAPI_D3D12_GetSupportedSwapchainFormats
 #endif

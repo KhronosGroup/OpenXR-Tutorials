@@ -1,3 +1,9 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+// OpenXR Tutorial for Khronos Group
+
 #include <GraphicsAPI_OpenGL.h>
 
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
@@ -196,13 +202,13 @@ inline GLenum ToGLBlendFactor(GraphicsAPI::BlendFactor factor) {
         return GL_ZERO;
     case GraphicsAPI::BlendFactor::ONE:
         return GL_ONE;
-    case GraphicsAPI::BlendFactor::SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::SRC_COLOR:
         return GL_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOR:
         return GL_ONE_MINUS_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::DST_COLOUR:
+    case GraphicsAPI::BlendFactor::DST_COLOR:
         return GL_DST_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOR:
         return GL_ONE_MINUS_DST_COLOR;
     case GraphicsAPI::BlendFactor::SRC_ALPHA:
         return GL_SRC_ALPHA;
@@ -375,7 +381,7 @@ GraphicsAPI_OpenGL::GraphicsAPI_OpenGL() {
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL
 GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance m_xrInstance, XrSystemId systemId) {
-    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetOpenGLGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetOpenGLGraphicsRequirementsKHR), "Failed to get InstanceProcAddr for xrGetOpenGLGraphicsRequirementsKHR.");
     XrGraphicsRequirementsOpenGLKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR};
     OPENXR_CHECK(xrGetOpenGLGraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for OpenGL.");
 
@@ -460,9 +466,10 @@ void *GraphicsAPI_OpenGL::GetGraphicsBinding() {
 // XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetGraphicsBinding
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_AllocateSwapchainImageData
-XrSwapchainImageBaseHeader *GraphicsAPI_OpenGL::AllocateSwapchainImageData(uint32_t count) {
-    swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR});
-    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImages.data());
+XrSwapchainImageBaseHeader *GraphicsAPI_OpenGL::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
+    swapchainImagesMap[swapchain].first = type;
+    swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR});
+    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
 // XR_DOCS_TAG_END_GraphicsAPI_OpenGL_AllocateSwapchainImageData
 
@@ -996,8 +1003,8 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
                           DSS.back.compareMask);
     glStencilMaskSeparate(GL_BACK, DSS.back.writeMask);
 
-    // ColourBlendState
-    const ColourBlendState &CBS = pipelineCI.colourBlendState;
+    // ColorBlendState
+    const ColorBlendState &CBS = pipelineCI.colorBlendState;
 
     if (CBS.logicOpEnable) {
         glEnable(GL_COLOR_LOGIC_OP);
@@ -1007,7 +1014,7 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
     }
 
     for (int i = 0; i < (int)CBS.attachments.size(); i++) {
-        const ColourBlendAttachmentState &CBA = CBS.attachments[i];
+        const ColorBlendAttachmentState &CBA = CBS.attachments[i];
 
         PFNGLENABLEIPROC glEnablei = (PFNGLENABLEIPROC)GetExtension("glEnablei");                                                              // 3.0+
         PFNGLDISABLEIPROC glDisablei = (PFNGLDISABLEIPROC)GetExtension("glDisablei");                                                          // 3.0+
@@ -1021,19 +1028,19 @@ void GraphicsAPI_OpenGL::SetPipeline(void *pipeline) {
             glDisablei(GL_BLEND, i);
         }
 
-        glBlendEquationSeparatei(i, ToGLBlendOp(CBA.colourBlendOp), ToGLBlendOp(CBA.alphaBlendOp));
+        glBlendEquationSeparatei(i, ToGLBlendOp(CBA.colorBlendOp), ToGLBlendOp(CBA.alphaBlendOp));
 
         glBlendFuncSeparatei(i,
-                             ToGLBlendFactor(CBA.srcColourBlendFactor),
-                             ToGLBlendFactor(CBA.dstColourBlendFactor),
+                             ToGLBlendFactor(CBA.srcColorBlendFactor),
+                             ToGLBlendFactor(CBA.dstColorBlendFactor),
                              ToGLBlendFactor(CBA.srcAlphaBlendFactor),
                              ToGLBlendFactor(CBA.dstAlphaBlendFactor));
 
         glColorMaski(i,
-                     (((uint32_t)CBA.colourWriteMask & (uint32_t)ColourComponentBit::R_BIT) == (uint32_t)ColourComponentBit::R_BIT),
-                     (((uint32_t)CBA.colourWriteMask & (uint32_t)ColourComponentBit::G_BIT) == (uint32_t)ColourComponentBit::G_BIT),
-                     (((uint32_t)CBA.colourWriteMask & (uint32_t)ColourComponentBit::B_BIT) == (uint32_t)ColourComponentBit::B_BIT),
-                     (((uint32_t)CBA.colourWriteMask & (uint32_t)ColourComponentBit::A_BIT) == (uint32_t)ColourComponentBit::A_BIT));
+                     (((uint32_t)CBA.colorWriteMask & (uint32_t)ColorComponentBit::R_BIT) == (uint32_t)ColorComponentBit::R_BIT),
+                     (((uint32_t)CBA.colorWriteMask & (uint32_t)ColorComponentBit::G_BIT) == (uint32_t)ColorComponentBit::G_BIT),
+                     (((uint32_t)CBA.colorWriteMask & (uint32_t)ColorComponentBit::B_BIT) == (uint32_t)ColorComponentBit::B_BIT),
+                     (((uint32_t)CBA.colorWriteMask & (uint32_t)ColorComponentBit::A_BIT) == (uint32_t)ColorComponentBit::A_BIT));
     }
     glBlendColor(CBS.blendConstants[0], CBS.blendConstants[1], CBS.blendConstants[2], CBS.blendConstants[3]);
 }
@@ -1109,7 +1116,7 @@ void GraphicsAPI_OpenGL::Draw(uint32_t vertexCount, uint32_t instanceCount, uint
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_GetSupportedSwapchainFormats
-const std::vector<int64_t> GraphicsAPI_OpenGL::GetSupportedSwapchainFormats() {
+const std::vector<int64_t> GraphicsAPI_OpenGL::GetSupportedColorSwapchainFormats() {
     // https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/f122f9f1fc729e2dc82e12c3ce73efa875182854/src/tests/hello_xr/graphicsplugin_opengl.cpp#L229-L236
     return {
         GL_RGB10_A2,
@@ -1119,6 +1126,13 @@ const std::vector<int64_t> GraphicsAPI_OpenGL::GetSupportedSwapchainFormats() {
         GL_RGBA8,
         GL_RGBA8_SNORM,
     };
+}
+const std::vector<int64_t> GraphicsAPI_OpenGL::GetSupportedDepthSwapchainFormats() {
+    return {
+        GL_DEPTH_COMPONENT32F,
+        GL_DEPTH_COMPONENT32,
+        GL_DEPTH_COMPONENT24,
+        GL_DEPTH_COMPONENT16};
 }
 // XR_DOCS_TAG_END_GraphicsAPI_OpenGL_GetSupportedSwapchainFormats
 #endif

@@ -1,3 +1,9 @@
+.*
+!.github
+!.gitignore
+!.clang-format
+!.cmake-format.*
+
 # Prerequisites
 *.d
 
@@ -39,7 +45,13 @@ sphinx
 # Android build folders
 .idea
 
+# Android build config files
+local.properties
+
 # Android Shader output sources/binaries
+Chapter6_1_Multiview/Chapter6/app/src/main/assets/shaders/*.spv
+Chapter6_1_Multiview/Chapter6/app/src/main/assets/shaders/*.glsl
+
 Chapter5/app/src/main/assets/shaders/*.spv
 Chapter5/app/src/main/assets/shaders/*.glsl
 
@@ -51,3 +63,9 @@ Chapter3/app/src/main/assets/shaders/*.glsl
 
 Chapter2/app/src/main/assets/shaders/*.spv
 Chapter2/app/src/main/assets/shaders/*.glsl
+
+Chapter1/app/src/main/assets/shaders/*.spv
+Chapter1/app/src/main/assets/shaders/*.glsl
+
+# Force reuse.software to ignore External
+/External/

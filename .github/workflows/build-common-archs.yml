@@ -1,0 +1,36 @@
+name: 'Build Common Folder Archives'
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: |
+          bash ./build-common-archs.sh D3D11 D3D12 OPENGL OPENGL_ES VULKAN
+          cd ./Chapter6_1_Multiview/
+          bash ./build-common-archs.sh D3D11 D3D12 OPENGL OPENGL_ES VULKAN
+          cd ./../
+      - name: Upload Common Folder Archives
+        id: upload
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./build/common_archs/Common_D3D11.zip
+            ./build/common_archs/Common_D3D12.zip
+            ./build/common_archs/Common_OpenGL.zip
+            ./build/common_archs/Common_OpenGL_ES.zip
+            ./build/common_archs/Common_Vulkan.zip
+            ./build/common_archs/Common.zip
+            ./Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_D3D11.zip
+            ./Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_D3D12.zip
+            ./Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_OpenGL.zip
+            ./Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_OpenGL_ES.zip
+            ./Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common_Vulkan.zip
+            ./Chapter6_1_Multiview/build/common_archs/Chapter6_1_Multiview_Common.zip

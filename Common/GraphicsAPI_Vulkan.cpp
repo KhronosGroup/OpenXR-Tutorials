@@ -1,3 +1,9 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+// OpenXR Tutorial for Khronos Group
+
 #if defined(_WIN32)
 #define VK_USE_PLATFORM_WIN32_KHR
 #endif
@@ -200,6 +206,46 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan() {
     deviceCI.ppEnabledExtensionNames = activeDeviceExtensions.data();
     deviceCI.pEnabledFeatures = &features;
     VULKAN_CHECK(vkCreateDevice(physicalDevice, &deviceCI, nullptr, &device), "Failed to create Device.");
+
+    VkCommandPoolCreateInfo cmdPoolCI;
+    cmdPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    cmdPoolCI.pNext = nullptr;
+    cmdPoolCI.flags = 0;
+    cmdPoolCI.queueFamilyIndex = queueFamilyIndex;
+    VULKAN_CHECK(vkCreateCommandPool(device, &cmdPoolCI, nullptr, &cmdPool), "Failed to create CommandPool.");
+
+    VkCommandBufferAllocateInfo allocateInfo;
+    allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocateInfo.pNext = nullptr;
+    allocateInfo.commandPool = cmdPool;
+    allocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocateInfo.commandBufferCount = 1;
+    VULKAN_CHECK(vkAllocateCommandBuffers(device, &allocateInfo, &cmdBuffer), "Failed to allocate CommandBuffers.");
+
+    vkGetDeviceQueue(device, queueFamilyIndex, queueIndex, &queue);
+
+    VkFenceCreateInfo fenceCI{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+    fenceCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceCI.pNext = nullptr;
+    fenceCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    VULKAN_CHECK(vkCreateFence(device, &fenceCI, nullptr, &fence), "Failed to create Fence.")
+
+    uint32_t maxSets = 1024;
+    std::vector<VkDescriptorPoolSize> poolSizes{
+        {VK_DESCRIPTOR_TYPE_SAMPLER, 16 * maxSets},
+        {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 16 * maxSets},
+        {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 16 * maxSets},
+        {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 16 * maxSets},
+        {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 16 * maxSets}};
+
+    VkDescriptorPoolCreateInfo descPoolCI;
+    descPoolCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descPoolCI.pNext = nullptr;
+    descPoolCI.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    descPoolCI.maxSets = maxSets;
+    descPoolCI.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+    descPoolCI.pPoolSizes = poolSizes.data();
+    VULKAN_CHECK(vkCreateDescriptorPool(device, &descPoolCI, nullptr, &descriptorPool), "Failed to create DescriptorPool");
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan
@@ -325,9 +371,56 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance m_xrInstance, XrSystemId syste
     deviceCI.ppEnabledExtensionNames = activeDeviceExtensions.data();
     deviceCI.pEnabledFeatures = &features;
     VULKAN_CHECK(vkCreateDevice(physicalDevice, &deviceCI, nullptr, &device), "Failed to create Device.");
+
+    VkCommandPoolCreateInfo cmdPoolCI;
+    cmdPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    cmdPoolCI.pNext = nullptr;
+    cmdPoolCI.flags = 0;
+    cmdPoolCI.queueFamilyIndex = queueFamilyIndex;
+    VULKAN_CHECK(vkCreateCommandPool(device, &cmdPoolCI, nullptr, &cmdPool), "Failed to create CommandPool.");
+
+    VkCommandBufferAllocateInfo allocateInfo;
+    allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocateInfo.pNext = nullptr;
+    allocateInfo.commandPool = cmdPool;
+    allocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocateInfo.commandBufferCount = 1;
+    VULKAN_CHECK(vkAllocateCommandBuffers(device, &allocateInfo, &cmdBuffer), "Failed to allocate CommandBuffers.");
+
+    vkGetDeviceQueue(device, queueFamilyIndex, queueIndex, &queue);
+
+    VkFenceCreateInfo fenceCI{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+    fenceCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceCI.pNext = nullptr;
+    fenceCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    VULKAN_CHECK(vkCreateFence(device, &fenceCI, nullptr, &fence), "Failed to create Fence.")
+
+    uint32_t maxSets = 1024;
+    std::vector<VkDescriptorPoolSize> poolSizes{
+        {VK_DESCRIPTOR_TYPE_SAMPLER, 16 * maxSets},
+        {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 16 * maxSets},
+        {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 16 * maxSets},
+        {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 16 * maxSets},
+        {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 16 * maxSets}};
+
+    VkDescriptorPoolCreateInfo descPoolCI;
+    descPoolCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descPoolCI.pNext = nullptr;
+    descPoolCI.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    descPoolCI.maxSets = maxSets;
+    descPoolCI.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+    descPoolCI.pPoolSizes = poolSizes.data();
+    VULKAN_CHECK(vkCreateDescriptorPool(device, &descPoolCI, nullptr, &descriptorPool), "Failed to create DescriptorPool");
 }
 
 GraphicsAPI_Vulkan::~GraphicsAPI_Vulkan() {
+    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+
+    vkDestroyFence(device, fence, nullptr);
+
+    vkFreeCommandBuffers(device, cmdPool, 1, &cmdBuffer);
+    vkDestroyCommandPool(device, cmdPool, nullptr);
+
     vkDestroyDevice(device, nullptr);
     vkDestroyInstance(instance, nullptr);
 }
@@ -485,9 +578,10 @@ void *GraphicsAPI_Vulkan::GetGraphicsBinding() {
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetGraphicsBinding
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_AllocateSwapchainImageData
-XrSwapchainImageBaseHeader *GraphicsAPI_Vulkan::AllocateSwapchainImageData(uint32_t count) {
-    swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR});
-    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImages.data());
+XrSwapchainImageBaseHeader *GraphicsAPI_Vulkan::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
+    swapchainImagesMap[swapchain].first = type;
+    swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR});
+    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_AllocateSwapchainImageData
 
@@ -894,32 +988,32 @@ void *GraphicsAPI_Vulkan::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     vkDepthStencilState.minDepthBounds = pipelineCI.depthStencilState.minDepthBounds;
     vkDepthStencilState.maxDepthBounds = pipelineCI.depthStencilState.maxDepthBounds;
 
-    // ColourBlend
+    // ColorBlend
     std::vector<VkPipelineColorBlendAttachmentState> vkPipelineColorBlendAttachmentStates;
-    vkPipelineColorBlendAttachmentStates.reserve(pipelineCI.colourBlendState.attachments.size());
-    for (auto &attachment : pipelineCI.colourBlendState.attachments)
+    vkPipelineColorBlendAttachmentStates.reserve(pipelineCI.colorBlendState.attachments.size());
+    for (auto &attachment : pipelineCI.colorBlendState.attachments)
         vkPipelineColorBlendAttachmentStates.push_back(
             {attachment.blendEnable,
-             static_cast<VkBlendFactor>(attachment.srcColourBlendFactor),
-             static_cast<VkBlendFactor>(attachment.dstColourBlendFactor),
-             static_cast<VkBlendOp>(attachment.colourBlendOp),
+             static_cast<VkBlendFactor>(attachment.srcColorBlendFactor),
+             static_cast<VkBlendFactor>(attachment.dstColorBlendFactor),
+             static_cast<VkBlendOp>(attachment.colorBlendOp),
              static_cast<VkBlendFactor>(attachment.srcAlphaBlendFactor),
              static_cast<VkBlendFactor>(attachment.dstAlphaBlendFactor),
              static_cast<VkBlendOp>(attachment.alphaBlendOp),
-             static_cast<VkColorComponentFlags>(attachment.colourWriteMask)});
+             static_cast<VkColorComponentFlags>(attachment.colorWriteMask)});
 
-    VkPipelineColorBlendStateCreateInfo vkColourBlendState;
-    vkColourBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    vkColourBlendState.pNext = nullptr;
-    vkColourBlendState.flags = 0;
-    vkColourBlendState.logicOpEnable = pipelineCI.colourBlendState.logicOpEnable;
-    vkColourBlendState.logicOp = static_cast<VkLogicOp>(pipelineCI.colourBlendState.logicOp);
-    vkColourBlendState.attachmentCount = static_cast<uint32_t>(vkPipelineColorBlendAttachmentStates.size());
-    vkColourBlendState.pAttachments = vkPipelineColorBlendAttachmentStates.data();
-    vkColourBlendState.blendConstants[0] = pipelineCI.colourBlendState.blendConstants[0];
-    vkColourBlendState.blendConstants[1] = pipelineCI.colourBlendState.blendConstants[1];
-    vkColourBlendState.blendConstants[2] = pipelineCI.colourBlendState.blendConstants[2];
-    vkColourBlendState.blendConstants[3] = pipelineCI.colourBlendState.blendConstants[3];
+    VkPipelineColorBlendStateCreateInfo vkColorBlendState;
+    vkColorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    vkColorBlendState.pNext = nullptr;
+    vkColorBlendState.flags = 0;
+    vkColorBlendState.logicOpEnable = pipelineCI.colorBlendState.logicOpEnable;
+    vkColorBlendState.logicOp = static_cast<VkLogicOp>(pipelineCI.colorBlendState.logicOp);
+    vkColorBlendState.attachmentCount = static_cast<uint32_t>(vkPipelineColorBlendAttachmentStates.size());
+    vkColorBlendState.pAttachments = vkPipelineColorBlendAttachmentStates.data();
+    vkColorBlendState.blendConstants[0] = pipelineCI.colorBlendState.blendConstants[0];
+    vkColorBlendState.blendConstants[1] = pipelineCI.colorBlendState.blendConstants[1];
+    vkColorBlendState.blendConstants[2] = pipelineCI.colorBlendState.blendConstants[2];
+    vkColorBlendState.blendConstants[3] = pipelineCI.colorBlendState.blendConstants[3];
 
     // Dynamic
     std::vector<VkDynamicState> vkDynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
@@ -945,7 +1039,7 @@ void *GraphicsAPI_Vulkan::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
     GPCI.pRasterizationState = &vkRasterisationState;
     GPCI.pMultisampleState = &vkMultisampleState;
     GPCI.pDepthStencilState = &vkDepthStencilState;
-    GPCI.pColorBlendState = &vkColourBlendState;
+    GPCI.pColorBlendState = &vkColorBlendState;
     GPCI.pDynamicState = &vkDynamicState;
     GPCI.layout = pipelineLayout;
     GPCI.renderPass = renderPass;
@@ -972,27 +1066,27 @@ void GraphicsAPI_Vulkan::DestroyPipeline(void *&pipeline) {
 }
 
 void GraphicsAPI_Vulkan::BeginRendering() {
-    VkCommandPoolCreateInfo cmdPoolCI;
-    cmdPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    cmdPoolCI.pNext = nullptr;
-    cmdPoolCI.flags = 0;
-    cmdPoolCI.queueFamilyIndex = queueFamilyIndex;
-    VULKAN_CHECK(vkCreateCommandPool(device, &cmdPoolCI, nullptr, &cmdPool), "Failed to create CommandPool.");
+    VULKAN_CHECK(vkWaitForFences(device, 1, &fence, true, UINT64_MAX), "Failed to wait for Fence");
 
-    VkCommandBufferAllocateInfo allocateInfo;
-    allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocateInfo.pNext = nullptr;
-    allocateInfo.commandPool = cmdPool;
-    allocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocateInfo.commandBufferCount = 1;
-    VULKAN_CHECK(vkAllocateCommandBuffers(device, &allocateInfo, &cmdBuffer), "Failed to allocate CommandBuffers.");
+    //VULKAN_CHECK(vkResetDescriptorPool(device, descriptorPool, VkDescriptorPoolResetFlags(0)), "Failed to rest DescriptorPool")
+    for (const auto &descSet : cmdBufferDescriptorSets[cmdBuffer]) {
+        VULKAN_CHECK(vkFreeDescriptorSets(device, descriptorPool, 1, &descSet), "Failed to free DescriptorSet.");
+    }
+    cmdBufferDescriptorSets.erase(cmdBuffer);
+
+    for (const VkFramebuffer &framebuffer : cmdBufferFramebuffers[cmdBuffer]) {
+        vkDestroyFramebuffer(device, framebuffer, nullptr);
+    }
+    cmdBufferFramebuffers.erase(cmdBuffer);
+
+    VULKAN_CHECK(vkResetCommandBuffer(cmdBuffer, VkCommandBufferResetFlagBits(0)), "Failed to reset CommandBuffer.");
 
     VkCommandBufferBeginInfo beginInfo;
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.pNext = nullptr;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     beginInfo.pInheritanceInfo = nullptr;
-    VULKAN_CHECK(vkBeginCommandBuffer(cmdBuffer, &beginInfo), "Failed to begin CommandBuffers.");
+    VULKAN_CHECK(vkBeginCommandBuffer(cmdBuffer, &beginInfo), "Failed to begin CommandBuffer.");
 
     if (currentDesktopSwapchainImage) {
         VkImageMemoryBarrier barrier;
@@ -1039,9 +1133,6 @@ void GraphicsAPI_Vulkan::EndRendering() {
 
     VULKAN_CHECK(vkEndCommandBuffer(cmdBuffer), "Failed to end CommandBuffer.");
 
-    VkQueue queue{};
-    vkGetDeviceQueue(device, queueFamilyIndex, queueIndex, &queue);
-
     VkPipelineStageFlags waitDstStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
     VkSubmitInfo submitInfo{VK_STRUCTURE_TYPE_SUBMIT_INFO};
@@ -1055,31 +1146,7 @@ void GraphicsAPI_Vulkan::EndRendering() {
     submitInfo.signalSemaphoreCount = submitSemaphore ? 1 : 0;
     submitInfo.pSignalSemaphores = submitSemaphore ? &submitSemaphore : nullptr;
 
-    VkFence fence{};
-    VkFenceCreateInfo fenceCI{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
-    fenceCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceCI.pNext = nullptr;
-    fenceCI.flags = 0;
-    VULKAN_CHECK(vkCreateFence(device, &fenceCI, nullptr, &fence), "Failed to create Fence.")
-
     VULKAN_CHECK(vkQueueSubmit(queue, 1, &submitInfo, fence), "Failed to submit to Queue.");
-
-    VULKAN_CHECK(vkWaitForFences(device, 1, &fence, true, UINT64_MAX), "Failed to wait for Fence");
-    vkDestroyFence(device, fence, nullptr);
-
-    for (const auto &descPoolSet : cmdBufferDescriptorSets[cmdBuffer]) {
-        VULKAN_CHECK(vkFreeDescriptorSets(device, descPoolSet.first, 1, &descPoolSet.second), "Failed to free DescriptorSet.");
-        vkDestroyDescriptorPool(device, descPoolSet.first, nullptr);
-    }
-    cmdBufferDescriptorSets.erase(cmdBuffer);
-
-    for (const VkFramebuffer& framebuffer : cmdBufferFramebuffers[cmdBuffer]) {
-        vkDestroyFramebuffer(device, framebuffer, nullptr);
-    }
-    cmdBufferFramebuffers.erase(cmdBuffer);
-
-    vkFreeCommandBuffers(device, cmdPool, 1, &cmdBuffer);
-    vkDestroyCommandPool(device, cmdPool, nullptr);
 }
 
 void GraphicsAPI_Vulkan::SetBufferData(void *buffer, size_t offset, size_t size, void *data) {
@@ -1294,26 +1361,11 @@ void GraphicsAPI_Vulkan::UpdateDescriptors() {
     VkDescriptorSetLayout descSetLayout = std::get<1>(pipelineResources[(VkPipeline)setPipeline]);
     PipelineCreateInfo pipelinCI = std::get<3>(pipelineResources[(VkPipeline)setPipeline]);
 
-    std::vector<VkDescriptorPoolSize> poolSizes;
-    for (const DescriptorInfo &descInfo : pipelinCI.layout) {
-        poolSizes.push_back({ToVkDescrtiptorType(descInfo), 1});
-    }
-
-    VkDescriptorPool descPool{};
-    VkDescriptorPoolCreateInfo descPoolCI;
-    descPoolCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    descPoolCI.pNext = nullptr;
-    descPoolCI.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-    descPoolCI.maxSets = 1;
-    descPoolCI.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-    descPoolCI.pPoolSizes = poolSizes.data();
-    VULKAN_CHECK(vkCreateDescriptorPool(device, &descPoolCI, nullptr, &descPool), "Failed to create DescriptorPool");
-
     VkDescriptorSet descSet{};
     VkDescriptorSetAllocateInfo descSetAI;
     descSetAI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     descSetAI.pNext = nullptr;
-    descSetAI.descriptorPool = descPool;
+    descSetAI.descriptorPool = descriptorPool;
     descSetAI.descriptorSetCount = 1;
     descSetAI.pSetLayouts = &descSetLayout;
     VULKAN_CHECK(vkAllocateDescriptorSets(device, &descSetAI, &descSet), "Failed to allocate DescriptorSet.");
@@ -1338,7 +1390,7 @@ void GraphicsAPI_Vulkan::UpdateDescriptors() {
     writeDescSets.clear();
 
     vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descSet, 0, nullptr);
-    cmdBufferDescriptorSets[cmdBuffer].push_back({descPool, descSet});
+    cmdBufferDescriptorSets[cmdBuffer].push_back({descSet});
 }
 
 void GraphicsAPI_Vulkan::SetVertexBuffers(void **vertexBuffers, size_t count) {
@@ -1368,10 +1420,10 @@ void GraphicsAPI_Vulkan::Draw(uint32_t vertexCount, uint32_t instanceCount, uint
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 void GraphicsAPI_Vulkan::LoadPFN_XrFunctions(XrInstance m_xrInstance) {
-    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
-    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanInstanceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanInstanceExtensionsKHR), "Failed to get InstanceProcAddr.");
-    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanDeviceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanDeviceExtensionsKHR), "Failed to get InstanceProcAddr.");
-    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanGraphicsDeviceKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsDeviceKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanGraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsRequirementsKHR), "Failed to get InstanceProcAddr for xrGetVulkanGraphicsRequirementsKHR.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanInstanceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanInstanceExtensionsKHR), "Failed to get InstanceProcAddr for xrGetVulkanInstanceExtensionsKHR.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanDeviceExtensionsKHR", (PFN_xrVoidFunction *)&xrGetVulkanDeviceExtensionsKHR), "Failed to get InstanceProcAddr for xrGetVulkanDeviceExtensionsKHR.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetVulkanGraphicsDeviceKHR", (PFN_xrVoidFunction *)&xrGetVulkanGraphicsDeviceKHR), "Failed to get InstanceProcAddr for xrGetVulkanGraphicsDeviceKHR.");
 }
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_LoadPFN_XrFunctions
 
@@ -1412,12 +1464,17 @@ std::vector<std::string> GraphicsAPI_Vulkan::GetDeviceExtensionsForOpenXR(XrInst
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
-const std::vector<int64_t> GraphicsAPI_Vulkan::GetSupportedSwapchainFormats() {
+const std::vector<int64_t> GraphicsAPI_Vulkan::GetSupportedColorSwapchainFormats() {
     return {
         VK_FORMAT_B8G8R8A8_SRGB,
         VK_FORMAT_R8G8B8A8_SRGB,
         VK_FORMAT_B8G8R8A8_UNORM,
         VK_FORMAT_R8G8B8A8_UNORM};
+}
+const std::vector<int64_t> GraphicsAPI_Vulkan::GetSupportedDepthSwapchainFormats() {
+    return {
+        VK_FORMAT_D32_SFLOAT,
+        VK_FORMAT_D16_UNORM};
 }
 // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetSupportedSwapchainFormats
 #endif

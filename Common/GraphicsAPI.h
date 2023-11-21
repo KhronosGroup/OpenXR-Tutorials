@@ -1,3 +1,9 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+// OpenXR Tutorial for Khronos Group
+
 #pragma once
 #include <HelperFunctions.h>
 
@@ -21,7 +27,7 @@
 #if defined(XR_TUTORIAL_USE_VULKAN)
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
-#endif // _WIN32
+#endif  // _WIN32
 
 #if defined(__linux__) && !defined(__ANDROID__)
 #if defined(XR_TUTORIAL_USE_LINUX_XLIB)
@@ -30,7 +36,6 @@
 #endif
 #if defined(XR_TUTORIAL_USE_LINUX_XCB)
 #include <xcb/xcb.h>
-#include <X11/Xlib.h>
 #define XR_USE_PLATFORM_XCB
 #endif
 #if defined(XR_TUTORIAL_USE_LINUX_WAYLAND)
@@ -44,7 +49,7 @@
 #if defined(XR_TUTORIAL_USE_VULKAN)
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
-#endif // __linux__
+#endif  // __linux__
 
 #if defined(__ANDROID__)
 #include <android_native_app_glue.h>
@@ -56,7 +61,7 @@
 #if defined(XR_TUTORIAL_USE_VULKAN)
 #define XR_USE_GRAPHICS_API_VULKAN
 #endif
-#endif // __ANDROID__
+#endif  // __ANDROID__
 
 // Graphic APIs headers
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -96,7 +101,7 @@
 #include <vulkan/vulkan.h>
 #endif
 
-// OpenXR
+// OpenXR Helper
 #include <OpenXRHelper.h>
 
 enum GraphicsAPI_Type : uint8_t {
@@ -116,6 +121,10 @@ class GraphicsAPI {
 public:
 // Pipeline Helpers
 #pragma region Pipeline Helpers
+    enum class SwapchainType : uint8_t {
+        COLOR,
+        DEPTH
+    };
     enum class VertexType : uint8_t {
         FLOAT,
         VEC2,
@@ -185,10 +194,10 @@ public:
     enum class BlendFactor : uint8_t {
         ZERO = 0,
         ONE = 1,
-        SRC_COLOUR = 2,
-        ONE_MINUS_SRC_COLOUR = 3,
-        DST_COLOUR = 4,
-        ONE_MINUS_DST_COLOUR = 5,
+        SRC_COLOR = 2,
+        ONE_MINUS_SRC_COLOR = 3,
+        DST_COLOR = 4,
+        ONE_MINUS_DST_COLOR = 5,
         SRC_ALPHA = 6,
         ONE_MINUS_SRC_ALPHA = 7,
         DST_ALPHA = 8,
@@ -201,21 +210,21 @@ public:
         MIN = 3,
         MAX = 4,
     };
-    enum class ColourComponentBit : uint8_t {
+    enum class ColorComponentBit : uint8_t {
         R_BIT = 0x00000001,
         G_BIT = 0x00000002,
         B_BIT = 0x00000004,
         A_BIT = 0x00000008,
     };
-    struct ColourBlendAttachmentState {
+    struct ColorBlendAttachmentState {
         bool blendEnable;
-        BlendFactor srcColourBlendFactor;
-        BlendFactor dstColourBlendFactor;
-        BlendOp colourBlendOp;
+        BlendFactor srcColorBlendFactor;
+        BlendFactor dstColorBlendFactor;
+        BlendOp colorBlendOp;
         BlendFactor srcAlphaBlendFactor;
         BlendFactor dstAlphaBlendFactor;
         BlendOp alphaBlendOp;
-        ColourComponentBit colourWriteMask;
+        ColorComponentBit colorWriteMask;
     };
     enum class LogicOp : uint8_t {
         CLEAR = 0,
@@ -302,10 +311,10 @@ public:
         float minDepthBounds;
         float maxDepthBounds;
     };
-    struct ColourBlendState {
+    struct ColorBlendState {
         bool logicOpEnable;
         LogicOp logicOp;
-        std::vector<ColourBlendAttachmentState> attachments;
+        std::vector<ColorBlendAttachmentState> attachments;
         float blendConstants[4];
     };
 
@@ -336,7 +345,7 @@ public:
         RasterisationState rasterisationState;
         MultisampleState multisampleState;
         DepthStencilState depthStencilState;
-        ColourBlendState colourBlendState;
+        ColorBlendState colorBlendState;
         std::vector<int64_t> colorFormats;
         int64_t depthFormat;
         std::vector<DescriptorInfo> layout;
@@ -410,7 +419,8 @@ public:
         enum class Filter : uint8_t {
             NEAREST,
             LINEAR
-        } magFilter, minFilter;
+        } magFilter,
+            minFilter;
         enum class MipmapMode : uint8_t {
             NEAREST,
             LINEAR,
@@ -422,7 +432,8 @@ public:
             CLAMP_TO_EDGE,
             CLAMP_TO_BORDER,
             MIRROR_CLAMP_TO_EDGE
-        } addressModeS, addressModeT, addressModeR;
+        } addressModeS,
+            addressModeT, addressModeR;
         float mipLodBias;
         bool compareEnable;
         CompareOp compareOp;
@@ -455,7 +466,8 @@ public:
 public:
     virtual ~GraphicsAPI() = default;
 
-    int64_t SelectSwapchainFormat(const std::vector<int64_t>& formats);
+    int64_t SelectColorSwapchainFormat(const std::vector<int64_t>& formats);
+    int64_t SelectDepthSwapchainFormat(const std::vector<int64_t>& formats);
 
     virtual void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) = 0;
     virtual void DestroyDesktopSwapchain(void*& swapchain) = 0;
@@ -466,9 +478,10 @@ public:
     virtual int64_t GetDepthFormat() = 0;
 
     virtual void* GetGraphicsBinding() = 0;
-    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(uint32_t count) = 0;
-    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(uint32_t index) = 0;
-    virtual void* GetSwapchainImage(uint32_t index) = 0;
+    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) = 0;
+    virtual void FreeSwapchainImageData(XrSwapchain swapchain) = 0;
+    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) = 0;
+    virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) = 0;
 
     virtual void* CreateImage(const ImageCreateInfo& imageCI) = 0;
     virtual void DestroyImage(void*& image) = 0;
@@ -509,6 +522,7 @@ public:
     virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) = 0;
 
 protected:
-    virtual const std::vector<int64_t> GetSupportedSwapchainFormats() = 0;
-	bool debugAPI=false;
+    virtual const std::vector<int64_t> GetSupportedColorSwapchainFormats() = 0;
+    virtual const std::vector<int64_t> GetSupportedDepthSwapchainFormats() = 0;
+    bool debugAPI = false;
 };

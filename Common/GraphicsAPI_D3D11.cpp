@@ -1,3 +1,9 @@
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+// OpenXR Tutorial for Khronos Group
+
 #include <GraphicsAPI_D3D11.h>
 
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -125,13 +131,13 @@ static D3D11_BLEND ToD3D11_BLEND(GraphicsAPI::BlendFactor blend) {
         return D3D11_BLEND_ZERO;
     case GraphicsAPI::BlendFactor::ONE:
         return D3D11_BLEND_ONE;
-    case GraphicsAPI::BlendFactor::SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::SRC_COLOR:
         return D3D11_BLEND_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_SRC_COLOR:
         return D3D11_BLEND_INV_SRC_COLOR;
-    case GraphicsAPI::BlendFactor::DST_COLOUR:
+    case GraphicsAPI::BlendFactor::DST_COLOR:
         return D3D11_BLEND_DEST_COLOR;
-    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOUR:
+    case GraphicsAPI::BlendFactor::ONE_MINUS_DST_COLOR:
         return D3D11_BLEND_INV_DEST_COLOR;
     case GraphicsAPI::BlendFactor::SRC_ALPHA:
         return D3D11_BLEND_SRC_ALPHA;
@@ -191,7 +197,7 @@ GraphicsAPI_D3D11::GraphicsAPI_D3D11() {
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11
 GraphicsAPI_D3D11::GraphicsAPI_D3D11(XrInstance m_xrInstance, XrSystemId systemId) {
-    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetD3D11GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D11GraphicsRequirementsKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrGetD3D11GraphicsRequirementsKHR", (PFN_xrVoidFunction *)&xrGetD3D11GraphicsRequirementsKHR), "Failed to get InstanceProcAddr xrGetD3D11GraphicsRequirementsKHR.");
     XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
     OPENXR_CHECK(xrGetD3D11GraphicsRequirementsKHR(m_xrInstance, systemId, &graphicsRequirements), "Failed to get Graphics Requirements for D3D11.");
 
@@ -277,9 +283,10 @@ void *GraphicsAPI_D3D11::GetGraphicsBinding() {
 // XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetGraphicsBinding
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_AllocateSwapchainImageData
-XrSwapchainImageBaseHeader *GraphicsAPI_D3D11::AllocateSwapchainImageData(uint32_t count) {
-    swapchainImages.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
-    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImages.data());
+XrSwapchainImageBaseHeader *GraphicsAPI_D3D11::AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) {
+    swapchainImagesMap[swapchain].first = type;
+    swapchainImagesMap[swapchain].second.resize(count, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
+    return reinterpret_cast<XrSwapchainImageBaseHeader *>(swapchainImagesMap[swapchain].second.data());
 }
 // XR_DOCS_TAG_END_GraphicsAPI_D3D11_AllocateSwapchainImageData
 
@@ -840,23 +847,23 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
     blendDesc.AlphaToCoverageEnable = pipelineCI.multisampleState.alphaToCoverageEnable;
     blendDesc.IndependentBlendEnable = true;
     size_t i = 0;
-    for (auto &blend : pipelineCI.colourBlendState.attachments) {
+    for (auto &blend : pipelineCI.colorBlendState.attachments) {
 		blendDesc.RenderTarget[i].RenderTargetWriteMask=0xFF;
         blendDesc.RenderTarget[i].BlendEnable = blend.blendEnable;
-        blendDesc.RenderTarget[i].SrcBlend = ToD3D11_BLEND(blend.srcColourBlendFactor);
-        blendDesc.RenderTarget[i].DestBlend = ToD3D11_BLEND(blend.dstColourBlendFactor);
-        blendDesc.RenderTarget[i].BlendOp = static_cast<D3D11_BLEND_OP>(static_cast<uint32_t>(blend.colourBlendOp) + 1);
+        blendDesc.RenderTarget[i].SrcBlend = ToD3D11_BLEND(blend.srcColorBlendFactor);
+        blendDesc.RenderTarget[i].DestBlend = ToD3D11_BLEND(blend.dstColorBlendFactor);
+        blendDesc.RenderTarget[i].BlendOp = static_cast<D3D11_BLEND_OP>(static_cast<uint32_t>(blend.colorBlendOp) + 1);
         blendDesc.RenderTarget[i].SrcBlendAlpha = ToD3D11_BLEND(blend.srcAlphaBlendFactor);
         blendDesc.RenderTarget[i].DestBlendAlpha = ToD3D11_BLEND(blend.dstAlphaBlendFactor);
         blendDesc.RenderTarget[i].BlendOpAlpha = static_cast<D3D11_BLEND_OP>(static_cast<uint32_t>(blend.alphaBlendOp) + 1);
-        blendDesc.RenderTarget[i].RenderTargetWriteMask = static_cast<UINT8>(blend.colourWriteMask);
+        blendDesc.RenderTarget[i].RenderTargetWriteMask = static_cast<UINT8>(blend.colorWriteMask);
 
         i++;
         if (i >= 8)
             break;
     }
     D3D11_CHECK(device->CreateBlendState(&blendDesc, &blendState), "Failed to create Color Blend State.");
-    immediateContext->OMSetBlendState(blendState, pipelineCI.colourBlendState.blendConstants, pipelineCI.multisampleState.sampleMask);
+    immediateContext->OMSetBlendState(blendState, pipelineCI.colorBlendState.blendConstants, pipelineCI.multisampleState.sampleMask);
     D3D11_SAFE_RELEASE(blendState);
 }
 
@@ -988,12 +995,17 @@ void GraphicsAPI_D3D11::Draw(uint32_t vertexCount, uint32_t instanceCount, uint3
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
-const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedSwapchainFormats() {
+const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedColorSwapchainFormats() {
     return {
         DXGI_FORMAT_R8G8B8A8_UNORM,
         DXGI_FORMAT_B8G8R8A8_UNORM,
         DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
         DXGI_FORMAT_B8G8R8A8_UNORM_SRGB};
+}
+const std::vector<int64_t> GraphicsAPI_D3D11::GetSupportedDepthSwapchainFormats() {
+    return {
+        DXGI_FORMAT_D32_FLOAT,
+        DXGI_FORMAT_D16_UNORM};
 }
 // XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 #endif

@@ -1,4 +1,7 @@
-// Copyright Khronos Group 2023
+// Copyright 2023, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: Apache-2.0
+
 // OpenXR Tutorial for Khronos Group
 
 // XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D11
@@ -26,8 +29,8 @@
 
 class OpenXRTutorial {
 public:
-    OpenXRTutorial(GraphicsAPI_Type api)
-        : m_apiType(api) {
+    OpenXRTutorial(GraphicsAPI_Type apiType)
+        : m_apiType(apiType) {
         // Check API compatibility with Platform.
         if (!CheckGraphicsAPI_TypeIsValidForPlatform(m_apiType)) {
             LOG_ERROR("ERROR: The provided Graphics API is not valid for this platform.");
@@ -57,6 +60,7 @@ public:
 #endif
         DestroySession();
 #endif
+
         DestroyDebugMessenger();
         DestroyInstance();
     }
@@ -79,15 +83,10 @@ private:
         {
             // XR_DOCS_TAG_BEGIN_instanceExtensions
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
+            // Ensure m_apiType is already defined when we call this line.
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
             // XR_DOCS_TAG_END_instanceExtensions
         }
-
-#if defined(__linux__) && !defined(__ANDROID__)
-        SetEnv("XR_RUNTIME_JSON", "/home/roderick/monado/build/openxr_monado-dev.json");
-        std::string XR_RUNTIME_JSON = GetEnv("XR_RUNTIME_JSON");
-        std::cout << "XR_RUNTIME_JSON" << XR_RUNTIME_JSON << "\n";
-#endif
 
         // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
         // Get all the API Layers from the OpenXR runtime.
@@ -100,7 +99,8 @@ private:
         // Check the requested API layers against the ones from the OpenXR. If found add it to the Active API Layers.
         for (auto &requestLayer : m_apiLayers) {
             for (auto &layerProperty : apiLayerProperties) {
-                if (strcmp(requestLayer.c_str(), layerProperty.layerName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestLayer.c_str(), layerProperty.layerName) != 0) {
                     continue;
                 } else {
                     m_activeAPILayers.push_back(requestLayer.c_str());
@@ -116,21 +116,23 @@ private:
         extensionProperties.resize(extensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
         OPENXR_CHECK(xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()), "Failed to enumerate InstanceExtensionProperties.");
 
-        // Check the requested Instance Extensions against the ones from the OpenXR. If found add it to Active Instance Extensions.
+        // Check the requested Instance Extensions against the ones from the OpenXR runtime.
+        // If an extension is found add it to Active Instance Extensions.
         // Log error if the Instance Extension is not found.
-        for (auto &requestExtension : m_instanceExtensions) {
+        for (auto &requestedInstanceExtension : m_instanceExtensions) {
             bool found = false;
             for (auto &extensionProperty : extensionProperties) {
-                if (strcmp(requestExtension.c_str(), extensionProperty.extensionName)) {
+                // strcmp returns 0 if the strings match.
+                if (strcmp(requestedInstanceExtension.c_str(), extensionProperty.extensionName) != 0) {
                     continue;
                 } else {
-                    m_activeInstanceExtensions.push_back(requestExtension.c_str());
+                    m_activeInstanceExtensions.push_back(requestedInstanceExtension.c_str());
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                LOG_ERROR("Failed to find OpenXR instance extension: " << requestExtension);
+                LOG_ERROR("Failed to find OpenXR instance extension: " << requestedInstanceExtension);
             }
         }
         // XR_DOCS_TAG_END_find_apiLayer_extension
@@ -166,7 +168,7 @@ private:
     void DestroyDebugMessenger() {
         // XR_DOCS_TAG_BEGIN_DestroyDebugMessenger
         // Check that "XR_EXT_debug_utils" is in the active Instance Extensions before destroying the XrDebugUtilsMessengerEXT.
-        if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+        if (m_debugUtilsMessenger != XR_NULL_HANDLE) {
             DestroyOpenXRDebugUtilsMessenger(m_xrInstance, m_debugUtilsMessenger);  // From OpenXRDebugUtils.h.
         }
         // XR_DOCS_TAG_END_DestroyDebugMessenger
@@ -248,12 +250,14 @@ private:
 
     void PollEvents() {
         // XR_DOCS_TAG_BEGIN_PollEvents
-        XrResult result = XR_SUCCESS;
-        do {
-            // Poll OpenXR for a new event.
-            XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
-            result = xrPollEvent(m_xrInstance, &eventData);
+        // Poll OpenXR for a new event.
+        XrEventDataBuffer eventData{XR_TYPE_EVENT_DATA_BUFFER};
+        auto XrPollEvents = [&]() -> bool {
+            eventData = {XR_TYPE_EVENT_DATA_BUFFER};
+            return xrPollEvent(m_xrInstance, &eventData) == XR_SUCCESS;
+        };
 
+        while (XrPollEvents()) {
             switch (eventData.type) {
             // Log the number of lost events from the runtime.
             case XR_TYPE_EVENT_DATA_EVENTS_LOST: {
@@ -273,22 +277,34 @@ private:
             case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
                 XrEventDataInteractionProfileChanged *interactionProfileChanged = reinterpret_cast<XrEventDataInteractionProfileChanged *>(&eventData);
                 LOG_INFO("OPENXR: Interaction Profile changed for Session: " << interactionProfileChanged->session);
+                if (interactionProfileChanged->session != m_session) {
+                    LOG_INFO("XrEventDataInteractionProfileChanged for unknown Session");
+                    break;
+                }
                 break;
             }
             // Log that there's a reference space change pending.
             case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 LOG_INFO("OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session);
+                if (referenceSpaceChangePending->session != m_session) {
+                   LOG_INFO("XrEventDataReferenceSpaceChangePending for unknown Session");
+                    break;
+                }
                 break;
             }
             // Session State changes:
             case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
                 XrEventDataSessionStateChanged *sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged *>(&eventData);
+                if (sessionStateChanged->session != m_session) {
+                    std::cout << "XrEventDataSessionStateChanged for unknown Session" << std::endl;
+                    break;
+                }
 
                 if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
                     // SessionState is ready. Begin the XrSession using the XrViewConfigurationType.
                     XrSessionBeginInfo sessionBeginInfo{XR_TYPE_SESSION_BEGIN_INFO};
-                    sessionBeginInfo.primaryViewConfigurationType = m_viewConfiguration;
+                    sessionBeginInfo.primaryViewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
                     OPENXR_CHECK(xrBeginSession(m_session, &sessionBeginInfo), "Failed to begin Session.");
                     m_sessionRunning = true;
                 }
@@ -302,7 +318,13 @@ private:
                     m_sessionRunning = false;
                     m_applicationRunning = false;
                 }
-                // Store state for reference across the appplication.
+                if (sessionStateChanged->state == XR_SESSION_STATE_LOSS_PENDING) {
+                    // SessionState is loss pending. Exit the application.
+                    // It's possible to try a reestablish an XrInstance and XrSession, but we will simply exit here.
+                    m_sessionRunning = false;
+                    m_applicationRunning = false;
+                }
+                // Store state for reference across the application.
                 m_sessionState = sessionStateChanged->state;
                 break;
             }
@@ -310,13 +332,12 @@ private:
                 break;
             }
             }
-
-        } while (result == XR_SUCCESS);
+        }
         // XR_DOCS_TAG_END_PollEvents
     }
 
 #if defined(__ANDROID__)
-    // XR_DOCS_TAG_BEGIN_Android_System_Functionality
+    // XR_DOCS_TAG_BEGIN_Android_System_Functionality1
 public:
     // Stored pointer to the android_app structure from android_main().
     static android_app *androidApp;
@@ -364,9 +385,11 @@ public:
         }
         }
     }
+    // XR_DOCS_TAG_END_Android_System_Functionality1
 
 private:
     void PollSystemEvents() {
+        // XR_DOCS_TAG_BEGIN_Android_System_Functionality2
         // Checks whether Android has requested that application should by destroyed.
         if (androidApp->destroyRequested != 0) {
             m_applicationRunning = false;
@@ -376,7 +399,7 @@ private:
             // Poll and process the Android OS system events.
             struct android_poll_source *source = nullptr;
             int events = 0;
-            // The timeout is depended on whether that applicaion is active.
+            // The timeout depends on whether the application is active.
             const int timeoutMilliseconds = (!androidAppState.resumed && !m_sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
             if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
                 if (source != nullptr) {
@@ -386,8 +409,8 @@ private:
                 break;
             }
         }
+        // XR_DOCS_TAG_END_Android_System_Functionality2
     }
-    // XR_DOCS_TAG_END_Android_System_Functionality
 #else
     void PollSystemEvents() {
         return;
@@ -395,13 +418,13 @@ private:
 #endif
 
 private:
-    XrInstance m_xrInstance = {};
+    XrInstance m_xrInstance = XR_NULL_HANDLE;
     std::vector<const char *> m_activeAPILayers = {};
     std::vector<const char *> m_activeInstanceExtensions = {};
     std::vector<std::string> m_apiLayers = {};
     std::vector<std::string> m_instanceExtensions = {};
 
-    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = {};
+    XrDebugUtilsMessengerEXT m_debugUtilsMessenger = XR_NULL_HANDLE;
 
     XrFormFactor m_formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     XrSystemId m_systemID = {};
@@ -414,23 +437,41 @@ private:
     XrSessionState m_sessionState = XR_SESSION_STATE_UNKNOWN;
     bool m_applicationRunning = true;
     bool m_sessionRunning = false;
-
-    XrViewConfigurationType m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 };
 
-void OpenXRTutorial_Main(GraphicsAPI_Type api) {
+void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
+    DebugOutput debugOutput;  // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
     LOG_INFO("OpenXR Tutorial Chapter 2");
-
-    OpenXRTutorial app(api);
+    OpenXRTutorial app(apiType);
     app.Run();
 }
 
 #if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
-// XR_DOCS_TAG_BEGIN_main_WIN32___linux__
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(XR_TUTORIAL_GRAPHICS_API);
+}
+/*
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
 int main(int argc, char **argv) {
     OpenXRTutorial_Main(OPENGL);
 }
-// XR_DOCS_TAG_END_main_WIN32___linux__
+// XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(VULKAN);
+}
+// XR_DOCS_TAG_END_main_Windows_Linux_VULKAN
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D11
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(D3D11);
+}
+// XR_DOCS_TAG_END_main_Windows_Linux_D3D11
+// XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D12
+int main(int argc, char **argv) {
+    OpenXRTutorial_Main(D3D12);
+}
+// XR_DOCS_TAG_END_main_Windows_Linux_D3D12
+*/
 #elif (__ANDROID__)
 // XR_DOCS_TAG_BEGIN_android_main___ANDROID__
 android_app *OpenXRTutorial::androidApp = nullptr;
@@ -443,11 +484,11 @@ void android_main(struct android_app *app) {
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
     // https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_loader_init
-    // Load xrInitializeLoaderKHR() function pointer. On Android, the loader must be initialised with variables from android_app *.
+    // Load xrInitializeLoaderKHR() function pointer. On Android, the loader must be initialized with variables from android_app *.
     // Without this, there's is no loader and thus our function calls to OpenXR would fail.
     XrInstance m_xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR = nullptr;
-    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr.");
+    OPENXR_CHECK(xrGetInstanceProcAddr(XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction *)&xrInitializeLoaderKHR), "Failed to get InstanceProcAddr for xrInitializeLoaderKHR.");
     if (!xrInitializeLoaderKHR) {
         return;
     }
@@ -456,14 +497,24 @@ void android_main(struct android_app *app) {
     XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid{XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
     loaderInitializeInfoAndroid.applicationVM = app->activity->vm;
     loaderInitializeInfoAndroid.applicationContext = app->activity->clazz;
-    OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialise Loader for Android.");
+    OPENXR_CHECK(xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR *)&loaderInitializeInfoAndroid), "Failed to initialize Loader for Android.");
 
     // Set userData and Callback for PollSystemEvents().
     app->userData = &OpenXRTutorial::androidAppState;
     app->onAppCmd = OpenXRTutorial::AndroidAppHandleCmd;
 
     OpenXRTutorial::androidApp = app;
+    // XR_DOCS_TAG_END_android_main___ANDROID__
+    OpenXRTutorial_Main(XR_TUTORIAL_GRAPHICS_API);
+}
+/*
+// XR_DOCS_TAG_BEGIN_android_main_OPENGL_ES
     OpenXRTutorial_Main(OPENGL_ES);
 }
-// XR_DOCS_TAG_END_android_main___ANDROID__
+// XR_DOCS_TAG_END_android_main_OPENGL_ES
+// XR_DOCS_TAG_BEGIN_android_main_VULKAN
+    OpenXRTutorial_Main(VULKAN);
+}
+// XR_DOCS_TAG_END_android_main_VULKAN
+*/
 #endif

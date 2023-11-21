@@ -29,7 +29,7 @@ def configureDoxyfile(input_dir, output_dir):
 # -- Project information -----------------------------------------------------
 
 project = 'OpenXR Tutorial'
-copyright = '"OpenXR" and the OpenXR logo are trademarks owned by The Khronos Group Inc. and are registered as a trademark in China, the European Union, Japan and the United Kingdom'
+copyright = ''
 author = 'Simul Software Ltd'
 
 
@@ -38,7 +38,7 @@ author = 'Simul Software Ltd'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["myst_parser","sphinx.ext.autosectionlabel","sphinxcontrib.mermaid","sphinxcontrib.jquery","sphinx_copybutton"]
+extensions = ["myst_parser","sphinx.ext.autosectionlabel","sphinxcontrib.mermaid","sphinxcontrib.jquery","sphinx_copybutton","sphinx.ext.extlinks"]
 mermaid_output_format='png'
 source_suffix = {'.rst': 'restructuredtext'}
 # Add any paths that contain templates here, relative to this directory.
@@ -79,3 +79,22 @@ html_sidebars = {
    '**': ['globaltoc.html', 'sourcelink.html', 'searchbox.html']
 }
 mermaid_cmd='mmdc.cmd'
+
+# -- Get and parse the OPENXR_TUTORIALS_GIT_TAG environment variable ---------
+openxr_tutorials_git_tag_py = os.getenv("OPENXR_TUTORIALS_GIT_TAG")
+if openxr_tutorials_git_tag_py != None:
+    openxr_tutorials_git_tag_py = openxr_tutorials_git_tag_py.strip('\"')
+else:
+    openxr_tutorials_git_tag_py = 'v0.0.0'
+
+print('openxr_tutorials_git_tag_py is ' + openxr_tutorials_git_tag_py)
+
+# -- Definitions for sphinx.ext.extlinks -------------------------------------
+extlinks = {
+    'openxr_ref' : ('https://registry.khronos.org/OpenXR/specs/1.0/man/html/%s.html', '%s'), # :openxr_ref:
+    'git_release' : ('https://github.com/KhronosGroup/OpenXR-Tutorials/releases/download/' + openxr_tutorials_git_tag_py + '/%s', '%s') # :git_release:
+}
+
+# -- Substitutions for sphinx.ext.extlinks -----------------------------------
+rst_epilog = 'Version: %s' % openxr_tutorials_git_tag_py # Appears at the end of the page
+rst_prolog = '.. |openxr_tutorials_git_tag| replace:: %s' % openxr_tutorials_git_tag_py
