@@ -624,26 +624,26 @@ When setting up the graphics API core objects, there are things that we need to 
 		:start-after: // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 		:end-before: // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 	
-..
 
-	*********************
-	6.3 OpenXR API Layers
-	*********************
 
-	The OpenXR loader has a layer system that allows OpenXR API calls to pass through a number of optional layers, that add some functionality for the application. These are extremely useful for debugging.
+*********************
+6.3 OpenXR API Layers
+*********************
 
-	The OpenXR SDK provides two API layers for us to use:
-	In the table below are the layer names and their associated libraries and .json files.
+The OpenXR loader has a layer system that allows OpenXR API calls to pass through a number of optional layers, that add some functionality for the application. These are extremely useful for debugging.
 
-	+------------------------------------+-----------------------------------------------+-------------------------------------+
-	| XR_APILAYER_LUNARG_api_dump        | ``XrApiLayer_api_dump.dll`` or ``.so``        | ``XrApiLayer_api_dump.json``        |
-	+------------------------------------+-----------------------------------------------+-------------------------------------+
-	| XR_APILAYER_LUNARG_core_validation | ``XrApiLayer_core_validation.dll`` or ``.so`` | ``XrApiLayer_core_validation.json`` |
-	+------------------------------------+-----------------------------------------------+-------------------------------------+
+The OpenXR SDK provides two API layers for us to use:
+In the table below are the layer names and their associated libraries and .json files.
+
++------------------------------------+-----------------------------------------------+-------------------------------------+
+| XR_APILAYER_LUNARG_api_dump        | ``XrApiLayer_api_dump.dll`` or ``.so``        | ``XrApiLayer_api_dump.json``        |
++------------------------------------+-----------------------------------------------+-------------------------------------+
+| XR_APILAYER_LUNARG_core_validation | ``XrApiLayer_core_validation.dll`` or ``.so`` | ``XrApiLayer_core_validation.json`` |
++------------------------------------+-----------------------------------------------+-------------------------------------+
 
 XR_APILAYER_LUNARG_api_dump simply logs extra/verbose information to the output describing in more detail what has happened during that API call. XR_APILAYER_LUNARG_core_validation acts similarly to VK_LAYER_KHRONOS_validation in Vulkan, where the layer intercepts the API call and performs validation to ensure conformance with the specification.
 
-	Other runtimes and hardware vendors may provide layers that are useful for debugging your XR system and/or application.
+Other runtimes and hardware vendors may provide layers that are useful for debugging your XR system and/or application.
 
 Firstly, ensure that you are building the OpenXR provided API layers from the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_.
 
@@ -721,7 +721,7 @@ Firstly, ensure that you are building the OpenXR provided API layers from the `O
 	For more details, please see `API Layers README <https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/src/api_layers/README.md>`_ and see `OpenXR API Layers <https://registry.khronos.org/OpenXR/specs/1.0/loader.html#openxr-api-layers>`_.
 
 *****************
-6.3 Color Science
+6.4 Color Science
 *****************
 
 As OpenXR support both linear and sRGB color spaces for compositing. It is helpful to have a deeper knowledge of color science; especially if you are planning to use sRGB formats and have the OpenXR runtime/compositor do automatic conversions for you.
@@ -729,7 +729,7 @@ As OpenXR support both linear and sRGB color spaces for compositing. It is helpf
 For more information on color spaces and gamma encoding, see J. Guy Davidson's `video presentation <https://www.youtube.com/watch?v=_zQ_uBAHA4A>`_ on the subject.
 
 ***************************
-6.4 Multithreaded Rendering
+6.5 Multithreaded Rendering
 ***************************
 
 Multithreaded rendering with OpenXR is supported and it allows for simple and complex cases ranging from stand-alone application to game/rendering engines. In this tutorial, we have used a single thread to simulate and render our XR application, but modern desktops and mobile devices have multiple cores and thus threads for us to use. Effective use of multiple CPU threads in combination with parallel GPU work can deliver higher performance for the application.
@@ -758,7 +758,7 @@ Here's a link to the PDF to download and a link to the video recording of the pr
 Note: This talk was given before the release of the OpenXR 1.0 Specification; therefore details may vary or be inaccurate.
 
 **************
-6.5 Conclusion
+6.6 Conclusion
 **************
 
 In this chapter, we discussed a few of the possible next steps in your OpenXR journey. Be sure to refer back to the `OpenXR Specification <https://registry.khronos.org/OpenXR/specs/1.0>`_ and look out for updates, both there and here, as the specification develops.
