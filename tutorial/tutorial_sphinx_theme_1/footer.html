@@ -12,12 +12,14 @@
   {%- endif %}
 
   <hr>
-  
+
   <b>Legal Notice</b>
   <br>
   <div role="contentinfo">
       {%- block contentinfo %}
-      <p>
+      <div class="legal-notice">
+          <h3>Legal</h3>
+          <p>
         {%- if show_copyright %}
         {%- if hasdoc('copyright') %}
         {%- trans path=pathto('copyright'), copyright=copyright|e %}&#169; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}
@@ -61,7 +63,8 @@
         </span>
         {%- endif -%}
 
-      </p>
+          </p>
+      </div>
       {%- endblock %}
   </div>
 
