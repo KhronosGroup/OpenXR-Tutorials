@@ -257,7 +257,7 @@ private:
             }
         }
         if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM) {
-            std::cerr << "Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE." << std::endl;
+            XR_TUT_LOG_ERROR("Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE.")
             m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         }
         // XR_DOCS_TAG_END_GetEnvironmentBlendModes
@@ -534,7 +534,7 @@ private:
             case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
                 XrEventDataSessionStateChanged *sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged *>(&eventData);
                 if (sessionStateChanged->session != m_session) {
-                    std::cout << "XrEventDataSessionStateChanged for unknown Session" << std::endl;
+                    XR_TUT_LOG("XrEventDataSessionStateChanged for unknown Session");
                     break;
                 }
 
@@ -793,7 +793,7 @@ private:
         uint32_t viewCount = 0;
         XrResult result = xrLocateViews(m_session, &viewLocateInfo, &viewState, static_cast<uint32_t>(views.size()), &viewCount, views.data());
         if (result != XR_SUCCESS) {
-            std::cout << "Failed to locate Views." << std::endl;
+            XR_TUT_LOG("Failed to locate Views.");
             return false;
         }
 
