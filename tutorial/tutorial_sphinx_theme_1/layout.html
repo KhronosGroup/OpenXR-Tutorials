@@ -180,6 +180,7 @@
 	{
 		platform = "linux"; // Set default here.
 	}
+	Cookies.set('platform', platform, { expires: 365});
 	addUrlParameter('platform', platform);
 	console.log('updatePlatform() 2 - platform = ' + platform);
 
