@@ -181,7 +181,7 @@
 	function updatePlatform()
 	{
 	var platform = Cookies.get("platform");
-	console.log('updatePlatform() - platform = ' + platform);
+	console.log('updatePlatform() = ' + platform);
 
 	$(".linux").hide();
 	$(".android").hide();
@@ -206,7 +206,6 @@
 	}
 	if (platform == "android")
 	{
-		console.log("platform  " + platform + ".");
 	$(".android").show();
 	$(".selectd3d11").attr("disabled", true);
 	$(".selectd3d12").attr("disabled", true);
@@ -330,6 +329,7 @@
 	function updateGraphicsAPI()
 	{
 	var graphicsApi = Cookies.get("graphicsapi")
+	console.log('updateGraphicsAPI() = ' + graphicsApi);
 	
 	// first, hide all the api's
 	$(".d3d11").hide();
