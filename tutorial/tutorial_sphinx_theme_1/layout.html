@@ -163,12 +163,13 @@
 		console.log('updatePlatformFromURL() - platform = ' + platform);
 		updatePlatform();
 	}
-
+	
 	function updatePlatformFromTab()
 	{
 		var platform = Cookies.get("platform");
 		Cookies.set('platform', platform, { expires: 365});
 		console.log('updatePlatformFromTab() - platform = ' + platform);
+		addUrlParameter('platform', platform);
 		updatePlatform();
 	}
 
@@ -180,8 +181,6 @@
 	{
 		platform = "linux"; // Set default here.
 	}
-	Cookies.set('platform', platform, { expires: 365});
-	addUrlParameter('platform', platform);
 	console.log('updatePlatform() 2 - platform = ' + platform);
 
 	$(".linux").hide();
