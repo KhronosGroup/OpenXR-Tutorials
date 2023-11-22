@@ -774,6 +774,8 @@ Note here that for some platforms, we need additional functionality provided via
 
 	The ``PollSystemEvents()`` method is outside the scope of OpenXR, but in general it will poll Android for system events, updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members, which we describe later in this chapter.
 
+	While editing ``main.cpp`` in Android Studio, you may see a warning ``"This file does not belong to any project target; code insight features might not work properly."`` To fix this, right-click on the top-level folder of the project in the ``Project`` panel, select ``Mark Directory as >``, and click the option ``Sources Root``.
+
 We'll add the main function for the application. It will look slightly different, depending on your
 chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutorial_Main()``, in which we create an instance of our ``OpenXRTutorial`` class, taking a ``GraphicsAPI_Type`` parameter, and call the ``Run()`` method. ``GraphicsAPI_Type`` can be changed to suit the graphics API that you have chosen.
 
