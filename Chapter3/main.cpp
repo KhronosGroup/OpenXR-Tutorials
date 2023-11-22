@@ -257,7 +257,7 @@ private:
             }
         }
         if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM) {
-            XR_TUT_LOG_ERROR("Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE.")
+            XR_TUT_LOG_ERROR("Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE.");
             m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         }
         // XR_DOCS_TAG_END_GetEnvironmentBlendModes
