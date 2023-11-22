@@ -158,6 +158,10 @@
 	function updatePlatformFromURL()
 	{
 		var platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android'], Cookies.get("platform"));
+		if (typeof platform == 'undefined')
+		{
+			platform = "linux"; // Set default here.
+		}
 		Cookies.set('platform', platform, { expires: 365});
 		console.log('updatePlatformFromURL() - platform = ' + platform);
 		updatePlatform();
@@ -166,6 +170,10 @@
 	function updatePlatformFromTab()
 	{
 		var platform = Cookies.get("platform");
+		if (typeof platform == 'undefined')
+		{
+			platform = "linux"; // Set default here.
+		}
 		Cookies.set('platform', platform, { expires: 365});
 		console.log('updatePlatformFromTab() - platform = ' + platform);
 		addUrlParameter('platform', platform);
@@ -175,10 +183,6 @@
 	function updatePlatform()
 	{
 	var platform = Cookies.get("platform");
-	if (typeof platform == 'undefined')
-	{
-		platform = "linux"; // Set default here.
-	}
 	console.log('updatePlatform() - platform = ' + platform);
 
 	$(".linux").hide();
