@@ -34,7 +34,7 @@
 	function chooseGraphicsAPI(graphicsApiName)
 	{
 		Cookies.set('graphicsapi', graphicsApiName, { expires: 365 })
-		updateGraphicsAPI();
+		updateGraphicsAPIFromTab();
 		limitAPIChoice();
 	};
 </script>

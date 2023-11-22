@@ -132,13 +132,13 @@
 		{
 			searchParams.set(name, value);
 			window.location.search = searchParams.toString();
-			console.log("addUrlParameter() - " + name + " = " + value);
+			//console.log("addUrlParameter() - " + name + " = " + value);
 		}
 	}
 
 	function getUrlParameter(name)
 	{
-		console.log(window.location);
+		//console.log(window.location);
 		const urlParams = new URLSearchParams(window.location.search);
 		return urlParams.get(name);
 	}
@@ -146,7 +146,7 @@
 	function getUrlParameterWithCheck(name, checkValues, defaultValue)
 	{
 		const urlParameter = getUrlParameter(name);
-		console.log("getUrlParameter()" + urlParameter);
+		//console.log("getUrlParameter()" + urlParameter);
 		ok = false;
 		for (i = 0; i < checkValues.length; i++)
 		{
@@ -163,7 +163,6 @@
 			platform = "linux"; // Set default here.
 		}
 		Cookies.set('platform', platform, { expires: 365});
-		console.log('updatePlatformFromURL() - platform = ' + platform);
 		updatePlatform();
 	}
 	
@@ -175,7 +174,6 @@
 			platform = "linux"; // Set default here.
 		}
 		Cookies.set('platform', platform, { expires: 365});
-		console.log('updatePlatformFromTab() - platform = ' + platform);
 		addUrlParameter('platform', platform);
 		updatePlatform();
 	}
@@ -305,17 +303,34 @@
 	//console.log("Adding id "+heading_ids[i]+" to toctree heading "+i);
 	});
 	}
+
+	function updateGraphicsAPIFromURL()
+	{
+		var graphicsApi = getUrlParameterWithCheck('graphicsapi', ['d3d11', 'd3d12', 'opengl', 'opengles', 'vulkan'], Cookies.get("graphicsapi"));
+		if (typeof graphicsApi == 'undefined')
+		{
+			graphicsApi = "vulkan"; // Set default here.
+		}
+		Cookies.set('graphicsapi', graphicsApi, { expires: 365});
+		updateGraphicsAPI();
+	}
+	
+	function updateGraphicsAPIFromTab()
+	{
+		var graphicsApi = Cookies.get("graphicsapi");
+		if (typeof graphicsApi == 'undefined')
+		{
+			graphicsApi = "vulkan"; // Set default here.
+		}
+		Cookies.set('graphicsapi', graphicsApi, { expires: 365});
+		addUrlParameter('graphicsapi', graphicsApi);
+		updateGraphicsAPI();
+	}
+
 	function updateGraphicsAPI()
 	{
 	var graphicsApi = Cookies.get("graphicsapi")
-	graphicsApi = getUrlParameterWithCheck('graphicsapi', ['d3d11', 'd3d12', 'opengl', 'opengles', 'vulkan'], graphicsApi);
-	if (typeof graphicsApi == 'undefined')
-	{
-		graphicsApi = "vulkan"; // Set default here.
-	}
-	addUrlParameter('graphicsapi', graphicsApi)
-	Cookies.set('graphicsapi', graphicsApi, { expires: 365})
-
+	
 	// first, hide all the api's
 	$(".d3d11").hide();
 	$(".d3d12").hide();
@@ -372,7 +387,7 @@
 	</style>
 </head>
 
-<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL();" onload="updatePlatform(); updateGraphicsAPI(); makeLinksOpenInNewWindow(); addIconsToToctree();">
+<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL();  updateGraphicsAPIFromURL();" onload="updatePlatform(); updateGraphicsAPI(); makeLinksOpenInNewWindow(); addIconsToToctree();">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
