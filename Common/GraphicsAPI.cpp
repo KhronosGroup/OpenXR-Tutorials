@@ -19,7 +19,6 @@ bool CheckGraphicsAPI_TypeIsValidForPlatform(GraphicsAPI_Type type) {
 
 const char *GetGraphicsAPIInstanceExtensionString(GraphicsAPI_Type type) {
 #if defined(XR_USE_GRAPHICS_API_D3D11)
-    if (type == D3D11) {
         return XR_KHR_D3D11_ENABLE_EXTENSION_NAME;
     }
 #endif
