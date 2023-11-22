@@ -157,8 +157,7 @@
 
 	function updatePlatformFromURL()
 	{
-		var platform = undefined;
-		platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android'], platform);
+		var platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android'], Cookies.get("platform"));
 		Cookies.set('platform', platform, { expires: 365});
 		console.log('updatePlatformFromURL() - platform = ' + platform);
 		updatePlatform();
@@ -176,12 +175,11 @@
 	function updatePlatform()
 	{
 	var platform = Cookies.get("platform");
-	console.log('updatePlatform() 1 - platform = ' + platform);
 	if (typeof platform == 'undefined')
 	{
 		platform = "linux"; // Set default here.
 	}
-	console.log('updatePlatform() 2 - platform = ' + platform);
+	console.log('updatePlatform() - platform = ' + platform);
 
 	$(".linux").hide();
 	$(".android").hide();
