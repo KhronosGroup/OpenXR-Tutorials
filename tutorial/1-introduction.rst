@@ -928,12 +928,13 @@ Then, we create the actual platform-specific main function (our entry point to t
 
 .. container:: android
 
-	With all the source and build systems set up, we can now build the Android project. In upper right of Android Studio, you should find the toolbar below. Click the green hammer icon to build the project, if all is successful you should see "BUILD SUCCESSFUL in [...]s" in the Build Output window.
-	It is also recommended to sync the gradle files too.
+	With all the source and build system files set up, we can now build our Android project. If you are seeing warnings like this: "This file does not belong to any project target. [...]", this can be resolved by going to "File > Invalidate Caches..." and selecting ``Invalidate and Restart`` in the popup window. This will restart Android Studio.
+	
+	To build your project go to the upper right of Android Studio, and there you should find the toolbar below. Click the green hammer icon to build the project, if all is successful you should see "BUILD SUCCESSFUL in [...]s" in the Build Output window. It is also recommended to sync the gradle files too.
 
 	Next to the green hammer icon is the Run/Debug configuration dropdown menu. If that isn't populated, create a configuration called app.
 
-	Turn on and connect your Android device. Set up any requirements for USB debugging and adb. Your device should appear in the dropdown. Here, we are using a Meta Quest 2:
+	Turn on and connect your Android device. Set up any requirements for USB debugging and ``adb``. Your device should appear in the dropdown. Here, we are using a Meta Quest 2:
 
 	.. figure:: images/android-studio-build-run-toolbar.png
 		:alt: Build/Run Toolbar
