@@ -14,7 +14,7 @@ mkdir -p build/android_archs/app/src/main/res/mipmap-xxxhdpi
 mkdir -p build/android_archs/app/src/main/res/values
 
 #Copy the required files and folder to the android_archs folder
-cp -r Chapter2/app/src/main/res                 build/android_archs/app/src/main/res
+cp -r Chapter2/app/src/main/res                 build/android_archs/app/src/main
 cp    Chapter2/app/src/main/AndroidManifest.xml build/android_archs/app/src/main/AndroidManifest.xml
 cp    Chapter2/app/build.gradle                 build/android_archs/app/build.gradle
 cp    Chapter2/app/proguard-rules.pro           build/android_archs/app/proguard-rules.pro
