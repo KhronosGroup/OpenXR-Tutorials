@@ -7845,3 +7845,50 @@ display:none;
     background-size: contain;
     background-repeat: no-repeat;
 }
+
+.share-page-container{
+    float:right;
+    margin:0px 0px 0px auto;
+    padding:0px;
+}
+.share-this-page {
+    float:right;
+    margin:6px 12px 0px auto;
+    width:fit-content;
+    height:fit-content;
+    transition: opacity 0.3s, border .3s, background-color .3s;
+    user-select: none;
+    padding: 0;
+    outline: none;
+    border-radius: 0.4em;
+    /* The colors that GitHub uses */
+    border: #1b1f2426 1px solid;
+    background-color: #f6f8fa;
+    color: #57606a;
+}
+.share-this-page>img{
+    width:20px;
+    height:20px;
+    margin:6px;
+}
+
+
+.share-page-container .share-page-tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 6px 12px;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.share-page-container:hover .share-page-tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}

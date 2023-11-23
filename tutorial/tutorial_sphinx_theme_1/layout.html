@@ -123,35 +123,30 @@
 	{%- block extrahead %} {% endblock %}
 	<script  src="_static/js/js.cookie.min.js"></script>
 	<script >
-	
+
 	//https://stackoverflow.com/questions/8562613/how-to-add-url-parameter-to-the-current-url
-	function addUrlParameter(name, value)
+	function addUrlParameter(addr,name, value)
 	{
-		var searchParams = new URLSearchParams(window.location.search)
-		if (searchParams.get(name) != value)
-		{
-			searchParams.set(name, value)
-			window.location.search = searchParams.toString()
-		}
+		url=new URL(addr);
+		url.searchParams.set(name,value);
+		return url.toString();
 	}
 
 	function getUrlParameter(name)
 	{
-		//console.log(window.location)
-		const urlParams = new URLSearchParams(window.location.search);
-		return urlParams.get(name);
+	const urlParams = new URLSearchParams(window.location.search);
+	return urlParams.get(name);
 	}
 
 	function getUrlParameterWithCheck(name, checkValues, defaultValue)
 	{
-		const urlParameter = getUrlParameter(name);
-		//console.log("getUrlParameter()" + urlParameter)
-		ok = false;
-		for (i = 0; i < checkValues.length; i++)
-		{
-			ok |= (urlParameter == checkValues[i]);
-		}
-		return ok ? urlParameter : defaultValue;
+	const urlParameter = getUrlParameter(name);
+	ok = false;
+	for (i = 0; i < checkValues.length; i++)
+	{
+	ok |= (urlParameter == checkValues[i]);
+	}
+	return ok ? urlParameter : defaultValue;
 	}
 
 	function updatePlatform()
@@ -160,9 +155,8 @@
 	platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android'], platform);
 	if (typeof platform == 'undefined')
 	{
-		platform = "linux"; // Set default here.
+	platform = "linux"; // Set default here.
 	}
-	addUrlParameter('platform', platform);
 	Cookies.set('platform', platform, { expires: 365})
 
 	$(".linux").hide();
@@ -188,7 +182,7 @@
 	}
 	if (platform == "android")
 	{
-		console.log("platform  " + platform + ".");
+	console.log("platform  " + platform + ".");
 	$(".android").show();
 	$(".selectd3d11").attr("disabled", true);
 	$(".selectd3d12").attr("disabled", true);
@@ -285,15 +279,25 @@
 	//console.log("Adding id "+heading_ids[i]+" to toctree heading "+i);
 	});
 	}
+	function copyLinkToThisPage()
+	{
+	var graphicsapi = Cookies.get("graphicsapi")
+	var platform = Cookies.get("platform")
+	var url=window.location.href;
+	url=addUrlParameter(url,"platform",platform)
+	url=addUrlParameter(url,"graphicsapi",graphicsapi)
+	navigator.clipboard.writeText(url);
+	// Alert the copied text
+	alert("Copied the link: " + url+" to the clipboard.");
+	}
 	function updateGraphicsAPI()
 	{
 	var graphicsApi = Cookies.get("graphicsapi")
 	graphicsApi = getUrlParameterWithCheck('graphicsapi', ['d3d11', 'd3d12', 'opengl', 'opengles', 'vulkan'], graphicsApi);
 	if (typeof graphicsApi == 'undefined')
 	{
-		graphicsApi = "vulkan"; // Set default here.
+	graphicsApi = "vulkan"; // Set default here.
 	}
-	addUrlParameter('graphicsapi', graphicsApi)
 	Cookies.set('graphicsapi', graphicsApi, { expires: 365})
 
 	// first, hide all the api's
@@ -432,21 +436,27 @@
 			<div class="rst-content style-external-links">
 				{%- else %}
 				<div class="rst-content">
-					{%- endif %}
-					<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-						{%- block document %}
-						<div itemprop="articleBody">
-							{% block body %}{% endblock %}
-						</div>
-						{%- if self.comments()|trim %}
-						<div class="articleComments">
-							{%- block comments %}{% endblock %}
-						</div>
-						{%- endif%}
+					<dic class="share-page-container">
+						<button class="share-this-page" id='share-this-page' onclick="copyLinkToThisPage()">
+							<img class="api-tab-img" src="_static/css/icons/share_FILL0_wght400_GRAD0_opsz24.svg" alt="Copy link to this page" />
+						</button>
+						<span class="share-page-tooltiptext">Copy link to this page</span>
 					</div>
-					{%- endblock %}
-					{% include "footer.html" %}
+				{%- endif %}
+				<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+					{%- block document %}
+					<div itemprop="articleBody">
+						{% block body %}{% endblock %}
+					</div>
+					{%- if self.comments()|trim %}
+					<div class="articleComments">
+						{%- block comments %}{% endblock %}
+					</div>
+					{%- endif%}
 				</div>
+				{%- endblock %}
+				{% include "footer.html" %}
+			</div>
 				{%- endblock %}
 			</div>
 		</div>
