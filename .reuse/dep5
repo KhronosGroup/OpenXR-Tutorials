@@ -77,6 +77,14 @@ Files: build-site.sh
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 
+Files: BUILD.md
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
+Files: CONTRIBUTORS.md
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0
+
 Files: README.md
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
@@ -85,3 +93,6 @@ Files: requirements.txt
 Copyright: 2023 The Khronos Group Inc.
 License: Apache-2.0
 
+Files: Schedule.md
+Copyright: 2023 The Khronos Group Inc.
+License: Apache-2.0

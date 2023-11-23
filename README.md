@@ -1,157 +1,106 @@
-OpenXR Tutorial
-===================================
+# OpenXR-Tutorial
 
-*This is a work in progress of the upcoming OpenXR tutorial, do not use this to learn OpenXR yet*
+*This is a work in progress of the upcoming OpenXR tutorial, do not use this to learn OpenXR yet.*
 
-Contents
---------
+This OpenXR-Tutorial repository contains both the text and code samples for the OpenXR-Tutorial website (https://openxr-tutorial.com/).
 
-1. **INTRO (understanding & dev env)**
-1.1. What is the goal of OpenXR
-1.2. High Level overview of the components of OpenXR (Application - Loader - API
-layers - Runtime - Graphics - Input System)
-1.3. Setting up a development environment ( Visual Studio & Android Studio &
-Monado for people without HMDs )
-    1. *TODO: Add Monado support.*
-2. **SETUP (Basic structure ready)**
-2.1. Creating an XrInstance / xrGetSystem (xrCreateInstance)
-2.2. Creating an XrSession (xrCreateSession, OpenGL based for code brevity)
-2.3. Polling the Event Loop (xrPollEvent and Session States)
-3. GRAPHICS (solid color render at end)
-3.1. Creating SwapChains for color and depth (xrEnumerateSwapchainFormats)
-3.2. The Renderloop (xrWaitFrame/xrBeginFrame/xrEndFrame/ env.blend.mode)
-(solid color)
-4. ACTIONS (cube at controller position at end)
-4.1. Using Spaces ( xrCreateReferenceSpace/xrLocateSpace ) (draw cube at world
-origin, view from VIEW space)
-4.2. The interaction system. Interaction Profiles, Bindings best practices
-4.3. Create Actions and Actions Sets (xrCreateActionSet, xrCreateAction,
-xrSuggestInteractionProfileBindings)
-4.4. How to check if a controller is connected.
-5. EXTENSIONS (extensions debug and hand tracking)
-5.1. Using Extensions and Layers xrEnumerateInstanceExtensionProperties,
-xrEnumerateApiLayerProperties,
-5.2. Using xrCreateDebugUtilsMessengerEXT (might consider doing this earlier to
-show how to get debug messages)
-5.3. Extension examples including XR_EXT_HAND_TRACKING cubes at joints.
+![image](tutorial/images/OpenXR_500px_Feb17.png)
 
-Phase 1: 15th May to 14th June 2023
-===================================
+## Table of Contents
+- [OpenXR-Tutorial](#openxr-tutorial)
+  - [Table of Contents](#table-of-contents)
+  - [Chapters](#chapters)
+    - [1. Introduction](#1-introduction)
+    - [2. OpenXR Setup](#2-openxr-setup)
+    - [3. Graphics](#3-graphics)
+    - [4. Interactions](#4-interactions)
+    - [5. Extensions](#5-extensions)
+    - [6. Next Setup](#6-next-setup)
+  - [Website](#website)
+  - [Setup](#setup)
+  - [Build](#build)
+    - [Supported Platforms](#supported-platforms)
+  - [Contributors](#contributors)
+  - [Legal Notice](#legal-notice)
+    - [Webiste](#webiste)
+    - [Repository](#repository)
+  - [Related resources](#related-resources)
 
-1A Design, look and feel 15th-26th May 2023
--------------------------------------------
+## Chapters
 
-3-4 potential designs will be commissioned, encompassing colour scheme, layout, font choices, text and menu styles. We propose to use [Calland Creative](https://callandcreative.com/) to create these single-page designs; this agency designed our site at [simul.co](https://simul.co). Due to the technical nature of this project, design is a small, but important part of the process. The designs will be validated internally, then presented to the working group by 5th June.
+### 1. Introduction
+This chapter describes the goals of OpenXR and gives an overview of the core concepts used in the API. It describes how to set up your project as well.
 
+### 2. OpenXR Setup
+This chapter explains how to set up an [`XrInstance`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrInstance.html) and [`XrSession`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSession.html). It also discusses how to poll events in OpenXR.
 
-1B Outlines of Chapters 1.1, 1.2 and 2.1: 15th-22nd May 2023
-------------------------------------------------------------
-Chapters **1.1 (What is the Goal of OpenXR)**, **1.2 (High Level Overview of OpenXR Components)** and **2.1 (Creating an XrInstance)**  will be outlined and presented to the working group by 5th June.
-NOTE: we propose to incorporate xrCreateDebugUtilsMessengerEXT here, after Chapter 2.1, and will outline it in Phase 1B.
+### 3. Graphics
+[`XrSwapchain`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSwapchain.html) construction is explained in this chapter along with the [`XrEnvironmentBlendMode`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrEnvironmentBlendMode.html) and the [`XrReferenceSpaceType`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html). Finally, it explains how to set up a render loop and draw some simple geometry.
+
+### 4. Interactions
+This chapter focuses solely on explaining and demonstrating both the interaction profile and action systems that OpenXR uses. These systems provide a way for developers and users to bind inputs to actions allowing greater cross-vendor compatibility of an application.
+
+### 5. Extensions
+This chapter discusses a few extensions for Hand tracking and Composition Layer Depth. Extensions allow greater functionality to be added to an application provided that the hardware and runtime support them.
+
+### 6. Next Setup
+This chapter contains a collection of topics to act as a jumping-off point to explore further the diverse and ever-growing world of XR development. Of note are the sections on Multiview rendering, OpenXR API Layers and Multithreaded rendering.
 
 
-1C Draft Text of Chapter 1.1: 23rd – 29th May 2023
---------------------------------------------------
+## Website
 
-Based on approval and feedback of Phase 1B, Chapter 1.1 (What is the Goal of OpenXR) will be drafted and presented to the working group by 5th June.
+https://openxr-tutorial.com/
 
+![image](tutorial/screencapture-openxr-tutorial-index.png)
 
-1D Draft Text of Chapter 2.1 (with code examples): 30th May – 12th June 2023
-----------------------------------------------------------------------------
+## Setup
 
-Based on approval and feedback of Phase 1B, Chapter 2.1 (Creating an XrInstance) will be drafted and presented to the working group. This will include code examples for each platform (work on these would start from 15th May, to be ready for when the text is drafted). The example code will build and run on each platform. The text and code will be presented to the working group by 5th June.
+Prerequisites: [git](https://git-scm.com/downloads)
 
+Clone the repo with submodules using the following command:
+```
+git clone https://github.com/KhronosGroup/OpenXR-Tutorials.git
+cd OpenXR-Tutorials
+```
+Follow build instructions for your platform below.
 
-1E Design Implementation: 6th-14th June 2023
---------------------------------------------
+## Build
 
-When the final design is chosen by the working group it will be integrated in the site and presented to the group on or before June 19th as a working prototype website.
-While the Working Group chooses the final design, work will be underway on implementing any feedback from Phases 1B-1D.
-Throughout Phase 1, we will continue work on the code examples for each platform-graphics API combination, in order that these shall be ready in advance of the text being written.
+### Supported Platforms
+* Windows - [Build Guide](BUILD.md#windows)
 
-Phase 2: 15th June to September 14th 2023
-=========================================
+* Linux - [Build Guide](BUILD.md#linux)
 
+* Android - [Build Guide](BUILD.md#android)
 
+## Contributors
 
-2A Outlines of Chapters 2.2, 2.3: 30th May – 19th June
-------------------------------------------------------
- 
-The remainder of Chapter 2, 2.2 (Creating an XrSession) and 2.3 (Polling the Event Loop) will be outlined and presented on or before June 26th.
-We suggest that Chapter 2.2 contain optional content, depending on the user’s choice of graphics API – the site would show/hide the appropriate code blocks depending on the user’s choice, rather than showing only one.
+The text of the OpenXR Tutorial is by Roderick Kennedy and Andrew Richards of Simul Software Ltd. The design of the site is by Calland Creative Ltd. The site is overseen by the Khronos OpenXR Working Group. Thanks to all volunteers who tested the site through its development.
 
+See [CONTRIBUTORS](CONTRIBUTORS.md) for the full contributor list.
 
-2B Outlines of Chapters 3.1 and 3.2: 3rd July
----------------------------------------------
+## Legal Notice
 
-Chapters 3.1 (Creating SwapChains) and 3.2 (The Renderloop) will be outlined and presented by June 26th.
+### Webiste
 
+Â© 2023, The Khronos Group. Creative Commons International 4.0 BY Attribution. Code is licensed as Apache 2.0.
 
-2C Draft Text of Chapters 1.2 and 1.3: 13th – 26th June
--------------------------------------------------------
- 
-Chapters 1.2 (OpenXR Components Overview) and 1.3 (Setting up a Development Environment) will be drafted and presented by 26th June.
+"OpenXR" and the OpenXR logo are trademarks owned by The Khronos Group Inc. and are registered as a trademark in China, the European Union, Japan and the United Kingdom. Vulkan and the Vulkan logo are registered trademarks of the Khronos Group Inc.
 
+OpenGLÂ® and the oval logo are trademarks or registered trademarks of Hewlett Packard Enterprise in the United States and/or other countries worldwide. OpenGL is a registered trademark and the OpenGL ES logo is a trademark of Hewlett Packard Enterprise used by permission by Khronos.
 
-2D Outline of Chapter 4: 20th June – 3rd July
----------------------------------------------
- 
-Chapter 4.1 (Using Spaces), 4.2 (Interaction System), 4.3 (Creating Actions and Action Sets), and 4.4 (Checking for Controllers) will be outlined and presented by June 19th.
+Microsoft DirectX, Microsoft DirectX11, and Microsoft DirectX12 are trademarks owned by Microsoft.
 
+The OpenXR Tutorial is owned and operated by The Khronos Group Inc. Khronos Legal Notices, Privacy Policy, and Code of Conduct apply.
 
-2E Outline of Chapter 5: 27th June – 3rd July
----------------------------------------------
- 
-Chapter 5.1 (Using Extensions and Layers), and 5.3 (Extension Examples) will be outlined and presented by 10th July (Chapter 5.2, Getting Debug Messages is suggested to be moved to Chapter 2 and will be presented in Phase 1.2.)
+### Repository
 
+See [LICENSE](LICENSE).
 
-2.6 Draft Text of Chapters 2.2 and 2.3: 20th June – 10th July
--------------------------------------------------------------
- 
-The complete first draft of Chapter 2 (SETUP), will be presented by 10th July.
+## Related resources
 
+[Khronos OpenXR Main page](https://www.khronos.org/openxr/)
 
-2G Draft Text of Chapter 3: 20th June – 24th July 2023
-------------------------------------------------------
+[OpenXR 1.0 Specification](https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html)
 
-The complete first draft of Chapter 3 (GRAPHICS) will be presented by 17th July.
-
-
-2H Draft Text of Chapter 4: 3rd – 24th July 2023
-------------------------------------------------
-
-The complete first draft of Chapter 4 (ACTIONS) will be presented by 24th July.
-
-
-2i Draft Text of Chapter 5: 4th – 31st July 2023
--------------------------------------------------
-
-The complete first draft of Chapter 5 (EXTENSIONS) will be presented by 31st July.
-Thus, the first draft of the entire site will be completed by 31st July. The text will be written by Roderick Kennedy and Andrew Richards, who will also generate any images, diagrams etc. If appropriate, we will revert to Calland Creative for any additional design work on these.
-We will begin the process of seeking external testers: programmers of various levels of experience who will test the site in Phase 2.12.
-
-
-2J  2nd Draft: 18th July – 14th August, 2023
---------------------------------------------
-
-In this phase, all text should be finalized based on the feedback of the working group. Diagrams and images should be polished to a final standard, and all changes presented to the working group on a weekly basis.
-The 2nd draft will be presented to the Working Group by 14th August.
-
-
-2K Internal Testing: 1st August - 15th September, 2023
---------------------------------------------------
-
-The site will be tested internally. We will test each supported combination of operating system, target system and graphics API by following the tutorial through and ensuring that there are no missing or unclear steps, and that a final, functional app is produced at all stages.
-
-
-2L External testing: 15th September – 14th October, 2023
--------------------------------------------------------
-
-In this phase, the site will be tested externally. A cohort of programmers of various levels of experience will be asked to work through the tutorial, and their feedback will be used to finalize the website.
-The complete site will be presented to the working group by October 14th.
-
-
-2M Final Feedback: 9th-31st October, 2023
-----------------------------------------------------
-
-At this point, the site should be essentially complete. However, any final modifications or corrections required by the working group will be executed, and the site presented to the group as soon as these are complete, in the month of October.
+[OpenXR 1.0 Manual Pages](https://registry.khronos.org/OpenXR/specs/1.0/man/html/openxr.html)
