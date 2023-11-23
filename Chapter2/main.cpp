@@ -297,7 +297,7 @@ private:
             case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
                 XrEventDataSessionStateChanged *sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged *>(&eventData);
                 if (sessionStateChanged->session != m_session) {
-                    std::cout << "XrEventDataSessionStateChanged for unknown Session" << std::endl;
+                    XR_TUT_LOG("XrEventDataSessionStateChanged for unknown Session");
                     break;
                 }
 

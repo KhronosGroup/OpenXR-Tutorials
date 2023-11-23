@@ -340,7 +340,7 @@ private:
             interactionProfileSuggestedBinding.countSuggestedBindings = (uint32_t)bindings.size();
             if (xrSuggestInteractionProfileBindings(m_xrInstance, &interactionProfileSuggestedBinding) == XrResult::XR_SUCCESS)
                 return true;
-            std::cout << "Failed to suggest bindings with " << profile_path << "\n";
+            XR_TUT_LOG("Failed to suggest bindings with " << profile_path);
             return false;
         };
         // XR_DOCS_TAG_END_SuggestBindings1
@@ -377,11 +377,13 @@ private:
             XrInteractionProfileState interactionProfile = {XR_TYPE_INTERACTION_PROFILE_STATE, 0, 0};
             // for each action, what is the binding?
             OPENXR_CHECK(xrGetCurrentInteractionProfile(m_session, m_handPaths[0], &interactionProfile), "Failed to get profile.");
-            if (interactionProfile.interactionProfile)
-                std::cout << " user/hand/left ActiveProfile " << FromXrPath(interactionProfile.interactionProfile).c_str() << std::endl;
+            if (interactionProfile.interactionProfile) {
+                XR_TUT_LOG("user/hand/left ActiveProfile " << FromXrPath(interactionProfile.interactionProfile).c_str());
+            }
             OPENXR_CHECK(xrGetCurrentInteractionProfile(m_session, m_handPaths[1], &interactionProfile), "Failed to get profile.");
-            if (interactionProfile.interactionProfile)
-                std::cout << "user/hand/right ActiveProfile " << FromXrPath(interactionProfile.interactionProfile).c_str() << std::endl;
+            if (interactionProfile.interactionProfile) {
+                XR_TUT_LOG("user/hand/right ActiveProfile " << FromXrPath(interactionProfile.interactionProfile).c_str());
+            }
         }
     }
     // XR_DOCS_TAG_END_SuggestBindings3
@@ -430,7 +432,7 @@ private:
             }
         }
         if (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM) {
-            std::cerr << "Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE." << std::endl;
+            XR_TUT_LOG_ERROR("Failed to find a compatible blend mode. Defaulting to XR_ENVIRONMENT_BLEND_MODE_OPAQUE.");
             m_environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         }
         // XR_DOCS_TAG_END_GetEnvironmentBlendModes
@@ -452,7 +454,7 @@ private:
             }
         }
         if (m_viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM) {
-            std::cerr << "Failed to find a view configuration type. Defaulting to XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO." << std::endl;
+            XR_TUT_LOG_ERROR("Failed to find a view configuration type. Defaulting to XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO.");
             m_viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
         }
 
@@ -735,7 +737,7 @@ private:
             case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
                 XrEventDataSessionStateChanged *sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged *>(&eventData);
                 if (sessionStateChanged->session != m_session) {
-                    std::cout << "XrEventDataSessionStateChanged for unknown Session" << std::endl;
+                    XR_TUT_LOG("XrEventDataSessionStateChanged for unknown Session");
                     break;
                 }
 
@@ -932,7 +934,7 @@ private:
         std::vector<int64_t> formats(formatCount);
         OPENXR_CHECK(xrEnumerateSwapchainFormats(m_session, formatCount, &formatCount, formats.data()), "Failed to enumerate Swapchain Formats");
         if (m_graphicsAPI->SelectDepthSwapchainFormat(formats) == 0) {
-            std::cerr << "Failed to find depth format for Swapchain." << std::endl;
+            XR_TUT_LOG_ERROR("Failed to find depth format for Swapchain.");
             DEBUG_BREAK;
         }
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
@@ -1135,7 +1137,7 @@ private:
         uint32_t viewCount = 0;
         XrResult result = xrLocateViews(m_session, &viewLocateInfo, &viewState, static_cast<uint32_t>(views.size()), &viewCount, views.data());
         if (result != XR_SUCCESS) {
-            std::cout << "Failed to locate Views." << std::endl;
+            XR_TUT_LOG("Failed to locate Views.");
             return false;
         }
 

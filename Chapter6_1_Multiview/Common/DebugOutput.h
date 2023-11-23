@@ -85,6 +85,7 @@ protected:
     std::streambuf *old_cout_buffer;
     std::streambuf *old_cerr_buffer;
 };
+
 #elif defined(__linux__) && !defined(__ANDROID__)
 #include <iostream>
 class DebugOutput {
@@ -105,7 +106,7 @@ public:
         bufsize = 128
     };  // ... or some other suitable buffer size
     android_LogPriority logPriority;
-    AndroidStreambuf(android_LogPriority p = ANDROID_LOG_INFO) {
+    AndroidStreambuf(android_LogPriority p = ANDROID_LOG_DEBUG) {
         logPriority = p;
         this->setp(buffer, buffer + bufsize - 1);
     }
@@ -169,4 +170,28 @@ public:
     DebugOutput() {
     }
 };
+
+
+#endif
+
+#ifdef __ANDROID__
+#include <android/log.h>
+#include <sstream>
+
+#define XR_TUT_LOG_TAG "openxr_tutorial"
+#define XR_TUT_LOG(...) {                                                           \
+        std::ostringstream ostr;                                                    \
+        ostr<<__VA_ARGS__;                                                          \
+        __android_log_write(ANDROID_LOG_DEBUG, XR_TUT_LOG_TAG, ostr.str().c_str()); \
+    }
+#define XR_TUT_LOG_ERROR(...) {                                                     \
+        std::ostringstream ostr;                                                    \
+        ostr<<__VA_ARGS__;                                                          \
+        __android_log_write(ANDROID_LOG_ERROR, XR_TUT_LOG_TAG, ostr.str().c_str()); \
+    }
+#else
+#include <iostream>
+
+#define XR_TUT_LOG(...) std::cout << __VA_ARGS__ << "\n"
+#define XR_TUT_LOG_ERROR(...) std::cerr << __VA_ARGS__ << "\n"
 #endif

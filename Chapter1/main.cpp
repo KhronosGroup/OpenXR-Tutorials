@@ -123,7 +123,7 @@ private:
 
 void OpenXRTutorial_Main(GraphicsAPI_Type apiType) {
     DebugOutput debugOutput;  // This redirects std::cerr and std::cout to the IDE's output or Android Studio's logcat.
-    std::cout << "OpenXR Tutorial Chapter 1." << std::endl;
+    XR_TUT_LOG("OpenXR Tutorial Chapter 1");
 
     OpenXRTutorial app(apiType);
     app.Run();
