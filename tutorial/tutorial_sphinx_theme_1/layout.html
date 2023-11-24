@@ -127,9 +127,10 @@
 	//https://stackoverflow.com/questions/8562613/how-to-add-url-parameter-to-the-current-url
 	function addUrlParameter(addr,name, value)
 	{
-		url=new URL(addr);
-		url.searchParams.set(name,value);
-		return url.toString();
+	//console.log("add url parameter to : "+addr)
+	url=new URL(addr);
+	url.searchParams.set(name,value);
+	return url.toString();
 	}
 
 	function getUrlParameter(name)
@@ -149,15 +150,33 @@
 	return ok ? urlParameter : defaultValue;
 	}
 
-	function updatePlatform()
+	function updatePlatformFromURL()
 	{
-	var platform = Cookies.get("platform");
-	platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android'], platform);
+	var platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android'], Cookies.get("platform"));
 	if (typeof platform == 'undefined')
 	{
 	platform = "linux"; // Set default here.
 	}
-	Cookies.set('platform', platform, { expires: 365})
+	Cookies.set('platform', platform, { expires: 365});
+	updatePlatform();
+	}
+
+	function updatePlatformFromTab()
+	{
+	var platform = Cookies.get("platform");
+	//console.log("from cookie, platform " + platform);
+	if (typeof platform == 'undefined')
+	{
+	platform = "linux"; // Set default here.
+	}
+	Cookies.set('platform', platform, { expires: 365});
+	updatePlatform();
+	}
+
+	function updatePlatform()
+	{
+	var platform = Cookies.get("platform");
+	//console.log('updatePlatform() = ' + platform);
 
 	$(".linux").hide();
 	$(".android").hide();
@@ -182,7 +201,7 @@
 	}
 	if (platform == "android")
 	{
-	console.log("platform  " + platform + ".");
+	//console.log("platform  " + platform + ".");
 	$(".android").show();
 	$(".selectd3d11").attr("disabled", true);
 	$(".selectd3d12").attr("disabled", true);
@@ -195,24 +214,24 @@
 	{
 	var el=oldelements.item(0);
 	el.classList.remove('selected-platform');
-	//console.log("Removing selected-platform from "+el.id);
+	////console.log("Removing selected-platform from "+el.id);
 	oldelements = document.querySelectorAll(".selected-platform");
 	}
 	var element = document.getElementById('select' + platform);
 	if(element)
 	{
 	element.classList.add('selected-platform');
-	//console.log("Adding selected-platform to "+element.id);
+	////console.log("Adding selected-platform to "+element.id);
 	}
 	var element2 = document.getElementById('select' + platform + "-inline");
 	if(element2)
 	{
 	element2.classList.add('selected-platform');
-	//console.log("Adding selected-platform to "+element2.id);
+	////console.log("Adding selected-platform to "+element2.id);
 	}
 	else
 	{
-	//console.log('select' + platform + "-inline not found");
+	////console.log('select' + platform + "-inline not found");
 	}
 	if(limitAPIChoice())
 	updateGraphicsAPI();
@@ -223,7 +242,7 @@
 	{
 	var platform = Cookies.get("platform");
 	var graphicsApi = Cookies.get("graphicsapi")
-	//console.log("limitAPIChoice(), platform = " + platform+", graphicsApi = "+graphicsApi);
+	////console.log("limitAPIChoice(), platform = " + platform+", graphicsApi = "+graphicsApi);
 	window.limitAPIChoice=limitAPIChoice;
 	var newApi=graphicsApi;
 	if (platform == "windows")
@@ -241,10 +260,10 @@
 	if (graphicsApi != "opengles"&&graphicsApi!="vulkan")
 	newApi="vulkan";
 	}
-	//console.log("newApi = "+newApi);
+	////console.log("newApi = "+newApi);
 	if (newApi != graphicsApi)
 	{
-	//console.log("setting graphicsapi = "+newApi);
+	////console.log("setting graphicsapi = "+newApi);
 	Cookies.set('graphicsapi', newApi,{ expires: 365})
 	graphicsApi=newApi;
 	return true;
@@ -253,16 +272,16 @@
 	}
 	function makeLinksOpenInNewWindow()
 	{
-	//console.log("makeLinksOpenInNewWindow ");
+	////console.log("makeLinksOpenInNewWindow ");
 	var download_hrefs = document.getElementsByClassName('reference download internal');
 	[].forEach.call(download_hrefs, function(el) {
 	el.setAttribute('target', "_blank");
-	//console.log("Adding target blank to "+el.id);
+	////console.log("Adding target blank to "+el.id);
 	});
 	link_hrefs = document.getElementsByClassName('reference external');
 	[].forEach.call(link_hrefs, function(el) {
 	el.setAttribute('target', "_blank");
-	//console.log("Adding target blank to "+el.id);
+	////console.log("Adding target blank to "+el.id);
 	});
 	window.makeLinksOpenInNewWindow=makeLinksOpenInNewWindow;
 	}
@@ -276,29 +295,57 @@
 	el.id =heading_ids[i];
 	el.children[0].href=el.children[0].href.replace('#','')+"#"+heading_anchors[i];
 	i++;
-	//console.log("Adding id "+heading_ids[i]+" to toctree heading "+i);
+	////console.log("Adding id "+heading_ids[i]+" to toctree heading "+i);
 	});
 	}
 	function copyLinkToThisPage()
 	{
-	var graphicsapi = Cookies.get("graphicsapi")
-	var platform = Cookies.get("platform")
-	var url=window.location.href;
-	url=addUrlParameter(url,"platform",platform)
-	url=addUrlParameter(url,"graphicsapi",graphicsapi)
+	var graphicsapi =Cookies.get("graphicsapi")
+	var platform	=Cookies.get("platform")
+	var url			=window.location.href;
+	url				=addUrlParameter(url,"platform",platform);
+	url				=addUrlParameter(url,"graphicsapi",graphicsapi);
 	navigator.clipboard.writeText(url);
-	// Alert the copied text
-	alert("Copied the link: " + url+" to the clipboard.");
-	}
-	function updateGraphicsAPI()
+	var dlg = document.getElementById("copied-link-dialog");
+	document.getElementById("copied-link-text").innerHTML  = "Copied:<br>" + url + "<br>to the clipboard.";
+	dlg.style.visibility = 'visible';
+	var sharepagetooltip = document.getElementById('share-page-tooltiptext');
+	//sharepagetooltip.style.opacity = 0;
+	setTimeout(() =>
 	{
-	var graphicsApi = Cookies.get("graphicsapi")
-	graphicsApi = getUrlParameterWithCheck('graphicsapi', ['d3d11', 'd3d12', 'opengl', 'opengles', 'vulkan'], graphicsApi);
+	const dlg = document.getElementById("copied-link-dialog");
+	dlg.style.visibility = 'hidden';
+	}, 2500);
+
+	// Alert the copied text
+	//alert("Copied the link: " + url+" to the clipboard.");
+	}
+	function updateGraphicsAPIFromURL()
+	{
+	var graphicsApi = getUrlParameterWithCheck('graphicsapi', ['d3d11', 'd3d12', 'opengl', 'opengles', 'vulkan'], Cookies.get("graphicsapi"));
 	if (typeof graphicsApi == 'undefined')
 	{
 	graphicsApi = "vulkan"; // Set default here.
 	}
-	Cookies.set('graphicsapi', graphicsApi, { expires: 365})
+	Cookies.set('graphicsapi', graphicsApi, { expires: 365});
+	updateGraphicsAPI();
+	}
+
+	function updateGraphicsAPIFromTab()
+	{
+	var graphicsApi = Cookies.get("graphicsapi");
+	if (typeof graphicsApi == 'undefined')
+	{
+	graphicsApi = "vulkan"; // Set default here.
+	}
+	Cookies.set('graphicsapi', graphicsApi, { expires: 365});
+	updateGraphicsAPI();
+	}
+
+	function updateGraphicsAPI()
+	{
+	var graphicsApi = Cookies.get("graphicsapi")
+	//console.log('updateGraphicsAPI() = ' + graphicsApi);
 
 	// first, hide all the api's
 	$(".d3d11").hide();
@@ -323,12 +370,12 @@
 	$(".vulkan").show();
 	}
 	var oldelements = document.querySelectorAll(".selected-graphics-api");
-	//console.log("selected-platform on "+oldelements.length+" elements.");
+	////console.log("selected-platform on "+oldelements.length+" elements.");
 	while (oldelements.length > 0)
 	{
 	var el=oldelements.item(0);
 	el.classList.remove('selected-graphics-api');
-	//console.log("Removing selected-graphics-api from "+el.id);
+	////console.log("Removing selected-graphics-api from "+el.id);
 	oldelements = document.querySelectorAll(".selected-graphics-api");
 	}
 	var element = document.getElementById('select' + graphicsApi);
@@ -356,7 +403,7 @@
 	</style>
 </head>
 
-<body class="wy-body-for-nav" onload="updatePlatform(); updateGraphicsAPI(); makeLinksOpenInNewWindow(); addIconsToToctree();">
+<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL(); updateGraphicsAPIFromURL();" onload="makeLinksOpenInNewWindow(); addIconsToToctree();">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
@@ -440,8 +487,11 @@
 						<button class="share-this-page" id='share-this-page' onclick="copyLinkToThisPage()">
 							<img class="api-tab-img" src="_static/css/icons/share_FILL0_wght400_GRAD0_opsz24.svg" alt="Copy link to this page" />
 						</button>
-						<span class="share-page-tooltiptext">Copy link to this page</span>
-					</div>
+						<div id="copied-link-dialog">
+							<p id="copied-link-text"></p>
+						</div>
+						<div id="share-page-tooltiptext">Copy link to this page</div>
+</div>
 				{%- endif %}
 				<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
 					{%- block document %}
@@ -463,11 +513,7 @@
 	</div>
   {% include "versions.html" -%}
 
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable({{ 'true' if theme_sticky_navigation|tobool else 'false' }});
-      });
-  </script>
+  <script></script>
 
   {#- Do not conflict with RTD insertion of analytics script #}
   {%- if not READTHEDOCS %}

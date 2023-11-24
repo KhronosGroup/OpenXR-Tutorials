@@ -12,6 +12,7 @@
 <script>
 	function choosePlatform(platformName)
 	{
+		console.log("choose platform " + platformName);
 		Cookies.set('platform', platformName, { expires: 365 })
 		updatePlatformFromTab();
 	};

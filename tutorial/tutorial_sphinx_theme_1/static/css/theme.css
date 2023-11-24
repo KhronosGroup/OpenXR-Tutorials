@@ -7873,7 +7873,8 @@ display:none;
 }
 
 
-.share-page-container .share-page-tooltiptext {
+.share-page-container #share-page-tooltiptext {
+    margin:6px 12px 0px auto;
   visibility: hidden;
   width: 120px;
   background-color: #555;
@@ -7881,14 +7882,32 @@ display:none;
   text-align: center;
   border-radius: 6px;
   padding: 6px 12px;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
+  z-index: 10;
   margin-left: -60px;
   opacity: 0;
   transition: opacity 0.6s;
+  position:absolute;
+  right:64px;
 }
-.share-page-container:hover .share-page-tooltiptext {
+
+.share-page-container:hover #share-page-tooltiptext {
   visibility: visible;
   opacity: 1;
+}
+
+.share-page-container #copied-link-dialog {
+    margin:6px 12px 0px 40px;
+  visibility: hidden;
+  width: auto;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 6px;
+  z-index: 2000;
+  position:absolute;
+  right:64px;
+}
+#copied-link-text {
+    margin:6px 24px;
 }
