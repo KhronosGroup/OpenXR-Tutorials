@@ -1,2 +1,2 @@
-RewriteMap tutorialmap "txt:path/to/map/tutorialmap.txt"
+RewriteMap tutorialmap "txt:tutorialmap.txt"
 RewriteRule "^/(.*)/(.*)" "/${tutorialmap:$1-$2|NOTFOUND}" [PT]
