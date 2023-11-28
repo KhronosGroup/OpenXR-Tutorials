@@ -1,0 +1,8 @@
+/windows/d3d11/(.*) /$1/?platform=windows&graphicsapi=d3d11
+/windows/d3d12/(.*) /$1/?platform=windows&graphicsapi=d3d12
+/windows/opengl/(.*) /$1/?platform=windows&graphicsapi=opengl
+/windows/vulkan/(.*) /$1/?platform=windows&graphicsapi=vulkan
+/linux/opengl/(.*) /$1/?platform=linux&graphicsapi=opengl
+/linux/vulkan/(.*) /$1/?platform=linux&graphicsapi=vulkan
+/android/opengles/(.*) /$1/?platform=android&graphicsapi=opengles
+/android/vulkan/(.*) /$1/?platform=android&graphicsapi=vulkan
