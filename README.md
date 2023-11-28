@@ -4,7 +4,8 @@
 
 This OpenXR-Tutorial repository contains both the text and code samples for the OpenXR-Tutorial website (https://openxr-tutorial.com/).
 
-![image](tutorial/images/OpenXR_500px_Feb17.png)
+![image](tutorial/images/OpenXR_500px_Feb17_White.png#gh-dark-mode-only)
+![image](tutorial/images/OpenXR_500px_Feb17_RGB.png#gh-light-mode-only)
 
 ## Table of Contents
 - [OpenXR-Tutorial](#openxr-tutorial)

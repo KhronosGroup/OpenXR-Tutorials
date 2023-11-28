@@ -92,7 +92,8 @@ function(glsl_spv_shader)
                 $<$<CONFIG:Debug>:-Od>
                 $<$<CONFIG:Release>:-g0>
                 "--target-env" "${_glsl_spv_TARGET_ENV}"
-                "-V ${_glsl_spv_INPUT}"
+                -V 
+                "${_glsl_spv_INPUT}"
             MAIN_DEPENDENCY "${_glsl_spv_INPUT}"
             DEPENDS "${_glsl_spv_INPUT}" ${_glsl_spv_EXTRA_DEPENDS}
             USES_TERMINAL VERBATIM
