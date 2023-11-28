@@ -24,7 +24,7 @@ add_custom_target(
     Sphinx ALL
     COMMAND
         "${SPHINX_EXECUTABLE}" -a -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
-        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD}
+        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} -D html_baseurl=https://openxr-tutorial.simul.co/
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS
         # Other docs files you want to track should go here (or in some variable)

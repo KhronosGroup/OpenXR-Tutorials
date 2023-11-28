@@ -43,13 +43,14 @@ mermaid_output_format='png'
 source_suffix = {'.rst': 'restructuredtext'}
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
-
+sitemap_locales = ['windows/d3d11','windows/d3d12','windows/opengl','windows/vulkan','linux/opengl', 'linux/vulkan','android/opengles','android/vulkan']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["**/README.md","**/Readme.md","ReadMe.md","**/*.md","External/**/*.*"]
-
+html_baseurl = 'https://openxr-tutorial.com/'
 html_static_path = ['_static']
+
 html_logo = "images/OpenXR_170px_Feb17.png"
 html_theme_options = {
     'logo_only': False,

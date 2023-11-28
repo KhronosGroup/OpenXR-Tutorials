@@ -1,0 +1,3 @@
+User-agent: *
+
+Sitemap: https://openxr-tutorial.com/sitemap.xml
