@@ -550,7 +550,11 @@
 	</div>
   {% include "versions.html" -%}
 
-  <script></script>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable({{ 'true' if theme_sticky_navigation|tobool else 'false' }});
+      });
+  </script>
 
   {#- Do not conflict with RTD insertion of analytics script #}
   {%- if not READTHEDOCS %}
