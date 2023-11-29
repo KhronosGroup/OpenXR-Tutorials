@@ -12,8 +12,7 @@
 <script>
 	function choosePlatform(platformName)
 	{
-		console.log("choose platform " + platformName);
-		Cookies.set('platform', platformName, { expires: 365 })
+		setPlatform(platformName);
 		updatePlatformFromTab();
 	};
 </script>
@@ -34,7 +33,7 @@
 <script>
 	function chooseGraphicsAPI(graphicsApiName)
 	{
-		Cookies.set('graphicsapi', graphicsApiName, { expires: 365 })
+		setGraphicsAPI(graphicsApiName);
 		updateGraphicsAPIFromTab();
 		limitAPIChoice();
 	};

@@ -15,6 +15,21 @@
 # sys.path.insert(0, os.path.abspath('.'))
 import subprocess, os
 
+def createSiteMap(root):
+    variant_pages = ['1-introduction','2-setup','3-graphics','4-actions','5-extensions','6-next-steps']
+    static_pages=['index','search'];
+    platforms = ['linux','windows','android']
+    apis=[['vulkan','opengl'],['vulkan','opengl','d3d11','d3d12'],['vulkan','opengles']]
+    with open('sitemap.txt', 'w') as f:
+        for pg in static_pages:
+            f.write(root+'/'+pg+'/')
+            f.write('\n')
+        for pg in variant_pages:
+            for i in range(len(platforms)):
+                platform=platforms[i]
+                for api in apis[i]:
+                    f.write(root+'/'+pg+'/'+platform+'/'+api+'/')
+                    f.write('\n')
 def configureDoxyfile(input_dir, output_dir):
     with open('Doxyfile.in', 'r') as file :
         filedata = file.read()
@@ -32,7 +47,7 @@ project = 'OpenXR Tutorial'
 copyright = ''
 author = 'Simul Software Ltd'
 
-
+createSiteMap('https://openxr-tutorial.com')
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -43,7 +58,7 @@ mermaid_output_format='png'
 source_suffix = {'.rst': 'restructuredtext'}
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
-sitemap_locales = ['windows/d3d11','windows/d3d12','windows/opengl','windows/vulkan','linux/opengl', 'linux/vulkan','android/opengles','android/vulkan']
+sitemap_locales = []#'windows/d3d11','windows/d3d12','windows/opengl','windows/vulkan','linux/opengl', 'linux/vulkan','android/opengles','android/vulkan'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
