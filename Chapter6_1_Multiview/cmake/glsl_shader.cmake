@@ -71,7 +71,7 @@ function(glsl_spv_shader)
                 "${_glsl_spv_INPUT}"
             MAIN_DEPENDENCY "${_glsl_spv_INPUT}"
             DEPENDS "${_glsl_spv_INPUT}" ${_glsl_spv_EXTRA_DEPENDS}
-            USES_TERMINAL VERBATIM
+            USES_TERMINAL VERBATIM COMMAND_EXPAND_LISTS
         )
 
     elseif(GLSLANG_VALIDATOR)
@@ -95,7 +95,7 @@ function(glsl_spv_shader)
                 "-V ${_glsl_spv_INPUT}"
             MAIN_DEPENDENCY "${_glsl_spv_INPUT}"
             DEPENDS "${_glsl_spv_INPUT}" ${_glsl_spv_EXTRA_DEPENDS}
-            USES_TERMINAL VERBATIM
+            USES_TERMINAL VERBATIM COMMAND_EXPAND_LISTS
         )
 
     elseif(_glsl_spv_HAVE_PRECOMPILED)

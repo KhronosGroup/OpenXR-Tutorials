@@ -53,6 +53,7 @@ function(dxc_shader)
         COMMENT "dxc: ${_dxc_INPUT}"
         USES_TERMINAL
         VERBATIM
+        COMMAND_EXPAND_LISTS
     )
 
 endfunction()
