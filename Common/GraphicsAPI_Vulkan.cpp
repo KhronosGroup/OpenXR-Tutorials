@@ -70,7 +70,7 @@ static VkFormat ToVkFormat(GraphicsAPI::VertexType type) {
         return VK_FORMAT_UNDEFINED;
     }
 }
-VkDescriptorType ToVkDescrtiptorType(const GraphicsAPI::DescriptorInfo& descInfo) {
+VkDescriptorType ToVkDescrtiptorType(const GraphicsAPI::DescriptorInfo &descInfo) {
     VkDescriptorType vkType;
     switch (descInfo.type) {
     default:
@@ -210,7 +210,7 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan() {
     VkCommandPoolCreateInfo cmdPoolCI;
     cmdPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     cmdPoolCI.pNext = nullptr;
-    cmdPoolCI.flags = 0;
+    cmdPoolCI.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     cmdPoolCI.queueFamilyIndex = queueFamilyIndex;
     VULKAN_CHECK(vkCreateCommandPool(device, &cmdPoolCI, nullptr, &cmdPool), "Failed to create CommandPool.");
 
@@ -229,7 +229,7 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan() {
     fenceCI.pNext = nullptr;
     fenceCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
     VULKAN_CHECK(vkCreateFence(device, &fenceCI, nullptr, &fence), "Failed to create Fence.")
-
+    
     uint32_t maxSets = 1024;
     std::vector<VkDescriptorPoolSize> poolSizes{
         {VK_DESCRIPTOR_TYPE_SAMPLER, 16 * maxSets},
@@ -375,7 +375,7 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan(XrInstance m_xrInstance, XrSystemId syste
     VkCommandPoolCreateInfo cmdPoolCI;
     cmdPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     cmdPoolCI.pNext = nullptr;
-    cmdPoolCI.flags = 0;
+    cmdPoolCI.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     cmdPoolCI.queueFamilyIndex = queueFamilyIndex;
     VULKAN_CHECK(vkCreateCommandPool(device, &cmdPoolCI, nullptr, &cmdPool), "Failed to create CommandPool.");
 
@@ -1067,8 +1067,9 @@ void GraphicsAPI_Vulkan::DestroyPipeline(void *&pipeline) {
 
 void GraphicsAPI_Vulkan::BeginRendering() {
     VULKAN_CHECK(vkWaitForFences(device, 1, &fence, true, UINT64_MAX), "Failed to wait for Fence");
+    VULKAN_CHECK(vkResetFences(device, 1, &fence), "Failed to reset Fence.")
 
-    //VULKAN_CHECK(vkResetDescriptorPool(device, descriptorPool, VkDescriptorPoolResetFlags(0)), "Failed to rest DescriptorPool")
+    // VULKAN_CHECK(vkResetDescriptorPool(device, descriptorPool, VkDescriptorPoolResetFlags(0)), "Failed to rest DescriptorPool")
     for (const auto &descSet : cmdBufferDescriptorSets[cmdBuffer]) {
         VULKAN_CHECK(vkFreeDescriptorSets(device, descriptorPool, 1, &descSet), "Failed to free DescriptorSet.");
     }
@@ -1112,7 +1113,7 @@ void GraphicsAPI_Vulkan::EndRendering() {
         vkCmdEndRenderPass(cmdBuffer);
         inRenderPass = false;
     }
-    
+
     if (currentDesktopSwapchainImage) {
         VkImageMemoryBarrier barrier;
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -1249,7 +1250,7 @@ void GraphicsAPI_Vulkan::ClearDepth(void *imageView, float d) {
 }
 
 void GraphicsAPI_Vulkan::SetRenderAttachments(void **colorViews, size_t colorViewCount, void *depthStencilView, uint32_t width, uint32_t height, void *pipeline) {
-    if (inRenderPass){
+    if (inRenderPass) {
         vkCmdEndRenderPass(cmdBuffer);
     }
 
@@ -1288,7 +1289,7 @@ void GraphicsAPI_Vulkan::SetRenderAttachments(void **colorViews, size_t colorVie
     renderPassBegin.clearValueCount = 0;
     renderPassBegin.pClearValues = nullptr;
     vkCmdBeginRenderPass(cmdBuffer, &renderPassBegin, VK_SUBPASS_CONTENTS_INLINE);
-    inRenderPass    = true;
+    inRenderPass = true;
 }
 
 void GraphicsAPI_Vulkan::SetViewports(Viewport *viewports, size_t count) {
@@ -1375,7 +1376,7 @@ void GraphicsAPI_Vulkan::UpdateDescriptors() {
         VkWriteDescriptorSet &vkWriteDescSet = std::get<0>(writeDescSet);
         VkDescriptorBufferInfo &vkDescBufferInfo = std::get<1>(writeDescSet);
         VkDescriptorImageInfo &vkDescImageInfo = std::get<2>(writeDescSet);
-        
+
         vkWriteDescSet.dstSet = descSet;
         if (vkDescBufferInfo.buffer) {
             vkWriteDescSet.pBufferInfo = &vkDescBufferInfo;

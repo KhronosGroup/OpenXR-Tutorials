@@ -64,6 +64,7 @@ function(fxc_shader)
         COMMENT "FXC: ${_fxc_INPUT}"
         USES_TERMINAL
         VERBATIM
+        COMMAND_EXPAND_LISTS
     )
 
 endfunction()
