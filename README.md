@@ -74,6 +74,20 @@ Follow build instructions for your platform below.
 
 * Android - [Build Guide](BUILD.md#android)
 
+### Building the Tutorial Website
+
+The tutorial website is built with [Sphinx](https://www.sphinx-doc.org), a Python-based documentation build tool. To set up, set the CMake variable XR_TUTORIAL_BUILD_DOCUMENTATION to TRUE, and install the following Python modules:
+
+```
+pip install sphinx
+pip install breathe
+pip install myst-parser
+pip install sphinxcontrib-jquery
+pip install sphinx-copybutton
+```
+
+Now build the project "Sphinx" from the command line or IDE.
+
 ## Contributors
 
 The text of the OpenXR Tutorial is by Roderick Kennedy and Andrew Richards of Simul Software Ltd. The design of the site is by Calland Creative Ltd. The site is overseen by the Khronos OpenXR Working Group. Thanks to all volunteers who tested the site through its development.
@@ -82,7 +96,7 @@ See [CONTRIBUTORS](CONTRIBUTORS.md) for the full contributor list.
 
 ## Legal Notice
 
-### Webiste
+### Website
 
 © 2023, The Khronos Group. Creative Commons International 4.0 BY Attribution. Code is licensed as Apache 2.0.
 

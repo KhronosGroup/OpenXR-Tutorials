@@ -17,7 +17,7 @@ set(XR_RUNTIME_JSON
 )
 # XR_DOCS_TAG_END_CMakeLists
 
-option(XR_TUTORIAL_BUILD_DOCUMENTATION "Build the tutorial documentation?" ON)
+option(XR_TUTORIAL_BUILD_DOCUMENTATION "Build the tutorial documentation?" OFF)
 option(XR_TUTORIAL_BUILD_PROJECTS "Build the tutorial projects?" ON)
 
 if (XR_TUTORIAL_BUILD_DOCUMENTATION)
