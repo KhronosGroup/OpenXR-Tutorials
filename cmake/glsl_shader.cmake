@@ -52,16 +52,10 @@ function(glsl_spv_shader)
     )
 
     if(GLSL_COMPILER)
-        if(_glsl_spv_GENERATE_HEADER)
-            set(_glsl_spv_output_type_arg "-mfmt=c")
-        else()
-            set(_glsl_spv_output_type_arg)
-        endif()
         add_custom_command(
             OUTPUT "${_glsl_spv_OUTPUT}"
             COMMAND
                 "${GLSL_COMPILER}"
-                ${_glsl_spv_output_type_arg}
                 -o "${_glsl_spv_OUTPUT}"
                 "-fshader-stage=${_glsl_spv_STAGE}"
                 "-fentry-point=${_glsl_spv_ENTRY_POINT}"
@@ -73,13 +67,7 @@ function(glsl_spv_shader)
             DEPENDS "${_glsl_spv_INPUT}" ${_glsl_spv_EXTRA_DEPENDS}
             USES_TERMINAL VERBATIM COMMAND_EXPAND_LISTS
         )
-
     elseif(GLSLANG_VALIDATOR)
-        if(_glsl_spv_GENERATE_HEADER)
-            set(_glsl_spv_output_type_arg "-x")
-        else()
-            set(_glsl_spv_output_type_arg)
-        endif()
         add_custom_command(
             OUTPUT "${_glsl_spv_OUTPUT}"
             COMMAND
@@ -87,7 +75,6 @@ function(glsl_spv_shader)
                 -o "${_glsl_spv_OUTPUT}"
                 -S "${_glsl_spv_STAGE}"
                 -e "${_glsl_spv_ENTRY_POINT}"
-                -x # output as hex
                 $<$<CONFIG:Debug,RelWithDebInfo>:-gVS>
                 $<$<CONFIG:Debug>:-Od>
                 $<$<CONFIG:Release>:-g0>
