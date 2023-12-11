@@ -949,3 +949,7 @@ In this chapter, you learned about the fundamental concepts of OpenXR and create
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs. Note that Chapter2 is renamed to Chapter1 is the archive and repository folder.
 
 :git_release:`Chapter1.zip`
+
+.. meta::
+   :description: OpenXR Tutorial: Introduction to OpenXR
+   :keywords: khronos, openxr, tutorial

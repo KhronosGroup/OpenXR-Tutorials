@@ -602,3 +602,7 @@ We have now created an XR application that can begin and stop an :openxr_ref:`Xr
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 
 :git_release:`Chapter2.zip`
+
+.. meta::
+   :description: OpenXR Tutorial: Setup
+   :keywords: khronos, openxr, tutorial, setup

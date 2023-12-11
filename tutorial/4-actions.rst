@@ -390,3 +390,7 @@ In this chapter, you have learned about Actions, Controller Profiles, Bindings. 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 
 :git_release:`Chapter4.zip`
+
+.. meta::
+   :description: OpenXR Tutorial: Actions, Controller Profiles and Bindings
+   :keywords: khronos, openxr, tutorial, actions, profiles, bindings, xr

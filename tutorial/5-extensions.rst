@@ -208,3 +208,7 @@ In this chapter, you have learned how to extend the core OpenXR functionality wi
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 
 :git_release:`Chapter5.zip`
+
+.. meta::
+   :description: OpenXR Tutorial: Extensions, Hand Tracking
+   :keywords: khronos, openxr, tutorial, extensions, hand tracking, layers, xr

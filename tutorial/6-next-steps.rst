@@ -765,3 +765,7 @@ In this chapter, we discussed a few of the possible next steps in your OpenXR jo
 
 The text of the OpenXR Tutorial is by Roderick Kennedy and Andrew Richards of Simul Software Ltd. The design of the site is by Calland Creative Ltd. The site is overseen by the Khronos OpenXR Working Group. Thanks to all volunteers who tested the site through its development.
 
+
+.. meta::
+   :description: OpenXR Tutorial: Next Steps
+   :keywords: khronos, openxr, tutorial, multithreading, multiview, xr

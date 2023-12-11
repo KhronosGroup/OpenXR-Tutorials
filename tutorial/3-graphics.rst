@@ -1299,3 +1299,7 @@ In the next chapter, we will discuss how to use OpenXR to interact with your XR 
 Below is a download link to a zip archive for this chapter containing all the C++ and CMake code for all platform and graphics APIs.
 
 :git_release:`Chapter3.zip`
+
+.. meta::
+   :description: OpenXR Tutorial: Graphics
+   :keywords: khronos, openxr, tutorial, graphics
