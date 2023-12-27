@@ -75,15 +75,15 @@ OpenXR recognizes that there is a vast and ever-changing array of hardware and c
 
 This section will help you set up your development environment. Here your choice of platform makes a difference, but afterwards, things will be much more consistent. You can change platform and graphics API at any time by clicking the tabs at the top of the page. Select the platform you want to develop for now, by clicking the appropriate tab above.
 
-.. container:: windows linux
+.. only:: windows or linux
 
 	You should make sure that the XR runtime that you wish to use is made the default for the XR loader to recognize and load for your application.
 
-.. container:: windows
+.. only:: windows
 
 	.. rubric:: Visual Studio
 
-	If you'll be building an OpenXR project for Microsoft Windows PC-based devices, we'll assume you'll be using Microsoft Visual Studio. The free Community Edition of Visual Studio is available to download `<https://visualstudio.microsoft.com/vs/community/>`_.
+	If you'll be building an OpenXR project for Microsoft Windows PC-based devices, we'll assume you'll be using Microsoft Visual Studio. The free Community Edition of Visual Studio is available to download from `<https://visualstudio.microsoft.com/vs/community/>`_.
 
 	.. rubric:: CMake
 
@@ -91,7 +91,7 @@ This section will help you set up your development environment. Here your choice
 
 	Next, you'll want to choose which graphics API you'll be using.
 	
-	.. container:: d3d11 d3d12
+	.. only:: d3d11 or d3d12
 
 		Direct3D 11 and Direct3D 12 are built into the Windows SDK. If you're using Direct3D, D3D12 is recommended, because of it support for `View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_. Essentially, it allows you to draw both eye views in one draw call.
 
@@ -99,24 +99,24 @@ This section will help you set up your development environment. Here your choice
 
 		You will need GPU that supports ``D3D_FEATURE_LEVEL_11_0`` for this tutorial.
 	
-	.. container:: d3d11
+	.. only:: d3d11
 
 		You will need at least Direct3D 11.1 Feature for this tutorial.
 		
-	.. container:: opengl
+	.. only:: opengl
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``.
 		If you want to use OpenGL stand-alone, you will need to use WGL to create a valid OpenGL Context for Microsoft Windows - `Creating an OpenGL Context WGL <https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - `GLAD <https://glad.dav1d.de/>`_.
 
 		You will need GPU that supports at least OpenGL 4.3 for this tutorial.
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		If you're using Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_.
 
 		You will need GPU that supports at least Vulkan 1.0 for this tutorial.
 
-.. container:: linux
+.. only:: linux
 
 	.. rubric:: Install Visual Studio Code
 
@@ -128,14 +128,14 @@ This section will help you set up your development environment. Here your choice
 
 	Now choose which graphics API you want to use from the tabs at the top of the page. For Linux you can either use OpenGL or Vulkan.
 
-	.. container:: opengl
+	.. only:: opengl
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``.
 		If you want to use OpenGL stand-alone, you will need to use GLX to create a valid OpenGL Context for Linux - see `Tutorial: OpenGL 3.0 Context Creation (GLX) <https://www.khronos.org/opengl/wiki/Tutorial:_OpenGL_3.0_Context_Creation_(GLX)>`_. You will also need to use a function loader like GLAD to access functions for OpenGL - see `https://glad.dav1d.de <https://glad.dav1d.de/>`_.
 
 		You will need GPU that supports at least OpenGL 4.3 for this tutorial.
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		If you want to use Vulkan, download and install the latest `Vulkan SDK <https://www.lunarg.com/vulkan-sdk/>`_.
 
@@ -145,7 +145,7 @@ This section will help you set up your development environment. Here your choice
 
 		XR support for Linux is provided by `Monado <https://monado.freedesktop.org/>`_, an open source runtime. Monado supports a selection of XR devices and can also run in a device emulation mode. Follow the instructions `<https://monado.freedesktop.org/getting-started.html>`_ to set up the runtime.
 	
-.. container:: android
+.. only:: android
 	
 	When building for Android, you can use Microsoft Windows, Linux or Apple macOS as the host platform to run Android studio.
 
@@ -153,14 +153,14 @@ This section will help you set up your development environment. Here your choice
 
 	Install Android Studio from this location: `https://developer.android.com/studio <https://developer.android.com/studio>`_.
 	
-	.. container:: opengles
+	.. only:: opengles
 		
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL ES API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. 
 		If you want to use OpenGL ES stand-alone, you will need to use EGL to create a valid OpenGL ES Context for Android - `EGL Overview <https://www.khronos.org/egl>`_. You will also need to use a function loader like GLAD to access functions for OpenGL ES - `GLAD <https://glad.dav1d.de/>`_.
 
 		You will need an Android device that supports at least OpenGL ES 3.1 for this tutorial.
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		Vulkan is included as part of the NDK provided by Google and is supported on Android 7.0 (Nougat), API level 24 or higher (see `https://developer.android.com/ndk/guides/graphics <https://developer.android.com/ndk/guides/graphics>`_).
 
@@ -175,12 +175,12 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 1.4.1 CMake and Project Files
 =============================
 
-.. container:: windows
+.. only:: windows
 
 	For the Microsoft Windows OpenXR project, we'll use CMake to create the solution and project files for Visual Studio.
 	Create a directory where the code will go, we'll call this the *workspace* directory.
 
-.. container:: linux
+.. only:: linux
 
 	You can use any code editor and/or compiler with OpenXR; this tutorial will use Visual Studio Code as an example. For the Linux OpenXR project, we'll use CMake alongside VS Code to build the project. Create a directory where the code will go, we'll call this the *workspace* directory. Open Visual Studio Code and from the File menu, select "Open Folder..."
 
@@ -197,19 +197,19 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		:align: left
 		:scale: 55%
 	
-.. container:: windows linux
+.. only:: windows or linux
 
 	Create a folder called ``cmake`` in the *workspace* directory. Download the linked file below and put it in ``cmake``. This will be used in our ``CMakeLists.txt`` to help build our project.
 
-	.. container:: d3d11 d3d12
+	.. only:: d3d11 or d3d12
 		
 		:download:`fxc_shader.cmake <../cmake/fxc_shader.cmake>`
 
-	.. container:: opengl
+	.. only:: opengl
 
 		:download:`gfxwrapper.cmake <../cmake/gfxwrapper.cmake>`
 	
-	.. container:: vulkan
+	.. only:: vulkan
 
 		:download:`glsl_shader.cmake <../cmake/glsl_shader.cmake>`
 
@@ -253,7 +253,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	Now, we will add to ``Chapter2/CMakeLists.txt`` the source and header files by adding the following code. Here, we are including all the files needed for our project.
 
-	.. container:: d3d11
+	.. only:: d3d11
 
 		.. code-block:: cmake
 
@@ -271,7 +271,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
 	
-	.. container:: d3d12
+	.. only:: d3d12
 		
 		.. code-block:: cmake
 
@@ -289,7 +289,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
 	
-	.. container:: opengl
+	.. only:: opengl
 
 		.. code-block:: cmake
 
@@ -307,7 +307,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. code-block:: cmake
 
@@ -337,9 +337,9 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	We have used ``add_executable()`` to create the program we'll be building, and specified its ``${SOURCES}`` and ``${HEADERS}``. We passed the ``XR_RUNTIME_JSON`` variable on to the debugging environment (Windows only). We've added the ``../Common``, ``"${openxr_SOURCE_DIR}/src/common"`` and ``"${openxr_SOURCE_DIR}/external/include"`` folders as include directories and linked the ``openxr_loader`` which we obtained with ``FetchContent``. This will also add the include directory for the OpenXR headers.
 	
-	.. container:: windows
+	.. only:: windows
 
-		.. container:: d3d11
+		.. only:: d3d11
 
 			.. literalinclude:: ../Chapter2/CMakeLists.txt
 				:language: cmake
@@ -347,7 +347,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 				:end-before: XR_DOCS_TAG_END_D3D11
 				:dedent: 8
 
-		.. container:: d3d12
+		.. only:: d3d12
 
 			.. literalinclude:: ../Chapter2/CMakeLists.txt
 				:language: cmake
@@ -355,7 +355,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 				:end-before: XR_DOCS_TAG_END_D3D12
 				:dedent: 8
 
-		.. container:: d3d11 d3d12
+		.. only:: d3d11 or d3d12
 
 			.. literalinclude:: ../Chapter2/CMakeLists.txt
 				:language: cmake
@@ -363,15 +363,15 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 				:end-before: XR_DOCS_TAG_END_D3D11_12
 				:dedent: 8
 			
-		.. container:: d3d11
+		.. only:: d3d11
 			
 			For Microsoft Windows, we've linked ``d3d11.lib`` and ``dxgi.lib``, so that we can use Direct3D 11 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project. We've added the ``XR_TUTORIAL_USE_D3D11`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
-		.. container:: d3d12
+		.. only:: d3d12
 
 			For Microsoft Windows, we've linked ``d3d12.lib`` and ``dxgi.lib``, so that we can use Direct3D 12 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project. We've added the ``XR_TUTORIAL_USE_D3D12`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
-	.. container:: linux
+	.. only:: linux
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -381,7 +381,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 		For Linux, there are no headers to include or libraries to link against. We've added the ``XR_TUTORIAL_USE_LINUX_XLIB`` compiler definition to specify which Linux Windowing System should be supported and have their headers included in ``GraphicsAPI.h``. Other options are ``XR_TUTORIAL_USE_LINUX_XCB`` and ``XR_TUTORIAL_USE_LINUX_WAYLAND``. Wayland uses *EGL* for its *OpenGL ES* context and not *GLX* with *OpenGL*.
 
-	.. container:: opengl
+	.. only:: opengl
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -391,7 +391,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		
 		We include the ``gfxwrapper.cmake`` from our ``cmake`` folder in the *workspace* directory. This file creates a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL. We link against ``openxr-gfxwrapper``, which also provide us with the needed include directories. We've added the ``XR_TUTORIAL_USE_OPENGL`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
-	.. container:: vulkan
+	.. only:: vulkan
 		
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -403,7 +403,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	That's all the CMake code that we require for this project. 
 
-.. container:: android
+.. only:: android
 
 	**For a quick setup download this ``.zip`` archive:**
 
@@ -445,7 +445,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	.. rubric:: CMake
 
-	.. container:: opengles
+	.. only:: opengles
 	
 		Create a folder called ``cmake`` in the *workspace* directory. Download the linked files below and put them in ``cmake``. These will be used by CMake to help build our project. 
 
@@ -453,7 +453,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		:download:`FindEGL.cmake <../cmake/FindEGL.cmake>`
 		:download:`FindOpenGLES.cmake <../cmake/FindOpenGLES.cmake>`
 
-	.. container:: vulkan
+	.. only:: vulkan
 	
 		Create a folder called ``cmake`` in the *workspace* directory. Download the linked file below and put it in ``cmake``. This will be used by CMake to help build our project. Files with ``shader`` in the name will be used in later chapters.
 
@@ -484,7 +484,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	After setting our CMake version, our own CMake variable ``PROJECT_NAME`` to ``OpenXRTutorialChapter2`` and with that variable setting the project's name, we append to the ``CMAKE_MODULE_PATH`` variable an additional path for ``find_package()`` to search within and we include ``FetchContent`` and use it to get the OpenXR-SDK-Source from Khronos's GitHub page.
 
-	.. container:: opengles
+	.. only:: opengles
 
 		.. code-block:: cmake
 
@@ -502,7 +502,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
 			
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. code-block:: cmake
 
@@ -538,7 +538,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	Now, add:
 
-	.. container:: opengles
+	.. only:: opengles
 	
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -548,7 +548,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 	
 		We include the ``gfxwrapper.cmake`` from our ``cmake`` folder in the *workspace* directory. This file creates a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL ES. We link against ``openxr-gfxwrapper``, which also provides us with the needed include directories. We've added the ``XR_TUTORIAL_USE_OPENGL_ES`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
@@ -602,50 +602,50 @@ Create a folder called ``Common`` in the *workspace* directory. Download each of
 * :download:`Common/GraphicsAPI.h <../Common/GraphicsAPI.h>`
 * :download:`Common/GraphicsAPI.cpp <../Common/GraphicsAPI.cpp>`
 
-.. container:: d3d11
+.. only:: d3d11
 
 	* :download:`Common/GraphicsAPI_D3D11.h <../Common/GraphicsAPI_D3D11.h>`
 	* :download:`Common/GraphicsAPI_D3D11.cpp <../Common/GraphicsAPI_D3D11.cpp>`
 
-.. container:: d3d12
+.. only:: d3d12
 
 	* :download:`Common/GraphicsAPI_D3D12.h <../Common/GraphicsAPI_D3D12.h>`
 	* :download:`Common/GraphicsAPI_D3D12.cpp <../Common/GraphicsAPI_D3D12.cpp>`
 
-.. container:: opengl
+.. only:: opengl
 
 	* :download:`Common/GraphicsAPI_OpenGL.h <../Common/GraphicsAPI_OpenGL.h>`
 	* :download:`Common/GraphicsAPI_OpenGL.cpp <../Common/GraphicsAPI_OpenGL.cpp>`
 
-.. container:: opengles
+.. only:: opengles
 
 	* :download:`Common/GraphicsAPI_OpenGL_ES.h <../Common/GraphicsAPI_OpenGL_ES.h>`
 	* :download:`Common/GraphicsAPI_OpenGL_ES.cpp <../Common/GraphicsAPI_OpenGL_ES.cpp>`
 
-.. container:: vulkan
+.. only:: vulkan
 
 	* :download:`Common/GraphicsAPI_Vulkan.h <../Common/GraphicsAPI_Vulkan.h>`
 	* :download:`Common/GraphicsAPI_Vulkan.cpp <../Common/GraphicsAPI_Vulkan.cpp>`
 
 Or, you can download the ``zip`` archive containing all the required files. Extract the archive to get the ``Common`` folder.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	* :git_release:`Common_D3D11.zip`
 
-.. container:: d3d12
+.. only:: d3d12
 
 	* :git_release:`Common_D3D12.zip`
 
-.. container:: opengl
+.. only:: opengl
 
 	* :git_release:`Common_OpenGL.zip`
 
-.. container:: opengles
+.. only:: opengles
 
 	* :git_release:`Common_OpenGL_ES.zip`
 
-.. container:: vulkan
+.. only:: vulkan
 
 	* :git_release:`Common_Vulkan.zip`
 
@@ -653,15 +653,15 @@ Or, you can download the ``zip`` archive containing all the required files. Extr
 
 ``DebugOutput`` is a class that redirects ``std::cout`` and ``std::cerr`` to the output window in your IDE.
 
-.. container:: windows
+.. only:: windows
 
 	``DebugOutput`` uses ``OutputDebugStringA()`` to log the message to the Visual Studio Output window.
 
-.. container:: linux
+.. only:: linux
 
 	``DebugOutput`` will not redirect the output a Visual Studio Code window. The output will remain in the terminal.
 
-.. container:: android
+.. only:: android
 
 	``DebugOutput`` uses ``__android_log_write()`` to log the message to Android Logcat.
 
@@ -700,35 +700,35 @@ Now, create a text file called ``main.cpp`` in the ``Chapter2`` folder. Open ``m
 
 Next, we add the ``GraphicsAPI_....h`` header to include the ``GraphicsAPI`` code of your chosen graphics API. This will in turn include ``GraphicsAPI.h``, ``HelperFunctions.h``  and ``OpenXRHelper.h``.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D11
 		:end-before: XR_DOCS_TAG_END_include_GraphicsAPI_D3D11
 
-.. container:: d3d12
+.. only:: d3d12
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D12
 		:end-before: XR_DOCS_TAG_END_include_GraphicsAPI_D3D12
 
-.. container:: opengl
+.. only:: opengl
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL
 		:end-before: XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL
 
-.. container:: opengles
+.. only:: opengles
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL_ES
 		:end-before: XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL_ES
 
-.. container:: vulkan
+.. only:: vulkan
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -766,11 +766,11 @@ Now we will define the main class ``OpenXRTutorial`` of the application. It's ju
 
 Note here that for some platforms, we need additional functionality provided via the ``PollSystemEvents()`` method, so that our application can react to any relevant updates from the platform correctly.
 
-.. container:: windows linux
+.. only:: windows or linux
 
 	For Windows and Linux, there are no relevant system events that we need to be aware of, and thus the ``PollSystemEvents()`` method definition can be left blank.
 
-.. container:: android
+.. only:: android
 
 	The ``PollSystemEvents()`` method is outside the scope of OpenXR, but in general it will poll Android for system events, updates and uses the ``AndroidAppState``, ``m_applicationRunning`` and ``m_sessionRunning`` members, which we describe later in this chapter.
 
@@ -784,37 +784,37 @@ chosen platform. We first create a 'pseudo-main function' called ``OpenXRTutoria
 
 Then, we create the actual platform-specific main function (our entry point to the application), which will call ``OpenXRTutorial_Main()`` with our ``GraphicsAPI_Type`` parameter. This must be changed to match on your chosen graphics API, one of: ``D3D11``, ``D3D12``, ``OPENGL``, ``OPENGL_ES``, or ``VULKAN``.
 
-.. container:: windows linux
+.. only:: windows or linux
 
-	.. container:: d3d11
+	.. only:: d3d11
 
 		.. literalinclude:: ../Chapter2/main.cpp
 			:language: cpp
 			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D11
 			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_D3D11
 
-	.. container:: d3d12
+	.. only:: d3d12
 
 		.. literalinclude:: ../Chapter2/main.cpp
 			:language: cpp
 			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_D3D12
 			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_D3D12
 
-	.. container:: opengl
+	.. only:: opengl
 
 		.. literalinclude:: ../Chapter2/main.cpp
 			:language: cpp
 			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_OPENGL
 			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_OPENGL
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. literalinclude:: ../Chapter2/main.cpp
 			:language: cpp
 			:start-after: XR_DOCS_TAG_BEGIN_main_Windows_Linux_VULKAN
 			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_VULKAN
 
-.. container:: android
+.. only:: android
 	
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -823,14 +823,14 @@ Then, we create the actual platform-specific main function (our entry point to t
 
 	And we will initialize the app with your chosen API:
 
-	.. container:: opengles
+	.. only:: opengles
 
 		.. literalinclude:: ../Chapter2/main.cpp
 			:language: cpp
 			:start-after: XR_DOCS_TAG_BEGIN_android_main_OPENGL_ES
 			:end-before: XR_DOCS_TAG_END_android_main_OPENGL_ES
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. literalinclude:: ../Chapter2/main.cpp
 			:language: cpp
@@ -858,7 +858,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 1.4.4 Build and Run
 ===================
 
-.. container:: windows
+.. only:: windows
 
 	In the *workspace* directory, create a ``build/`` folder, which will contain our project, solution and output binary files. Now launch the CMake GUI, and point the "Where is the source code" box to the *workspace* directory, where your original ``CMakeLists.txt`` is located. Point the "Where to build the binaries" box to a subdirectory called ``build``, that we have just created. Click "Configure" and "OK" to accept the default Generator, then click "Generate" to create the Visual Studio solution and project. Finally, click "Open Project" to open that solution with Visual Studio.
 
@@ -872,7 +872,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 
 	You can now build and run your program. It should compile and link with no errors or warnings, but it won't run correctly yet.
 
-.. container:: linux
+.. only:: linux
 
 	You now have all the files and folders, laid out as follows:
 
@@ -912,19 +912,19 @@ Then, we create the actual platform-specific main function (our entry point to t
 			]
 		}
 
-.. container:: windows linux
+.. only:: windows or linux
 
 	If you wish to run the application outside of you IDE, you will need to be aware of the working directory for the application to run correctly.	For example, To run the debug varinat of the Chapter2 application, use this:
 
-.. container:: windows
+.. only:: windows
 
 	``[...]/<workspaceFolder>/build/Chapter2>"Debug/OpenXRTutorialChapter2"``
 
-.. container:: linux
+.. only:: linux
 
 	``[...]/<workspaceFolder>/Chapter2 $ "../build/Chapter2/OpenXRTutorialChapter2"``
 
-.. container:: android
+.. only:: android
 
 	With all the source and build system files set up, we can now build our Android project. If while editing ``main.cpp`` or any other file you are seeing warnings like this: ``"This file does not belong to any project target..."``, right-click on the top-level folder of the project in the ``Project`` panel, select ``Mark Directory as >``, and click the option ``Sources Root``.
 	

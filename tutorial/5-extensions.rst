@@ -20,7 +20,7 @@ Many XR devices now support hand-tracking. Instead of a motion-tracked controlle
 
 **Remember to enable hand tracking in your XR runtime and/or XR system settings.**
 
-.. container:: android
+.. only:: android
 
 	We'll edit your ``app/src/main/AndroidManifest.xml`` to enable the hand tracking feature. Add these lines to the ``<manifest>`` block:
 	

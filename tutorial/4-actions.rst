@@ -4,7 +4,7 @@
 
 The goal of this chapter is to build an application that uses OpenXR actions to create interactivity. We will render numerous colored cubes for the user play with and build stuctures. First, we will update our build files and folders.
 
-.. container:: windows linux
+.. only:: windows or linux
 
 	In the *workspace* directory, update the ``CMakeLists.txt`` by adding the following CMake code to the end of the file:
 
@@ -16,7 +16,7 @@ The goal of this chapter is to build an application that uses OpenXR actions to 
 
 	Now, create a ``Chapter4`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` and ``CMakeLists.txt`` from ``Chapter3``. In the ``Chapter4/CMakeLists.txt`` update these lines:
 
-.. container:: android
+.. only:: android
 
 	Add a ``Chapter4`` folder in the *workspace* directory and into that folder copy the whole contents of ``Chapter3`` to it. In ``CMakeLists.txt``, update this line:
 
@@ -25,7 +25,7 @@ The goal of this chapter is to build an application that uses OpenXR actions to 
 	:start-after: XR_DOCS_TAG_BEGIN_SetProjectName4
 	:end-before: XR_DOCS_TAG_END_SetProjectName4
 
-.. container:: android
+.. only:: android
 
 	For Android, you will also need to change all references to ``OpenXRTutorialChapter3`` to ``OpenXRTutorialChapter4`` in app/build.gradle, settings.gradle and app/src/main/AndroidManifest.xml. Refer to :ref:`Chapter 1.4.1<1.4.1 CMake and Project Files>` for a refresher on the Android build files.
 

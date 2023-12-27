@@ -83,7 +83,7 @@ The :openxr_ref:`XrInstance` is the foundational object that we need to create f
 
 This structure allows you to specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the :openxr_ref:`XrApplicationInfo` ``::apiVersion``. Here we use the :openxr_ref:`XR_CURRENT_API_VERSION` macro to specify the OpenXR version that we want to run. Also, note here the use of ``strncpy()`` to set the name strings. If you look at :openxr_ref:`XrApplicationInfo` ``::applicationName`` and :openxr_ref:`XrApplicationInfo` ``::engineName`` members, they are of type ``char[]``, so you must copy your string into that buffer. Also, be aware of the allowable length. :openxr_ref:`XrApplicationInfo` will be used later when we will fill out :openxr_ref:`XrInstanceCreateInfo`.
 
-.. container:: vulkan
+.. only:: vulkan
 
 	Note the slight difference in the approach the OpenXR API takes compared to the Vulkan API. In OpenXR, name strings are explicitly copied into structures like :openxr_ref:`XrApplicationInfo`, which contain fixed-size string buffers, whereas in Vulkan, structures such as ``VkApplicationInfo`` take pointers to C strings of arbitrary size.
 
@@ -111,7 +111,7 @@ These functions are called twice. The first time is to get the count of the API 
 
 In OpenXR, we provide an explicit input capacity to both :openxr_ref:`xrEnumerateApiLayerProperties` and :openxr_ref:`xrEnumerateInstanceExtensionProperties`, which provides an additional layer of memory-safety. :openxr_ref:`xrEnumerateInstanceExtensionProperties` also allows you to query instance extensions by API layer name. In this tutorial, we just query the non-layer extensions that are implicitly loaded by the runtime. 
 
-.. container:: vulkan
+.. only:: vulkan
 
 	This is a subtle difference here from the two-call idiom in the Vulkan API.
 
@@ -215,7 +215,7 @@ With the above code, we have also got the system's properties. We partially fill
 
 You can now run the application to check that you have a valid :openxr_ref:`XrInstance` and :openxr_ref:`XrSystemId`.
 
-.. container:: linux
+.. only:: linux
 
 	Make sure your Monado service is running prior to running your app.
 
@@ -326,7 +326,7 @@ Copy the following code into the ``CreateSession()`` method.
 	:end-before: XR_DOCS_TAG_END_CreateSession1
 	:dedent: 8
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -334,7 +334,7 @@ Copy the following code into the ``CreateSession()`` method.
 		:end-at: );
 		:dedent: 12
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -342,7 +342,7 @@ Copy the following code into the ``CreateSession()`` method.
 		:end-at: );
 		:dedent: 12
 
-.. container:: opengl
+.. only:: opengl
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -350,7 +350,7 @@ Copy the following code into the ``CreateSession()`` method.
 		:end-at: );
 		:dedent: 12
 
-.. container:: opengles
+.. only:: opengles
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
@@ -358,7 +358,7 @@ Copy the following code into the ``CreateSession()`` method.
 		:end-at: );
 		:dedent: 12
 
-.. container:: vulkan
+.. only:: vulkan
 
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
