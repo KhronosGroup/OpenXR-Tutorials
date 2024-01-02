@@ -321,7 +321,9 @@
 		});
 		link_hrefs = document.getElementsByClassName('reference external');
 		[].forEach.call(link_hrefs, function(el) {
-			el.setAttribute('target', "_blank");
+			// ONLY if it's really an external link, i.e. it contains "http:" or "https:"
+			if(el.href.contains(":"))
+				el.setAttribute('target', "_blank");
 			////console.log("Adding target blank to "+el.id);
 		});
 		window.makeLinksOpenInNewWindow=makeLinksOpenInNewWindow;
@@ -466,7 +468,7 @@
 	</style>
 </head>
 
-<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL(); updateGraphicsAPIFromURL();initDropdownLinks()" onload="makeLinksOpenInNewWindow(); addIconsToToctree();">
+<body class="wy-body-for-nav" onpageshow="" onload="">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
@@ -480,7 +482,7 @@
           {# the master_doc variable was renamed to root_doc in Sphinx 4 (master_doc still exists in later Sphinx versions) #}
           {%- set _logo_url = logo_url|default(pathto('_static/' + (logo or ""), 1)) %}
           {%- set _root_doc = root_doc|default(master_doc) %}
-			<a href="{{ pathto(_root_doc) }}" {% if not theme_logo_only %} class="" {% endif %}>
+			<a href="/" {% if not theme_logo_only %} class="" {% endif %}>
 				{%- if logo or logo_url %}
 				<img src="{{ _logo_url }}" class="logo" alt="The OpenXR logo" >
 				{%- endif %}
@@ -547,7 +549,7 @@
 				{%- else %}
 				<div class="rst-content">
 					<div class="share-page-container">
-						<button class="share-this-page" id='share-this-page' onclick="copyLinkToThisPage()">
+						<button class="share-this-page" id='share-this-page' onclick="">
 							<img class="api-tab-img" src="_static/css/icons/share_FILL0_wght400_GRAD0_opsz24.svg" alt="Copy link to this page" />
 						</button>
 						<div id="copied-link-dialog">
@@ -576,11 +578,7 @@
 	</div>
   {% include "versions.html" -%}
 
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable({{ 'true' if theme_sticky_navigation|tobool else 'false' }});
-      });
-  </script>
+  <script></script>
 
   {#- Do not conflict with RTD insertion of analytics script #}
   {%- if not READTHEDOCS %}

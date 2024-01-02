@@ -22,7 +22,7 @@ Tutorial Structure
 
 The tutorial is divided into several main chapters. Each chapter walks you through a part of the process of creating an XR application and assumes that the previous chapters have been completed.
 
-Explantions of key concepts are given throughout the chapters to provide deeper insight into the workings of OpenXR. The code snippets can be copied directly into your project as you follow the tutorial, and explantions for the code are generally given after the code snippets.
+Explanations of key concepts are given throughout the chapters to provide deeper insight into the workings of OpenXR. Code snippets can be copied directly into your project as you follow the tutorial, and explanations for the code are generally given after the code snippets.
 
 At the end of each chapter there is a link to download the full example source code up to that point.
 
@@ -38,37 +38,15 @@ The full source code for this tutorial can also be downloaded from `https://gith
 
 	To begin the tutorial, select the platform and graphics API you want to use:
 	
-	+---------+---------------------------------------------------+
-	| Windows | `Windows/Vulkan <./windows/vulkan>`_.             |
-	|         +---------------------------------------------------+
-	|         | `Windows/OpenGL <./windows/opengl>`_.             |
-	|         +---------------------------------------------------+
-	|         | `Windows/Direct3D 11 <./windows/d3d11>`_.         |
-	|         +---------------------------------------------------+
-	|         | `Windows/Direct3D 12 <./windows/d3d12>`_.         |
-	+---------+---------------------------------------------------+
-	| Linux   | `Linux/Vulkan <./linux/vulkan>`_.                 |
-	|         +---------------------------------------------------+
-	|         | `Linux/OpenGL <./linux/opengl>`_.                 |
-	+---------+---------------------------------------------------+
-	| Android | `Android/Vulkan <./android/vulkan>`_.             |
-	|         +---------------------------------------------------+
-	|         | `Android/OpenGL <./android/opengl>`_.             |
-	+---------+---------------------------------------------------+
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
+	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+	|         | Vulkan                                              | OpenGL or OpenGL ES                                   | Direct3D 11                                 | Direct3D 12                                 |
+	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+	| Windows | `Windows/Vulkan <./windows/vulkan/index.html>`_     | `Windows/OpenGL <./windows/opengl/index.html>`_       | `Direct3D 11 <./windows/d3d11/index.html>`_ | `Direct3D 12 <./windows/d3d12/index.html>`_ |
+	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+	| Linux   | `Linux/Vulkan <./linux/vulkan/index.html>`_         | `Linux/OpenGL <./linux/opengl/index.html>`_           |                                             |                                             |
+	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+	| Android | `Android/Vulkan <./android/vulkan/index.html>`_     |  `Android/OpenGL ES <./android/opengles/index.html>`_ |                                             |                                             |
+	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
 	
 
 
