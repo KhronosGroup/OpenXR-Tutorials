@@ -124,7 +124,7 @@ if (Vulkan_FOUND)
                            MAIN_DEPENDENCY ${FILE}
                            COMMENT "GLSL ${FILE}"
                            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                           VERBATIM)
+                           VERBATIM COMMAND_EXPAND_LISTS)
     endforeach(FILE)
 endif()
 
