@@ -7769,9 +7769,10 @@ display:none;
     vertical-align: -50%;
 }
 
-.toctree-l1> a{
+.toctree-sidepanel> a{
     padding-left:56px;
 }
+
 #toc_interactions>a:before{
     background: url(icons/HandsetIcon.svg);
     background-size: contain;
