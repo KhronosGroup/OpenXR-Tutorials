@@ -40,7 +40,7 @@ def configureDoxyfile(input_dir, output_dir):
     with open('Doxyfile', 'w') as file:
         file.write(filedata)
 
-OPENXR_PLATFORM_API='Linux'
+OPENXR_PLATFORM_API='Android'
 if(tags.has('windows')):
     OPENXR_PLATFORM_API = "Windows"
 if(tags.has('linux')):
@@ -60,7 +60,8 @@ elif(tags.has('d3d12')):
     OPENXR_PLATFORM_API += "D3D12"
 else:
     OPENXR_PLATFORM_API += "Vulkan"
-html_context = {'platform_api': OPENXR_PLATFORM_API}
+OPENXR_PLATFORM_API_PATH=OPENXR_PLATFORM_API.replace(' ','').lower();
+html_context = {'platform_api': OPENXR_PLATFORM_API, 'platform_api_path':OPENXR_PLATFORM_API_PATH}
 
 
 # -- Project information -----------------------------------------------------

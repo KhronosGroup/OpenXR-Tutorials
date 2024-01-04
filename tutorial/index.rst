@@ -34,21 +34,19 @@ The full source code for this tutorial can also be downloaded from `https://gith
 * In Actions, we use OpenXR's action system to bind input to application specific actions allowing the user to interactivity.
 * In Extensions, we demonstrate various extensions that you may find helpful.
 
-.. only:: OPENXR_MAINSITE
-
-	To begin the tutorial, select the platform and graphics API you want to use:
+To begin the tutorial, select the platform and graphics API you want to use:
 	
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	|         | Vulkan                                              | OpenGL or OpenGL ES                                   | Direct3D 11                                 | Direct3D 12                                 |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	| Windows | `Windows/Vulkan <./windows/vulkan/index.html>`_     | `Windows/OpenGL <./windows/opengl/index.html>`_       | `Direct3D 11 <./windows/d3d11/index.html>`_ | `Direct3D 12 <./windows/d3d12/index.html>`_ |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	| Linux   | `Linux/Vulkan <./linux/vulkan/index.html>`_         | `Linux/OpenGL <./linux/opengl/index.html>`_           |                                             |                                             |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	| Android | `Android/Vulkan <./android/vulkan/index.html>`_     |  `Android/OpenGL ES <./android/opengles/index.html>`_ |                                             |                                             |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+|         | Vulkan                                              | OpenGL or OpenGL ES                                   | Direct3D 11                                 | Direct3D 12                                 |
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+| Windows | `Windows/Vulkan </windows/vulkan/index.html>`_     | `Windows/OpenGL </windows/opengl/index.html>`_       | `Direct3D 11 </windows/d3d11/index.html>`_ | `Direct3D 12 </windows/d3d12/index.html>`_ |
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+| Linux   | `Linux/Vulkan </linux/vulkan/index.html>`_         | `Linux/OpenGL </linux/opengl/index.html>`_           |                                             |                                             |
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+| Android | `Android/Vulkan </android/vulkan/index.html>`_     |  `Android/OpenGL ES </android/opengles/index.html>`_ |                                             |                                             |
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
 
+At any time you can change platform/API by clicking the link at the top-right of the page.	
 
 .. only:: OPENXR_SUBSITE
 

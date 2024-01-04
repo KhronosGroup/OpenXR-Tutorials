@@ -27,7 +27,7 @@ function(SiteVariant Platform Api)
         COMMAND
             "${SPHINX_EXECUTABLE}" -a -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
             "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D html_baseurl=https://openxr-tutorial.simul.co/
-            -t ${Platform} -t ${Api} -t OPENXR_SUBSITE -D OPENXR_PLATFORM_API=${Platform}/${Api}
+            -t ${Platform} -t ${Api} -t OPENXR_SUBSITE 
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         DEPENDS
             # Other docs files you want to track should go here (or in some variable)
@@ -61,7 +61,7 @@ add_custom_target(
     MainSite ALL
     COMMAND
         "${SPHINX_EXECUTABLE}" -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
-        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=https://openxr-tutorial.simul.co/ -D OPENXR_PLATFORM_API=Platform/Api -t OPENXR_MAINSITE 
+        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=https://openxr-tutorial.simul.co/ -t OPENXR_MAINSITE 
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS
         # Other docs files you want to track should go here (or in some variable)
