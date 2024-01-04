@@ -39,11 +39,11 @@ To begin the tutorial, select the platform and graphics API you want to use:
 +---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
 |         | Vulkan                                              | OpenGL or OpenGL ES                                   | Direct3D 11                                 | Direct3D 12                                 |
 +---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-| Windows | `Windows/Vulkan </windows/vulkan/index.html>`_     | `Windows/OpenGL </windows/opengl/index.html>`_       | `Direct3D 11 </windows/d3d11/index.html>`_ | `Direct3D 12 </windows/d3d12/index.html>`_ |
+| Windows | `Windows/Vulkan </windows/vulkan/index.html>`_      | `Windows/OpenGL </windows/opengl/index.html>`_        | `Direct3D 11 </windows/d3d11/index.html>`_  | `Direct3D 12 </windows/d3d12/index.html>`_  |
 +---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-| Linux   | `Linux/Vulkan </linux/vulkan/index.html>`_         | `Linux/OpenGL </linux/opengl/index.html>`_           |                                             |                                             |
+| Linux   | `Linux/Vulkan </linux/vulkan/index.html>`_          | `Linux/OpenGL </linux/opengl/index.html>`_            |                                             |                                             |
 +---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-| Android | `Android/Vulkan </android/vulkan/index.html>`_     |  `Android/OpenGL ES </android/opengles/index.html>`_ |                                             |                                             |
+| Android | `Android/Vulkan </android/vulkan/index.html>`_      |  `Android/OpenGL ES </android/opengles/index.html>`_  |                                             |                                             |
 +---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
 
 At any time you can change platform/API by clicking the link at the top-right of the page.	
