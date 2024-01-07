@@ -84,6 +84,8 @@ pip install breathe
 pip install myst-parser
 pip install sphinxcontrib-jquery
 pip install sphinx-copybutton
+pip install reuse
+pip install sphinxcontrib-mermaid
 ```
 
 Now build the project "Sphinx" from the command line or IDE.
