@@ -4,7 +4,7 @@
 
 The goal of this chapter is to build an application that creates and clears color and depth buffers and draws some geometry to the views within the scope of OpenXR render loop and to demonstrate its interaction with the Graphics APIs.
 
-.. container:: windows linux
+.. only:: windows or linux
 
 	In the *workspace* directory, update the ``CMakeLists.txt`` by adding the following CMake code to the end of the file:
 
@@ -16,7 +16,7 @@ The goal of this chapter is to build an application that creates and clears colo
 
 	Now, create a ``Chapter3`` folder in the *workspace* directory and into that folder copy the ``main.cpp`` and ``CMakeLists.txt`` from ``Chapter2``. In the ``Chapter3/CMakeLists.txt`` update these lines:
 
-.. container:: android
+.. only:: android
 
 	Add a ``Chapter3`` folder in the *workspace* directory and into that folder copy the whole contents of ``Chapter2`` to it. In ``CMakeLists.txt``, update this line:
 
@@ -27,38 +27,38 @@ The goal of this chapter is to build an application that creates and clears colo
 
 Create a ``Shaders`` folder in your root *workspace* folder, download and put these files in it:
 
-.. container:: d3d11 d3d12
+.. only:: d3d11 or d3d12
 
 	* :download:`Shaders/VertexShader.hlsl <../Shaders/VertexShader.hlsl>`
 	* :download:`Shaders/PixelShader.hlsl <../Shaders/PixelShader.hlsl>`
 
-.. container:: vulkan opengl
+.. only:: vulkan or opengl
 
 	* :download:`Shaders/VertexShader.glsl <../Shaders/VertexShader.glsl>`
 	* :download:`Shaders/PixelShader.glsl <../Shaders/PixelShader.glsl>`
 
-.. container:: opengles
+.. only:: opengles
 
 	* :download:`Shaders/VertexShader_GLES.glsl <../Shaders/VertexShader_GLES.glsl>`
 	* :download:`Shaders/PixelShader_GLES.glsl <../Shaders/PixelShader_GLES.glsl>`
 
 Underneath the ``SOURCES`` and ``HEADERS`` section, add the following CMake code specifying the location of the shaders:
 
-.. container:: d3d11 d3d12
+.. only:: d3d11 or d3d12
 
 	.. literalinclude:: ../Chapter3/CMakeLists.txt
 		:language: cmake
 		:start-after: XR_DOCS_TAG_BEGIN_HLSLShaders
 		:end-before: XR_DOCS_TAG_END_HLSLShaders
 
-.. container:: opengl vulkan
+.. only:: opengl or vulkan
 
 	.. literalinclude:: ../Chapter3/CMakeLists.txt
 		:language: cmake
 		:start-after: XR_DOCS_TAG_BEGIN_GLSLShaders
 		:end-before: XR_DOCS_TAG_END_GLSLShaders
 
-.. container:: opengles
+.. only:: opengles
 
 	.. literalinclude:: ../Chapter3/CMakeLists.txt
 		:language: cmake
@@ -67,9 +67,9 @@ Underneath the ``SOURCES`` and ``HEADERS`` section, add the following CMake code
 
 Underneath section where specify your Graphics API, add the following CMake code:
 
-.. container:: windows
+.. only:: windows
 
-	.. container:: d3d11 d3d12
+	.. only:: d3d11 or d3d12
 
 		.. literalinclude:: ../Chapter3/CMakeLists.txt
 			:language: cmake
@@ -77,9 +77,9 @@ Underneath section where specify your Graphics API, add the following CMake code
 			:end-before: XR_DOCS_TAG_END_BuildShadersWindows
 			:dedent: 4
 
-.. container:: windows linux
+.. only:: windows or linux
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. literalinclude:: ../Chapter3/CMakeLists.txt
 			:language: cmake
@@ -87,7 +87,7 @@ Underneath section where specify your Graphics API, add the following CMake code
 			:end-before: XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
 			:dedent: 4
 
-	.. container:: opengl
+	.. only:: opengl
 
 		.. literalinclude:: ../Chapter3/CMakeLists.txt
 			:language: cmake
@@ -96,9 +96,9 @@ Underneath section where specify your Graphics API, add the following CMake code
 			:dedent: 4
 
 
-.. container:: android
+.. only:: android
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. literalinclude:: ../Chapter3/CMakeLists.txt
 				:language: cmake
@@ -106,7 +106,7 @@ Underneath section where specify your Graphics API, add the following CMake code
 				:end-before: XR_DOCS_TAG_END_CompileAndroidGLSLShaders
 				:dedent: 4
 
-	.. container:: opengles
+	.. only:: opengles
 
 		.. literalinclude:: ../Chapter3/CMakeLists.txt
 			:language: cmake
@@ -115,7 +115,7 @@ Underneath section where specify your Graphics API, add the following CMake code
 			:dedent: 4
 
 
-.. container:: android
+.. only:: android
 
 	For Android, you will also need to change all references to ``OpenXRTutorialChapter2`` to ``OpenXRTutorialChapter3`` in app/build.gradle, settings.gradle and app/src/main/AndroidManifest.xml. Refer to :ref:`Chapter 1.4.1<1.4.1 CMake and Project Files>` for a refresher on the Android build files.
 
@@ -282,7 +282,7 @@ Inside the for loop of the ``CreateSwapchains()`` method, add the following code
 
 Here, we've filled out the :openxr_ref:`XrSwapchainCreateInfo` structure. The ``sampleCount``, ``width`` and ``height`` members were assigned from the related :openxr_ref:`XrViewConfigurationView`. We set the ``createFlags`` to ``0`` as we require no constraints or additional functionality. We set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT`` requesting that the images are suitable to be read in a shader and to be used as a render target/color attachment. For the depth swapchain, we set the ``usageFlags`` to ``XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` as these images will be used as a depth stencil attachments.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. rubric:: DirectX 11
 
@@ -306,7 +306,7 @@ Here, we've filled out the :openxr_ref:`XrSwapchainCreateInfo` structure. The ``
 	| XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_KHR     | ignored                            |
 	+-------------------------------------------------+------------------------------------+
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. rubric:: DirectX 12
 
@@ -330,19 +330,19 @@ Here, we've filled out the :openxr_ref:`XrSwapchainCreateInfo` structure. The ``
 	| XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_KHR     | ignored                                    |
 	+-------------------------------------------------+--------------------------------------------+
 
-.. container:: opengl
+.. only:: opengl
 
 	.. rubric:: OpenGL
 
 	All :openxr_ref:`XrSwapchainUsageFlags` are ignored as OpenGL can't specify usage of an image.
 
-.. container:: opengles
+.. only:: opengles
 
 	.. rubric:: OpenGL ES
 
 	All :openxr_ref:`XrSwapchainUsageFlags` are ignored as OpenGL ES can't specify usage of an image.
 
-.. container:: vulkan
+.. only:: vulkan
 
 	.. rubric:: Vulkan
 
@@ -379,7 +379,7 @@ Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
 
 The functions each call a pure virtual method called ``GraphicsAPI::SelectColorSwapchainFormat()`` and ``GraphicsAPI::SelectDepthSwapchainFormat()`` respectively, which each class implements. It returns an array of API-specific formats that the GraphicsAPI library supports.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. rubric:: DirectX 11
 
@@ -390,7 +390,7 @@ The functions each call a pure virtual method called ``GraphicsAPI::SelectColorS
 		
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. rubric:: DirectX 12
 
@@ -401,7 +401,7 @@ The functions each call a pure virtual method called ``GraphicsAPI::SelectColorS
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.cpp*
 
-.. container:: opengl
+.. only:: opengl
 
 	.. rubric:: OpenGL
 
@@ -412,7 +412,7 @@ The functions each call a pure virtual method called ``GraphicsAPI::SelectColorS
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.cpp*
 
-.. container:: opengles
+.. only:: opengles
 
 	.. rubric:: OpenGL ES
 
@@ -423,7 +423,7 @@ The functions each call a pure virtual method called ``GraphicsAPI::SelectColorS
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.cpp*
 
-.. container:: vulkan
+.. only:: vulkan
 
 	.. rubric:: Vulkan
 
@@ -454,7 +454,7 @@ Copy and append the following code into the for loop of the ``CreateSwapchains()
 
 Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method and the ``XrSwapchainImage...KHR`` structure relating to your chosen graphics API.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. rubric:: DirectX 11
 
@@ -476,7 +476,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	The structure contains a ``ID3D11Texture2D *`` member that is the handle to one of the images in the swapchain.
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. rubric:: DirectX 12
 
@@ -498,7 +498,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	The structure contains a ``ID3D12Resource *`` member that is the handle to one of the images in the swapchain.
 
-.. container:: opengl
+.. only:: opengl
 
 	.. rubric:: OpenGL
 
@@ -520,7 +520,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	The structure contains a ``uint32_t`` member that is the handle to one of the images in the swapchain.
 
-.. container:: opengles
+.. only:: opengles
 
 	.. rubric:: OpenGL ES
 
@@ -542,7 +542,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 
 	The structure contains a ``uint32_t`` member that is the handle to one of the images in the swapchain.
 
-.. container:: vulkan
+.. only:: vulkan
 
 	.. rubric:: Vulkan
 
@@ -579,7 +579,7 @@ Append the following code into the for loop of the ``CreateSwapchains()`` method
 
 Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImage()``, which returns an API-specific handle to the image, which is cast to a ``void *``.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. rubric:: DirectX 11
 
@@ -591,7 +591,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.h*
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. rubric:: DirectX 12
 
@@ -605,7 +605,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET`` for color and ``D3D12_RESOURCE_STATE_DEPTH_WRITE`` for depth. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
 
-.. container:: opengl
+.. only:: opengl
 
 	.. rubric:: OpenGL
 
@@ -617,7 +617,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL.h*
 
-.. container:: opengles
+.. only:: opengles
 
 	.. rubric:: OpenGL ES
 
@@ -629,7 +629,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	*The above code is an excerpt from Common/GraphicsAPI_OpenGL_ES.h*
 
-.. container:: vulkan
+.. only:: vulkan
 
 	.. rubric:: Vulkan
 
@@ -1183,7 +1183,7 @@ Copy the following code into ``CreateResources()``:
 
 Now, we will add the code to load and create our shaders with ``GraphicsAPI::CreateShader()``. Copy the following code into ``CreateResources()``:
 
-.. container:: opengl
+.. only:: opengl
 
 	For OpenGL, we will use GLSL version 450. Add this code to define our vertex and pixel shaders, and to create a shader program:
 
@@ -1193,9 +1193,9 @@ Now, we will add the code to load and create our shaders with ``GraphicsAPI::Cre
 		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL
 		:dedent: 8
 
-.. container:: vulkan 
+.. only:: vulkan 
 
-	.. container:: windows linux 
+	.. only:: windows or linux 
 
 	 	For Vulkan, we will use GLSL version 450. Add this code to define our vertex and pixel shaders:
 
@@ -1205,7 +1205,7 @@ Now, we will add the code to load and create our shaders with ``GraphicsAPI::Cre
 			:end-before: XR_DOCS_TAG_END_CreateResources2_VulkanWindowsLinux
 			:dedent: 8
 	
-	.. container:: android 
+	.. only:: android 
 
 		For Vulkan, we will use GLSL version 450. Add this code to define our vertex and pixel shaders:
 
@@ -1215,7 +1215,7 @@ Now, we will add the code to load and create our shaders with ``GraphicsAPI::Cre
 			:end-before: XR_DOCS_TAG_END_CreateResources2_VulkanAndroid
 			:dedent: 8
 	
-.. container:: opengles
+.. only:: opengles
 
 	For OpenGL ES, we will use GLSL version 310 es. Add this code to define our vertex and pixel shaders:
 
@@ -1225,7 +1225,7 @@ Now, we will add the code to load and create our shaders with ``GraphicsAPI::Cre
 		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGLES
 		:dedent: 8
 
-.. container:: d3d11 d3d12
+.. only:: d3d11 or d3d12
 
 	For Direct 3D, add this code to define our vertex and pixel shaders:
 

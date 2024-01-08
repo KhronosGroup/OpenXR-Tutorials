@@ -10,19 +10,19 @@ So far, you've learned how to create a basic OpenXR application: how to initiali
 
 Stereoscopic rendering usually involves drawing two very similar views of the same scene, with only a slight difference in perspective due to the separation of the left and right eye positions. Multiview rendering provides a great saving, particularly of CPU time, as we can use just one set of draw calls to render both views. The benefits can also extend to the GPU, depending on the implementation. In certain cases, it's possible that the Input Assembler only needs to be invoked once for all views, instead of repeating non-view dependent work redundantly.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	D3D11 supports rendering to a Texture2DArray RenderTarget, but requires the use of instanced rendering to render to multiple views in the same draw call.
 
-.. container:: d3d12
+.. only:: d3d12
 
 	D3D12 supports rendering to both eye views with View Instancing - see `D3D12 View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_.
 
-.. container:: opengl opengles
+.. only:: opengl or opengles
 
 	OpenGL and OpenGL ES support rendering to both eye views with multiview - see `OpenGL and OpenGL ES Multiview <https://registry.khronos.org/OpenGL/extensions/OVR/OVR_multiview.txt>`_.
 
-.. container:: Vulkan
+.. only:: Vulkan
 
 	Vulkan supports rendering to both eye views with multiview - see `Vulkan Multiview <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_multiview.html>`_.
 
@@ -41,27 +41,27 @@ In the *workspace* directory, update the ``CMakeLists.txt`` by adding the follow
 
 There are some changes in Chapter 6 to the implementation of ``GraphicsAPI``. Update the ``Common`` folder with the zip archive below.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	:git_release:`Chapter6_1_Multiview_Common_D3D11.zip`
 
-.. container:: d3d12
+.. only:: d3d12
 
 	:git_release:`Chapter6_1_Multiview_Common_D3D12.zip`
 
-.. container:: opengl
+.. only:: opengl
 
 	:git_release:`Chapter6_1_Multiview_Common_OpenGL.zip`
 
-.. container:: opengles
+.. only:: opengles
 
 	:git_release:`Chapter6_1_Multiview_Common_OpenGL_ES.zip`
 
-.. container:: vulkan
+.. only:: vulkan
 
 	:git_release:`Chapter6_1_Multiview_Common_Vulkan.zip`
 
-.. container:: d3d12
+.. only:: d3d12
 
 	For Direct3D 12, you will need to an additional download. This goes into the ``cmake`` folder. This locates and allow CMake to use dxc for shader compilation.
 	
@@ -69,27 +69,27 @@ There are some changes in Chapter 6 to the implementation of ``GraphicsAPI``. Up
 
 For multiview there are some changes to the shaders. Create a new ``ShaderMultiview`` folder in the *workspace* directory and download the new shaders.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	* :download:`ShadersMultiview/VertexShader_DX11_MV.hlsl <../Chapter6_1_Multiview/ShadersMultiview/VertexShader_DX11_MV.hlsl>`
 	* :download:`ShadersMultiview/PixelShader_DX11_MV.hlsl <../Chapter6_1_Multiview/ShadersMultiview/PixelShader_DX11_MV.hlsl>`
 
-.. container:: d3d12
+.. only:: d3d12
 
 	* :download:`ShadersMultiview/VertexShader_DX12_MV.hlsl <../Chapter6_1_Multiview/ShadersMultiview/VertexShader_DX12_MV.hlsl>`
 	* :download:`ShadersMultiview/PixelShader_DX12_MV.hlsl <../Chapter6_1_Multiview/ShadersMultiview/PixelShader_DX12_MV.hlsl>`
 
-.. container:: opengl
+.. only:: opengl
 
 	* :download:`ShadersMultiview/VertexShader_GL_MV.glsl <../Chapter6_1_Multiview/ShadersMultiview/VertexShader_GL_MV.glsl>`
 	* :download:`ShadersMultiview/PixelShader_GL_MV.glsl <../Chapter6_1_Multiview/ShadersMultiview/PixelShader_GL_MV.glsl>`
 
-.. container:: opengles
+.. only:: opengles
 
 	* :download:`ShadersMultiview/VertexShader_GLES_MV.glsl <../Chapter6_1_Multiview/ShadersMultiview/VertexShader_GLES_MV.glsl>`
 	* :download:`ShadersMultiview/PixelShader_GLES_MV.glsl <../Chapter6_1_Multiview/ShadersMultiview/PixelShader_GLES_MV.glsl>`
 
-.. container:: vulkan
+.. only:: vulkan
 
 	* :download:`ShadersMultiview/VertexShader_VK_MV.glsl <../Chapter6_1_Multiview/ShadersMultiview/VertexShader_VK_MV.glsl>`
 	* :download:`ShadersMultiview/PixelShader_VK_MV.glsl <../Chapter6_1_Multiview/ShadersMultiview/PixelShader_VK_MV.glsl>`
@@ -103,35 +103,35 @@ Update the ``Chapter6/CMakeLists.txt`` as follows. First, we update the project 
 
 Next, we update the shaders file paths:
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
 		:start-after: XR_DOCS_TAG_BEGIN_DX11_SHADERS
 		:end-before: XR_DOCS_TAG_END_DX11_SHADERS
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
 		:start-after: XR_DOCS_TAG_BEGIN_DX12_SHADERS
 		:end-before: XR_DOCS_TAG_END_DX12_SHADERS
 
-.. container:: opengl
+.. only:: opengl
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
 		:start-after: XR_DOCS_TAG_BEGIN_GL_SHADERS
 		:end-before: XR_DOCS_TAG_END_GL_SHADERS
 
-.. container:: opengles
+.. only:: opengles
 	
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
 		:start-after: XR_DOCS_TAG_BEGIN_ES_GLSL_SHADERS
 		:end-before: XR_DOCS_TAG_END_ES_GLSL_SHADERS
 
-.. container:: vulkan
+.. only:: vulkan
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
@@ -140,7 +140,7 @@ Next, we update the shaders file paths:
 
 Just after where we link the ``openxr_loader``, we add in the ``XR_TUTORIAL_ENABLE_MULTIVIEW`` definition to enable multiview in ``GraphicsAPI`` class.
 
-.. container:: windows linux
+.. only:: windows or linux
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
@@ -148,7 +148,7 @@ Just after where we link the ``openxr_loader``, we add in the ``XR_TUTORIAL_ENAB
 		:end-before: XR_DOCS_TAG_END_WindowsLinuxEnableMultiview
 		:dedent: 4
 
-.. container:: android
+.. only:: android
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
@@ -158,7 +158,7 @@ Just after where we link the ``openxr_loader``, we add in the ``XR_TUTORIAL_ENAB
 
 Finally, we update the CMake section where we compile the shaders:
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
@@ -166,7 +166,7 @@ Finally, we update the CMake section where we compile the shaders:
 		:end-at: endforeach()
 		:dedent: 8
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
@@ -174,7 +174,7 @@ Finally, we update the CMake section where we compile the shaders:
 		:end-at: endforeach()
 		:dedent: 8
 
-.. container:: opengl
+.. only:: opengl
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
@@ -182,13 +182,13 @@ Finally, we update the CMake section where we compile the shaders:
 		:end-before: XR_DOCS_TAG_END_BuildShadersOpenGLWindowsLinux
 		:dedent: 4
 
-.. container:: opengles
+.. only:: opengles
 
 	No changes needed for OpenGL ES!
 
-.. container:: vulkan
+.. only:: vulkan
 	
-	.. container:: windows linux
+	.. only:: windows or linux
 	
 		.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 			:language: cmake
@@ -196,7 +196,7 @@ Finally, we update the CMake section where we compile the shaders:
 			:end-before: XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
 			:dedent: 4
 
-	.. container:: android
+	.. only:: android
 
 		.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 			:language: cmake
@@ -278,7 +278,7 @@ Because of the larger size of the camera constant/uniform buffer, we need to ali
 
 Next, we update the shader filepaths:
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
 		:language: cpp
@@ -287,7 +287,7 @@ Next, we update the shader filepaths:
 		:dedent: 8
 		:emphasize-lines: 2, 5
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
 		:language: cpp
@@ -296,7 +296,7 @@ Next, we update the shader filepaths:
 		:dedent: 8
 		:emphasize-lines: 2, 5
 
-.. container:: opengl
+.. only:: opengl
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
 		:language: cpp
@@ -305,7 +305,7 @@ Next, we update the shader filepaths:
 		:dedent: 8
 		:emphasize-lines: 2, 5
 
-.. container:: opengles
+.. only:: opengles
 
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
 		:language: cpp
@@ -314,9 +314,9 @@ Next, we update the shader filepaths:
 		:dedent: 8
 		:emphasize-lines: 2, 4
 
-.. container:: vulkan
+.. only:: vulkan
 
-	.. container:: windows linux
+	.. only:: windows or linux
 
 		.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
 			:language: cpp
@@ -325,7 +325,7 @@ Next, we update the shader filepaths:
 			:dedent: 8
 			:emphasize-lines: 2, 5
 
-	.. container:: android
+	.. only:: android
 
 		.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
 			:language: cpp
@@ -371,7 +371,7 @@ You can now debug and run your application using Multiview rendering.
 
 In this section, we describe some of the background changes to the shaders and ``GraphicsAPI`` needed to support multiview rendering.
 
-.. container:: d3d11
+.. only:: d3d11
 	
 	Here, we use the vertex shader to write to the ``SV_RenderTargetArrayIndex`` System-Value Semantic, which specifies which index in the array within the render target we should emit the primitives data to. This System-Value Semantic must be matched in the pixel shader input. Note that this is only supported when ``D3D11_FEATURE_DATA_D3D11_OPTIONS3::VPAndRTArrayIndexFromAnyShaderFeedingRasterizer`` is set to true. Otherwise, you would need to use a geometry shader. `HLSL Semantics <https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics>`_.
 	Also see this example from Microsoft's `OpenXR-MixedReality GitHub repository <https://github.com/microsoft/OpenXR-MixedReality/blob/a46ea22a396a38725043fea91166c6d5b1a49dfc/samples/BasicXrApp/CubeGraphics.cpp>`_ and a reference page from Mixed Reality about `Rendering in DirectX <https://learn.microsoft.com/en-us/windows/mixed-reality/develop/native/rendering-in-directx>`_.
@@ -389,7 +389,7 @@ In this section, we describe some of the background changes to the shaders and `
 		:language: hlsl
 
 
-.. container:: d3d12
+.. only:: d3d12
 
 	First, you need to check that ``D3D12_FEATURE_DATA_D3D12_OPTIONS3::ViewInstancingTier`` is greater than ``D3D12_VIEW_INSTANCING_TIER_NOT_SUPPORTED``. Next, within the pipeline creation, set up the ``D3D12_VIEW_INSTANCING_DESC`` and a ``std::vector<D3D12_VIEW_INSTANCE_LOCATION>`` for pipeline creation. Here, we must use ``ID3D12Device2::CreatePipelineState()`` for ViewInstancing. Set the ``D3D12_VIEW_INSTANCE_LOCATION::RenderTargetArrayIndex`` to ``0`` for left and ``1`` for right eye views. This means that we don't need to write to ``SV_RenderTargetArrayIndex`` in the shader. We set ``D3D12_VIEW_INSTANCING_DESC::Flags`` to ``D3D12_VIEW_INSTANCING_FLAG_NONE``, though it's possible to set it to ``D3D12_VIEW_INSTANCING_FLAG_ENABLE_VIEW_INSTANCE_MASKING`` and use ``ID3D12CommandList2::SetViewInstanceMask()`` to control further which views will be rendered to.
 
@@ -406,7 +406,7 @@ In this section, we describe some of the background changes to the shaders and `
 		:diff: ../Shaders/VertexShader.hlsl
 		:language: hlsl
 
-.. container:: opengl
+.. only:: opengl
 
 	Enusre you have support for ``GL_OVR_multiview`` by checking the extensions and that you have loaded the ``glFramebufferTextureMultiviewOVR()`` function pointer, if you need to do so. You will use this to create a framebuffer that supports rendering to multiple layers.
 	See this example from ARM's OpenGL ES SDK for Android `here <https://arm-software.github.io/opengl-es-sdk-for-android/multiview.html>`_, which works for OpenGL too.
@@ -417,7 +417,7 @@ In this section, we describe some of the background changes to the shaders and `
 		:diff: ../Shaders/VertexShader.glsl
 		:language: glsl
 
-.. container:: opengles
+.. only:: opengles
 
 	Enusre you have support for ``GL_OVR_multiview`` by checking the extensions and that you have loaded the ``glFramebufferTextureMultiviewOVR()`` function pointer, if you need to do so. You will use this to create a framebuffer that supports rendering to multiple layers.
 	See this example from ARM's OpenGL ES SDK for Android `here <https://arm-software.github.io/opengl-es-sdk-for-android/multiview.html>`_.
@@ -428,7 +428,7 @@ In this section, we describe some of the background changes to the shaders and `
 		:diff: ../Shaders/VertexShader_GLES.glsl
 		:language: glsl
 
-.. container:: vulkan
+.. only:: vulkan
 
 	First, add the ``VK_KHR_MULTIVIEW_EXTENSION_NAME`` or ``"VK_KHR_multiview"`` string to the device extensions list when creating the ``VkDevice``.
 
@@ -462,9 +462,9 @@ The code below is an example of how you might implement the inclusion and defini
 	:start-at: #include <HelperFunctions
 	:end-at: .h>
 
-.. container:: windows
+.. only:: windows
 
-	.. container:: d3d11
+	.. only:: d3d11
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -472,7 +472,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:end-at: #endif  // _WIN32
 			:emphasize-lines: 6, 8-10
 
-	.. container:: d3d12
+	.. only:: d3d12
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -480,7 +480,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:end-at: #endif  // _WIN32
 			:emphasize-lines: 6, 11-13
 
-	.. container:: opengl
+	.. only:: opengl
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -488,7 +488,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:end-at: #endif  // _WIN32
 			:emphasize-lines: 6, 14-16
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -496,9 +496,9 @@ The code below is an example of how you might implement the inclusion and defini
 			:end-at: #endif  // _WIN32
 			:emphasize-lines: 6, 17-19
 
-.. container:: linux
+.. only:: linux
 
-	.. container:: opengl
+	.. only:: opengl
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -506,7 +506,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:end-at: #endif  // __linux__
 			:emphasize-lines: 2-13, 15-17
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -514,9 +514,9 @@ The code below is an example of how you might implement the inclusion and defini
 			:end-at: #endif  // __linux__
 			:emphasize-lines: 2-13, 18-20
 
-.. container:: android
+.. only:: android
 
-	.. container:: opengles
+	.. only:: opengles
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -524,7 +524,7 @@ The code below is an example of how you might implement the inclusion and defini
 			:end-at: endif  // __ANDROID__
 			:emphasize-lines: 3, 5-7
 
-	.. container:: vulkan
+	.. only:: vulkan
 
 		.. literalinclude:: ../Common/GraphicsAPI.h
 			:language: cpp
@@ -532,35 +532,35 @@ The code below is an example of how you might implement the inclusion and defini
 			:end-at: endif  // __ANDROID__
 			:emphasize-lines: 3, 8-10
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
 		:start-at: #if defined(XR_USE_GRAPHICS_API_D3D11)
 		:end-at: #endif
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
 		:start-at: #if defined(XR_USE_GRAPHICS_API_D3D12)
 		:end-at: #endif
 
-.. container:: opengl
+.. only:: opengl
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
 		:start-at: #if defined(XR_USE_GRAPHICS_API_OPENGL)
 		:end-at: #endif
 
-.. container:: opengles
+.. only:: opengles
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
 		:start-at: #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
 		:end-at: #endif
 
-.. container:: vulkan
+.. only:: vulkan
 
 	.. literalinclude:: ../Common/GraphicsAPI.h
 		:language: cpp
@@ -574,35 +574,35 @@ The code below is an example of how you might implement the inclusion and defini
 
 When setting up the graphics API core objects, there are things that we need to know from OpenXR in order to create the objects correctly. These could include the version of the graphics API required, referencing a specific GPU, required instance and/or device extension etc. Below are code examples showing how to set up your graphics for OpenXR.
 
-.. container:: d3d11
+.. only:: d3d11
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D11.cpp
 		:language: cpp
 		:start-after: // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11
 		:end-before: // XR_DOCS_TAG_END_GraphicsAPI_D3D11
 
-.. container:: d3d12
+.. only:: d3d12
 
 	.. literalinclude:: ../Common/GraphicsAPI_D3D12.cpp
 		:language: cpp
 		:start-after: // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D12
 		:end-before: // XR_DOCS_TAG_END_GraphicsAPI_D3D12
 
-.. container:: opengl
+.. only:: opengl
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL.cpp
 		:language: cpp
 		:start-after: // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL
 		:end-before: // XR_DOCS_TAG_END_GraphicsAPI_OpenGL
 
-.. container:: opengles
+.. only:: opengles
 
 	.. literalinclude:: ../Common/GraphicsAPI_OpenGL_ES.cpp
 		:language: cpp
 		:start-after: // XR_DOCS_TAG_BEGIN_GraphicsAPI_OpenGL_ES
 		:end-before: // XR_DOCS_TAG_END_GraphicsAPI_OpenGL_ES
 
-.. container:: vulkan
+.. only:: vulkan
 
 	.. literalinclude:: ../Common/GraphicsAPI_Vulkan.cpp
 		:language: cpp
@@ -653,7 +653,7 @@ Firstly, ensure that you are building the OpenXR provided API layers from the `O
 	:end-before: XR_DOCS_TAG_END_FetchContent
 	:emphasize-lines: 9 - 12
 
-.. container:: windows linux
+.. only:: windows or linux
 
 	To enable API layers, add the ``XR_API_LAYER_PATH=<path>`` environment variable to your project or your system. Something like this: ``XR_API_LAYER_PATH=<openxr_base>/<build_folder>/src/api_layers/;<another_path>``. In this tutorial, the API layer files are found in ``<cmake_source_folder>/build/_deps/openxr-build/src/api_layers/``.
 	
@@ -676,7 +676,7 @@ Firstly, ensure that you are building the OpenXR provided API layers from the `O
 
 	This file points to the library that the loader should use for this API layer.
 
-.. container:: android
+.. only:: android
 
 	The Android OpenXR Loader will find API Layers be reading all of the ``.json`` files in specific locations within the APK assets folder. The APK assest folder will be something like ``app/src/main/assets/``. Under that folder, the loader will check for implicit and explicit layers in these directories:
 	
@@ -708,13 +708,13 @@ Firstly, ensure that you are building the OpenXR provided API layers from the `O
 
 	Calls to :openxr_ref:`xrEnumerateApiLayerProperties` should now return a pointer to an array of structs and the count of all API layers available to the application.
 
-.. container:: windows linux
+.. only:: windows or linux
 
 	To select which API layers we want to use, there are two ways to do this:
 	 1. Add the ``XR_ENABLE_API_LAYERS=<layer_name>`` environment variable to your project or your system. Something like this: ``XR_ENABLE_API_LAYERS=XR_APILAYER_LUNARG_test1;XR_APILAYER_LUNARG_test2``.
 	 2. When creating the :openxr_ref:`XrInstance`, specify the requested API layers in the :openxr_ref:`XrInstanceCreateInfo` structure.
 
-.. container:: android
+.. only:: android
 
 	To select which API layers we want to use, specify the requested API layers in the :openxr_ref:`XrInstanceCreateInfo` structure, when creating the :openxr_ref:`XrInstance`.
 

@@ -1,14 +1,23 @@
-<div id='selectplatform'>
-	<button class="select-platform" id='selectwindows' onclick="choosePlatform('windows')">
-		<img class="platform-tab-img" src="_static/css/windows-mono.svg" alt="Windows" />
-	</button>
-	<button class="select-platform" id='selectlinux' onclick="choosePlatform('linux')">
-		<img class="platform-tab-img" src="_static/css/tux-mono.svg" alt="Linux" />
-	</button>
-	<button class="select-platform" id='selectandroid' onclick="choosePlatform('android')">
-		<img class="platform-tab-img" src="_static/css/android-mono.svg" alt="Android" />
-	</button>
+
+
+<div class="platform-api-dropdown">
+  <span>{{ platform_api }}</span>
+  <div class="platform-api-dropdown-content">
+    <ul>
+      <li><a class="dropdown-platform-api" id="windows-vulkan" href="#">Windows Vulkan</a></li>
+      <li><a class="dropdown-platform-api" id="windows-opengl" href="#">Windows OpenGL</a></li>
+      <li><a class="dropdown-platform-api" id="windows-d3d11" href="#">Windows D3D11</a></li>
+      <li><a class="dropdown-platform-api" id="windows-d3d12" href="#">Windows D3D12</a></li>
+      <li><a class="dropdown-platform-api" id="linux-vulkan" href="#">Linux Vulkan</a></li>
+      <li><a class="dropdown-platform-api" id="linux-opengl" href="#">Linux OpenGL</a></li>
+      <li><a class="dropdown-platform-api" id="android-vulkan" href="#">Android Vulkan</a></li>
+      <li><a class="dropdown-platform-api" id="android-opengles" href="#">Android OpenGL ES</a></li>
+    </ul>
+  </div>
 </div>
+
+
+
 <script>
 	function choosePlatform(platformName)
 	{
@@ -17,19 +26,6 @@
 	};
 </script>
 
-<div id='selectgraphicsapi'>
-	<button class="select-graphics-api selectd3d11" id='selectd3d11' onclick="chooseGraphicsAPI('d3d11')">
-		<img class="api-tab-img" src="_static/css/DirectX11_Black_Aligned.svg" alt="DirectX 11" />
-	</button><button class="select-graphics-api selectd3d12" id='selectd3d12' onclick="chooseGraphicsAPI('d3d12')">
-		<img class="api-tab-img" src="_static/css/DirectX12_Black_Aligned.svg" alt="DirectX 12" />
-	</button><button class="select-graphics-api selectopengl" id='selectopengl' onclick="chooseGraphicsAPI('opengl')">
-		<img class="api-tab-img" src="_static/css/OpenGL_Black_Aligned.svg" alt="OpenGL" />
-	</button><button class="select-graphics-api selectopengles" id='selectopengles' onclick="chooseGraphicsAPI('opengles')">
-		<img class="api-tab-img" src="_static/css/OpenGLES_Black_Aligned.svg" alt="OpenGL ES" />
-	</button><button class="select-graphics-api selectvulkan" id='selectvulkan' onclick="chooseGraphicsAPI('vulkan')">
-		<img class="api-tab-img" src="_static/css/Vulkan_Black_Aligned.svg" alt="Vulkan" />
-	</button>
-</div>
 <script>
 	function chooseGraphicsAPI(graphicsApiName)
 	{

@@ -40,6 +40,29 @@ def configureDoxyfile(input_dir, output_dir):
     with open('Doxyfile', 'w') as file:
         file.write(filedata)
 
+OPENXR_PLATFORM_API='Android'
+if(tags.has('windows')):
+    OPENXR_PLATFORM_API = "Windows"
+if(tags.has('linux')):
+    OPENXR_PLATFORM_API = "Linux"
+if(tags.has('android')):
+    OPENXR_PLATFORM_API = "Android"
+OPENXR_PLATFORM_API+="/"
+if(tags.has('vulkan')):
+    OPENXR_PLATFORM_API += "Vulkan"
+elif(tags.has('opengles')):
+    OPENXR_PLATFORM_API += "OpenGL ES"
+elif(tags.has('opengl')):
+    OPENXR_PLATFORM_API += "OpenGL"
+elif(tags.has('d3d11')):
+    OPENXR_PLATFORM_API += "D3D11"
+elif(tags.has('d3d12')):
+    OPENXR_PLATFORM_API += "D3D12"
+else:
+    OPENXR_PLATFORM_API += "Vulkan"
+OPENXR_PLATFORM_API_PATH=OPENXR_PLATFORM_API.replace(' ','').lower();
+html_context = {'platform_api': OPENXR_PLATFORM_API, 'platform_api_path':OPENXR_PLATFORM_API_PATH}
+
 
 # -- Project information -----------------------------------------------------
 
@@ -58,7 +81,7 @@ mermaid_output_format='png'
 source_suffix = {'.rst': 'restructuredtext'}
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
-sitemap_locales = []#'windows/d3d11','windows/d3d12','windows/opengl','windows/vulkan','linux/opengl', 'linux/vulkan','android/opengles','android/vulkan'
+sitemap_locales = []
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
@@ -80,9 +103,6 @@ html_favicon = 'favicon.ico'
 #
 html_theme = 'tutorial_sphinx_theme_1'
 html_theme_path = ["."]
-html_theme_options = {
-  "show_nav_level": 4
-}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -109,6 +129,7 @@ print('openxr_tutorials_git_tag_py is ' + openxr_tutorials_git_tag_py)
 extlinks = {
     'openxr_ref' : ('https://registry.khronos.org/OpenXR/specs/1.0/man/html/%s.html', '%s'), # :openxr_ref:
     'git_release' : ('https://github.com/KhronosGroup/OpenXR-Tutorials/releases/download/' + openxr_tutorials_git_tag_py + '/%s', '%s') # :git_release:
+
 }
 
 # -- Substitutions for sphinx.ext.extlinks -----------------------------------

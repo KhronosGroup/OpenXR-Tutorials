@@ -145,12 +145,12 @@
 			if (typeof currentPlatform == 'undefined')
 			{
 				currentPlatform = "windows"; // Default if cookies are enabled.
-				console.log("getPlatform() defaulted to: "+windows);
+			//	console.log("getPlatform() defaulted to: "+currentPlatform);
 			}
-			else
-				console.log("getPlatform() from cookie: "+currentPlatform);
+			//else
+			//	console.log("getPlatform() from cookie: "+currentPlatform);
 		}
-		console.log("getPlatform() returned: "+currentPlatform);
+		//console.log("getPlatform() returned: "+currentPlatform);
 		return currentPlatform;
 	}
 	function getGraphicsAPI()
@@ -161,12 +161,12 @@
 			if (typeof currentAPI == 'undefined')
 			{
 				currentAPI = "vulkan"; // Default if cookies are enabled.
-				console.log("getGraphicsAPI() defaulted to: "+currentAPI);
+				//console.log("getGraphicsAPI() defaulted to: "+currentAPI);
 			}
-			else
-				console.log("getGraphicsAPI() from cookie: "+currentAPI);
+			//else
+			//	console.log("getGraphicsAPI() from cookie: "+currentAPI);
 		}
-		console.log("getGraphicsAPI() returned: "+currentAPI);
+		//console.log("getGraphicsAPI() returned: "+currentAPI);
 		return currentAPI;
 	}
 
@@ -321,10 +321,42 @@
 		});
 		link_hrefs = document.getElementsByClassName('reference external');
 		[].forEach.call(link_hrefs, function(el) {
-			el.setAttribute('target', "_blank");
+			// ONLY if it's really an external link, i.e. it contains "http:" or "https:"
+			if(el.getAttribute('href').includes("://")) {
+				console.log(el.getAttribute('href')+" includes ://");
+				el.setAttribute('target', "_blank");
+			}
+			else {
+			}
 			////console.log("Adding target blank to "+el.id);
 		});
 		window.makeLinksOpenInNewWindow=makeLinksOpenInNewWindow;
+	}
+	function initDropdownLinks()
+	{
+		//console.log("initDropdownLinks ");
+		var platform_api_links = document.getElementsByClassName('dropdown-platform-api');
+		//let pattern = new RegExp("\/[windows|linux|android]\/[d3d11|d3d12|vulkan|opengl|opengles]\/","gm");
+		let pattern = new RegExp("(windows|linux|android)\/(d3d11|d3d12|vulkan|opengl|opengles)","gm");
+		let root_pattern = new RegExp("(.*)\/([a-z0-9A-Z_]+\.html)","gm");
+		[].forEach.call(platform_api_links, function(el) {
+			href=window.location.href;
+			//console.log("href "+href);
+			platform_api=el.id.replace('-','/');
+			//console.log("platform_api "+platform_api);
+			if(href.match(pattern)==null)
+			{
+				href=href.replace(root_pattern,"$1/"+platform_api+"/$2");
+			}
+			else
+			{
+				href=href.replace(pattern, platform_api);
+			}
+			//console.log("-> href "+href);
+			el.href=href;
+			////console.log("Adding target blank to "+el.id);
+		});
+		window.initDropdownLinks=initDropdownLinks;
 	}
 	function addIconsToToctree()
 	{
@@ -333,9 +365,12 @@
 		const heading_ids = ["toc_introduction", "toc_setup", "toc_graphics","toc_interactions","toc_extensions","toc_nextsteps"];
 		const heading_anchors = ["introduction", "openxr-setup", "graphics","interactions","extensions","nextsteps"];
 		[].forEach.call(toctreeheadings, function(el) {
-		el.id =heading_ids[i];
-		el.children[0].href=el.children[0].href.replace('#','')+"#"+heading_anchors[i];
-		i++;
+			if(i<6) {
+				el.id =heading_ids[i];
+				el.classList.add('toctree-sidepanel');
+				el.children[0].href=el.children[0].href.replace('#','')+"#"+heading_anchors[i];
+			}
+			i++;
 		////console.log("Adding id "+heading_ids[i]+" to toctree heading "+i);
 		});
 	}
@@ -440,7 +475,7 @@
 	</style>
 </head>
 
-<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL(); updateGraphicsAPIFromURL();" onload="makeLinksOpenInNewWindow(); addIconsToToctree();">
+<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL(); updateGraphicsAPIFromURL();initDropdownLinks()" onload="makeLinksOpenInNewWindow(); addIconsToToctree();">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
@@ -454,7 +489,7 @@
           {# the master_doc variable was renamed to root_doc in Sphinx 4 (master_doc still exists in later Sphinx versions) #}
           {%- set _logo_url = logo_url|default(pathto('_static/' + (logo or ""), 1)) %}
           {%- set _root_doc = root_doc|default(master_doc) %}
-			<a href="{{ pathto(_root_doc) }}" {% if not theme_logo_only %} class="" {% endif %}>
+			<a href="/" {% if not theme_logo_only %} class="" {% endif %}>
 				{%- if logo or logo_url %}
 				<img src="{{ _logo_url }}" class="logo" alt="The OpenXR logo" >
 				{%- endif %}
@@ -491,7 +526,16 @@
                                       includehidden=theme_includehidden|tobool,
                                       titles_only=theme_titles_only|tobool) %}
             {%- if toctree %}
-              {{ toctree }}
+              <!--{{ toctree }}-->
+			<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+			<ul>
+				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/1-introduction.html">1 Introduction</a></li>
+				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/2-setup.html">2 OpenXR Setup</a></li>
+				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/3-graphics.html">3 Graphics</a></li>
+				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/4-actions.html">4 Interactions</a></li>
+				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/5-extensions.html">5 Extensions</a></li>
+				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/6-next-steps.html">6 Next Steps</a></li>
+			</ul>
             {%- else %}
               <!-- Local TOC -->
               <div class="local-toc">{{ toc }}</div>

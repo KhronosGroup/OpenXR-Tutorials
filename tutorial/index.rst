@@ -32,15 +32,31 @@ The full source code for this tutorial can also be downloaded from `https://gith
 * In Setup, we show how to initialize OpenXR and connect your program to your XR device.
 * In Graphics, we setup the swapchains and render graphics to the views.
 * In Actions, we use OpenXR's action system to bind input to application specific actions allowing the user to interact with the XR device.
-* In Extensions, we demonstrate various extension that you may find helpful.
+* In Extensions, we demonstrate various extensions that you may find helpful.
 
-.. toctree::
-	:maxdepth: 5
-	:caption: Contents:
+To begin the tutorial, select the platform and graphics API you want to use:
+	
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+|         | Vulkan                                              | OpenGL or OpenGL ES                                   | Direct3D 11                                 | Direct3D 12                                 |
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+| Windows | `Windows/Vulkan </windows/vulkan/index.html>`_      | `Windows/OpenGL </windows/opengl/index.html>`_        | `Direct3D 11 </windows/d3d11/index.html>`_  | `Direct3D 12 </windows/d3d12/index.html>`_  |
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+| Linux   | `Linux/Vulkan </linux/vulkan/index.html>`_          | `Linux/OpenGL </linux/opengl/index.html>`_            |                                             |                                             |
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+| Android | `Android/Vulkan </android/vulkan/index.html>`_      |  `Android/OpenGL ES </android/opengles/index.html>`_  |                                             |                                             |
++---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
 
-	1-introduction
-	2-setup
-	3-graphics
-	4-actions
-	5-extensions
-	6-next-steps
+At any time you can change platform/API by clicking the link at the top-right of the page.	
+
+.. only:: OPENXR_SUBSITE
+
+	.. toctree::
+		:maxdepth: 5
+		:caption: Contents:
+
+		1-introduction
+		2-setup
+		3-graphics
+		4-actions
+		5-extensions
+		6-next-steps
