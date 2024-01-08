@@ -419,7 +419,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	Here, We'll show how to hand build an Android Studio project that runs a C++ Native Activity.
 	First, we will create a *workspace* folder and in that folder create a subdirectory called ``/Chapter2``.
-	Open Android Studio, select New Project and choose an Empty View Activity (Android Studio 22+) or an Empty Activity (Android Studio up to version 21).
+	Open Android Studio, select New Project and choose an Empty Views Activity (Android Studio 22+) or an Empty Activity (Android Studio up to version 21).
 
 	.. figure:: images/android-studio-newproject.png
 		:alt: Android Studio - New Project - Empty View Activity.
@@ -459,7 +459,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 		:download:`glsl_shader.cmake <../cmake/glsl_shader.cmake>`
 
-	Create a text file called ``CMakeLists.txt`` in the ``Chapter2`` directory. We will use this file to specific how our Native C++ code will be built. This file will be invoked by Android Studio's Gradle build system. 
+	Create a text file called ``CMakeLists.txt`` in the ``Chapter2`` directory. We will use this file to specify how our Native C++ code will be built. This file will be invoked by Android Studio's Gradle build system.
 
 	.. rubric:: CMakeLists.txt
 
@@ -672,7 +672,7 @@ This is a simple header file for boilerplate code for the various platforms. It 
 
 .. rubric::  OpenXRDebugUtils
 
-A header and cpp file pair that helps in setting up the DebugUtilsMessenger. :openxr_ref:`XR_EXT_debug_utils` in an OpenXR instance extension that can intercept call made to OpenXR and provide extra information or report warning and errors, if the usage of the API or the current state of OpenXR is not valid. As you go through this tutorial it is highly recommended to have this enabled to help with debugging. This is discussed in detail in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`, but in general, ``CreateOpenXRDebugUtilsMessenger()`` creates and ``DestroyOpenXRDebugUtilsMessenger()`` destroys an :openxr_ref:`XrDebugUtilsMessengerEXT`. ``OpenXRMessageCallbackFunction()`` is a callback function that is specified at object creation, which is called when OpenXR raises an issue. The header declares the functions and the cpp defines them.
+A header and cpp file pair that helps in setting up the DebugUtilsMessenger. :openxr_ref:`XR_EXT_debug_utils` is an OpenXR instance extension that can intercept calls made to OpenXR and provide extra information or report warnings and errors, if the usage of the API or the current state of OpenXR is not valid. As you go through this tutorial it is highly recommended to have this enabled to help with debugging. This is discussed in detail in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`, but in general, ``CreateOpenXRDebugUtilsMessenger()`` creates and ``DestroyOpenXRDebugUtilsMessenger()`` destroys an :openxr_ref:`XrDebugUtilsMessengerEXT`. ``OpenXRMessageCallbackFunction()`` is a callback function that is specified at object creation, which is called when OpenXR raises an issue. The header declares the functions and the cpp defines them.
 
 .. rubric::  OpenXRHelper
 
