@@ -21,11 +21,13 @@ This OpenXR-Tutorial repository contains both the text and code samples for the 
   - [Setup](#setup)
   - [Build](#build)
     - [Supported Platforms](#supported-platforms)
+    - [Building the Tutorial Website](#building-the-tutorial-website)
   - [Contributors](#contributors)
   - [Legal Notice](#legal-notice)
-    - [Webiste](#webiste)
+    - [Website](#website-1)
     - [Repository](#repository)
   - [Related resources](#related-resources)
+
 
 ## Chapters
 
@@ -76,7 +78,7 @@ Follow build instructions for your platform below.
 
 ### Building the Tutorial Website
 
-The tutorial website is built with [Sphinx](https://www.sphinx-doc.org), a Python-based documentation build tool. To set up, set the CMake variable XR_TUTORIAL_BUILD_DOCUMENTATION to TRUE, and install the following Python modules:
+The tutorial website is built with [Sphinx](https://www.sphinx-doc.org), a Python-based documentation build tool. To build the website, set the CMake variable `XR_TUTORIAL_BUILD_DOCUMENTATION` to `TRUE` and install the following Python modules:
 
 ```
 pip install sphinx
@@ -88,7 +90,7 @@ pip install reuse
 pip install sphinxcontrib-mermaid
 ```
 
-Now build the project "Sphinx" from the command line or IDE.
+Now build the project `Sphinx` from the command line or your IDE.
 
 ## Contributors
 
