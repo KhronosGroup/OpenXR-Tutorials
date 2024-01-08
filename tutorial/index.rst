@@ -22,7 +22,7 @@ Tutorial Structure
 
 The tutorial is divided into several main chapters. Each chapter walks you through a part of the process of creating an XR application and assumes that the previous chapters have been completed.
 
-Explanations of key concepts are given throughout the chapters to provide deeper insight into the workings of OpenXR. Code snippets can be copied directly into your project as you follow the tutorial, and explanations for the code are generally given after the code snippets.
+Explanations of key concepts are given throughout the chapters to provide deeper insight into the workings of OpenXR. The code snippets can be copied directly into your project as you follow the tutorial, and explanations for the code are generally given after the code snippets.
 
 At the end of each chapter there is a link to download the full example source code up to that point.
 
@@ -31,7 +31,7 @@ The full source code for this tutorial can also be downloaded from `https://gith
 * In the Introduction, we describe the basic concepts underpinning OpenXR, and show you how to set up a PC or Android development environment to build the code.
 * In Setup, we show how to initialize OpenXR and connect your program to your XR device.
 * In Graphics, we setup the swapchains and render graphics to the views.
-* In Actions, we use OpenXR's action system to bind input to application specific actions allowing the user to interactivity.
+* In Actions, we use OpenXR's action system to bind input to application specific actions allowing the user to interact with the XR device.
 * In Extensions, we demonstrate various extensions that you may find helpful.
 
 To begin the tutorial, select the platform and graphics API you want to use:
