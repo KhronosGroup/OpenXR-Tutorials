@@ -38,31 +38,31 @@ To begin the tutorial, select the platform and graphics API you want to use:
 
 .. container:: wide_version_table
 
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	|         | Vulkan                                              | OpenGL or OpenGL ES                                   | Direct3D 11                                 | Direct3D 12                                 |
-	+=========+=====================================================+=======================================================+=============================================+=============================================+
-	| Windows | `Windows, Vulkan </windows/vulkan/index.html>`_     | `Windows, OpenGL </windows/opengl/index.html>`_       | `Direct3D 11 </windows/d3d11/index.html>`_  | `Direct3D 12 </windows/d3d12/index.html>`_  |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	| Linux   | `Linux, Vulkan </linux/vulkan/index.html>`_         | `Linux, OpenGL </linux/opengl/index.html>`_           |                                             |                                             |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	| Android | `Android, Vulkan </android/vulkan/index.html>`_     |  `Android, OpenGL ES </android/opengles/index.html>`_ |                                             |                                             |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
+	+---------+-----------------------------------------------+-----------------------------------------------+------------------------------------------------------+-----------------------------------------------------+
+	|         | D3D11                                         | D3D12                                         | OpenGL or OpenGL ES                                  | Vulkan                                              |
+	+=========+===============================================+===============================================+======================================================+=====================================================+
+	| Android |                                               |                                               | `Android, OpenGL ES </android/opengles/index.html>`_ | `Android, Vulkan </android/vulkan/index.html>`_     |
+	+---------+-----------------------------------------------+-----------------------------------------------+-------------------------------------------------------+----------------------------------------------------+
+	| Linux   |                                               |                                               | `Linux, OpenGL </linux/opengl/index.html>`_          | `Linux, Vulkan </linux/vulkan/index.html>`_         |
+	+---------+-----------------------------------------------+-----------------------------------------------+------------------------------------------------------+-----------------------------------------------------+
+	| Windows | `Windows, D3D11 </windows/d3d11/index.html>`_ | `Windows, D3D12 </windows/d3d12/index.html>`_ | `Windows, OpenGL </windows/opengl/index.html>`_      | `Windows, Vulkan </windows/vulkan/index.html>`_     |
+	+---------+-----------------------------------------------+-----------------------------------------------+------------------------------------------------------+-----------------------------------------------------+
 
 .. container:: narrow_version_table
 
-    * Windows
-        - `Windows, Vulkan </windows/vulkan/index.html>`_
-        - `Windows, OpenGL </windows/opengl/index.html>`_ 
-        - `Windows, Direct3D 11 </windows/d3d11/index.html>`_   
-        - `Windows, Direct3D 12 </windows/d3d12/index.html>`_
+    * Android
+        - `Android, OpenGL ES </android/opengles/index.html>`_
+        - `Android, Vulkan </android/vulkan/index.html>`_
 		
     * Linux
-        - `Linux, Vulkan </linux/vulkan/index.html>`_
         - `Linux, OpenGL </linux/opengl/index.html>`_
+        - `Linux, Vulkan </linux/vulkan/index.html>`_
 		
-    * Android
-        - `Android, Vulkan </android/vulkan/index.html>`_      
-        - `Android, OpenGL ES </android/opengles/index.html>`_ 
+    * Windows
+        - `Windows, D3D11 </windows/d3d11/index.html>`_
+        - `Windows, D3D12 </windows/d3d12/index.html>`_
+        - `Windows, OpenGL </windows/opengl/index.html>`_ 
+        - `Windows, Vulkan </windows/vulkan/index.html>`_
 
 At any time you can change platform/API by clicking the link at the top-right of the page.	
 
