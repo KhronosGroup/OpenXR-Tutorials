@@ -36,7 +36,9 @@ function(SiteVariant Platform Api)
             conf.py
             tutorial_sphinx_theme_1/static/css/theme.css
             ${SPHINX_SOURCE}/conf.py
-        COMMENT "Generating documentation with Sphinx"
+        COMMENT "Generating documentation with Sphinx\n\"${SPHINX_EXECUTABLE}\" -a -c \"${CMAKE_CURRENT_SOURCE_DIR}\" -b html
+            \"${SPHINX_SOURCE}\" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D html_baseurl=https://openxr-tutorial.simul.co/
+            -t ${Platform} -t ${Api} -t OPENXR_SUBSITE "
         SOURCES
             ${RST_FILES}
             ${MD_FILES}
@@ -70,7 +72,8 @@ add_custom_target(
         conf.py
         tutorial_sphinx_theme_1/static/css/theme.css
         ${SPHINX_SOURCE}/conf.py
-    COMMENT "Generating documentation with Sphinx"
+    COMMENT "Generating documentation with Sphinx\n\"${SPHINX_EXECUTABLE}\" -c \"${CMAKE_CURRENT_SOURCE_DIR}\" -b html
+        \"${SPHINX_SOURCE}\" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=https://openxr-tutorial.simul.co/ -t OPENXR_MAINSITE"
     SOURCES
         index.rst
         ${MD_FILES}

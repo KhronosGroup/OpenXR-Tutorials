@@ -7929,6 +7929,17 @@ display:none;
   display: inline-block;
 }
 
+.platform-api-dropdown > span:after{
+  content: "\1F780";
+  width: 21px;
+  height: 21px;
+  display: inline-block;
+  margin-left:4px;
+  }
+.platform-api-dropdown:hover > span:after{
+  content: "\1F783";
+}
+
 .platform-api-dropdown-content {
   display: none;
   position: absolute;
@@ -7942,4 +7953,15 @@ display:none;
 
 .platform-api-dropdown:hover .platform-api-dropdown-content {
   display: block;
+}
+
+@media screen and (min-width:1100px) {
+    .narrow-version-table{
+      display: none;
+    }
+}
+@media screen and (max-width:1100px){
+    .wide-version-table{
+      display: none;
+    }
 }
