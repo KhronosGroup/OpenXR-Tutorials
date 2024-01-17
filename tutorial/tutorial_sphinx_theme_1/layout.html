@@ -337,7 +337,7 @@
 		//console.log("initDropdownLinks ");
 		var platform_api_links = document.getElementsByClassName('dropdown-platform-api');
 		//let pattern = new RegExp("\/[windows|linux|android]\/[d3d11|d3d12|vulkan|opengl|opengles]\/","gm");
-		let pattern = new RegExp("(windows|linux|android)\/(d3d11|d3d12|vulkan|opengl|opengles)","gm");
+		let pattern = new RegExp("(windows|linux|android)\/(d3d11|d3d12|vulkan|opengles|opengl)","gm");
 		let root_pattern = new RegExp("(.*)\/([a-z0-9A-Z_]+\.html)","gm");
 		[].forEach.call(platform_api_links, function(el) {
 			href=window.location.href;
