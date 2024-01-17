@@ -5156,7 +5156,7 @@ input[type=checkbox][disabled], input[type=radio][disabled]
     transform: scaleX(-1) rotate(270deg)
 }
 
-@media only screen and (max-width:480px)
+@media only screen and (max-width:240px)
 {
     .wy-form button[type=submit]
     {
@@ -5203,7 +5203,7 @@ input[type=checkbox][disabled], input[type=radio][disabled]
     }
 }
 
-@media screen and (max-width:480px)
+@media screen and (max-width:240px)
 {
     .mobile-hide
     {
@@ -5670,7 +5670,7 @@ hr
     display: inline-block
 }
 
-@media screen and (max-width:480px)
+@media screen and (max-width:240px)
 {
     .wy-breadcrumbs-extra, .wy-breadcrumbs li.wy-breadcrumbs-aside
     {
@@ -7470,7 +7470,7 @@ html.writer-html4 .rst-content dl:not(.docutils) .descclassname, html.writer-htm
     font-style: italic
 }
 
-@media screen and (max-width:480px)
+@media screen and (max-width:240px)
 {
     .rst-content .sidebar
     {
