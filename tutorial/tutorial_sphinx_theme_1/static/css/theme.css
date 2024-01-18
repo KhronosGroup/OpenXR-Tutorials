@@ -5156,7 +5156,7 @@ input[type=checkbox][disabled], input[type=radio][disabled]
     transform: scaleX(-1) rotate(270deg)
 }
 
-@media only screen and (max-width:480px)
+@media only screen and (max-width:240px)
 {
     .wy-form button[type=submit]
     {
@@ -5203,7 +5203,7 @@ input[type=checkbox][disabled], input[type=radio][disabled]
     }
 }
 
-@media screen and (max-width:480px)
+@media screen and (max-width:240px)
 {
     .mobile-hide
     {
@@ -5670,7 +5670,7 @@ hr
     display: inline-block
 }
 
-@media screen and (max-width:480px)
+@media screen and (max-width:240px)
 {
     .wy-breadcrumbs-extra, .wy-breadcrumbs li.wy-breadcrumbs-aside
     {
@@ -7470,7 +7470,7 @@ html.writer-html4 .rst-content dl:not(.docutils) .descclassname, html.writer-htm
     font-style: italic
 }
 
-@media screen and (max-width:480px)
+@media screen and (max-width:240px)
 {
     .rst-content .sidebar
     {
@@ -7930,14 +7930,22 @@ display:none;
 }
 
 .platform-api-dropdown > span:after{
-  content: "\1F780";
-  width: 21px;
-  height: 21px;
+  background: url(icons/Vector_down_arrow_link.svg);
+  content: " ";
+  rotate: 90deg;
+  width: 16px;
+  height: 16px;
   display: inline-block;
   margin-left:4px;
-  }
+}
 .platform-api-dropdown:hover > span:after{
-  content: "\1F783";
+   background: url(icons/Vector_down_arrow_link.svg);
+   content: " ";
+   rotate: 0deg;
+   width: 16px;
+   height: 16px;
+   display: inline-block;
+   margin-left:4px;
 }
 
 .platform-api-dropdown-content {
@@ -7964,9 +7972,14 @@ display:none;
     .wide-version-table{
       display: none;
     }
-    .rst-content table.docutils td, .rst-content table.docutils th, .rst-content table.field-list td, .rst-content table.field-list th, .wy-table td, .wy-table th
-    {
-        padding: 4px 8px
-    }
+}
 
+.rst-content .wide-version-table table.docutils td,
+.rst-content .wide-version-table table.docutils th,
+.rst-content .wide-version-table table.docutils p
+{
+    font-size: 90%;
+    margin: 0;
+    overflow: visible;
+    padding: 8px 8px;
 }

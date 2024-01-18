@@ -36,33 +36,81 @@ The full source code for this tutorial can also be downloaded from `https://gith
 
 To begin the tutorial, select the platform and graphics API you want to use:
 
-.. container:: wide_version_table
-
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	|         | Vulkan                                              | OpenGL or OpenGL ES                                   | Direct3D 11                                 | Direct3D 12                                 |
-	+=========+=====================================================+=======================================================+=============================================+=============================================+
-	| Windows | `Windows, Vulkan </windows/vulkan/index.html>`_     | `Windows, OpenGL </windows/opengl/index.html>`_       | `Direct3D 11 </windows/d3d11/index.html>`_  | `Direct3D 12 </windows/d3d12/index.html>`_  |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	| Linux   | `Linux, Vulkan </linux/vulkan/index.html>`_         | `Linux, OpenGL </linux/opengl/index.html>`_           |                                             |                                             |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-	| Android | `Android, Vulkan </android/vulkan/index.html>`_     |  `Android, OpenGL ES </android/opengles/index.html>`_ |                                             |                                             |
-	+---------+-----------------------------------------------------+-------------------------------------------------------+---------------------------------------------+---------------------------------------------+
-
-.. container:: narrow_version_table
-
-    * Windows
-        - `Windows, Vulkan </windows/vulkan/index.html>`_
-        - `Windows, OpenGL </windows/opengl/index.html>`_ 
-        - `Windows, Direct3D 11 </windows/d3d11/index.html>`_   
-        - `Windows, Direct3D 12 </windows/d3d12/index.html>`_
-		
-    * Linux
-        - `Linux, Vulkan </linux/vulkan/index.html>`_
-        - `Linux, OpenGL </linux/opengl/index.html>`_
-		
-    * Android
-        - `Android, Vulkan </android/vulkan/index.html>`_      
-        - `Android, OpenGL ES </android/opengles/index.html>`_ 
+.. raw:: html
+	
+	<div class="wide-version-table docutils container">
+		<table class="docutils align-default">
+			<colgroup>
+				<col style="width: 0.12%"/>
+				<col style="width: 0.22%"/>
+				<col style="width: 0.22%"/>
+				<col style="width: 0.22%"/>
+				<col style="width: 0.22%"/>
+			</colgroup>
+			<thead>
+				<tr class="row-odd">
+					<th class="head"></th>
+					<th class="head"><p>D3D11</p></th>
+					<th class="head"><p>D3D12</p></th>
+					<th class="head"><p>OpenGL or OpenGL&nbsp;ES</p></th>
+					<th class="head"><p>Vulkan</p></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="row-even">
+					<td><p>Android</p></td>
+					<td></td>
+					<td></td>
+					<td><p><a class="reference external" href="/android/opengles/index.html">Android, OpenGL&nbsp;ES</a></p></td>
+					<td><p><a class="reference external" href="/android/vulkan/index.html">Android, Vulkan</a></p></td>
+				</tr>
+				<tr class="row-odd">
+					<td><p>Linux</p></td>
+					<td></td>
+					<td></td>
+					<td><p><a class="reference external" href="/linux/opengl/index.html">Linux, OpenGL</a></p></td>
+					<td><p><a class="reference external" href="/linux/vulkan/index.html">Linux, Vulkan</a></p></td>
+				</tr>
+				<tr class="row-even">
+					<td><p>Windows</p></td>
+					<td><p><a class="reference external" href="/windows/d3d11/index.html">Windows, D3D11</a></p></td>
+					<td><p><a class="reference external" href="/windows/d3d12/index.html">Windows, D3D12</a></p></td>
+					<td><p><a class="reference external" href="/windows/opengl/index.html">Windows, OpenGL</a></p></td>
+					<td><p><a class="reference external" href="/windows/vulkan/index.html">Windows, Vulkan</a></p></td>
+				</tr>
+				</tbody>
+		</table>
+	</div>
+	<div class="narrow-version-table docutils container">
+		<ul class="simple">
+			<li><dl class="simple">
+				<dt>Android</dt><dd><ul>
+				<li><p><a class="reference external" href="/android/opengles/index.html">Android, OpenGL&nbsp;ES</a></p></li>
+				<li><p><a class="reference external" href="/android/vulkan/index.html">Android, Vulkan</a></p></li>
+				</ul>
+				</dd>
+				</dl>
+			</li>
+			<li><dl class="simple">
+				<dt>Linux</dt><dd><ul>
+				<li><p><a class="reference external" href="/linux/opengl/index.html">Linux, OpenGL</a></p></li>
+				<li><p><a class="reference external" href="/linux/vulkan/index.html">Linux, Vulkan</a></p></li>
+				</ul>
+				</dd>
+				</dl>
+			</li>
+			<li><dl class="simple">
+				<dt>Windows</dt><dd><ul>
+				<li><p><a class="reference external" href="/windows/d3d11/index.html">Windows, D3D11</a></p></li>
+				<li><p><a class="reference external" href="/windows/d3d12/index.html">Windows, D3D12</a></p></li>
+				<li><p><a class="reference external" href="/windows/opengl/index.html">Windows, OpenGL</a></p></li>
+				<li><p><a class="reference external" href="/windows/vulkan/index.html">Windows, Vulkan</a></p></li>
+				</ul>
+				</dd>
+				</dl>
+			</li>
+		</ul>
+	</div>
 
 At any time you can change platform/API by clicking the link at the top-right of the page.	
 
