@@ -7930,14 +7930,22 @@ display:none;
 }
 
 .platform-api-dropdown > span:after{
-  content: "\1F780";
-  width: 21px;
-  height: 21px;
+  background: url(icons/Vector_down_arrow_link.svg);
+  content: " ";
+  rotate: 90deg;
+  width: 16px;
+  height: 16px;
   display: inline-block;
   margin-left:4px;
-  }
+}
 .platform-api-dropdown:hover > span:after{
-  content: "\1F783";
+   background: url(icons/Vector_down_arrow_link.svg);
+   content: " ";
+   rotate: 0deg;
+   width: 16px;
+   height: 16px;
+   display: inline-block;
+   margin-left:4px;
 }
 
 .platform-api-dropdown-content {
