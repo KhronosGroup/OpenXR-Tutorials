@@ -41,34 +41,38 @@ To begin the tutorial, select the platform and graphics API you want to use:
 	<div class="wide-version-table docutils container">
 		<table class="docutils align-default">
 			<colgroup>
-				<col style="width: 4%" />
-				<col style="width: 22%" />
-				<col style="width: 22%" />
-				<col style="width: 26%" />
-				<col style="width: 25%" />
+				<col style="width: 0.12%"/>
+				<col style="width: 0.22%"/>
+				<col style="width: 0.22%"/>
+				<col style="width: 0.22%"/>
+				<col style="width: 0.22%"/>
 			</colgroup>
 			<thead>
-				<tr class="row-odd"><th class="head"></th>
-				<th class="head"><p>D3D11</p></th>
-				<th class="head"><p>D3D12</p></th>
-				<th class="head"><p>OpenGL or OpenGL&nbsp;ES</p></th>
-				<th class="head"><p>Vulkan</p></th>
+				<tr class="row-odd">
+					<th class="head"></th>
+					<th class="head"><p>D3D11</p></th>
+					<th class="head"><p>D3D12</p></th>
+					<th class="head"><p>OpenGL or OpenGL&nbsp;ES</p></th>
+					<th class="head"><p>Vulkan</p></th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr class="row-even"><td><p>Android</p></td>
+				<tr class="row-even">
+					<td><p>Android</p></td>
 					<td></td>
 					<td></td>
 					<td><p><a class="reference external" href="/android/opengles/index.html">Android, OpenGL&nbsp;ES</a></p></td>
 					<td><p><a class="reference external" href="/android/vulkan/index.html">Android, Vulkan</a></p></td>
 				</tr>
-					<tr class="row-odd"><td><p>Linux</p></td>
+				<tr class="row-odd">
+					<td><p>Linux</p></td>
 					<td></td>
 					<td></td>
 					<td><p><a class="reference external" href="/linux/opengl/index.html">Linux, OpenGL</a></p></td>
-				<td><p><a class="reference external" href="/linux/vulkan/index.html">Linux, Vulkan</a></p></td>
+					<td><p><a class="reference external" href="/linux/vulkan/index.html">Linux, Vulkan</a></p></td>
 				</tr>
-				<tr class="row-even"><td><p>Windows</p></td>
+				<tr class="row-even">
+					<td><p>Windows</p></td>
 					<td><p><a class="reference external" href="/windows/d3d11/index.html">Windows, D3D11</a></p></td>
 					<td><p><a class="reference external" href="/windows/d3d12/index.html">Windows, D3D12</a></p></td>
 					<td><p><a class="reference external" href="/windows/opengl/index.html">Windows, OpenGL</a></p></td>

@@ -7972,9 +7972,14 @@ display:none;
     .wide-version-table{
       display: none;
     }
-    .rst-content table.docutils td, .rst-content table.docutils th, .rst-content table.field-list td, .rst-content table.field-list th, .wy-table td, .wy-table th
-    {
-        padding: 4px 8px
-    }
+}
 
+.rst-content .wide-version-table table.docutils td,
+.rst-content .wide-version-table table.docutils th,
+.rst-content .wide-version-table table.docutils p
+{
+    font-size: 90%;
+    margin: 0;
+    overflow: visible;
+    padding: 8px 8px;
 }
