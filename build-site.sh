@@ -8,7 +8,7 @@ popd
 python3 -m pip install -r requirements.txt
 
 export OPENXR_TUTORIALS_GIT_TAG=$1
-sphinx-build -M html tutorial build
+
 sphinx-build -c tutorial -M html tutorial build index.rst -t OPENXR_MAINSITE -D html_baseurl=https://openxr-tutorial.com/
 
 sphinx-build -M html tutorial build/windows/vulkan -t windows -t vulkan -t OPENXR_SUBSITE -D html_baseurl=https://openxr-tutorial.com/ 
