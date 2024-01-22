@@ -7,6 +7,8 @@ popd
 
 python3 -m pip install -r requirements.txt
 
+sphinx-build --version
+
 mkdir -p build/html/android/opengles
 mkdir -p build/html/android/vulkan
 mkdir -p build/html/linux/opengl
