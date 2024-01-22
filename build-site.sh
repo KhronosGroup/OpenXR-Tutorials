@@ -18,7 +18,7 @@ mkdir -p build/html/windows/vulkan
 
 export OPENXR_TUTORIALS_GIT_TAG=$1
 
-sphinx-build -c tutorial -M html tutorial build index.rst -t OPENXR_MAINSITE -D html_baseurl=https://openxr-tutorial.com/
+sphinx-build -M html tutorial build index.rst -t OPENXR_MAINSITE -D html_baseurl=https://openxr-tutorial.com/
 
 sphinx-build -M html tutorial build/android/opengles -t android -t opengles -t OPENXR_SUBSITE -D html_baseurl=https://openxr-tutorial.com/
 sphinx-build -M html tutorial build/android/vulkan -t android -t vulkan -t OPENXR_SUBSITE -D html_baseurl=https://openxr-tutorial.com/
