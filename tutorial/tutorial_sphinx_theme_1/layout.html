@@ -341,18 +341,25 @@
 		let root_pattern = new RegExp("(.*)\/([a-z0-9A-Z_]+\.html)","gm");
 		[].forEach.call(platform_api_links, function(el) {
 			href=window.location.href;
-		console.log("initDropdownLinks href "+href);
+		//console.log("initDropdownLinks href "+href);
 			platform_api=el.id.replace('-','/');
-		console.log("platform_api "+platform_api);
+		//console.log("platform_api "+platform_api);
 			if(href.match(pattern)==null)
 			{
+				if(href.match(root_pattern)==null)
+				{
+					href=href+"/"+platform_api);
+				}
+				else
+				{
 				href=href.replace(root_pattern,"$1/"+platform_api+"/$2");
-		console.log("1-> href "+href);
+				}
+		//console.log("1-> href "+href);
 			}
 			else
 			{
 				href=href.replace(pattern, platform_api);
-		console.log("2-> href "+href);
+		//console.log("2-> href "+href);
 			}
 			el.href=href;
 			////console.log("Adding target blank to "+el.id);
