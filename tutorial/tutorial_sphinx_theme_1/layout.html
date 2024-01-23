@@ -371,7 +371,14 @@
 				el.children[0].href=el.children[0].href.replace('#','')+"#"+heading_anchors[i];
 			}
 			i++;
-		////console.log("Adding id "+heading_ids[i]+" to toctree heading "+i);
+		});
+	}
+	function updatedToctreeURLs()
+	{
+		var toctreeheadings = document.getElementsByClassName('toctree-l1');
+		[].forEach.call(toctreeheadings, function(el)
+		{
+			el.children[0].href = "/{{platform_api_path}}/" + el.children[0].href;
 		});
 	}
 	function copyLinkToThisPage()
@@ -475,7 +482,7 @@
 	</style>
 </head>
 
-<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL(); updateGraphicsAPIFromURL();initDropdownLinks()" onload="makeLinksOpenInNewWindow(); addIconsToToctree();">
+<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL(); updateGraphicsAPIFromURL();initDropdownLinks()" onload="makeLinksOpenInNewWindow(); addIconsToToctree(); updatedToctreeURLs();">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
@@ -526,16 +533,7 @@
                                       includehidden=theme_includehidden|tobool,
                                       titles_only=theme_titles_only|tobool) %}
             {%- if toctree %}
-              <!--{{ toctree }}-->
-			<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-			<ul>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/1-introduction.html">1 Introduction</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/2-setup.html">2 OpenXR Setup</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/3-graphics.html">3 Graphics</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/4-actions.html">4 Interactions</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/5-extensions.html">5 Extensions</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/6-next-steps.html">6 Next Steps</a></li>
-			</ul>
+              {{ toctree }}
             {%- else %}
               <!-- Local TOC -->
               <div class="local-toc">{{ toc }}</div>
