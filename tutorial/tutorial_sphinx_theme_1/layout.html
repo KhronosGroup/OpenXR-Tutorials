@@ -371,7 +371,16 @@
 				el.children[0].href=el.children[0].href.replace('#','')+"#"+heading_anchors[i];
 			}
 			i++;
-		////console.log("Adding id "+heading_ids[i]+" to toctree heading "+i);
+		});
+	}
+	function updatedToctreeURLs()
+	{
+		var toctreeheadings = document.getElementsByClassName('toctree-l1');
+		[].forEach.call(toctreeheadings, function(el)
+		{
+			var baseURI = el.children[0].baseURI;
+			var baseURIAddPath = baseURI + "{{platform_api_path}}/";
+			el.children[0].href = el.children[0].href.replace(baseURI, baseURIAddPath);
 		});
 	}
 	function copyLinkToThisPage()
@@ -475,7 +484,7 @@
 	</style>
 </head>
 
-<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL(); updateGraphicsAPIFromURL();initDropdownLinks()" onload="makeLinksOpenInNewWindow(); addIconsToToctree();">
+<body class="wy-body-for-nav" onpageshow="updatePlatformFromURL(); updateGraphicsAPIFromURL();initDropdownLinks()" onload="makeLinksOpenInNewWindow(); addIconsToToctree(); updatedToctreeURLs();">
 
   {%- block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
