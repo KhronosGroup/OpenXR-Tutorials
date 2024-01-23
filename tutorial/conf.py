@@ -94,7 +94,7 @@ sitemap_locales = []
 exclude_patterns = ["**/README.md","**/Readme.md","ReadMe.md","**/*.md","External/**/*.*"]
 html_baseurl = 'https://openxr-tutorial.com/'
 html_static_path = ['_static']
-html_extra_path = ['.htaccess']
+html_extra_path = []
 
 html_logo = "images/OpenXR_170px_Feb17.png"
 html_theme_options = {
