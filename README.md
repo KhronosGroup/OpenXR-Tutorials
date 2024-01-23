@@ -78,16 +78,16 @@ Follow build instructions for your platform below.
 
 ### Building the Tutorial Website
 
-The tutorial website is built with [Sphinx](https://www.sphinx-doc.org), a Python-based documentation build tool. To build the website, set the CMake variable `XR_TUTORIAL_BUILD_DOCUMENTATION` to `TRUE` and install the following Python modules:
+The tutorial website is built with [Sphinx](https://www.sphinx-doc.org), a Python-based documentation build tool. To build the website, set the CMake variable `XR_TUTORIAL_BUILD_DOCUMENTATION` to `TRUE`. Set the CMake variable `BUILD_ALL_EXTENSIONS` to `FALSE` if you only intend to build the documentation and might be missing requirements for graphics APIs. Install the following Python modules:
 
 ```
-pip install sphinx
+pip install sphinx==6.1.3
 pip install breathe
 pip install myst-parser
 pip install sphinxcontrib-jquery
 pip install sphinx-copybutton
-pip install reuse
 pip install sphinxcontrib-mermaid
+pip install reuse
 ```
 
 Now build the project `Sphinx` from the command line or your IDE.
