@@ -184,10 +184,9 @@ static DXGI_FORMAT ToDXGI_FORMAT(GraphicsAPI::VertexType type) {
 GraphicsAPI_D3D11::GraphicsAPI_D3D11() {
     D3D11_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
 
-    UINT i = 0;
     IDXGIAdapter *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
-    while (factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND) {
+    for(UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
         adapter->GetDesc(&adapterDesc);
         break;
     }
