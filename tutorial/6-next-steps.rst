@@ -4,6 +4,8 @@
 
 So far, you've learned how to create a basic OpenXR application: how to initialize and shut down an OpenXR instance and session, how to connect a graphics API to receive rendering events, and how to poll your runtime for interactions. The next steps are up to you but in these chapter you'll find a few suggestions.
 
+Note: This chapter does not follow a continuous path to a goal, but instead presents a few ideas for the reader to explore. If you are using the `OpenXR-Tutorials GitHub Repository <https://github.com/KhronosGroup/OpenXR-Tutorials>`_ only chapters 1 to 5 are included in the CMake build from the root of the repository. There is a ``Chapter6_1_Multiview`` folder which contains a separate 'mini-CMake build' for code reference and testing.
+
 ***********************
 6.1 Multiview rendering
 ***********************
