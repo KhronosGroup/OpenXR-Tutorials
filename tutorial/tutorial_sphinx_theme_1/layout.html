@@ -222,7 +222,7 @@
 	function updatePlatform()
 	{
 		var platform = getPlatform();
-		console.log('updatePlatform() = ' + platform);
+		//console.log('updatePlatform() = ' + platform);
 		$(".linux").hide();
 		$(".android").hide();
 		$(".windows").hide();
@@ -323,7 +323,7 @@
 		[].forEach.call(link_hrefs, function(el) {
 			// ONLY if it's really an external link, i.e. it contains "http:" or "https:"
 			if(el.getAttribute('href').includes("://")) {
-				console.log(el.getAttribute('href')+" includes ://");
+				//console.log(el.getAttribute('href')+" includes ://");
 				el.setAttribute('target', "_blank");
 			}
 			else {
@@ -525,20 +525,18 @@
                                       collapse=theme_collapse_navigation|tobool,
                                       includehidden=theme_includehidden|tobool,
                                       titles_only=theme_titles_only|tobool) %}
-            {%- if toctree %}
-              <!--{{ toctree }}-->
-			<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-			<ul>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/1-introduction.html">1 Introduction</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/2-setup.html">2 OpenXR Setup</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/3-graphics.html">3 Graphics</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/4-actions.html">4 Interactions</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/5-extensions.html">5 Extensions</a></li>
-				<li class="toctree-l1"><a class="reference internal" href="/{{platform_api_path}}/6-next-steps.html">6 Next Steps</a></li>
-			</ul>
+            {%- if tutorial_root_site|tobool %}
+				<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+				<ul>
+					<li id="toc_introduction" class="toctree-l1 toctree-sidepanel"><a class="reference internal" href="{{url_root}}/{{platform_api_path}}/1-introduction.html">1 Introduction</a></li>
+					<li id="toc_setup" class="toctree-l1 toctree-sidepanel"><a class="reference internal" href="{{url_root}}/{{platform_api_path}}/2-setup.html">2 OpenXR Setup</a></li>
+					<li id="toc_graphics" class="toctree-l1 toctree-sidepanel"><a class="reference internal" href="{{url_root}}/{{platform_api_path}}/3-graphics.html">3 Graphics</a></li>
+					<li id="toc_interactions" class="toctree-l1 toctree-sidepanel"><a class="reference internal" href="{{url_root}}/{{platform_api_path}}/4-actions.html">4 Interactions</a></li>
+					<li id="toc_extensions" class="toctree-l1 toctree-sidepanel"><a class="reference internal" href="{{url_root}}/{{platform_api_path}}/5-extensions.html">5 Extensions</a></li>
+					<li id="toc_nextsteps" class="toctree-l1 toctree-sidepanel"><a class="reference internal" href="{{url_root}}/{{platform_api_path}}/6-next-steps.html">6 Next Steps</a></li>
+				</ul>
             {%- else %}
-              <!-- Local TOC -->
-              <div class="local-toc">{{ toc }}</div>
+              {{ toctree }}
             {%- endif %}
           {%- endblock %}
         </div>

@@ -60,8 +60,14 @@ elif(tags.has('d3d12')):
     OPENXR_PLATFORM_API += "D3D12"
 else:
     OPENXR_PLATFORM_API += "Vulkan"
+if(tags.has('OPENXR_MAINSITE')):
+    OPENXR_MAINSITE="true";
+else:
+    OPENXR_MAINSITE="false";
 OPENXR_PLATFORM_API_PATH=OPENXR_PLATFORM_API.replace(' ','').lower();
-html_context = {'platform_api': OPENXR_PLATFORM_API, 'platform_api_path':OPENXR_PLATFORM_API_PATH}
+print('OPENXR_PLATFORM_API_PATH '+OPENXR_PLATFORM_API_PATH)
+print('OPENXR_MAINSITE '+OPENXR_MAINSITE)
+html_context = {'platform_api': OPENXR_PLATFORM_API, 'platform_api_path':OPENXR_PLATFORM_API_PATH,'tutorial_root_site':OPENXR_MAINSITE}
 
 
 # -- Project information -----------------------------------------------------
@@ -135,3 +141,7 @@ extlinks = {
 # -- Substitutions for sphinx.ext.extlinks -----------------------------------
 rst_epilog = 'Version: %s' % openxr_tutorials_git_tag_py # Appears at the end of the page
 rst_prolog = '.. |openxr_tutorials_git_tag| replace:: %s' % openxr_tutorials_git_tag_py
+
+
+def setup(app):
+    print(str(app.config));

@@ -9,6 +9,7 @@ set(TUTORIAL_SPHINX_BUILD
     "${CMAKE_CURRENT_SOURCE_DIR}/../openxr-tutorial"
     CACHE PATH "Set the location of the HTML build."
 )
+set(TUTORIAL_BASE_URL "https://openxr-tutorial.simul.co/" CACHE PATH "Base URL of the site to be built.")
 
 file(GLOB_RECURSE RST_FILES "*.rst")
 file(GLOB_RECURSE MD_FILES "*.md")
@@ -26,7 +27,7 @@ function(SiteVariant Platform Api)
         ${targetname} ALL
         COMMAND
             "${SPHINX_EXECUTABLE}" -a -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
-            "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D html_baseurl=https://openxr-tutorial.simul.co/
+            "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D html_baseurl=${TUTORIAL_BASE_URL}
             -t ${Platform} -t ${Api} -t OPENXR_SUBSITE 
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         DEPENDS
@@ -37,7 +38,7 @@ function(SiteVariant Platform Api)
             tutorial_sphinx_theme_1/static/css/theme.css
             ${SPHINX_SOURCE}/conf.py
         COMMENT "Generating documentation with Sphinx\n\"${SPHINX_EXECUTABLE}\" -a -c \"${CMAKE_CURRENT_SOURCE_DIR}\" -b html
-            \"${SPHINX_SOURCE}\" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D html_baseurl=https://openxr-tutorial.simul.co/
+            \"${SPHINX_SOURCE}\" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D html_baseurl=${TUTORIAL_BASE_URL}
             -t ${Platform} -t ${Api} -t OPENXR_SUBSITE "
         SOURCES
             ${RST_FILES}
@@ -63,7 +64,7 @@ add_custom_target(
     MainSite ALL
     COMMAND
         "${SPHINX_EXECUTABLE}" -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
-        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=https://openxr-tutorial.simul.co/ -t OPENXR_MAINSITE 
+        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=${TUTORIAL_BASE_URL} -t OPENXR_MAINSITE 
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS
         # Other docs files you want to track should go here (or in some variable)
@@ -73,7 +74,7 @@ add_custom_target(
         tutorial_sphinx_theme_1/static/css/theme.css
         ${SPHINX_SOURCE}/conf.py
     COMMENT "Generating documentation with Sphinx\n\"${SPHINX_EXECUTABLE}\" -c \"${CMAKE_CURRENT_SOURCE_DIR}\" -b html
-        \"${SPHINX_SOURCE}\" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=https://openxr-tutorial.simul.co/ -t OPENXR_MAINSITE"
+        \"${SPHINX_SOURCE}\" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=${TUTORIAL_BASE_URL} -t OPENXR_MAINSITE"
     SOURCES
         index.rst
         ${MD_FILES}
