@@ -1,6 +1,10 @@
 {%- if 'singlehtml' not in builder %}
 <div role="search">
+    {%- if tutorial_root_site|tobool %}
+    <form id="rtd-search-form" class="wy-form" action="{{platform_api_path}}/search.html" method="get">
+    {%- else %}
     <form id="rtd-search-form" class="wy-form" action="{{ pathto('search') }}" method="get">
+    {%- endif %}
         <label class="search-label" for="q">Search the tutorial</label>
         <input type="text" name="q" id="q" placeholder="{{ _('Search...') }}" aria-label="{{ _('Search docs') }}">
         <input type="hidden" name="check_keywords" value="yes">
