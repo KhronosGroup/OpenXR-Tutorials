@@ -1,2 +1,5 @@
 RewriteMap tutorialmap "txt:tutorialmap.txt"
 RewriteRule "^/(.*)/(.*)" "/${tutorialmap:$1-$2|NOTFOUND}" [PT]
+RewriteRule ^android/?$ "android/vulkan"
+RewriteRule ^windows/?$ "windows/vulkan"
+RewriteRule ^linux/?$ "linux/vulkan"

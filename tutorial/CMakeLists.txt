@@ -64,7 +64,7 @@ add_custom_target(
     MainSite ALL
     COMMAND
         "${SPHINX_EXECUTABLE}" -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
-        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=${TUTORIAL_BASE_URL} -t OPENXR_MAINSITE 
+        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=${TUTORIAL_BASE_URL} -D html_extra_path=windows/.htaccess,linux/.htaccess,android/.htaccess -t OPENXR_MAINSITE 
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS
         # Other docs files you want to track should go here (or in some variable)

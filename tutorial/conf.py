@@ -94,6 +94,7 @@ sitemap_locales = []
 exclude_patterns = ["**/README.md","**/Readme.md","ReadMe.md","**/*.md","External/**/*.*"]
 html_baseurl = 'https://openxr-tutorial.com/'
 html_static_path = ['_static']
+html_extra_path = ['windows/.htaccess']
 
 html_logo = "images/OpenXR_170px_Feb17.png"
 html_theme_options = {
@@ -144,4 +145,4 @@ rst_prolog = '.. |openxr_tutorials_git_tag| replace:: %s' % openxr_tutorials_git
 
 
 def setup(app):
-    print(str(app.config));
+    print(str(app.config.html_extra_path));
