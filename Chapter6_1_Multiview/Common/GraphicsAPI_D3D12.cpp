@@ -160,12 +160,14 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12() {
     reinterpret_cast<ID3D12Debug1 *>(debug)->SetEnableGPUBasedValidation(true);*/
 
     D3D12_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
-    UINT i = 0;
-    IDXGIAdapter1 *adapter = nullptr;
+
+    IDXGIAdapter *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
-    while (factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND) {
+    for(UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+        adapter->GetDesc(&adapterDesc);
         break;
     }
+
     D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
     D3D12_CHECK(D3D12CreateDevice(adapter, featureLevel, IID_PPV_ARGS(&device)), "Failed to create D3D12 Device.");
 
@@ -237,15 +239,17 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
     }
     D3D12_CHECK(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)), "Failed to create DXGI factory.");
 
-    UINT i = 0;
-    IDXGIAdapter1 *adapter = nullptr;
+    IDXGIAdapter *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
-    while (factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND) {
+    for(UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
         adapter->GetDesc(&adapterDesc);
         if (memcmp(&graphicsRequirements.adapterLuid, &adapterDesc.AdapterLuid, sizeof(LUID)) == 0) {
             break;  // We have the matching adapter that OpenXR wants.
         }
+        // If we don't get a match reset adapter to nullptr to force a throw.
+        adapter = nullptr;
     }
+    OPENXR_CHECK(adapter != nullptr ? XR_SUCCESS : XR_ERROR_VALIDATION_FAILURE, "Failed to find matching graphics adapter from xrGetD3D12GraphicsRequirementsKHR.");
 
     D3D12_CHECK(D3D12CreateDevice(adapter, graphicsRequirements.minFeatureLevel, IID_PPV_ARGS(&device)), "Failed to create D3D12 Device.");
 
