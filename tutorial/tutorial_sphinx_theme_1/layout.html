@@ -378,7 +378,9 @@
 		var toctreeheadings = document.getElementsByClassName('toctree-l1');
 		[].forEach.call(toctreeheadings, function(el)
 		{
-			el.children[0].href = "/{{platform_api_path}}/" + el.children[0].href;
+			var baseURI = el.children[0].baseURI;
+			var baseURIAddPath = baseURI + "/{{platform_api_path}}/";
+			el.children[0].href = el.children[0].href.replace(baseURI, baseURIAddPath);
 		});
 	}
 	function copyLinkToThisPage()
