@@ -388,8 +388,8 @@
 		var graphicsapi =getGraphicsAPI();
 		var platform	=getPlatform();
 		var url			=window.location.href;
-		url				=addUrlParameter(url,"platform",platform);
-		url				=addUrlParameter(url,"graphicsapi",graphicsapi);
+		//url				=addUrlParameter(url,"platform",platform);
+		//url				=addUrlParameter(url,"graphicsapi",graphicsapi);
 		navigator.clipboard.writeText(url);
 		var dlg = document.getElementById("copied-link-dialog");
 		document.getElementById("copied-link-text").innerHTML  = "Copied:<br>" + url + "<br>to the clipboard.";
