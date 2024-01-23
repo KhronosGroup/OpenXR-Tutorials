@@ -9,7 +9,7 @@ set(TUTORIAL_SPHINX_BUILD
     "${CMAKE_CURRENT_SOURCE_DIR}/../openxr-tutorial"
     CACHE PATH "Set the location of the HTML build."
 )
-set(TUTORIAL_BASE_URL "https://openxr-tutorial.simul.co/" CACHE PATH "Base URL of the site to be built.")
+set(TUTORIAL_BASE_URL "https:////openxr-tutorial.simul.co/" CACHE PATH "Base URL of the site to be built.")
 
 file(GLOB_RECURSE RST_FILES "*.rst")
 file(GLOB_RECURSE MD_FILES "*.md")
