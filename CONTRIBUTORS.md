@@ -1,10 +1,12 @@
 # Contributors (sorted alphabetically)
 
+Alex Allman
+
 Andrew Richards
 
 Diego Novillo
 
-pfontain
+Paulo Gomes
 
 Roderick Kennedy
 
