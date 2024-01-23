@@ -127,364 +127,365 @@
 	var currentAPI="all";
 	function setPlatform(pl)
 	{
-	currentPlatform=pl;
-	if(navigator.cookieEnabled)
-	Cookies.set('platform', pl, { expires: 365,sameSite: "strict"});
+		currentPlatform=pl;
+		if(navigator.cookieEnabled)
+			Cookies.set('platform', pl, { expires: 365,sameSite: "strict"});
 	}
 	function setGraphicsAPI(a)
 	{
-	currentAPI=a;
-	if(navigator.cookieEnabled)
-	Cookies.set('graphicsapi', a, { expires: 365,sameSite: "strict"});
+		currentAPI=a;
+		if(navigator.cookieEnabled)
+			Cookies.set('graphicsapi', a, { expires: 365,sameSite: "strict"});
 	}
 	function getPlatform()
 	{
-	if(currentPlatform=="all"&&navigator.cookieEnabled)
-	{
-	currentPlatform=Cookies.get("platform");
-	if (typeof currentPlatform == 'undefined')
-	{
-	currentPlatform = "windows"; // Default if cookies are enabled.
-	//	console.log("getPlatform() defaulted to: "+currentPlatform);
-	}
-	//else
-	//	console.log("getPlatform() from cookie: "+currentPlatform);
-	}
-	//console.log("getPlatform() returned: "+currentPlatform);
-	return currentPlatform;
+		if(currentPlatform=="all"&&navigator.cookieEnabled)
+		{
+			currentPlatform=Cookies.get("platform");
+			if (typeof currentPlatform == 'undefined')
+			{
+				currentPlatform = "windows"; // Default if cookies are enabled.
+			//	console.log("getPlatform() defaulted to: "+currentPlatform);
+			}
+			//else
+			//	console.log("getPlatform() from cookie: "+currentPlatform);
+		}
+		//console.log("getPlatform() returned: "+currentPlatform);
+		return currentPlatform;
 	}
 	function getGraphicsAPI()
 	{
-	if(currentAPI=="all"&&navigator.cookieEnabled)
-	{
-	currentAPI=Cookies.get("graphicsapi");
-	if (typeof currentAPI == 'undefined')
-	{
-	currentAPI = "vulkan"; // Default if cookies are enabled.
-	//console.log("getGraphicsAPI() defaulted to: "+currentAPI);
-	}
-	//else
-	//	console.log("getGraphicsAPI() from cookie: "+currentAPI);
-	}
-	//console.log("getGraphicsAPI() returned: "+currentAPI);
-	return currentAPI;
+		if(currentAPI=="all"&&navigator.cookieEnabled)
+		{
+			currentAPI=Cookies.get("graphicsapi");
+			if (typeof currentAPI == 'undefined')
+			{
+				currentAPI = "vulkan"; // Default if cookies are enabled.
+				//console.log("getGraphicsAPI() defaulted to: "+currentAPI);
+			}
+			//else
+			//	console.log("getGraphicsAPI() from cookie: "+currentAPI);
+		}
+		//console.log("getGraphicsAPI() returned: "+currentAPI);
+		return currentAPI;
 	}
 
 
 	//https://stackoverflow.com/questions/8562613/how-to-add-url-parameter-to-the-current-url
 	function addUrlParameter(addr,name, value)
 	{
-	//console.log("add url parameter to : "+addr)
-	url=new URL(addr);
-	url.searchParams.set(name,value);
-	return url.toString();
+		//console.log("add url parameter to : "+addr)
+		url=new URL(addr);
+		url.searchParams.set(name,value);
+		return url.toString();
 	}
 
 	function getUrlParameter(name)
 	{
-	const urlParams = new URLSearchParams(window.location.search);
-	return urlParams.get(name);
+		const urlParams = new URLSearchParams(window.location.search);
+		return urlParams.get(name);
 	}
 
 	function getUrlParameterWithCheck(name, checkValues, defaultValue)
 	{
-	const urlParameter = getUrlParameter(name);
-	ok = false;
-	for (i = 0; i < checkValues.length; i++)
-	{
-	ok |= (urlParameter == checkValues[i]);
-	}
-	return ok ? urlParameter : defaultValue;
+		const urlParameter = getUrlParameter(name);
+		ok = false;
+		for (i = 0; i < checkValues.length; i++)
+		{
+			ok |= (urlParameter == checkValues[i]);
+		}
+		return ok ? urlParameter : defaultValue;
 	}
 
 	function updatePlatformFromURL()
 	{
-	var platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android'], getPlatform());
-	if (typeof platform == 'undefined')
-	{
-	platform = "linux"; // Set default here.
-	}
-	setPlatform(platform);
-	updatePlatform();
+		var platform = getUrlParameterWithCheck('platform', ['windows', 'linux', 'android'], getPlatform());
+		if (typeof platform == 'undefined')
+		{
+			platform = "linux"; // Set default here.
+		}
+		setPlatform(platform);
+		updatePlatform();
 	}
 
 	function updatePlatformFromTab()
 	{
-	var platform = getPlatform();
-	if (typeof platform == 'undefined')
-	{
-	platform = "linux"; // Set default here.
-	}
-	setPlatform(platform);
-	updatePlatform();
+		var platform = getPlatform();
+		if (typeof platform == 'undefined')
+		{
+			platform = "linux"; // Set default here.
+		}
+		setPlatform(platform);
+		updatePlatform();
 	}
 
 	function updatePlatform()
 	{
-	var platform = getPlatform();
-	//console.log('updatePlatform() = ' + platform);
-	$(".linux").hide();
-	$(".android").hide();
-	$(".windows").hide();
-	if (platform == "windows"||platform == "all")
-	{
-	$(".windows").show();
-	$(".selectd3d11").removeAttr("disabled");
-	$(".selectd3d12").removeAttr("disabled");
-	$(".selectopengles").attr("disabled", true);
-	$(".selectvulkan").removeAttr("disabled");
-	$(".selectopengl").removeAttr("disabled");
-	}
-	if (platform == "linux"||platform == "all")
-	{
-	$(".linux").show();
-	$(".selectd3d11").attr("disabled", true);
-	$(".selectd3d12").attr("disabled", true);
-	$(".selectopengles").attr("disabled", true);
-	$(".selectvulkan").removeAttr("disabled");
-	$(".selectopengl").removeAttr("disabled");
-	}
-	if (platform == "android"||platform == "all")
-	{
-	//console.log("platform  " + platform + ".");
-	$(".android").show();
-	$(".selectd3d11").attr("disabled", true);
-	$(".selectd3d12").attr("disabled", true);
-	$(".selectopengles").removeAttr("disabled");
-	$(".selectvulkan").removeAttr("disabled");
-	$(".selectopengl").attr("disabled", true);
-	}
-	var oldelements = document.querySelectorAll(".selected-platform");
-	while (oldelements.length > 0)
-	{
-	var el=oldelements.item(0);
-	el.classList.remove('selected-platform');
-	////console.log("Removing selected-platform from "+el.id);
-	oldelements = document.querySelectorAll(".selected-platform");
-	}
-	var element = document.getElementById('select' + platform);
-	if(element)
-	{
-	element.classList.add('selected-platform');
-	////console.log("Adding selected-platform to "+element.id);
-	}
-	var element2 = document.getElementById('select' + platform + "-inline");
-	if(element2)
-	{
-	element2.classList.add('selected-platform');
-	////console.log("Adding selected-platform to "+element2.id);
-	}
-	if(limitAPIChoice())
-	updateGraphicsAPI();
-	window.updatePlatform=updatePlatform;
+		var platform = getPlatform();
+		//console.log('updatePlatform() = ' + platform);
+		$(".linux").hide();
+		$(".android").hide();
+		$(".windows").hide();
+		if (platform == "windows"||platform == "all")
+		{
+		$(".windows").show();
+			$(".selectd3d11").removeAttr("disabled");
+			$(".selectd3d12").removeAttr("disabled");
+			$(".selectopengles").attr("disabled", true);
+			$(".selectvulkan").removeAttr("disabled");
+			$(".selectopengl").removeAttr("disabled");
+		}
+		if (platform == "linux"||platform == "all")
+		{
+			$(".linux").show();
+			$(".selectd3d11").attr("disabled", true);
+			$(".selectd3d12").attr("disabled", true);
+			$(".selectopengles").attr("disabled", true);
+			$(".selectvulkan").removeAttr("disabled");
+			$(".selectopengl").removeAttr("disabled");
+		}
+		if (platform == "android"||platform == "all")
+		{
+			//console.log("platform  " + platform + ".");
+			$(".android").show();
+			$(".selectd3d11").attr("disabled", true);
+			$(".selectd3d12").attr("disabled", true);
+			$(".selectopengles").removeAttr("disabled");
+			$(".selectvulkan").removeAttr("disabled");
+			$(".selectopengl").attr("disabled", true);
+		}
+		var oldelements = document.querySelectorAll(".selected-platform");
+		while (oldelements.length > 0)
+		{
+			var el=oldelements.item(0);
+			el.classList.remove('selected-platform');
+			////console.log("Removing selected-platform from "+el.id);
+			oldelements = document.querySelectorAll(".selected-platform");
+		}
+		var element = document.getElementById('select' + platform);
+		if(element)
+		{
+			element.classList.add('selected-platform');
+		////console.log("Adding selected-platform to "+element.id);
+		}
+		var element2 = document.getElementById('select' + platform + "-inline");
+		if(element2)
+		{
+			element2.classList.add('selected-platform');
+		////console.log("Adding selected-platform to "+element2.id);
+		}
+		if(limitAPIChoice())
+			updateGraphicsAPI();
+		window.updatePlatform=updatePlatform;
 	}
 
 	function limitAPIChoice()
 	{
-	var platform = getPlatform();
-	var graphicsApi = getGraphicsAPI();
-	////console.log("limitAPIChoice(), platform = " + platform+", graphicsApi = "+graphicsApi);
-	window.limitAPIChoice=limitAPIChoice;
-	var newApi=graphicsApi;
-	if (platform == "windows")
-	{
-	if (graphicsApi == "opengles"||graphicsApi==undefined)
-	newApi="d3d11";
-	}
-	if (platform == "linux")
-	{
-	if (graphicsApi == "opengles"||graphicsApi=="d3d11"||graphicsApi=="d3d12"||graphicsApi==undefined)
-	newApi="vulkan";
-	}
-	if (platform == "android"||graphicsApi==undefined)
-	{
-	if (graphicsApi != "opengles"&&graphicsApi!="vulkan")
-	newApi="vulkan";
-	}
-	////console.log("newApi = "+newApi);
-	if (newApi != graphicsApi)
-	{
-	////console.log("setting graphicsapi = "+newApi);
-	setGraphicsAPI(newApi);
-	graphicsApi=newApi;
-	return true;
-	}
-	return false;
+		var platform = getPlatform();
+		var graphicsApi = getGraphicsAPI();
+		////console.log("limitAPIChoice(), platform = " + platform+", graphicsApi = "+graphicsApi);
+		window.limitAPIChoice=limitAPIChoice;
+		var newApi=graphicsApi;
+		if (platform == "windows")
+		{
+			if (graphicsApi == "opengles"||graphicsApi==undefined)
+			newApi="d3d11";
+		}
+		if (platform == "linux")
+		{
+			if (graphicsApi == "opengles"||graphicsApi=="d3d11"||graphicsApi=="d3d12"||graphicsApi==undefined)
+			newApi="vulkan";
+		}
+		if (platform == "android"||graphicsApi==undefined)
+		{
+			if (graphicsApi != "opengles"&&graphicsApi!="vulkan")
+			newApi="vulkan";
+		}
+		////console.log("newApi = "+newApi);
+		if (newApi != graphicsApi)
+		{
+			////console.log("setting graphicsapi = "+newApi);
+			setGraphicsAPI(newApi);
+			graphicsApi=newApi;
+			return true;
+		}
+		return false;
 	}
 	function makeLinksOpenInNewWindow()
 	{
-	////console.log("makeLinksOpenInNewWindow ");
-	var download_hrefs = document.getElementsByClassName('reference download internal');
-	[].forEach.call(download_hrefs, function(el) {
-	el.setAttribute('target', "_blank");
-	////console.log("Adding target blank to "+el.id);
-	});
-	link_hrefs = document.getElementsByClassName('reference external');
-	[].forEach.call(link_hrefs, function(el) {
-	// ONLY if it's really an external link, i.e. it contains "http:" or "https:"
-	if(el.getAttribute('href').includes("://")) {
-	//console.log(el.getAttribute('href')+" includes ://");
-	el.setAttribute('target', "_blank");
-	}
-	else {
-	}
-	////console.log("Adding target blank to "+el.id);
-	});
-	window.makeLinksOpenInNewWindow=makeLinksOpenInNewWindow;
+		////console.log("makeLinksOpenInNewWindow ");
+		var download_hrefs = document.getElementsByClassName('reference download internal');
+		[].forEach.call(download_hrefs, function(el) {
+			el.setAttribute('target', "_blank");
+			////console.log("Adding target blank to "+el.id);
+		});
+		link_hrefs = document.getElementsByClassName('reference external');
+		[].forEach.call(link_hrefs, function(el) {
+			// ONLY if it's really an external link, i.e. it contains "http:" or "https:"
+			if(el.getAttribute('href').includes("://")) {
+				//console.log(el.getAttribute('href')+" includes ://");
+				el.setAttribute('target', "_blank");
+			}
+			else {
+			}
+			////console.log("Adding target blank to "+el.id);
+		});
+		window.makeLinksOpenInNewWindow=makeLinksOpenInNewWindow;
 	}
 	function initDropdownLinks()
 	{
-	//console.log("initDropdownLinks ");
-	var platform_api_links = document.getElementsByClassName('dropdown-platform-api');
-	//let pattern = new RegExp("\/[windows|linux|android]\/[d3d11|d3d12|vulkan|opengl|opengles]\/","gm");
-	let pattern = new RegExp("(windows|linux|android)\/(d3d11|d3d12|vulkan|opengles|opengl)","gm");
-	let root_pattern = new RegExp("(.*)\/([a-z0-9A-Z_]+\.html)","gm");
-	[].forEach.call(platform_api_links, function(el) {
-	href=window.location.href;
-	//console.log("href "+href);
-	platform_api=el.id.replace('-','/');
-	//console.log("platform_api "+platform_api);
-	if(href.match(pattern)==null)
-	{
-	href = href.replace(root_pattern, "$1/" + platform_api + "/$2");
-	}
-	else
-	{
-	href=href.replace(pattern, platform_api);
-	}
-	//console.log("-> href "+href);
-	el.href=href;
-	////console.log("Adding target blank to "+el.id);
-	});
-	window.initDropdownLinks=initDropdownLinks;
+		//console.log("initDropdownLinks ");
+		var platform_api_links = document.getElementsByClassName('dropdown-platform-api');
+		//let pattern = new RegExp("\/[windows|linux|android]\/[d3d11|d3d12|vulkan|opengl|opengles]\/","gm");
+		let pattern = new RegExp("(windows|linux|android)\/(d3d11|d3d12|vulkan|opengles|opengl)","gm");
+		let root_pattern = new RegExp("(.*)\/([a-z0-9A-Z_]+\.html)","gm");
+		[].forEach.call(platform_api_links, function(el) {
+			href=window.location.href;
+			//console.log("href "+href);
+			platform_api=el.id.replace('-','/');
+			//console.log("platform_api "+platform_api);
+			if(href.match(pattern)==null)
+			{
+				href=href.replace(root_pattern,"$1/"+platform_api+"/$2");
+			}
+			else
+			{
+				href=href.replace(pattern, platform_api);
+			}
+			//console.log("-> href "+href);
+			el.href=href;
+			////console.log("Adding target blank to "+el.id);
+		});
+		window.initDropdownLinks=initDropdownLinks;
 	}
 	function addIconsToToctree()
 	{
-	var toctreeheadings = document.getElementsByClassName('toctree-l1');
-	var i = 0;
-	const heading_ids = ["toc_introduction", "toc_setup", "toc_graphics","toc_interactions","toc_extensions","toc_nextsteps"];
-	const heading_anchors = ["introduction", "openxr-setup", "graphics","interactions","extensions","nextsteps"];
-	[].forEach.call(toctreeheadings, function(el) {
-	if(i<6) {
-	el.id =heading_ids[i];
-	el.classList.add('toctree-sidepanel');
-	el.children[0].href=el.children[0].href.replace('#','')+"#"+heading_anchors[i];
-	}
-	i++;
-	});
+		var toctreeheadings = document.getElementsByClassName('toctree-l1');
+		var i = 0;
+		const heading_ids = ["toc_introduction", "toc_setup", "toc_graphics","toc_interactions","toc_extensions","toc_nextsteps"];
+		const heading_anchors = ["introduction", "openxr-setup", "graphics","interactions","extensions","nextsteps"];
+		[].forEach.call(toctreeheadings, function(el) {
+			if(i<6) {
+				el.id =heading_ids[i];
+				el.classList.add('toctree-sidepanel');
+				el.children[0].href=el.children[0].href.replace('#','')+"#"+heading_anchors[i];
+			}
+			i++;
+		});
 	}
 	function updatedToctreeURLs()
 	{
-	var toctreeheadings = document.getElementsByClassName('toctree-l1');
-	[].forEach.call(toctreeheadings, function(el)
-	{
-	var baseURI = el.children[0].baseURI;
-	var baseURIAddPath = baseURI + "{{platform_api_path}}/";
-	let pattern = new RegExp("(windows|linux|android)\/(d3d11|d3d12|vulkan|opengles|opengl)", "gm");
-	let href=el.children[0].href;
-	if (href.match(pattern) == null)
-	{
-		console.log("Replacing href " + href);
-		href = href.replace(baseURI, baseURIAddPath);
-		console.log("with " + href);
-		el.children[0].href= href;
-	}
-	});
+		var toctreeheadings = document.getElementsByClassName('toctree-l1');
+		[].forEach.call(toctreeheadings, function(el) {
+			var baseURI = el.children[0].baseURI;
+			var baseURIAddPath = baseURI + "{{platform_api_path}}/";
+			let pattern = new RegExp("(windows|linux|android)\/(d3d11|d3d12|vulkan|opengles|opengl)", "gm");
+			let href=el.children[0].href;
+			if (href.match(pattern) == null)
+			{
+				console.log("Replacing href " + href);
+				href = href.replace(baseURI, baseURIAddPath);
+				console.log("with " + href);
+				el.children[0].href= href;
+			}
+		});
 	}
 	function copyLinkToThisPage()
 	{
-	var graphicsapi =getGraphicsAPI();
-	var platform	=getPlatform();
-	var url			=window.location.href;
-	//url				=addUrlParameter(url,"platform",platform);
-	//url				=addUrlParameter(url,"graphicsapi",graphicsapi);
-	navigator.clipboard.writeText(url);
-	var dlg = document.getElementById("copied-link-dialog");
-	document.getElementById("copied-link-text").innerHTML  = "Copied:<br>" + url + "<br>to the clipboard.";
-	dlg.style.visibility = 'visible';
-	var sharepagetooltip = document.getElementById('share-page-tooltiptext');
-	//sharepagetooltip.style.opacity = 0;
-	setTimeout(() =>
-	{
-	const dlg = document.getElementById("copied-link-dialog");
-	dlg.style.visibility = 'hidden';
-	}, 2500);
+		var graphicsapi =getGraphicsAPI();
+		var platform	=getPlatform();
+		var url			=window.location.href;
+		//url				=addUrlParameter(url,"platform",platform);
+		//url				=addUrlParameter(url,"graphicsapi",graphicsapi);
+		navigator.clipboard.writeText(url);
+		var dlg = document.getElementById("copied-link-dialog");
+		document.getElementById("copied-link-text").innerHTML  = "Copied:<br>" + url + "<br>to the clipboard.";
+		dlg.style.visibility = 'visible';
+		var sharepagetooltip = document.getElementById('share-page-tooltiptext');
+		//sharepagetooltip.style.opacity = 0;
+		setTimeout(() =>
+		{
+		const dlg = document.getElementById("copied-link-dialog");
+		dlg.style.visibility = 'hidden';
+		}, 2500);
 
 	// Alert the copied text
 	//alert("Copied the link: " + url+" to the clipboard.");
 	}
 	function updateGraphicsAPIFromURL()
 	{
-	var graphicsApi = getUrlParameterWithCheck('graphicsapi', ['d3d11', 'd3d12', 'opengl', 'opengles', 'vulkan'], getGraphicsAPI());
-	setGraphicsAPI(graphicsApi);
-	updateGraphicsAPI();
+		var graphicsApi = getUrlParameterWithCheck('graphicsapi', ['d3d11', 'd3d12', 'opengl', 'opengles', 'vulkan'], getGraphicsAPI());
+		setGraphicsAPI(graphicsApi);
+		updateGraphicsAPI();
 	}
 
 	function updateGraphicsAPIFromTab()
 	{
-	var graphicsApi = getGraphicsAPI();
-	if (typeof graphicsApi == 'undefined')
-	{
-	graphicsApi = "vulkan"; // Set default here.
-	}
-	setGraphicsAPI(graphicsApi);
-	updateGraphicsAPI();
+		var graphicsApi = getGraphicsAPI();
+		if (typeof graphicsApi == 'undefined')
+		{
+			graphicsApi = "vulkan"; // Set default here.
+		}
+		setGraphicsAPI(graphicsApi);
+		updateGraphicsAPI();
 	}
 
 	function updateGraphicsAPI()
 	{
-	var graphicsApi = getGraphicsAPI();
-	//console.log('updateGraphicsAPI() = ' + graphicsApi);
+		var graphicsApi = getGraphicsAPI();
+		//console.log('updateGraphicsAPI() = ' + graphicsApi);
 
-	// first, hide all the api's
-	$(".d3d11").hide();
-	$(".d3d12").hide();
-	$(".opengl").hide();
-	$(".opengles").hide();
-	$(".vulkan").hide();
-	// Now, show the wanted api's. In this way, divs with more than one will be shown, even if they have one that is hidden.
-	if (graphicsApi == "d3d11"||graphicsApi == "all") {
-	$(".d3d11").show();
+		// first, hide all the api's
+		$(".d3d11").hide();
+		$(".d3d12").hide();
+		$(".opengl").hide();
+		$(".opengles").hide();
+		$(".vulkan").hide();
+		// Now, show the wanted api's. In this way, divs with more than one will be shown, even if they have one that is hidden.
+		if (graphicsApi == "d3d11"||graphicsApi == "all") {
+			$(".d3d11").show();
+		}
+		if (graphicsApi == "d3d12"||graphicsApi == "all") {
+			$(".d3d12").show();
+		}
+		if (graphicsApi == "opengl"||graphicsApi == "all") {
+			$(".opengl").show();
+		}
+		if (graphicsApi == "opengles"||graphicsApi == "all") {
+			$(".opengles").show();
+		}
+		if (graphicsApi == "vulkan"||graphicsApi == "all") {
+			$(".vulkan").show();
+		}
+			var oldelements = document.querySelectorAll(".selected-graphics-api");
+			////console.log("selected-platform on "+oldelements.length+" elements.");
+			while (oldelements.length > 0)
+			{
+				var el=oldelements.item(0);
+				el.classList.remove('selected-graphics-api');
+				////console.log("Removing selected-graphics-api from "+el.id);
+				oldelements = document.querySelectorAll(".selected-graphics-api");
+			}
+			var element = document.getElementById('select' + graphicsApi);
+			if(element)
+			{
+				element.classList.add('selected-graphics-api');
+			}
+			var element2 = document.getElementById('select' + graphicsApi +"-inline");
+			if (element2)
+			{
+				element2.classList.add('selected-graphics-api');
+			}
+			window.updateGraphicsAPI=updateGraphicsAPI;
 	}
-	if (graphicsApi == "d3d12"||graphicsApi == "all") {
-	$(".d3d12").show();
-	}
-	if (graphicsApi == "opengl"||graphicsApi == "all") {
-	$(".opengl").show();
-	}
-	if (graphicsApi == "opengles"||graphicsApi == "all") {
-	$(".opengles").show();
-	}
-	if (graphicsApi == "vulkan"||graphicsApi == "all") {
-	$(".vulkan").show();
-	}
-	var oldelements = document.querySelectorAll(".selected-graphics-api");
-	////console.log("selected-platform on "+oldelements.length+" elements.");
-	while (oldelements.length > 0)
-	{
-	var el=oldelements.item(0);
-	el.classList.remove('selected-graphics-api');
-	////console.log("Removing selected-graphics-api from "+el.id);
-	oldelements = document.querySelectorAll(".selected-graphics-api");
-	}
-	var element = document.getElementById('select' + graphicsApi);
-	if(element)
-	{
-	element.classList.add('selected-graphics-api');
-	}
-	var element2 = document.getElementById('select' + graphicsApi +"-inline");
-	if (element2)
-	{
-	element2.classList.add('selected-graphics-api');
-	}
-	window.updateGraphicsAPI=updateGraphicsAPI;
-	}</script>
-	<script >
-	var graphicsApi = getGraphicsAPI();
-	if (graphicsApi==undefined) {
-	setGraphicsAPI(a);
-	graphicsApi='vulkan';
-	}
+	</script>
+	<script>
+		var graphicsApi = getGraphicsAPI();
+		if (graphicsApi==undefined)
+		{
+			setGraphicsAPI(a);
+			graphicsApi='vulkan';
+		}
 	</script>
 	<style>
 	@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
