@@ -1,6 +1,10 @@
 OpenXR Tutorial
 ===============
 
+.. only:: OPENXR_SUBSITE
+
+	:ref:`Jump to Platform/Graphics API Selection<Selection-Table-List>`
+
 This tutorial will teach you how to use the OpenXR API. OpenXR is an API managed by the Khronos Group which provides a cross-platform way for applications to interact with immersive devices. This includes virtual reality (VR) headsets, augmented reality (AR) devices, motion controllers and more.
 
 An API is an application programming interface, a set of rules for how a software system can be interfaced-with by other systems. There is no specific library or code that is OpenXR, but rather there are multiple implementations (or runtimes), which might be provided by hardware manufacturers or by software companies; there are even open source runtimes for OpenXR. Whichever runtime you use, if it's compliant with the OpenXR specification, your OpenXR-compliant code will work with it.
@@ -34,83 +38,86 @@ The full source code for this tutorial can also be downloaded from `https://gith
 * In Actions, we use OpenXR's action system to bind input to application specific actions allowing the user to interact with the XR device.
 * In Extensions, we demonstrate various extensions that you may find helpful.
 
-To begin the tutorial, select the platform and graphics API you want to use:
 
-.. raw:: html
-	
-	<div class="wide-version-table docutils container">
-		<table class="docutils align-default">
-			<colgroup>
-				<col style="width: 0.12%"/>
-				<col style="width: 0.22%"/>
-				<col style="width: 0.22%"/>
-				<col style="width: 0.22%"/>
-				<col style="width: 0.22%"/>
-			</colgroup>
-			<thead>
-				<tr class="row-odd">
-					<th class="head"></th>
-					<th class="head"><p>D3D11</p></th>
-					<th class="head"><p>D3D12</p></th>
-					<th class="head"><p>OpenGL or OpenGL&nbsp;ES</p></th>
-					<th class="head"><p>Vulkan</p></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="row-even">
-					<td><p>Android</p></td>
-					<td></td>
-					<td></td>
-					<td><p><a class="reference external" href="/android/opengles/index.html">Android, OpenGL&nbsp;ES</a></p></td>
-					<td><p><a class="reference external" href="/android/vulkan/index.html">Android, Vulkan</a></p></td>
-				</tr>
-				<tr class="row-odd">
-					<td><p>Linux</p></td>
-					<td></td>
-					<td></td>
-					<td><p><a class="reference external" href="/linux/opengl/index.html">Linux, OpenGL</a></p></td>
-					<td><p><a class="reference external" href="/linux/vulkan/index.html">Linux, Vulkan</a></p></td>
-				</tr>
-				<tr class="row-even">
-					<td><p>Windows</p></td>
-					<td><p><a class="reference external" href="/windows/d3d11/index.html">Windows, D3D11</a></p></td>
-					<td><p><a class="reference external" href="/windows/d3d12/index.html">Windows, D3D12</a></p></td>
-					<td><p><a class="reference external" href="/windows/opengl/index.html">Windows, OpenGL</a></p></td>
-					<td><p><a class="reference external" href="/windows/vulkan/index.html">Windows, Vulkan</a></p></td>
-				</tr>
-				</tbody>
-		</table>
-	</div>
-	<div class="narrow-version-table docutils container">
-		<ul class="simple">
-			<li><dl class="simple">
-				<dt>Android</dt><dd><ul>
-				<li><p><a class="reference external" href="/android/opengles/index.html">Android, OpenGL&nbsp;ES</a></p></li>
-				<li><p><a class="reference external" href="/android/vulkan/index.html">Android, Vulkan</a></p></li>
-				</ul>
-				</dd>
-				</dl>
-			</li>
-			<li><dl class="simple">
-				<dt>Linux</dt><dd><ul>
-				<li><p><a class="reference external" href="/linux/opengl/index.html">Linux, OpenGL</a></p></li>
-				<li><p><a class="reference external" href="/linux/vulkan/index.html">Linux, Vulkan</a></p></li>
-				</ul>
-				</dd>
-				</dl>
-			</li>
-			<li><dl class="simple">
-				<dt>Windows</dt><dd><ul>
-				<li><p><a class="reference external" href="/windows/d3d11/index.html">Windows, D3D11</a></p></li>
-				<li><p><a class="reference external" href="/windows/d3d12/index.html">Windows, D3D12</a></p></li>
-				<li><p><a class="reference external" href="/windows/opengl/index.html">Windows, OpenGL</a></p></li>
-				<li><p><a class="reference external" href="/windows/vulkan/index.html">Windows, Vulkan</a></p></li>
-				</ul>
-				</dd>
-				</dl>
-			</li>
-		</ul>
-	</div>
+.. _Selection-Table-List:
+
+	To begin the tutorial, select the platform and graphics API you want to use:
+
+	.. raw:: html
+
+		<div class="wide-version-table docutils container">
+			<table class="docutils align-default">
+				<colgroup>
+					<col style="width: 0.12%"/>
+					<col style="width: 0.22%"/>
+					<col style="width: 0.22%"/>
+					<col style="width: 0.22%"/>
+					<col style="width: 0.22%"/>
+				</colgroup>
+				<thead>
+					<tr class="row-odd">
+						<th class="head"></th>
+						<th class="head"><p>D3D11</p></th>
+						<th class="head"><p>D3D12</p></th>
+						<th class="head"><p>OpenGL or OpenGL&nbsp;ES</p></th>
+						<th class="head"><p>Vulkan</p></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="row-even">
+						<td><p>Android</p></td>
+						<td></td>
+						<td></td>
+						<td><p><a class="reference external" href="/android/opengles/index.html">Android, OpenGL&nbsp;ES</a></p></td>
+						<td><p><a class="reference external" href="/android/vulkan/index.html">Android, Vulkan</a></p></td>
+					</tr>
+					<tr class="row-odd">
+						<td><p>Linux</p></td>
+						<td></td>
+						<td></td>
+						<td><p><a class="reference external" href="/linux/opengl/index.html">Linux, OpenGL</a></p></td>
+						<td><p><a class="reference external" href="/linux/vulkan/index.html">Linux, Vulkan</a></p></td>
+					</tr>
+					<tr class="row-even">
+						<td><p>Windows</p></td>
+						<td><p><a class="reference external" href="/windows/d3d11/index.html">Windows, D3D11</a></p></td>
+						<td><p><a class="reference external" href="/windows/d3d12/index.html">Windows, D3D12</a></p></td>
+						<td><p><a class="reference external" href="/windows/opengl/index.html">Windows, OpenGL</a></p></td>
+						<td><p><a class="reference external" href="/windows/vulkan/index.html">Windows, Vulkan</a></p></td>
+					</tr>
+					</tbody>
+			</table>
+		</div>
+		<div class="narrow-version-table docutils container">
+			<ul class="simple">
+				<li><dl class="simple">
+					<dt>Android</dt><dd><ul>
+					<li><p><a class="reference external" href="/android/opengles/index.html">Android, OpenGL&nbsp;ES</a></p></li>
+					<li><p><a class="reference external" href="/android/vulkan/index.html">Android, Vulkan</a></p></li>
+					</ul>
+					</dd>
+					</dl>
+				</li>
+				<li><dl class="simple">
+					<dt>Linux</dt><dd><ul>
+					<li><p><a class="reference external" href="/linux/opengl/index.html">Linux, OpenGL</a></p></li>
+					<li><p><a class="reference external" href="/linux/vulkan/index.html">Linux, Vulkan</a></p></li>
+					</ul>
+					</dd>
+					</dl>
+				</li>
+				<li><dl class="simple">
+					<dt>Windows</dt><dd><ul>
+					<li><p><a class="reference external" href="/windows/d3d11/index.html">Windows, D3D11</a></p></li>
+					<li><p><a class="reference external" href="/windows/d3d12/index.html">Windows, D3D12</a></p></li>
+					<li><p><a class="reference external" href="/windows/opengl/index.html">Windows, OpenGL</a></p></li>
+					<li><p><a class="reference external" href="/windows/vulkan/index.html">Windows, Vulkan</a></p></li>
+					</ul>
+					</dd>
+					</dl>
+				</li>
+			</ul>
+		</div>
 
 At any time you can change platform/API by clicking the link at the top-right of the page.	
 
