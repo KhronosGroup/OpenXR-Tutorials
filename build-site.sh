@@ -44,4 +44,8 @@ cp -r build/windows/d3d12/html/.    build/html/windows/d3d12
 cp -r build/windows/opengl/html/.   build/html/windows/opengl
 cp -r build/windows/vulkan/html/.   build/html/windows/vulkan
 
+cp thirdparty/index_android.html    build/html/android/index.html
+cp thirdparty/index_linux.html      build/html/linux/index.html
+cp thirdparty/index_windows.html    build/html/windows/index.html
+
 tar -czvf site.tar.gz build/html
