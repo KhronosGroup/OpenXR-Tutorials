@@ -99,7 +99,8 @@ html_extra_path = []
 html_logo = "images/OpenXR_170px_Feb17.png"
 html_theme_options = {
     'logo_only': False,
-    'display_version': False
+    'display_version': False,
+    'show_next_previous_button': OPENXR_MAINSITE=="false"
 }
 
 html_favicon = 'favicon.ico'

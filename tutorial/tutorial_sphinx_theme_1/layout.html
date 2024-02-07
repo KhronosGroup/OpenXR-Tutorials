@@ -113,11 +113,13 @@
 	{%- if hasdoc('copyright') %}
 	<link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" >
 	{%- endif %}
+	{%- if theme_show_next_previous_button %}
 	{%- if next %}
 	<link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}" >
 	{%- endif %}
 	{%- if prev %}
 	<link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}" >
+	{%- endif %}
 	{%- endif %}
 	{%- endblock %}
 	{%- block extrahead %} {% endblock %}
