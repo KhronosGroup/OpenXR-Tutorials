@@ -1,7 +1,5 @@
 # OpenXR-Tutorial
 
-*This is a work in progress of the upcoming OpenXR tutorial, do not use this to learn OpenXR yet.*
-
 This OpenXR-Tutorial repository contains both the text and code samples for the OpenXR-Tutorial website (https://openxr-tutorial.com/).
 
 ![image](tutorial/images/OpenXR_500px_Feb17_White.png#gh-dark-mode-only)
@@ -46,7 +44,7 @@ This chapter focuses solely on explaining and demonstrating both the interaction
 ### 5. Extensions
 This chapter discusses a few extensions for Hand tracking and Composition Layer Depth. Extensions allow greater functionality to be added to an application provided that the hardware and runtime support them.
 
-### 6. Next Setup
+### 6. Next Steps
 This chapter contains a collection of topics to act as a jumping-off point to explore further the diverse and ever-growing world of XR development. Of note are the sections on Multiview rendering, OpenXR API Layers and Multithreaded rendering.
 
 
@@ -94,9 +92,7 @@ Now build the project `Sphinx` from the command line or your IDE.
 
 ## Contributors
 
-The text of the OpenXR Tutorial is by Roderick Kennedy and Andrew Richards of Simul Software Ltd. The design of the site is by Calland Creative Ltd. The site is overseen by the Khronos OpenXR Working Group. Thanks to all volunteers who tested the site through its development.
-
-See [CONTRIBUTORS](CONTRIBUTORS.md) for the full contributor list.
+The original text of the OpenXR Tutorial is by Roderick Kennedy and Andrew Richards of Simul Software Ltd. The design of the site is by Calland Creative Ltd. The site is overseen by the Khronos OpenXR Working Group. Thanks to all volunteers who tested the site through its development.
 
 ## Legal Notice
 
