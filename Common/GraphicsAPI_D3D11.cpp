@@ -761,7 +761,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
         for (const VertexInputAttribute &attribute : pipelineCI.vertexInputState.attributes) {
             D3D11_INPUT_ELEMENT_DESC element{};
             element.SemanticName = attribute.semanticName;
-            element.SemanticIndex = attribute.bindingIndex;
+            element.SemanticIndex = attribute.attribIndex; 
             element.Format = ToDXGI_FORMAT(attribute.vertexType);
             element.InputSlot = attribute.bindingIndex;
             element.AlignedByteOffset = (UINT)attribute.offset;
