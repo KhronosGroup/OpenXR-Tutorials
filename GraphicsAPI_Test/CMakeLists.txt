@@ -14,8 +14,8 @@ set(BUILD_CONFORMANCE_TESTS OFF CACHE INTERNAL "Build conformance tests")
 set(BUILD_API_LAYERS ON CACHE INTERNAL "Use OpenXR layers")
 FetchContent_Declare(
         OpenXR
-        URL_HASH MD5=81930f0ccecdca852906e1a22aee4a45
-        URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.28.zip
+        URL_HASH MD5=924a94a2da0b5ef8e82154c623d88644
+        URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.34.zip
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         SOURCE_DIR openxr)
 FetchContent_MakeAvailable(OpenXR)
