@@ -1,0 +1,30 @@
+name: 'Windows Build Chapters'
+on:  
+  pull_request:
+    branches: [ "main" ]  
+#     tags:
+#       - "v*.*.*"
+#   workflow_dispatch:
+
+jobs:
+  build:
+    if: false
+    name: Windows Build
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [windows-latest]
+        target: [windows]
+        graphics: [VULKAN, OPENGL, DX11, DX12]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build ${{ matrix.gfx }} on ${{ matrix.os }}
+        run: |
+          echo "Building ${{ matrix.os }} ${{ github.ref_name }}"          
+          set GFX=${{ matrix.graphics }}
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build .
