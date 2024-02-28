@@ -4,13 +4,12 @@
 
 include_guard()
 
+
 set(XR_TUTORIAL_GRAPHICS_API "VULKAN" CACHE STRING "Which graphics API to use when building the tutorial projects.")
-if(WIN32)
-    set_property(CACHE XR_TUTORIAL_GRAPHICS_API PROPERTY STRINGS D3D11 D3D12 OPENGL VULKAN)
-elseif(LINUX AND NOT ANDROID)
-    set_property(CACHE XR_TUTORIAL_GRAPHICS_API PROPERTY STRINGS OPENGL VULKAN)
-elseif(ANDROID)
-    set_property(CACHE XR_TUTORIAL_GRAPHICS_API PROPERTY STRINGS OPENGL_ES VULKAN)
+
+IF(DEFINED ENV{GFX})
+    message(STATUS, "Overriding graphics api: " $ENV{GFX} )
+    set_property(CACHE XR_TUTORIAL_GRAPHICS_API PROPERTY VALUE $ENV{GFX})
 endif()
 
 function(AddGraphicsAPIDefine PROJECT_NAME)
