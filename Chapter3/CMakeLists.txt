@@ -115,6 +115,7 @@ if (ANDROID) # Android
     # XR_DOCS_TAG_BEGIN_Gfxwrapper
     include(../cmake/gfxwrapper.cmake)
     if(TARGET openxr-gfxwrapper)
+        target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common)
         target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL_ES)
     endif()
