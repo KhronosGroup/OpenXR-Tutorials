@@ -237,7 +237,9 @@ int main() {
     } else if (apiType == D3D12) {
         graphicsAPI = new GraphicsAPI_D3D12();
     } else if (apiType == VULKAN) {
+#ifdef XR_TUTORIAL_USE_VULKAN        
         graphicsAPI = new GraphicsAPI_Vulkan();
+#endif
     } else {
         return -1;
     }
@@ -255,7 +257,11 @@ int main() {
 
     // Swapchain
     const uint32_t swapchainCount = 3;
+#ifdef XR_TUTORIAL_USE_VULKAN    
     swapchainFormat = apiType == VULKAN ? VK_FORMAT_B8G8R8A8_UNORM : DXGI_FORMAT_B8G8R8A8_UNORM;
+#else
+    swapchainFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
+#endif
     void *swapchain = graphicsAPI->CreateDesktopSwapchain({width, height, swapchainCount, window, swapchainFormat, false});
     void *swapchainImages[swapchainCount] = {nullptr, nullptr, nullptr};
     void *swapchainImageViews[swapchainCount] = {nullptr, nullptr, nullptr};

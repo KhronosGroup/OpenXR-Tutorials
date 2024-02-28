@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-    if: false
     name: Windows Build
     runs-on: ${{matrix.os}}
     strategy:
