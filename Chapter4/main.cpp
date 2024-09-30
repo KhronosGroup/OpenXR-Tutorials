@@ -38,6 +38,8 @@ XrVector3f operator*(XrVector3f a, float b) {
 // XR_DOCS_TAG_BEGIN_include_algorithm_random
 // Include <algorithm> for std::min and max
 #include <algorithm>
+// A deque is used to track the blocks to draw.
+#include <deque>
 // Random numbers for colorful blocks
 #include <random>
 static std::uniform_real_distribution<float> pseudorandom_distribution(0, 1.f);
