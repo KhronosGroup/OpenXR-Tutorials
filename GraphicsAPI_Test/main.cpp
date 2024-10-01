@@ -189,7 +189,7 @@ void RenderCuboid(XrPosef pose, XrVector3f scale) {
 
 void DrawTestObject()
 {
-	
+
 	// Compute the view-projection transform.
 	// All matrices (including OpenXR's) are column-major, right-handed.
 	XrMatrix4x4f proj;
@@ -203,7 +203,7 @@ void DrawTestObject()
 	XrMatrix4x4f view;
 	XrMatrix4x4f_InvertRigidBody(&view, &toView);
 	XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
-	
+
 	// Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
 	RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -1.5f, 0.0f}}, {2.0f, 0.1f, 2.0f});
 	float scale=1.0f;
@@ -223,7 +223,7 @@ void DrawTestObject()
 				XrVector3f axis={0,0.707f,0.707f};
 				XrQuaternionf_CreateFromAxisAngle(&q,&axis,angleRad);
 				RenderCuboid({q, {x,y,z}}, {0.1f, 0.2f, 0.1f});
-	
+
 			}
 		}
 	}
@@ -237,7 +237,7 @@ int main() {
     } else if (apiType == D3D12) {
         graphicsAPI = new GraphicsAPI_D3D12();
     } else if (apiType == VULKAN) {
-#ifdef XR_TUTORIAL_USE_VULKAN        
+#ifdef XR_TUTORIAL_USE_VULKAN
         graphicsAPI = new GraphicsAPI_Vulkan();
 #endif
     } else {
@@ -257,7 +257,7 @@ int main() {
 
     // Swapchain
     const uint32_t swapchainCount = 3;
-#ifdef XR_TUTORIAL_USE_VULKAN    
+#ifdef XR_TUTORIAL_USE_VULKAN
     swapchainFormat = apiType == VULKAN ? VK_FORMAT_B8G8R8A8_UNORM : DXGI_FORMAT_B8G8R8A8_UNORM;
 #else
     swapchainFormat = DXGI_FORMAT_B8G8R8A8_UNORM;

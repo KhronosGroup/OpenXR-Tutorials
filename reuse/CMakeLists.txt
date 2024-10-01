@@ -16,11 +16,11 @@ elseif(${Python3_VERSION} VERSION_LESS 3.8)
 	return()
 else()
 	# Find/Install the reuse package
-	execute_process(COMMAND pip3 show reuse 
+	execute_process(COMMAND pip3 show reuse
 		RESULT_VARIABLE EXIT_CODE OUTPUT_QUIET)
 	if (NOT ${EXIT_CODE} EQUAL 0)
 		execute_process(COMMAND pip3 install --user reuse)
-		execute_process(COMMAND pip3 show reuse 
+		execute_process(COMMAND pip3 show reuse
 			RESULT_VARIABLE EXIT_CODE OUTPUT_QUIET)
 		if (NOT ${EXIT_CODE} EQUAL 0)
 			message(WARNING "Unable to find Python package: reuse.")
@@ -37,5 +37,5 @@ elseif (LINUX)
 endif()
 
 message(STATUS "${REUSE_PATH}/reuse lint")
-execute_process(COMMAND ${REUSE_PATH}/reuse lint 
+execute_process(COMMAND ${REUSE_PATH}/reuse lint
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})

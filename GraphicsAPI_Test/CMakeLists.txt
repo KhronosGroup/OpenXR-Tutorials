@@ -21,7 +21,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(OpenXR)
 
 # Files
-set(SOURCES 
+set(SOURCES
     "main.cpp"
     "../Common/GraphicsAPI.cpp"
     "../Common/GraphicsAPI_D3D11.cpp"
@@ -29,7 +29,7 @@ set(SOURCES
     "../Common/GraphicsAPI_OpenGL.cpp"
     "../Common/GraphicsAPI_OpenGL_ES.cpp"
     "../Common/GraphicsAPI_Vulkan.cpp")
-set(HEADERS 
+set(HEADERS
     "../Common/DebugOutput.h"
     "../Common/GraphicsAPI.h"
     "../Common/GraphicsAPI_D3D11.h"
@@ -57,11 +57,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC "../Common/")
 target_link_libraries(${PROJECT_NAME} openxr_loader)
 
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} "d3d11.lib") 
+    target_link_libraries(${PROJECT_NAME} "d3d11.lib")
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D11)
-    target_link_libraries(${PROJECT_NAME} "d3d12.lib") 
+    target_link_libraries(${PROJECT_NAME} "d3d12.lib")
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_D3D12)
-    target_link_libraries(${PROJECT_NAME} "dxgi.lib") 
+    target_link_libraries(${PROJECT_NAME} "dxgi.lib")
 endif()
 
 find_package(Vulkan)
@@ -81,7 +81,7 @@ if (WIN32)
     # HLSL Shaders
     set_source_files_properties(../Shaders/VertexShader.hlsl PROPERTIES ShaderType "vs")
     set_source_files_properties(../Shaders/PixelShader.hlsl PROPERTIES ShaderType "ps")
-    
+
     # D3D11
     set_source_files_properties(${HLSL_SHADERS} PROPERTIES ShaderModel "5_0")
     foreach(FILE ${HLSL_SHADERS})
@@ -131,9 +131,9 @@ endif()
 #OpenGL
 foreach(FILE ${GLSL_SHADERS})
     get_filename_component(FILE_WE ${FILE} NAME_WE)
-    add_custom_command(TARGET ${PROJECT_NAME} 
-                       COMMAND ${CMAKE_COMMAND} -E copy 
-                       ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} 
+    add_custom_command(TARGET ${PROJECT_NAME}
+                       COMMAND ${CMAKE_COMMAND} -E copy
+                       ${CMAKE_CURRENT_SOURCE_DIR}/${FILE}
                        ${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.glsl
                        MAIN_DEPENDENCY ${FILE}
                        COMMENT "GLSL ${FILE}"

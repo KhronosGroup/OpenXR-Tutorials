@@ -55,7 +55,7 @@ function(fxc_shader)
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:${_fxc_OUTPUT_PDB}>
             /T${_fxc_PROFILE}
             /E${_fxc_ENTRY_POINT}
-            $<$<CONFIG:Debug>:/Od> 
+            $<$<CONFIG:Debug>:/Od>
             $<$<CONFIG:Debug>:/Zss>
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:/Zi>
             "${_fxc_INPUT}"

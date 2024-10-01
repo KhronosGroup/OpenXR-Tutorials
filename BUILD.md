@@ -16,7 +16,7 @@ cd build
 cmake -G "<your_visual_studio_version>" ../
 ```
 
-You can also use the CMake GUI. 
+You can also use the CMake GUI.
 
 Open `openxr-tutorial.sln` and build the `ALL_BUILD` project. Right click on an `OpenXRTutorialChapter` project and select "`Set as Startup Project`", hit `F5` to run and debug.
 
@@ -34,13 +34,13 @@ cd build
 cmake -G "<your_generator>" ../
 ```
 
-You can also use the CMake GUI. 
+You can also use the CMake GUI.
 
 Open the `openxr-tutorial` solution file and build the `ALL_BUILD` project. Select an `OpenXRTutorialChapter` project to run and debug.
 
 ## Android
 
-Download [Android Studio](https://developer.android.com/studio) 2022.1.1 or later. 
+Download [Android Studio](https://developer.android.com/studio) 2022.1.1 or later.
 
 Android Prequisites:
 * SDK: 29

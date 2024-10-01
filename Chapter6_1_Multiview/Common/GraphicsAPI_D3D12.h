@@ -33,7 +33,7 @@ public:
     }
     virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
     // XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D12
-    virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override { 
+    virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override {
         ID3D12Resource* image = swapchainImagesMap[swapchain].second[index].texture;
         D3D12_RESOURCE_STATES state = swapchainImagesMap[swapchain].first == SwapchainType::COLOR ? D3D12_RESOURCE_STATE_RENDER_TARGET : D3D12_RESOURCE_STATE_DEPTH_WRITE;
         imageStates[image] = state;

@@ -28,7 +28,7 @@ function(SiteVariant Platform Api)
         COMMAND
             "${SPHINX_EXECUTABLE}" -a -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
             "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D html_baseurl=${TUTORIAL_BASE_URL}
-            -t ${Platform} -t ${Api} -t OPENXR_SUBSITE 
+            -t ${Platform} -t ${Api} -t OPENXR_SUBSITE
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         DEPENDS
             # Other docs files you want to track should go here (or in some variable)
@@ -64,7 +64,7 @@ add_custom_target(
     MainSite ALL
     COMMAND
         "${SPHINX_EXECUTABLE}" -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
-        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=${TUTORIAL_BASE_URL} -D html_extra_path=.htaccess -t OPENXR_MAINSITE 
+        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=${TUTORIAL_BASE_URL} -D html_extra_path=.htaccess -t OPENXR_MAINSITE
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS
         # Other docs files you want to track should go here (or in some variable)
@@ -96,7 +96,7 @@ if(TUTORIAL_VALIDATOR_EXECUTABLE)
     add_custom_target(
         Validator ALL
         COMMAND
-            ${TUTORIAL_VALIDATOR_EXECUTABLE} --format gnu --asciiquotes 
+            ${TUTORIAL_VALIDATOR_EXECUTABLE} --format gnu --asciiquotes
             --skip-non-html ${TUTORIAL_SPHINX_BUILD}
         WORKING_DIRECTORY ${TUTORIAL_SPHINX_BUILD}
         COMMENT "Validating documentation nu validator"

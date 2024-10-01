@@ -1,7 +1,7 @@
 name: 'Windows Build Chapters'
-on:  
+on:
   pull_request:
-    branches: [ "main" ]  
+    branches: [ "main" ]
 #     tags:
 #       - "v*.*.*"
 #   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build ${{ matrix.gfx }} on ${{ matrix.os }}
         run: |
-          echo "Building ${{ matrix.os }} ${{ github.ref_name }}"          
+          echo "Building ${{ matrix.os }} ${{ github.ref_name }}"
           set GFX=${{ matrix.graphics }}
           mkdir build
           cd build

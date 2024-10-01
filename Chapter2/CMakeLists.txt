@@ -62,7 +62,7 @@ set(HEADERS
 if (ANDROID) # Android
     # XR_DOCS_TAG_BEGIN_Android
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
-    target_include_directories(${PROJECT_NAME} PRIVATE 
+    target_include_directories(${PROJECT_NAME} PRIVATE
         # In this repo
         ../Common/
         # From OpenXR repo
@@ -95,7 +95,7 @@ if (ANDROID) # Android
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
     endif()
     # XR_DOCS_TAG_END_VulkanNDK
-    
+
     # XR_DOCS_TAG_BEGIN_Gfxwrapper
     include(../cmake/gfxwrapper.cmake)
     if(TARGET openxr-gfxwrapper)
@@ -113,7 +113,7 @@ else() # Windows / Linux
         set_target_properties( ${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
     endif()
 
-    target_include_directories(${PROJECT_NAME} PRIVATE 
+    target_include_directories(${PROJECT_NAME} PRIVATE
         # In this repo
         ../Common/
         # From OpenXR repo
@@ -124,7 +124,7 @@ else() # Windows / Linux
     # XR_DOCS_TAG_END_WindowsLinux
     AddGraphicsAPIDefine(${PROJECT_NAME})
 
-    if (WIN32) # Windows 
+    if (WIN32) # Windows
         # XR_DOCS_TAG_BEGIN_D3D11
         # D3D11
         target_link_libraries(${PROJECT_NAME} "d3d11.lib")
@@ -144,7 +144,7 @@ else() # Windows / Linux
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_LINUX_XLIB)
         # XR_DOCS_TAG_END_Linux
     endif()
-    
+
     # XR_DOCS_TAG_BEGIN_VulkanSDK
     # VulkanSDK
     find_package(Vulkan)
@@ -154,7 +154,7 @@ else() # Windows / Linux
         target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
     endif()
     # XR_DOCS_TAG_END_VulkanSDK
-    
+
     # XR_DOCS_TAG_BEGIN_OpenGL
     # OpenGL
     include(../cmake/gfxwrapper.cmake)

@@ -33,7 +33,7 @@ Multiview or View Instancing can be used for stereo rendering by creating one :o
 6.1.1 CMake and Downloads
 =========================
 
-This chapter is based on the code from chapter 4. So, Create a ``Chapter6`` folder in the *workspace* directory and copy across the contents of your ``Chapter4`` folder. 
+This chapter is based on the code from chapter 4. So, Create a ``Chapter6`` folder in the *workspace* directory and copy across the contents of your ``Chapter4`` folder.
 
 In the *workspace* directory, update the ``CMakeLists.txt`` by adding the following CMake code to the end of the file:
 
@@ -66,7 +66,7 @@ There are some changes in Chapter 6 to the implementation of ``GraphicsAPI``. Up
 .. only:: d3d12
 
 	For Direct3D 12, you will need to an additional download. This goes into the ``cmake`` folder. This locates and allow CMake to use dxc for shader compilation.
-	
+
 	:download:`dxc_shader.cmake <../Chapter6_1_Multiview/cmake/dxc_shader.cmake>`.
 
 For multiview there are some changes to the shaders. Create a new ``ShaderMultiview`` folder in the *workspace* directory and download the new shaders.
@@ -127,7 +127,7 @@ Next, we update the shaders file paths:
 		:end-before: XR_DOCS_TAG_END_GL_SHADERS
 
 .. only:: opengles
-	
+
 	.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 		:language: cmake
 		:start-after: XR_DOCS_TAG_BEGIN_ES_GLSL_SHADERS
@@ -189,9 +189,9 @@ Finally, we update the CMake section where we compile the shaders:
 	No changes needed for OpenGL ES!
 
 .. only:: vulkan
-	
+
 	.. only:: windows or linux
-	
+
 		.. literalinclude:: ../Chapter6_1_Multiview/Chapter6/CMakeLists.txt
 			:language: cmake
 			:start-after: XR_DOCS_TAG_BEGIN_BuildShadersVulkanWindowsLinux
@@ -269,7 +269,7 @@ With the swapchains correctly set up, we now need to update our resources for re
 	:dedent: 4
 	:emphasize-lines: 2, 3
 
-Because of the larger size of the camera constant/uniform buffer, we need to align the size of the structure, so that it's compatibile with the graphics API. We use ``GraphicsAPI::AlignSizeForUniformBuffer()`` to align up the size when creating the buffer. 
+Because of the larger size of the camera constant/uniform buffer, we need to align the size of the structure, so that it's compatibile with the graphics API. We use ``GraphicsAPI::AlignSizeForUniformBuffer()`` to align up the size when creating the buffer.
 
 .. literalinclude:: ../Chapter6_1_Multiview/Chapter6/main.cpp
 	:language: cpp
@@ -363,7 +363,7 @@ We are still required to submit an :openxr_ref:`XrCompositionLayerProjectionView
 	:start-after: XR_DOCS_TAG_BEGIN_RenderLayer1
 	:end-before: XR_DOCS_TAG_END_RenderLayer2
 	:dedent: 8
-	:linenos: 
+	:linenos:
 	:emphasize-lines: 22 - 31, 44 - 54, 76 - 85, 115 - 117
 
 You can now debug and run your application using Multiview rendering.
@@ -374,7 +374,7 @@ You can now debug and run your application using Multiview rendering.
 In this section, we describe some of the background changes to the shaders and ``GraphicsAPI`` needed to support multiview rendering.
 
 .. only:: d3d11
-	
+
 	Here, we use the vertex shader to write to the ``SV_RenderTargetArrayIndex`` System-Value Semantic, which specifies which index in the array within the render target we should emit the primitives data to. This System-Value Semantic must be matched in the pixel shader input. Note that this is only supported when ``D3D11_FEATURE_DATA_D3D11_OPTIONS3::VPAndRTArrayIndexFromAnyShaderFeedingRasterizer`` is set to true. Otherwise, you would need to use a geometry shader. `HLSL Semantics <https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics>`_.
 	Also see this example from Microsoft's `OpenXR-MixedReality GitHub repository <https://github.com/microsoft/OpenXR-MixedReality/blob/a46ea22a396a38725043fea91166c6d5b1a49dfc/samples/BasicXrApp/CubeGraphics.cpp>`_ and a reference page from Mixed Reality about `Rendering in DirectX <https://learn.microsoft.com/en-us/windows/mixed-reality/develop/native/rendering-in-directx>`_.
 
@@ -625,7 +625,7 @@ When setting up the graphics API core objects, there are things that we need to 
 		:language: cpp
 		:start-after: // XR_DOCS_TAG_BEGIN_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
 		:end-before: // XR_DOCS_TAG_END_GraphicsAPI_Vulkan_GetDeviceExtensionsForOpenXR
-	
+
 
 
 *********************
@@ -658,7 +658,7 @@ Firstly, ensure that you are building the OpenXR provided API layers from the `O
 .. only:: windows or linux
 
 	To enable API layers, add the ``XR_API_LAYER_PATH=<path>`` environment variable to your project or your system. Something like this: ``XR_API_LAYER_PATH=<openxr_base>/<build_folder>/src/api_layers/;<another_path>``. In this tutorial, the API layer files are found in ``<cmake_source_folder>/build/_deps/openxr-build/src/api_layers/``.
-	
+
 	The method described above sets the ``XR_API_LAYER_PATH`` environment variable, which overrrides the Operating System's default API Layers Paths. See `OpenXR API Layers - Overriding the Default API Layer Paths <https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/specification/loader/api_layer.adoc#overriding-the-default-api-layer-paths>`_. For more information on the default Desktop API Layer Discovery, see `OpenXR API Layers - Desktop API Layer Discovery <https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/specification/loader/api_layer.adoc#desktop-api-layer-discovery>`_.
 
 	The path must point to a folder containing a ``.json`` file similar to the one for XR_APILAYER_LUNARG_core_validation, shown below:
@@ -681,7 +681,7 @@ Firstly, ensure that you are building the OpenXR provided API layers from the `O
 .. only:: android
 
 	The Android OpenXR Loader will find API Layers be reading all of the ``.json`` files in specific locations within the APK assets folder. The APK assest folder will be something like ``app/src/main/assets/``. Under that folder, the loader will check for implicit and explicit layers in these directories:
-	
+
 	.. code-block::
 
 		openxr/<major_ver>/api_layers/implicit.d

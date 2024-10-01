@@ -3,12 +3,12 @@
 # This file is distributed under the same license as the sphinx_rtd_theme
 # project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
-# 
+#
 # Translators:
 # 王赛 <wangsai@bootcss.com>, 2019
 # Anthony <aj@ohess.org>, 2022
 # JY3, 2022
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: sphinx_rtd_theme 0.4.3.dev0\n"
