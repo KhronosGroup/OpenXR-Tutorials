@@ -148,7 +148,7 @@ We will now show how to use these profiles in practice to suggest bindings betwe
 4.3.2 Binding Interactions
 --------------------------
 
-We will set up bindings for the actions. A binding is a *suggested* correspondence between an action (which is app-defined), and the input/output on the user's devices. 
+We will set up bindings for the actions. A binding is a *suggested* correspondence between an action (which is app-defined), and the input/output on the user's devices.
 
 An XrPath is a 64-bit number that uniquely identifies any given forward-slash-delimited path string, allowing us to refer to paths without putting cumbersome string-handling in our runtime code. After the call to ``CreateActionSet()`` in ``Run()``, add the line:
 
@@ -298,7 +298,7 @@ We'll add the grabbing Action.
 	:start-after: XR_DOCS_TAG_BEGIN_PollActions3
 	:end-before: XR_DOCS_TAG_END_PollActions3
 	:dedent: 4
-	
+
 Finally in this function, we'll add the haptic buzz behaviour, which has variable amplitude.
 
 .. literalinclude:: ../Chapter4/main.cpp
@@ -306,7 +306,7 @@ Finally in this function, we'll add the haptic buzz behaviour, which has variabl
 	:start-after: XR_DOCS_TAG_BEGIN_PollActions4
 	:end-before: XR_DOCS_TAG_END_PollActions4
 	:dedent: 4
-	
+
 Now we've completed polling all the actions in the application. Let's introduce something to interact with. After your declaration of ``m_pipeline`` and before ``XrActionSet m_actionSet``, we will declare some interactable 3D blocks. Add:
 
 .. literalinclude:: ../Chapter4/main.cpp
@@ -315,7 +315,7 @@ Now we've completed polling all the actions in the application. Let's introduce 
 	:end-before: XR_DOCS_TAG_END_Objects
 	:dedent: 4
 
-We will add two more functions after the definition of ``PollActions`` to enable some interaction between the user and the 3D blocks:    
+We will add two more functions after the definition of ``PollActions`` to enable some interaction between the user and the 3D blocks:
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -336,7 +336,7 @@ Add this after ``#include <xr_linear_algebra.h>``:
 	:start-after: XR_DOCS_TAG_BEGIN_include_algorithm_random
 	:end-before: XR_DOCS_TAG_END_include_algorithm_random
 	:dedent: 0
-	
+
 Inside our ``CreateResources()`` method, locate where we set the variable ``numberOfCuboids`` and update it as follows:
 
 .. literalinclude:: ../Chapter4/main.cpp
@@ -345,7 +345,9 @@ Inside our ``CreateResources()`` method, locate where we set the variable ``numb
 	:end-before: XR_DOCS_TAG_END_Update_numberOfCuboids
 	:dedent: 8
 
-We will render 64 interactable cubes, two cuboids representing the controllers and a further two for the floor and table from the previous chapter. Inside our ``CreateResources()`` method and after the call to ``m_graphicsAPI->CreatePipeline()``, add the following code that m_vertexBuffersets up the orientation, position and color of each interactable cube.
+At startup we will render 64 interactable cubes, two cuboids representing the controllers and a further two for the floor and table from the previous chapter, we allocate space for up to m_maxBlockCount (100) blocks.
+
+Inside our ``CreateResources()`` method and after the call to ``m_graphicsAPI->CreatePipeline()``, add the following code that m_vertexBuffersets up the orientation, position and color of each interactable cube.
 
 .. literalinclude:: ../Chapter4/main.cpp
 	:language: cpp
@@ -375,7 +377,7 @@ You should also be able to grab and move the cubes with the controllers.
 **************************************
 
 Look again now at the function PollActions(). We specify which action to look at with the :openxr_ref:`XrActionStateGetInfo` struct. Then we use a type-specific call. For our boolean Grab Action, we call :openxr_ref:`xrGetActionStateBoolean` to retrieve an :openxr_ref:`XrActionStateBoolean` struct. This specifies whether the value of the boolean is true or false, and we can use this to determine whether the user is pressing the specified button on the controller.
-However, the struct :openxr_ref:`XrActionStateBoolean` also has a member called ``isActive``, which is true if the state of the action is actually being read. If it's false, the value of ``currentState`` is irrelevant - the polling failed. 
+However, the struct :openxr_ref:`XrActionStateBoolean` also has a member called ``isActive``, which is true if the state of the action is actually being read. If it's false, the value of ``currentState`` is irrelevant - the polling failed.
 
 Similarly, :openxr_ref:`XrActionStateFloat` has a floating-point ``currentState`` value, which is valid if ``isActive`` is true. The struct has ``changedSinceLastSync``, which is true if the value changed between the previous and current calls to :openxr_ref:`xrSyncActions`. And it has ``lastChangeTime``, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
 

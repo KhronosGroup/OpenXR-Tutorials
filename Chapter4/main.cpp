@@ -38,6 +38,8 @@ XrVector3f operator*(XrVector3f a, float b) {
 // XR_DOCS_TAG_BEGIN_include_algorithm_random
 // Include <algorithm> for std::min and max
 #include <algorithm>
+// A deque is used to track the blocks to draw.
+#include <deque>
 // Random numbers for colorful blocks
 #include <random>
 static std::uniform_real_distribution<float> pseudorandom_distribution(0, 1.f);
@@ -573,7 +575,7 @@ private:
         m_indexBuffer = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices), &cubeIndices});
 
         // XR_DOCS_TAG_BEGIN_Update_numberOfCuboids
-        size_t numberOfCuboids = 64 + 2 + 2;
+        size_t numberOfCuboids = m_maxBlockCount + 2 + 2;
         // XR_DOCS_TAG_END_Update_numberOfCuboids
         m_uniformBuffer_Camera = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants) * numberOfCuboids, nullptr});
         m_uniformBuffer_Normals = m_graphicsAPI->CreateBuffer({GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(normals), &normals});
@@ -668,6 +670,9 @@ private:
                     // A random color.
                     XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                     m_blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, color});
+                    if (m_blocks.size() > m_maxBlockCount) {
+                      m_blocks.pop_front();
+                    }
                 }
             }
         }
@@ -889,10 +894,13 @@ private:
                     }
                 } else {
                     // not near a block? We can spawn one.
-                    if (m_spawnCubeState.isActive == XR_TRUE && m_spawnCubeState.currentState == XR_FALSE && m_spawnCubeState.changedSinceLastSync == XR_TRUE && m_blocks.size() < m_maxBlockCount) {
+                    if (m_spawnCubeState.isActive == XR_TRUE && m_spawnCubeState.currentState == XR_FALSE && m_spawnCubeState.changedSinceLastSync == XR_TRUE) {
                         XrQuaternionf q = {0.0f, 0.0f, 0.0f, 1.0f};
                         XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                         m_blocks.push_back({{q, FixPosition(m_handPose[i].position)}, {0.095f, 0.095f, 0.095f}, color});
+                        while ( m_blocks.size() > m_maxBlockCount) {
+                          m_blocks.pop_front();
+                        }
                     }
                 }
             } else {
@@ -1408,7 +1416,7 @@ private:
         XrVector3f color;
     };
     // The list of block instances.
-    std::vector<Block> m_blocks;
+    std::deque<Block> m_blocks;
     // Don't let too many m_blocks get created.
     const size_t m_maxBlockCount = 100;
     // Which block, if any, is being held by each of the user's hands or controllers.
