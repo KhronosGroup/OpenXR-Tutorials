@@ -351,6 +351,7 @@ private:
         // Each Action here has two paths, one for each SubAction path.
         any_ok |= SuggestBindings("/interaction_profiles/khr/simple_controller", {{m_changeColorAction, CreateXrPath("/user/hand/left/input/select/click")},
                                                                                   {m_grabCubeAction, CreateXrPath("/user/hand/right/input/select/click")},
+                                                                                  {m_spawnCubeAction, CreateXrPath("/user/hand/right/input/menu/click")},
                                                                                   {m_palmPoseAction, CreateXrPath("/user/hand/left/input/grip/pose")},
                                                                                   {m_palmPoseAction, CreateXrPath("/user/hand/right/input/grip/pose")},
                                                                                   {m_buzzAction, CreateXrPath("/user/hand/left/output/haptic")},
@@ -893,8 +894,9 @@ private:
                         thisBlock.color = color;
                     }
                 } else {
-                    // not near a block? We can spawn one.
-                    if (m_spawnCubeState.isActive == XR_TRUE && m_spawnCubeState.currentState == XR_FALSE && m_spawnCubeState.changedSinceLastSync == XR_TRUE) {
+                    // right hand not near a block?
+                    // i = 1 means sub action path /user/hand/right
+                    if (i == 1 && m_spawnCubeState.isActive == XR_TRUE && m_spawnCubeState.currentState == XR_FALSE && m_spawnCubeState.changedSinceLastSync == XR_TRUE) {
                         XrQuaternionf q = {0.0f, 0.0f, 0.0f, 1.0f};
                         XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                         m_blocks.push_back({{q, FixPosition(m_handPose[i].position)}, {0.095f, 0.095f, 0.095f}, color});
@@ -1329,7 +1331,7 @@ private:
             int events = 0;
             // The timeout depends on whether the application is active.
             const int timeoutMilliseconds = (!androidAppState.resumed && !m_sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
-            if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
+            if (ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void**)&source) >= 0) {
                 if (source != nullptr) {
                     source->process(androidApp, source);
                 }
