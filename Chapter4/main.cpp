@@ -293,9 +293,10 @@ private:
         strncpy(actionSetCI.actionSetName, "openxr-tutorial-actionset", XR_MAX_ACTION_SET_NAME_SIZE);
         // Localized names are required so there is a human-readable action name to show the user if they are rebinding Actions in an options screen.
         strncpy(actionSetCI.localizedActionSetName, "OpenXR Tutorial ActionSet", XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE);
-        OPENXR_CHECK(xrCreateActionSet(m_xrInstance, &actionSetCI, &m_actionSet), "Failed to create ActionSet.");
         // Set a priority: this comes into play when we have multiple Action Sets, and determines which Action takes priority in binding to a specific input.
         actionSetCI.priority = 0;
+
+        OPENXR_CHECK(xrCreateActionSet(m_xrInstance, &actionSetCI, &m_actionSet), "Failed to create ActionSet.");
         // XR_DOCS_TAG_END_CreateActionSet
 
         // XR_DOCS_TAG_BEGIN_CreateActionLambda
