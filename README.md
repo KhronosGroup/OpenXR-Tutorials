@@ -33,10 +33,10 @@ This OpenXR-Tutorial repository contains both the text and code samples for the 
 This chapter describes the goals of OpenXR and gives an overview of the core concepts used in the API. It describes how to set up your project as well.
 
 ### 2. OpenXR Setup
-This chapter explains how to set up an [`XrInstance`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrInstance.html) and [`XrSession`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSession.html). It also discusses how to poll events in OpenXR.
+This chapter explains how to set up an [`XrInstance`](https://registry.khronos.org/OpenXR/specs/1.1/man/html/XrInstance.html) and [`XrSession`](https://registry.khronos.org/OpenXR/specs/1.1/man/html/XrSession.html). It also discusses how to poll events in OpenXR.
 
 ### 3. Graphics
-[`XrSwapchain`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSwapchain.html) construction is explained in this chapter along with the [`XrEnvironmentBlendMode`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrEnvironmentBlendMode.html) and the [`XrReferenceSpaceType`](https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrReferenceSpaceType.html). Finally, it explains how to set up a render loop and draw some simple geometry.
+[`XrSwapchain`](https://registry.khronos.org/OpenXR/specs/1.1/man/html/XrSwapchain.html) construction is explained in this chapter along with the [`XrEnvironmentBlendMode`](https://registry.khronos.org/OpenXR/specs/1.1/man/html/XrEnvironmentBlendMode.html) and the [`XrReferenceSpaceType`](https://registry.khronos.org/OpenXR/specs/1.1/man/html/XrReferenceSpaceType.html). Finally, it explains how to set up a render loop and draw some simple geometry.
 
 ### 4. Interactions
 This chapter focuses solely on explaining and demonstrating both the interaction profile and action systems that OpenXR uses. These systems provide a way for developers and users to bind inputs to actions allowing greater cross-vendor compatibility of an application.
@@ -114,8 +114,9 @@ See [LICENSE](LICENSE).
 
 ## Related resources
 
-[Khronos OpenXR Main page](https://www.khronos.org/openxr/)
+- [Khronos OpenXR Main page](https://www.khronos.org/openxr/)
 
-[OpenXR 1.0 Specification](https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html)
+- [OpenXR 1.1 Specification](https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html)
+  - Largely applies to 1.0 as well.
 
-[OpenXR 1.0 Manual Pages](https://registry.khronos.org/OpenXR/specs/1.0/man/html/openxr.html)
+- [OpenXR 1.1 Manual Pages](https://registry.khronos.org/OpenXR/specs/1.1/man/html/openxr.html)

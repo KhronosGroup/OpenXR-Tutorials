@@ -205,7 +205,7 @@ We will explore the added methods in the sub-chapters below.
 3.1.1 View Configurations
 =========================
 
-The first thing we need to do is get all the view configuration types available to our XR system. A view configuration type is a 'semantically meaningful set of one or more views for which an application can render images'. (`8. View Configurations <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#view_configurations>`_.) Theres's both mono and stereo types along others provided by hardware/software vendors.
+The first thing we need to do is get all the view configuration types available to our XR system. A view configuration type is a 'semantically meaningful set of one or more views for which an application can render images'. (`8. View Configurations <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#view_configurations>`_.) Theres's both mono and stereo types along others provided by hardware/software vendors.
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -236,7 +236,7 @@ From the code in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`, we modify our assignm
 3.1.2 Enumerate the Swapchain Formats
 =====================================
 
-For each runtime, the OpenXR compositor has certain preferred image formats that should be used by the swapchain. When calling :openxr_ref:`xrEnumerateSwapchainFormats`, the :openxr_ref:`XrSession` and the Graphics API will return an array of API-specific formats ordered by preference. :openxr_ref:`xrEnumerateSwapchainFormats` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
+For each runtime, the OpenXR compositor has certain preferred image formats that should be used by the swapchain. When calling :openxr_ref:`xrEnumerateSwapchainFormats`, the :openxr_ref:`XrSession` and the Graphics API will return an array of API-specific formats ordered by preference. :openxr_ref:`xrEnumerateSwapchainFormats` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#swapchain-image-management>`_).
 
 Both Linear and sRGB color spaces are supported and one may have preference over the other. In cases where you are compositing multiple layers, you may wish to use linear color spaces only, as OpenXR's compositor will perform all blend operations in a linear color space for correctness. For certain runtimes, systems and/or applications, sRGB maybe preferred especially if there's just a single opaque layer to composite.
 
@@ -603,7 +603,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
 
-	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET`` for color and ``D3D12_RESOURCE_STATE_DEPTH_WRITE`` for depth. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
+	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET`` for color and ``D3D12_RESOURCE_STATE_DEPTH_WRITE`` for depth. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_D3D12_enable>`_.
 
 .. only:: opengl
 
@@ -639,7 +639,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:end-before: XR_DOCS_TAG_END_GetSwapchainImage_Vulkan
 		:dedent: 4
 
-	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`` for color and ``VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL`` for depth. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.
+	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`` for color and ``VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL`` for depth. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_vulkan_enable>`_.
 
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
 
@@ -794,7 +794,7 @@ The enum `XrEnvironmentBlendMode` describes how OpenXR should blend the rendered
 |                                       | level of blending with the real world behind the display.                                                                     |
 +---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
 
-`XrEnvironmentBlendMode - Enumerant Descriptions <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#compositing>`_.
+`XrEnvironmentBlendMode - Enumerant Descriptions <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#compositing>`_.
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -861,7 +861,7 @@ Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this impli
 
 The Stage Reference Space defines a rectangular area that is flat and devoid of obstructions. The origin is defined to be on the floor and at the center of the rectangular area. +Y is up, +X is to the right, and -Z is forward. The origin is axis-aligned to the XZ plane. It is most often used for rendering standing-scale experiences (no bounds) or roomscale experiences (with bounds) where a physical floor is required. When the user is redefining the origin or bounds of the area, the runtime will queue a :openxr_ref:`XrEventDataReferenceSpaceChangePending` structure for the application to process.
 
-For more information on reference spaces see `the OpenXR Specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#reference-spaces>`_.
+For more information on reference spaces see `the OpenXR Specification <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#reference-spaces>`_.
 
 .. figure:: OpenXR-Coordinate-System.png
 	:alt: OpenXR Default Coordinate System
@@ -872,7 +872,7 @@ The default coordinate system in OpenXR is right-handed with +Y up, +X to the ri
 
 The XR_EXT_local_floor extension bridges the use-case of applications wanting to use a seated-scale experience, but also with a physical floor. Neither ``XR_REFERENCE_SPACE_TYPE_LOCAL`` nor ``XR_REFERENCE_SPACE_TYPE_STAGE`` truly fits this requirement.
 
-The Local Floor Reference Space establishes a world-locked, gravity-aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is the same as ``XR_REFERENCE_SPACE_TYPE_LOCAL`` in the X and Z coordinates, but not the Y coordinate. See more here: `12.34. XR_EXT_local_floor <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_local_floor>`_.
+The Local Floor Reference Space establishes a world-locked, gravity-aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is the same as ``XR_REFERENCE_SPACE_TYPE_LOCAL`` in the X and Z coordinates, but not the Y coordinate. See more here: `12.34. XR_EXT_local_floor <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_local_floor>`_.
 
 You may wish to call :openxr_ref:`xrEnumerateReferenceSpaces` to get all :openxr_ref:`XrReferenceSpaceType` s available to the system, before choosing one that is suitable for your application and the user's environment.
 
@@ -972,7 +972,7 @@ The compositing of layers can be set on a per-layer basis through the use of the
 | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT        | States that the color channels have not been pre-multiplied with alpha for transparency                   |
 +-------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+
 
-See more here: `10.6.1. Composition Layer Flags <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#composition-layer-flags>`_.
+See more here: `10.6.1. Composition Layer Flags <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#composition-layer-flags>`_.
 
 Before we call ``RenderLayer()``, we check that the :openxr_ref:`XrSession` is active, as we don't want to needlessly render graphics, and we also check whether OpenXR wants us to render via the use of :openxr_ref:`XrFrameState` ``::shouldRender``.
 

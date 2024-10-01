@@ -135,7 +135,7 @@ print('openxr_tutorials_git_tag_py is ' + openxr_tutorials_git_tag_py)
 
 # -- Definitions for sphinx.ext.extlinks -------------------------------------
 extlinks = {
-    'openxr_ref' : ('https://registry.khronos.org/OpenXR/specs/1.0/man/html/%s.html', '%s'), # :openxr_ref:
+    'openxr_ref' : ('https://registry.khronos.org/OpenXR/specs/1.1/man/html/%s.html', '%s'), # :openxr_ref:
     'git_release' : ('https://github.com/KhronosGroup/OpenXR-Tutorials/releases/download/' + openxr_tutorials_git_tag_py + '/%s', '%s') # :git_release:
 
 }

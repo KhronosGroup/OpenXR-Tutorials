@@ -160,7 +160,7 @@ The message types are:
  * Performance: indicates possible non-optimal usage of OpenXR.
  * Conformance: indicates a non-conformant OpenXR result from the runtime.
 
-See also `Debug Message Categorization <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#debug-message-categorization>`_ in the OpenXR Specification.
+See also `Debug Message Categorization <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#debug-message-categorization>`_ in the OpenXR Specification.
 
 Copy the following code into ``CreateDebugMessenger()`` and ``DestroyDebugMessenger()`` respectively:
 
@@ -183,7 +183,7 @@ Another feature of OpenXR is the API Layers, which may also assist you in debugg
 2.1.3 Obtaining the System Id
 =============================
 
-The next object we want to get is the :openxr_ref:`XrSystemId`. According to `System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_ in the OpenXR spec, OpenXR *separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences*. So, an :openxr_ref:`XrSystemId` could represent a VR headset and a pair of controllers, or perhaps a mobile device with video pass-through for AR. So we need to decide what type of :openxr_ref:`XrFormFactor` we want to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``. OpenXR currently offers two options for the :openxr_ref:`XrFormFactor`:
+The next object we want to get is the :openxr_ref:`XrSystemId`. According to `System <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#system>`_ in the OpenXR spec, OpenXR *separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences*. So, an :openxr_ref:`XrSystemId` could represent a VR headset and a pair of controllers, or perhaps a mobile device with video pass-through for AR. So we need to decide what type of :openxr_ref:`XrFormFactor` we want to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``. OpenXR currently offers two options for the :openxr_ref:`XrFormFactor`:
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -383,7 +383,7 @@ For the ``DestroySession()`` method, add the following code:
 
 Above is the code for creating and destroying an :openxr_ref:`XrSession`. :openxr_ref:`xrDestroySession` will destroy the :openxr_ref:`XrSession` when we are finished and shutting down the application. :openxr_ref:`xrCreateSession` takes the :openxr_ref:`XrInstance`, :openxr_ref:`XrSessionCreateInfo` and a :openxr_ref:`XrSession` return. If the function call is successful, :openxr_ref:`xrCreateSession` will return ``XR_SUCCESS`` and ``m_session`` will be non-null.
 
-In the :openxr_ref:`XrSessionCreateInfo` structure we specify the system id we got from :openxr_ref:`xrGetSystem`, we do not set any flags (``createFlags``), and we define which Graphics API we wish to use. The Graphics API is defined via the :openxr_ref:`XrSessionCreateInfo` ``::next`` void pointer. Following the Vulkan style of extensibility, structures for creating objects can be extended to enable extra functionality. In our case, the extension is required and thus :openxr_ref:`XrSessionCreateInfo` ``::next`` can not be a nullptr. That pointer must point to 'exactly one graphics API binding structure (a structure whose name begins with "XrGraphicsBinding")' (`XrSessionCreateInfo(3) Manual Page <https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSessionCreateInfo.html>`_). We get a pointer to the correct *Graphics Binding* structure by calling ``GraphicsAPI::GetGraphicsBinding();``.
+In the :openxr_ref:`XrSessionCreateInfo` structure we specify the system id we got from :openxr_ref:`xrGetSystem`, we do not set any flags (``createFlags``), and we define which Graphics API we wish to use. The Graphics API is defined via the :openxr_ref:`XrSessionCreateInfo` ``::next`` void pointer. Following the Vulkan style of extensibility, structures for creating objects can be extended to enable extra functionality. In our case, the extension is required and thus :openxr_ref:`XrSessionCreateInfo` ``::next`` can not be a nullptr. That pointer must point to 'exactly one graphics API binding structure (a structure whose name begins with "XrGraphicsBinding")' (`XrSessionCreateInfo(3) Manual Page <https://registry.khronos.org/OpenXR/specs/1.1/man/html/XrSessionCreateInfo.html>`_). We get a pointer to the correct *Graphics Binding* structure by calling ``GraphicsAPI::GetGraphicsBinding();``.
 
 
 **************************
@@ -506,7 +506,7 @@ Copy the following code into the ``PollEvents()`` method:
 
 In ``PollEvents()`` we use a lambda to call :openxr_ref:`xrPollEvent`. This call will fill in the :openxr_ref:`XrEventDataBuffer` structure that is accessible via the by-reference capture (``[&]``). We also check that the returned :openxr_ref:`XrResult` is ``XR_SUCCESS``. Whilst :openxr_ref:`xrPollEvent` returns ``XR_SUCCESS``, there are events for us to process, and therefore we use a while loop to continually check for new events. :openxr_ref:`xrPollEvent` will update the member variable ``type``, which then determines how we respond to the event. Depending on the updated type, we use a ``reinterpret_cast<>()`` to get the actual data that :openxr_ref:`xrPollEvent` returned. In certain cases, we also check that the returned :openxr_ref:`XrSession` matches the one we created.
 
-The description of the events comes from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_xrpollevent>`_.
+The description of the events comes from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#_xrpollevent>`_.
 
 +---------------------------------------------------+--------------------------------------------------------------------------------+
 | Event Type                                        | Description                                                                    |
