@@ -1,4 +1,4 @@
-﻿##############
+##############
 1 Introduction
 ##############
 
@@ -6,12 +6,12 @@
 1.1 Goal of OpenXR
 ******************
 
-OpenXR aims to help solve the fragmentation of the XR ecosystem. Before the advent of OpenXR, software developers working with multiple hardware platforms had to write different code paths for each platform to address the different hardware. Each platform had its own, often proprietary, API, and deploying an existing application to a new platform required a lot of adaptation. Developing a new application for a new platform was even more challenging. Documentation for the OpenXR 1.0 Core Specification can be found `<https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html>`_.
+OpenXR aims to help solve the fragmentation of the XR ecosystem. Before the advent of OpenXR, software developers working with multiple hardware platforms had to write different code paths for each platform to address the different hardware. Each platform had its own, often proprietary, API, and deploying an existing application to a new platform required a lot of adaptation. Developing a new application for a new platform was even more challenging. Documentation for the OpenXR 1.0 Core Specification can be found `<https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html>`_.
 
 Despite of their unique features, the platforms had a great deal in common. For example, most headsets had a main view seen from two slightly different perspectives. Most had a way to track the user's head and hands or hand controllers. Most had buttons, many had analogue controls like triggers or joysticks and many had haptic feedback.
 
 .. figure:: OpenXRBeforeAfter.png
-	:alt: XR Fragmentation 
+	:alt: XR Fragmentation
 	:align: left
 	:width: 99%
 
@@ -61,12 +61,12 @@ OpenXR provides a clear and precise common language for developers and hardware 
 
 An OpenXR Runtime implements the OpenXR API. The runtime translates the OpenXR function calls into something that the vendor's software/hardware can understand.
 
-The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as :openxr_ref:`XR_EXT_debug_utils`, any functions associated with that extension will need to be loaded in with :openxr_ref:`xrGetInstanceProcAddr`. Some platforms like Android require extra work and information to initialize the loader. Documentation for the OpenXR Loader can be found `<https://registry.khronos.org/OpenXR/specs/1.0/loader.html>`_.
+The OpenXR Loader finds and loads a suitable OpenXR runtime that is present on the system. The Loader will load in all of the OpenXR function pointers stated in the core specification for the application to use. If you are using an extension, such as :openxr_ref:`XR_EXT_debug_utils`, any functions associated with that extension will need to be loaded in with :openxr_ref:`xrGetInstanceProcAddr`. Some platforms like Android require extra work and information to initialize the loader. Documentation for the OpenXR Loader can be found `<https://registry.khronos.org/OpenXR/specs/1.1/loader.html>`_.
 
-API Layers are additional code layers that are inserted by the loader between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or for checking that the function calls made to OpenXR are compatible with the OpenXR specification. See :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`. 
+API Layers are additional code layers that are inserted by the loader between the application and the runtime. Each of these API layers intercepts the OpenXR function calls from the layer above, does something with that function, and then calls the next layer down. Examples of API Layers would be: logging the OpenXR functions to the output or a file; creating trace files of the OpenXR calls for later replay; or for checking that the function calls made to OpenXR are compatible with the OpenXR specification. See :ref:`Chapter 6.3 <6.3 OpenXR API Layers>`.
 
 OpenXR supports multiple graphics APIs via its extension functionality. OpenXR can extend its functionality to include debugging layers, vendor hardware and software support and graphics APIs. This idea of absolving the core specification of the graphics API functionality provides flexibility in choosing the graphics APIs now and in the future. OpenXR is targeted at developing XR experiences and isn't concerned with the specifics of any graphics APIs. The extensible nature of OpenXR allows revisions of existing APIs and new graphics APIs to be integrated with ease. See :ref:`Chapter 5 <5 Extensions>`.
-	
+
 OpenXR recognizes that there is a vast and ever-changing array of hardware and configurations in the XR space. With new headsets and controllers coming to the market, an abstraction of the input system was needed so that the same applications can target different and newer hardware with minimal change. This is the core reasoning behind the OpenXR Actions System.
 
 *********************
@@ -90,7 +90,7 @@ This section will help you set up your development environment. Here your choice
 	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake to generate the Visual Studio Solution and Project files. At least CMake 3.22.1 will be needed, so follow the instructions on the CMake download page to ensure that you have an up-to-date version.
 
 	Next, you'll want to choose which graphics API you'll be using.
-	
+
 	.. only:: d3d11 or d3d12
 
 		Direct3D 11 and Direct3D 12 are built into the Windows SDK. If you're using Direct3D, D3D12 is recommended, because of it support for `View Instancing <https://microsoft.github.io/DirectX-Specs/d3d/ViewInstancing.html>`_. Essentially, it allows you to draw both eye views in one draw call.
@@ -98,11 +98,11 @@ This section will help you set up your development environment. Here your choice
 		In both cases, download and install the latest `Windows SDK <https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/>`_.
 
 		You will need GPU that supports ``D3D_FEATURE_LEVEL_11_0`` for this tutorial.
-	
+
 	.. only:: d3d11
 
 		You will need at least Direct3D 11.1 Feature for this tutorial.
-		
+
 	.. only:: opengl
 
 		For this tutorial, we are using the 'gfxwrapper' for the OpenGL API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``.
@@ -144,18 +144,18 @@ This section will help you set up your development environment. Here your choice
 	.. rubric Install Monado
 
 		XR support for Linux is provided by `Monado <https://monado.freedesktop.org/>`_, an open source runtime. Monado supports a selection of XR devices and can also run in a device emulation mode. Follow the instructions `<https://monado.freedesktop.org/getting-started.html>`_ to set up the runtime.
-	
+
 .. only:: android
-	
+
 	When building for Android, you can use Microsoft Windows, Linux or Apple macOS as the host platform to run Android studio.
 
 	.. rubric:: Android Studio
 
 	Install Android Studio from this location: `https://developer.android.com/studio <https://developer.android.com/studio>`_.
-	
+
 	.. only:: opengles
-		
-		For this tutorial, we are using the 'gfxwrapper' for the OpenGL ES API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``. 
+
+		For this tutorial, we are using the 'gfxwrapper' for the OpenGL ES API found as a part of the `OpenXR-SDK-Source <https://github.com/KhronosGroup/OpenXR-SDK-Source>`_ reposity under ``src/common/``.
 		If you want to use OpenGL ES stand-alone, you will need to use EGL to create a valid OpenGL ES Context for Android - `EGL Overview <https://www.khronos.org/egl>`_. You will also need to use a function loader like GLAD to access functions for OpenGL ES - `GLAD <https://glad.dav1d.de/>`_.
 
 		You will need an Android device that supports at least OpenGL ES 3.1 for this tutorial.
@@ -189,26 +189,26 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		:scale: 55%
 
 	Select your *workspace* folder, which is currently empty.
-	
+
 	If you haven't previously done so, install the CMake extension for Visual Studio Code: select the "Extensions" tab, and type "CMake" in the search box.
-	
+
 	.. figure:: images/VSCodeCMakeLinux.png
 		:alt: Selecting the CMake extension in Visual Studio Code.
 		:align: left
 		:scale: 55%
-	
+
 .. only:: windows or linux
 
 	Create a folder called ``cmake`` in the *workspace* directory. Download the linked file below and put it in ``cmake``. This will be used in our ``CMakeLists.txt`` to help build our project.
 
 	.. only:: d3d11 or d3d12
-		
+
 		:download:`fxc_shader.cmake <../cmake/fxc_shader.cmake>`
 
 	.. only:: opengl
 
 		:download:`gfxwrapper.cmake <../cmake/gfxwrapper.cmake>`
-	
+
 	.. only:: vulkan
 
 		:download:`glsl_shader.cmake <../cmake/glsl_shader.cmake>`
@@ -242,8 +242,8 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		:start-after: XR_DOCS_TAG_BEGIN_CMakeModulePath
 		:end-before: XR_DOCS_TAG_END_CMakeModulePath
 
-	Now, we append to the ``CMAKE_MODULE_PATH`` variable an additional path for ``find_package()`` to search within. 
-	
+	Now, we append to the ``CMAKE_MODULE_PATH`` variable an additional path for ``find_package()`` to search within.
+
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake
 		:start-after: XR_DOCS_TAG_BEGIN_FetchContent
@@ -258,48 +258,48 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		.. code-block:: cmake
 
 			# Files
-			set(SOURCES 
+			set(SOURCES
 				"main.cpp"
 				"../Common/GraphicsAPI.cpp"
 				"../Common/GraphicsAPI_D3D11.cpp"
 				"../Common/OpenXRDebugUtils.cpp")
-			set(HEADERS 
+			set(HEADERS
 				"../Common/DebugOutput.h"
 				"../Common/GraphicsAPI.h"
 				"../Common/GraphicsAPI_D3D11.h"
 				"../Common/HelperFunctions.h"
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
-	
+
 	.. only:: d3d12
-		
+
 		.. code-block:: cmake
 
 			# Files
-			set(SOURCES 
+			set(SOURCES
 				"main.cpp"
 				"../Common/GraphicsAPI.cpp"
 				"../Common/GraphicsAPI_D3D12.cpp"
 				"../Common/OpenXRDebugUtils.cpp")
-			set(HEADERS 
+			set(HEADERS
 				"../Common/DebugOutput.h"
 				"../Common/GraphicsAPI.h"
 				"../Common/GraphicsAPI_D3D12.h"
 				"../Common/HelperFunctions.h"
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
-	
+
 	.. only:: opengl
 
 		.. code-block:: cmake
 
 			# Files
-			set(SOURCES 
+			set(SOURCES
 				"main.cpp"
 				"../Common/GraphicsAPI.cpp"
 				"../Common/GraphicsAPI_OpenGL.cpp"
 				"../Common/OpenXRDebugUtils.cpp")
-			set(HEADERS 
+			set(HEADERS
 				"../Common/DebugOutput.h"
 				"../Common/GraphicsAPI.h"
 				"../Common/GraphicsAPI_OpenGL.h"
@@ -312,12 +312,12 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		.. code-block:: cmake
 
 			# Files
-			set(SOURCES 
+			set(SOURCES
 				"main.cpp"
 				"../Common/GraphicsAPI.cpp"
 				"../Common/GraphicsAPI_Vulkan.cpp"
 				"../Common/OpenXRDebugUtils.cpp")
-			set(HEADERS 
+			set(HEADERS
 				"../Common/DebugOutput.h"
 				"../Common/GraphicsAPI.h"
 				"../Common/GraphicsAPI_Vulkan.h"
@@ -326,7 +326,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 				"../Common/OpenXRHelper.h")
 
 	All the files listed above with ``../Common/*.*`` are available to download below. In the next section, you will find the links and a discussion of their usage. This tutorial includes all the graphics APIs header and cpp files; you only need to download the files for your chosen graphics API.
-	
+
 	Add the following code to ``Chapter2/CMakeLists.txt``:
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
@@ -336,7 +336,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		:dedent: 4
 
 	We have used ``add_executable()`` to create the program we'll be building, and specified its ``${SOURCES}`` and ``${HEADERS}``. We passed the ``XR_RUNTIME_JSON`` variable on to the debugging environment (Windows only). We've added the ``../Common``, ``"${openxr_SOURCE_DIR}/src/common"`` and ``"${openxr_SOURCE_DIR}/external/include"`` folders as include directories and linked the ``openxr_loader`` which we obtained with ``FetchContent``. This will also add the include directory for the OpenXR headers.
-	
+
 	.. only:: windows
 
 		.. only:: d3d11
@@ -362,9 +362,9 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 				:start-after: XR_DOCS_TAG_BEGIN_D3D11_12
 				:end-before: XR_DOCS_TAG_END_D3D11_12
 				:dedent: 8
-			
+
 		.. only:: d3d11
-			
+
 			For Microsoft Windows, we've linked ``d3d11.lib`` and ``dxgi.lib``, so that we can use Direct3D 11 and the DirectX Graphics Infrastructure. The headers for Direct3D are automatically included as part of the Visual Studio project. We've added the ``XR_TUTORIAL_USE_D3D11`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
 		.. only:: d3d12
@@ -388,20 +388,20 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 			:start-after: XR_DOCS_TAG_BEGIN_OpenGL
 			:end-before: XR_DOCS_TAG_END_OpenGL
 			:dedent: 4
-		
+
 		We include the ``gfxwrapper.cmake`` from our ``cmake`` folder in the *workspace* directory. This file creates a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL. We link against ``openxr-gfxwrapper``, which also provide us with the needed include directories. We've added the ``XR_TUTORIAL_USE_OPENGL`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
 	.. only:: vulkan
-		
+
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
 			:start-after: XR_DOCS_TAG_BEGIN_VulkanSDK
 			:end-before: XR_DOCS_TAG_END_VulkanSDK
 			:dedent: 4
-		
+
 		If you have the Vulkan SDK installed, this CMake code will try to find that package, add the include directories and link the Vulkan libraries. We've added the ``XR_TUTORIAL_USE_VULKAN`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
-	That's all the CMake code that we require for this project. 
+	That's all the CMake code that we require for this project.
 
 .. only:: android
 
@@ -446,15 +446,15 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 	.. rubric:: CMake
 
 	.. only:: opengles
-	
-		Create a folder called ``cmake`` in the *workspace* directory. Download the linked files below and put them in ``cmake``. These will be used by CMake to help build our project. 
+
+		Create a folder called ``cmake`` in the *workspace* directory. Download the linked files below and put them in ``cmake``. These will be used by CMake to help build our project.
 
 		:download:`gfxwrapper.cmake <../cmake/gfxwrapper.cmake>`
 		:download:`FindEGL.cmake <../cmake/FindEGL.cmake>`
 		:download:`FindOpenGLES.cmake <../cmake/FindOpenGLES.cmake>`
 
 	.. only:: vulkan
-	
+
 		Create a folder called ``cmake`` in the *workspace* directory. Download the linked file below and put it in ``cmake``. This will be used by CMake to help build our project. Files with ``shader`` in the name will be used in later chapters.
 
 		:download:`glsl_shader.cmake <../cmake/glsl_shader.cmake>`
@@ -489,30 +489,30 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		.. code-block:: cmake
 
 			# Files
-			set(SOURCES 
+			set(SOURCES
 				"main.cpp"
 				"../Common/GraphicsAPI.cpp"
 				"../Common/GraphicsAPI_OpenGL_ES.cpp"
 				"../Common/OpenXRDebugUtils.cpp")
-			set(HEADERS 
+			set(HEADERS
 				"../Common/DebugOutput.h"
 				"../Common/GraphicsAPI.h"
 				"../Common/GraphicsAPI_OpenGL_ES.h"
 				"../Common/HelperFunctions.h"
 				"../Common/OpenXRDebugUtils.h"
 				"../Common/OpenXRHelper.h")
-			
+
 	.. only:: vulkan
 
 		.. code-block:: cmake
 
 			# Files
-			set(SOURCES 
+			set(SOURCES
 				"main.cpp"
 				"../Common/GraphicsAPI.cpp"
 				"../Common/GraphicsAPI_Vulkan.cpp"
 				"../Common/OpenXRDebugUtils.cpp")
-			set(HEADERS 
+			set(HEADERS
 				"../Common/DebugOutput.h"
 				"../Common/GraphicsAPI.h"
 				"../Common/GraphicsAPI_Vulkan.h"
@@ -529,23 +529,23 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		:start-after: XR_DOCS_TAG_BEGIN_Android
 		:end-before: XR_DOCS_TAG_END_Android
 		:dedent: 4
-	
+
 	We have added a library with the ``${SOURCES}`` and ``${HEADERS}`` and have added the ``../Common``, ``"${openxr_SOURCE_DIR}/src/common"`` and ``"${openxr_SOURCE_DIR}/external/include"`` folders as include directories. We have set the ``LINK_FLAGS`` for our project with the flag ``-u ANativeActivity_onCreate()`` to support C++ native code. This is used by a static library called ``native_app_glue``, which connects the Java Virtual Machine and our C++ code. Ultimately, it allows us to use the ``android_main()`` entry point.  We add ``native_app_glue`` to our project by including ``AndroidNdkModules`` and calling:
-	
-	``android_ndk_import_module_native_app_glue()``. 
+
+	``android_ndk_import_module_native_app_glue()``.
 
 	Now, we link the ``android``, ``native_app_glue`` and ``openxr_loader`` libraries to our ``OpenXRTutorialChapter2`` library. Our ``libOpenXRTutorialChapter2 .so`` will be packaged inside our .apk along with any shared libraries that we have linked. We also add ``-Wno-cast-calling-convention`` to the compiler option to allow the casting of calling conversions for function pointers.
 
 	Now, add:
 
 	.. only:: opengles
-	
+
 		.. literalinclude:: ../Chapter2/CMakeLists.txt
 			:language: cmake
 			:start-after: XR_DOCS_TAG_BEGIN_Gfxwrapper
 			:end-before: XR_DOCS_TAG_END_Gfxwrapper
 			:dedent: 4
-	
+
 		We include the ``gfxwrapper.cmake`` from our ``cmake`` folder in the *workspace* directory. This file creates a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL ES. We link against ``openxr-gfxwrapper``, which also provides us with the needed include directories. We've added the ``XR_TUTORIAL_USE_OPENGL_ES`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
 	.. only:: vulkan
@@ -562,19 +562,19 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	Replace the file 'app/src/main/AndroidManifest.xml' with the following:
 
-	Download :download:`AndroidManifest.xml <../Chapter2/app/src/main/AndroidManifest.xml>`. 
+	Download :download:`AndroidManifest.xml <../Chapter2/app/src/main/AndroidManifest.xml>`.
 	You can open the file. You don't need to edit it, but note:
 
 	* We added a ``<uses-feature>`` to require OpenGL ES 3.2 and Vulkan 1.0.3 support.
 	* Next, we added ``android.hardware.vr.headtracking`` to specify that the application works with 3DOF or 6DOF and on devices that are not all-in-ones. It's set to false so as to allow greater compatibility across devices.
 	* Finally, we updated the ``<intent-filter>`` to tell the application that it should take over rendering when active, rather than appearing in a window. We set:
-	
+
 	``<category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />``
-	
+
 	Note: not all devices yet support this category. For example, for Meta Quest devices you will need
-	
+
 	``<category android:name="com.oculus.intent.category.VR" />``
-	
+
 	The code shows both the 'Standard Khronos OpenXR' and 'Meta Quest-specific non-standard' ways of setting the intent filter. If you're building for another Android-based XR device which does not support all of the standard commands used here, you may need to look up the appropriate commands and modify the manifest.
 
 	.. rubric:: Gradle
@@ -582,9 +582,9 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 	Now download :download:`app/build.gradle <../Chapter2/app/build.gradle>` and replace the existing file ``app/build.gradle``.
 
 	In the ``dependencies`` section we have added:
-	
+
 	``implementation 'org.khronos.openxr:openxr_loader_for_android:...'``
-	
+
 	This provides an ``AndroidManifest.xml`` that will be merged into our own, setting some required properties for the package and application. We are still required to add to our own ``AndroidManifest.xml`` file with relevant intent filters, such as ``org.khronos.openxr.intent.category.IMMERSIVE_HMD``. It also provides the OpenXR headers and library binaries in a format that the Android Gradle Plugin will expose to CMake.
 
 	Now download :download:`build.gradle <../Chapter2/build.gradle>` and replace the existing file in the ``Chapter2`` folder.
@@ -708,7 +708,7 @@ Next, we add the ``GraphicsAPI_....h`` header to include the ``GraphicsAPI`` cod
 		:end-before: XR_DOCS_TAG_END_include_GraphicsAPI_D3D11
 
 .. only:: d3d12
-	
+
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_D3D12
@@ -722,14 +722,14 @@ Next, we add the ``GraphicsAPI_....h`` header to include the ``GraphicsAPI`` cod
 		:end-before: XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL
 
 .. only:: opengles
-	
+
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_OpenGL_ES
 		:end-before: XR_DOCS_TAG_END_include_GraphicsAPI_OpenGL_ES
 
 .. only:: vulkan
-	
+
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_include_GraphicsAPI_Vulkan
@@ -748,7 +748,7 @@ Now we will define the main class ``OpenXRTutorial`` of the application. It's ju
 
 	class OpenXRTutorial {
 	public:
-		OpenXRTutorial(GraphicsAPI_Type apiType) 
+		OpenXRTutorial(GraphicsAPI_Type apiType)
 		{
 		}
 		~OpenXRTutorial() = default;
@@ -756,7 +756,7 @@ Now we will define the main class ``OpenXRTutorial`` of the application. It's ju
 		{
 		}
 	private:
-		void PollSystemEvents() 
+		void PollSystemEvents()
 		{
 		}
 	private:
@@ -815,7 +815,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 			:end-before: XR_DOCS_TAG_END_main_Windows_Linux_VULKAN
 
 .. only:: android
-	
+
 	.. literalinclude:: ../Chapter2/main.cpp
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_android_main___ANDROID__
@@ -836,7 +836,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 			:language: cpp
 			:start-after: XR_DOCS_TAG_BEGIN_android_main_VULKAN
 			:end-before: XR_DOCS_TAG_END_android_main_VULKAN
-	
+
 	Before we can use OpenXR for Android, we need to initialize the loader based the application's context and virtual machine. We retrieve the function pointer to :openxr_ref:`xrInitializeLoaderKHR`, and with the :openxr_ref:`XrLoaderInitInfoAndroidKHR` filled out, call that function to initialize OpenXR for our use. At this point, we also attach the current thread to the Java Virtual Machine. We assign our ``AndroidAppState`` static member and our ``AndroidAppHandleCmd()`` static method to the ``android_app *`` and save it to a static member in the class.
 
 	Android requires a few extra additions to the OpenXRTutorial class. Namely, ``android_app *``, ``AndroidAppState`` and ``AndroidAppHandleCmd``, which are used in getting updates from the Android Operating System and keep our application functioning. Add the following code after the definition of ``Run()`` in your ``OpenXRTutorial`` class declaration:
@@ -877,7 +877,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 	You now have all the files and folders, laid out as follows:
 
 	.. figure:: images/linux-vscode-initial-files.png
-		:alt: Initial files in VS Code 
+		:alt: Initial files in VS Code
 		:scale: 100%
 
 	Having installed the CMake extension for VS Code, you can now right-click on the main ``CMakeLists.txt`` file (the one in the root *workspace* folder). We can select “Configure and Build All” from the right-click menu of the main ``CMakeLists.txt`` file.
@@ -893,7 +893,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 		mkdir build
 		cd build
 		cmake -G "<your_generator>" ../
-		
+
 	If you haven't previously done so, install the gdb extension for VS Code: select the "Extensions" tab, and type "gdb" in the search box. To enable debugging, select the Run/Debug panel in Visual Studio Code. You will now need to create a debugging configuration.
 	Click the link "create a launch.json file" to and enter the following in launch.json:
 
@@ -927,7 +927,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 .. only:: android
 
 	With all the source and build system files set up, we can now build our Android project. If while editing ``main.cpp`` or any other file you are seeing warnings like this: ``"This file does not belong to any project target..."``, right-click on the top-level folder of the project in the ``Project`` panel, select ``Mark Directory as >``, and click the option ``Sources Root``.
-	
+
 	To build your project go to the upper right of Android Studio, and there you should find the toolbar below. Click the green hammer icon to build the project, if all is successful you should see "BUILD SUCCESSFUL in [...]s" in the Build Output window. It is also recommended to sync the gradle files too.
 
 	Next to the green hammer icon is the Run/Debug configuration dropdown menu. If that isn't populated, create a configuration called app.
@@ -936,7 +936,7 @@ Then, we create the actual platform-specific main function (our entry point to t
 
 	.. figure:: images/android-studio-build-run-toolbar.png
 		:alt: Build/Run Toolbar
-	
+
 	To debug/run the application click the green bug icon (the plain green bug, not the one with an arrow on it).
 
 

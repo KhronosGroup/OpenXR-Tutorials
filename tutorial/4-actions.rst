@@ -1,4 +1,4 @@
-﻿##############
+##############
 4 Interactions
 ##############
 
@@ -228,9 +228,9 @@ The way this is achieved is as follows: Usually, each device will have its own "
 * You should *specify profile bindings for each device you have tested*.
 * You should *not* implement profiles you have not tested.
 
-It is the *runtime's responsibility* to support non-native profiles where possible, either automatically, or with the aid of user-specified rebinding. A device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_adding_input_sources_via_extensions).
+It is the *runtime's responsibility* to support non-native profiles where possible, either automatically, or with the aid of user-specified rebinding. A device can support any number of interaction profiles, either the nine profiles defined in the OpenXR standard, or an extension profile (see https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#_adding_input_sources_via_extensions).
 
-See also `semantic-path-interaction-profiles <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#semantic-path-interaction-profiles>`_.
+See also `semantic-path-interaction-profiles <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#semantic-path-interaction-profiles>`_.
 
 
 ************************************
@@ -381,7 +381,7 @@ However, the struct :openxr_ref:`XrActionStateBoolean` also has a member called 
 
 Similarly, :openxr_ref:`XrActionStateFloat` has a floating-point ``currentState`` value, which is valid if ``isActive`` is true. The struct has ``changedSinceLastSync``, which is true if the value changed between the previous and current calls to :openxr_ref:`xrSyncActions`. And it has ``lastChangeTime``, which is the time at which the value last changed. This allows us to be very precise about when the user pressed the button, and how long they held it down for. This could be used to detect "long presses", or double-clicks.
 
-Careful use of this polling metadata will help you to create applications that are responsive and intuitive to use. Bear in mind as well that multiple physical controls could be bound to the same action, and the user could be using more than one controller at once. See the `OpenXR spec <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#multiple_inputs>`_. for more details.
+Careful use of this polling metadata will help you to create applications that are responsive and intuitive to use. Bear in mind as well that multiple physical controls could be bound to the same action, and the user could be using more than one controller at once. See the `OpenXR spec <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#multiple_inputs>`_. for more details.
 
 ***********
 4.7 Summary

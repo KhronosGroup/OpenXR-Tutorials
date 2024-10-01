@@ -2293,7 +2293,7 @@ struct ID3DX12PipelineParserCallbacks
 
 // Requires the Windows 10 Fall Creators Update SDK (16299)
 #if defined(NTDDI_WIN10_RS3) && (NTDDI_VERSION >= NTDDI_WIN10_RS3)
-// CD3DX12_PIPELINE_STATE_STREAM1 Works on RS3+ (where there is a new view instancing subobject).  
+// CD3DX12_PIPELINE_STATE_STREAM1 Works on RS3+ (where there is a new view instancing subobject).
 // Use CD3DX12_PIPELINE_STATE_STREAM for RS2+ support.
 struct CD3DX12_PIPELINE_STATE_STREAM1
 {
@@ -2764,16 +2764,16 @@ inline bool operator==(const D3D12_RENDER_PASS_DEPTH_STENCIL_DESC& a, const D3D1
 
 //================================================================================================
 // D3DX12 State Object Creation Helpers
-// 
+//
 // Helper classes for creating new style state objects out of an arbitrary set of subobjects.
 // Uses STL
 //
 // Start by instantiating CD3DX12_STATE_OBJECT_DESC (see it's public methods).
 // One of its methods is CreateSubobject(), which has a comment showing a couple of options for
-// defining subobjects using the helper classes for each subobject (CD3DX12_DXIL_LIBRARY_SUBOBJECT 
-// etc.). The subobject helpers each have methods specific to the subobject for configuring it's 
+// defining subobjects using the helper classes for each subobject (CD3DX12_DXIL_LIBRARY_SUBOBJECT
+// etc.). The subobject helpers each have methods specific to the subobject for configuring it's
 // contents.
-// 
+//
 //================================================================================================
 #include <list>
 #include <vector>
@@ -2800,13 +2800,13 @@ public:
         m_RepointedAssociations.clear();
         m_SubobjectArray.clear();
         m_SubobjectArray.reserve(m_Desc.NumSubobjects);
-        // Flatten subobjects into an array (each flattened subobject still has a 
+        // Flatten subobjects into an array (each flattened subobject still has a
         // member that's a pointer to it's desc that's not flattened)
         for (auto Iter = m_SubobjectList.begin();
             Iter != m_SubobjectList.end(); Iter++)
         {
             m_SubobjectArray.push_back(*Iter);
-            // Store new location in array so we can redirect pointers contained in subobjects 
+            // Store new location in array so we can redirect pointers contained in subobjects
             Iter->pSubobjectArrayLocation = &m_SubobjectArray.back();
         }
         // For subobjects with pointer fields, create a new copy of those subobject definitions
@@ -2835,28 +2835,28 @@ public:
         return &static_cast<const D3D12_STATE_OBJECT_DESC&>(*this);
     }
 
-    // CreateSubobject creates a sububject helper (e.g. CD3DX12_HIT_GROUP_SUBOBJECT) 
+    // CreateSubobject creates a sububject helper (e.g. CD3DX12_HIT_GROUP_SUBOBJECT)
     // whose lifetime is owned by this class.
-    // e.g. 
-    // 
+    // e.g.
+    //
     //    CD3DX12_STATE_OBJECT_DESC Collection1(D3D12_STATE_OBJECT_TYPE_COLLECTION);
     //    auto Lib0 = Collection1.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
     //    Lib0->SetDXILLibrary(&pMyAppDxilLibs[0]);
-    //    Lib0->DefineExport(L"rayGenShader0"); // in practice these export listings might be 
+    //    Lib0->DefineExport(L"rayGenShader0"); // in practice these export listings might be
     //                                          // data/engine driven
     //    etc.
     //
-    // Alternatively, users can instantiate sububject helpers explicitly, such as via local 
-    // variables instead, passing the state object desc that should point to it into the helper 
-    // constructor (or call mySubobjectHelper.AddToStateObject(Collection1)).  
-    // In this alternative scenario, the user must keep the subobject alive as long as the state 
+    // Alternatively, users can instantiate sububject helpers explicitly, such as via local
+    // variables instead, passing the state object desc that should point to it into the helper
+    // constructor (or call mySubobjectHelper.AddToStateObject(Collection1)).
+    // In this alternative scenario, the user must keep the subobject alive as long as the state
     // object it is associated with is alive, else it's pointer references will be stale.
     // e.g.
     //
     //    CD3DX12_STATE_OBJECT_DESC RaytracingState2(D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE);
     //    CD3DX12_DXIL_LIBRARY_SUBOBJECT LibA(RaytracingState2);
-    //    LibA.SetDXILLibrary(&pMyAppDxilLibs[4]); // not manually specifying exports 
-    //                                             // - meaning all exports in the libraries 
+    //    LibA.SetDXILLibrary(&pMyAppDxilLibs[4]); // not manually specifying exports
+    //                                             // - meaning all exports in the libraries
     //                                             // are exported
     //    etc.
 
@@ -2890,16 +2890,16 @@ private:
     }
     typedef struct SUBOBJECT_WRAPPER : public D3D12_STATE_SUBOBJECT
     {
-        D3D12_STATE_SUBOBJECT* pSubobjectArrayLocation; // new location when flattened into array 
+        D3D12_STATE_SUBOBJECT* pSubobjectArrayLocation; // new location when flattened into array
                                                         // for repointing pointers in subobjects
     } SUBOBJECT_WRAPPER;
     D3D12_STATE_OBJECT_DESC m_Desc;
-    std::list<SUBOBJECT_WRAPPER>   m_SubobjectList; // Pointers to list nodes handed out so 
+    std::list<SUBOBJECT_WRAPPER>   m_SubobjectList; // Pointers to list nodes handed out so
                                                     // these can be edited live
     std::vector<D3D12_STATE_SUBOBJECT> m_SubobjectArray; // Built at the end, copying list contents
 
     std::list<D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION>
-        m_RepointedAssociations; // subobject type that contains pointers to other subobjects, 
+        m_RepointedAssociations; // subobject type that contains pointers to other subobjects,
                                  // repointed to flattened array
 
     class StringContainer

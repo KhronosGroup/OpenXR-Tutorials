@@ -44,7 +44,7 @@ function(dxc_shader)
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:${_dxc_OUTPUT_PDB}>
             /T${_dxc_PROFILE}
             /E${_dxc_ENTRY_POINT}
-            $<$<CONFIG:Debug>:/Od> 
+            $<$<CONFIG:Debug>:/Od>
             $<$<CONFIG:Debug>:/Zss>
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:/Zi>
             "${_dxc_INPUT}"

@@ -1,6 +1,6 @@
 Tux - Linux mascot
 License: CC-BY (sort-of)
-Credit: Permission to use and/or modify this image is granted provided you acknowledge me lewing@isc.tamu.edu and The GIMP if someone asks. 
+Credit: Permission to use and/or modify this image is granted provided you acknowledge me lewing@isc.tamu.edu and The GIMP if someone asks.
 Source: https://isc.tamu.edu/~lewing/linux/
 Download Date: 2023-07-11
 

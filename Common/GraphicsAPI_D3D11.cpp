@@ -578,10 +578,10 @@ void *GraphicsAPI_D3D11::CreateBuffer(const BufferCreateInfo &bufferCI) {
 
     ID3D11Buffer *d3D11Buffer = nullptr;
     D3D11_CHECK(device->CreateBuffer(&desc, bufferCI.data ? &initData : nullptr, &d3D11Buffer), "Failed to create Buffer");
-    
+
     SetBufferData(d3D11Buffer, 0, bufferCI.size, bufferCI.data);
     buffers[d3D11Buffer] = bufferCI;
-   
+
     return d3D11Buffer;
 }
 
@@ -761,7 +761,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
         for (const VertexInputAttribute &attribute : pipelineCI.vertexInputState.attributes) {
             D3D11_INPUT_ELEMENT_DESC element{};
             element.SemanticName = attribute.semanticName;
-            element.SemanticIndex = attribute.attribIndex; 
+            element.SemanticIndex = attribute.attribIndex;
             element.Format = ToDXGI_FORMAT(attribute.vertexType);
             element.InputSlot = attribute.bindingIndex;
             element.AlignedByteOffset = (UINT)attribute.offset;
@@ -816,7 +816,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
     rasteriserStateDesc.ScissorEnable = true;
     rasteriserStateDesc.MultisampleEnable = pipelineCI.multisampleState.rasterisationSamples > 1;
     rasteriserStateDesc.AntialiasedLineEnable = false;
-	
+
     D3D11_CHECK(device->CreateRasterizerState(&rasteriserStateDesc, &rasteriserState), "Failed to create Rasterizer State.");
     immediateContext->RSSetState(rasteriserState);
     D3D11_SAFE_RELEASE(rasteriserState);
@@ -936,7 +936,7 @@ void GraphicsAPI_D3D11::SetDescriptor(const DescriptorInfo &descriptorInfo) {
         }
         break;
     }
-    case DescriptorInfo::Stage::COMPUTE: { 
+    case DescriptorInfo::Stage::COMPUTE: {
         if (descriptorInfo.type == DescriptorInfo::Type::BUFFER) {
             if (descriptorInfo.readWrite) {
                 // UAVs?

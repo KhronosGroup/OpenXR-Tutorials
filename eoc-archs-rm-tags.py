@@ -38,7 +38,7 @@ def main(argv):
 			continue
 		else:
 			newLines.append(line)
-	
+
 	file.close()
 
 	filepath_temp = filepath + ".tmp"

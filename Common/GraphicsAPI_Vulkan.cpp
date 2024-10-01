@@ -229,7 +229,7 @@ GraphicsAPI_Vulkan::GraphicsAPI_Vulkan() {
     fenceCI.pNext = nullptr;
     fenceCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
     VULKAN_CHECK(vkCreateFence(device, &fenceCI, nullptr, &fence), "Failed to create Fence.")
-    
+
     uint32_t maxSets = 1024;
     std::vector<VkDescriptorPoolSize> poolSizes{
         {VK_DESCRIPTOR_TYPE_SAMPLER, 16 * maxSets},

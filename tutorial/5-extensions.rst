@@ -1,14 +1,14 @@
-﻿############
+############
 5 Extensions
 ############
 
-OpenXR is designed to be an extensible API. As we've seen before, the call to :openxr_ref:`xrCreateInstance` can include one or more extension names, and we can query them by using :openxr_ref:`xrEnumerateInstanceExtensionProperties` to find out which extensions are supported by the runtime. 
+OpenXR is designed to be an extensible API. As we've seen before, the call to :openxr_ref:`xrCreateInstance` can include one or more extension names, and we can query them by using :openxr_ref:`xrEnumerateInstanceExtensionProperties` to find out which extensions are supported by the runtime.
 
-All functions, types and constants for an extension are found in OpenXR headers. There are two ways to access the function(s) relating to an extension: functions pointers and function prototypes. 
+All functions, types and constants for an extension are found in OpenXR headers. There are two ways to access the function(s) relating to an extension: functions pointers and function prototypes.
 
 * The first one is more portable, as at runtime the application queries and loads the function pointers with :openxr_ref:`xrGetInstanceProcAddr`.
 
-* The second requires build time linking to resolve the symbols created by the declared function prototypes. 
+* The second requires build time linking to resolve the symbols created by the declared function prototypes.
 
 In this chapter, we will load the functions pointers. We'll see how extensions add to the core OpenXR API and look at specific cases: hand tracking and compostion layer depth.
 
@@ -23,7 +23,7 @@ Many XR devices now support hand-tracking. Instead of a motion-tracked controlle
 .. only:: android
 
 	We'll edit your ``app/src/main/AndroidManifest.xml`` to enable the hand tracking feature. Add these lines to the ``<manifest>`` block:
-	
+
 	.. code-block:: xml
 
 		<uses-permission android:name="com.oculus.permission.HAND_TRACKING" />
@@ -31,11 +31,11 @@ Many XR devices now support hand-tracking. Instead of a motion-tracked controlle
 		<uses-feature android:name="wave.feature.handtracking" android:required="false" />
 
 	Add this line to the ``<application>`` block:
-	
+
 	.. code-block:: xml
 
 		<meta-data android:name="com.oculus.handtracking.frequency" android:value="HIGH"/>
-	
+
 We saw in :ref:`Chapter 2 <instanceextensions>` how to create a list of instance extensions before creating the OpenXR instance. At the top of ``CreateInstance()``, where we're listing the extensions to request, we'll add the name of the one that enables hand tracking:
 
 .. literalinclude:: ../Chapter5/main.cpp
@@ -52,9 +52,9 @@ We saw in :ref:`Chapter 2 <instanceextensions>` how to create a list of instance
 
 XR_EXT_hand_tracking and XR_EXT_hand_interaction are official multivendor extensions. Being multivendor extensions means that they are likely well supported across vendors, but they are not currently Khronos-approved extensions. All functions, types and constants in this extension will have the 'EXT' label somewhere in their name.
 
-`OpenXR Specification 12.31. XR_EXT_hand_tracking <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking>`_.
+`OpenXR Specification 12.31. XR_EXT_hand_tracking <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_hand_tracking>`_.
 
-`OpenXR Specification 12.29. XR_EXT_hand_interaction <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_interaction>`_.
+`OpenXR Specification 12.29. XR_EXT_hand_interaction <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_hand_interaction>`_.
 
 At the start of your ``main.cpp`` file, underneath where you included ``"OpenXRDebugUtils.h"``, add these declarations:
 
@@ -149,7 +149,7 @@ Now run the app. You'll now see both hands rendered as blocks.
 
 Composition Layer Depth is truly important for AR use cases as it allows applications to submit to the runtime a depth image that can be used for the accurate reprojection of rendered graphics in the real world. Without a submitted depth image, certain AR applications would experience lag and 'sloshing' of the rendered graphics over the top of the real world. This extension *may in the future* also include the ability for runtimes to have real-world objects occlude rendered objects correctly. e.g. rendering a cube partially occluded by a door frame.
 
-This functionality is provided to OpenXR via the use of the :openxr_ref:`XR_KHR_composition_layer_depth` extension (`OpenXR Specification 12.8. XR_KHR_composition_layer_depth <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_composition_layer_depth>`_). This is a Khronos-approved extension and as such it's aligned with the standards used in the core specification. The extension allows depth images from a swapchain to be submitted alongside the color images. This extension works in conjunction with the projection layer type. 
+This functionality is provided to OpenXR via the use of the :openxr_ref:`XR_KHR_composition_layer_depth` extension (`OpenXR Specification 12.8. XR_KHR_composition_layer_depth <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_composition_layer_depth>`_). This is a Khronos-approved extension and as such it's aligned with the standards used in the core specification. The extension allows depth images from a swapchain to be submitted alongside the color images. This extension works in conjunction with the projection layer type.
 
 The :openxr_ref:`XrCompositionLayerProjection` structure contains a pointer to an array of :openxr_ref:`XrCompositionLayerProjectionView` structures. Each of these structures refers to a single view in the XR system and a single image subresource from a swapchain. To submit a depth image, we employ the use of a :openxr_ref:`XrCompositionLayerDepthInfoKHR` structure. Like with :openxr_ref:`XrCompositionLayerProjectionView`, :openxr_ref:`XrCompositionLayerDepthInfoKHR` refers to a single view in the XR system and a single image subresource from a swapchain. These structures are 'chained' together via the use of the ``const void* next`` member in :openxr_ref:`XrCompositionLayerProjectionView`. We assign the memory address of a :openxr_ref:`XrCompositionLayerDepthInfoKHR` structure that we want to chain together. The runtime time will read the ``next`` pointer and associate the structures and ultimately the color and depth images together for compositing. This is the same style of extensibility used in the Vulkan API.
 

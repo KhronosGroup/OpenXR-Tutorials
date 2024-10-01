@@ -1,4 +1,4 @@
-﻿##########
+##########
 3 Graphics
 ##########
 
@@ -142,19 +142,19 @@ Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new me
 	class OpenXRTutorial {
 	public:
 		// [...] Constructor and Destructor created in previous chapters.
-	
+
 		void Run() {
 			CreateInstance();
 			CreateDebugMessenger();
-	
+
 			GetInstanceProperties();
 			GetSystemID();
-	
+
 			GetViewConfigurationViews();
-	
+
 			CreateSession();
 			CreateSwapchains();
-	
+
 			while (m_applicationRunning) {
 				PollSystemEvents();
 				PollEvents();
@@ -162,17 +162,17 @@ Firstly, we will update the class in the ``Chapter3/main.cpp`` to add the new me
 					// Draw Frame.
 				}
 			}
-	
+
 			DestroySwapchains();
 			DestroySession();
-	
+
 			DestroyDebugMessenger();
 			DestroyInstance();
 		}
-	
+
 	private:
 		// [...] Methods created in previous chapters.
-		
+
 		void GetViewConfigurationViews()
 		{
 		}
@@ -205,7 +205,7 @@ We will explore the added methods in the sub-chapters below.
 3.1.1 View Configurations
 =========================
 
-The first thing we need to do is get all the view configuration types available to our XR system. A view configuration type is a 'semantically meaningful set of one or more views for which an application can render images'. (`8. View Configurations <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#view_configurations>`_.) Theres's both mono and stereo types along others provided by hardware/software vendors.
+The first thing we need to do is get all the view configuration types available to our XR system. A view configuration type is a 'semantically meaningful set of one or more views for which an application can render images'. (`8. View Configurations <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#view_configurations>`_.) Theres's both mono and stereo types along others provided by hardware/software vendors.
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -236,11 +236,11 @@ From the code in :ref:`Chapter 2.3.1 <2.3.1 xrPollEvent>`, we modify our assignm
 3.1.2 Enumerate the Swapchain Formats
 =====================================
 
-For each runtime, the OpenXR compositor has certain preferred image formats that should be used by the swapchain. When calling :openxr_ref:`xrEnumerateSwapchainFormats`, the :openxr_ref:`XrSession` and the Graphics API will return an array of API-specific formats ordered by preference. :openxr_ref:`xrEnumerateSwapchainFormats` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#swapchain-image-management>`_).
+For each runtime, the OpenXR compositor has certain preferred image formats that should be used by the swapchain. When calling :openxr_ref:`xrEnumerateSwapchainFormats`, the :openxr_ref:`XrSession` and the Graphics API will return an array of API-specific formats ordered by preference. :openxr_ref:`xrEnumerateSwapchainFormats` takes a pointer to the first element in an array of ``int64_t`` values. The use of ``int64_t`` is a simple type cast from a ``DXGI_FORMAT``, ``GLenum`` or a ``VkFormat``. The runtime "should support ``R8G8B8A8`` and ``R8G8B8A8 sRGB`` formats if possible" (`OpenXR Specification 10.1. Swapchain Image Management <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#swapchain-image-management>`_).
 
 Both Linear and sRGB color spaces are supported and one may have preference over the other. In cases where you are compositing multiple layers, you may wish to use linear color spaces only, as OpenXR's compositor will perform all blend operations in a linear color space for correctness. For certain runtimes, systems and/or applications, sRGB maybe preferred especially if there's just a single opaque layer to composite.
 
-If you wish to use an sRGB color format, you *must* use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB`` for the OpenXR runtime to automatically do sRGB-to-linear color space conversions when reading the image. 
+If you wish to use an sRGB color format, you *must* use an API-specific sRGB color format such as ``DXGI_FORMAT_R8G8B8A8_UNORM_SRGB``, ``GL_SRGB8_ALPHA8`` or ``VK_FORMAT_R8G8B8A8_SRGB`` for the OpenXR runtime to automatically do sRGB-to-linear color space conversions when reading the image.
 
 We also check that the runtime has a supported depth format so that we can create a depth swapchain. You can check this with :openxr_ref:`xrEnumerateSwapchainFormats`. Unfortunately, there are no guarantees with in the OpenXR 1.0 core specification or the :openxr_ref:`XR_KHR_composition_layer_depth` extension revision 6 that states runtimes must support depth format for swapchains. Most XR systems and/or run support depth swapchain formats. This will be useful for :openxr_ref:`XR_KHR_composition_layer_depth` and AR applications. See :ref:`Chapter 5.2<5.2 Composition Layer Depth>`.
 
@@ -366,7 +366,7 @@ Here, we've filled out the :openxr_ref:`XrSwapchainCreateInfo` structure. The ``
 	| XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_KHR     | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT         |
 	+-------------------------------------------------+---------------------------------------------+
 
-Then, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we used ``1``, as we have separate swapchains per view/eye. If your graphics API supports multiview rendering (See :ref:`Chapter 6.1<6.1 Multiview rendering>`.), you could pass ``2`` and have a 2D image array. ``mipCount`` describes the number of texture detail levels; this is useful when using the swapchain image as a sampled image in a shader. Finally, we set the format. Here, we asked our ``GraphicsAPI_...`` class to pick a suitable format for the swapchain from the enumerated formats we acquired earlier. 
+Then, we set the values for ``faceCount``, ``arraySize`` and ``mipCount``. ``faceCount`` describes the number of faces in the image and is used for creating cubemap textures. ``arraySize`` describes the number of layers in an image. Here, we used ``1``, as we have separate swapchains per view/eye. If your graphics API supports multiview rendering (See :ref:`Chapter 6.1<6.1 Multiview rendering>`.), you could pass ``2`` and have a 2D image array. ``mipCount`` describes the number of texture detail levels; this is useful when using the swapchain image as a sampled image in a shader. Finally, we set the format. Here, we asked our ``GraphicsAPI_...`` class to pick a suitable format for the swapchain from the enumerated formats we acquired earlier.
 
 Here is the code for ``GraphicsAPI::SelectSwapchainFormat()``:
 
@@ -387,7 +387,7 @@ The functions each call a pure virtual method called ``GraphicsAPI::SelectColorS
 		:language: cpp
 		:start-after: XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D11_GetSupportedSwapchainFormats
-		
+
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
 
 .. only:: d3d12
@@ -466,7 +466,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D11.cpp*
 
 	``swapchainImagesMap`` is of type ``std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageD3D11KHR>>``. Reference: :openxr_ref:`XrSwapchainImageD3D11KHR`.
-		
+
 	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
 		:language: cpp
 		:start-at: typedef struct XrSwapchainImageD3D11KHR {
@@ -486,7 +486,7 @@ Below is an excerpt of the ``GraphicsAPI::AllocateSwapchainImageData()`` method 
 		:end-before: XR_DOCS_TAG_END_GraphicsAPI_D3D12_AllocateSwapchainImageData
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.cpp*
-	
+
 	``swapchainImagesMap`` is of type ``std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageD3D12KHR>>``. Reference: :openxr_ref:`XrSwapchainImageD3D12KHR`.
 
 	.. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr_platform.h
@@ -603,7 +603,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 
 	*The above code is an excerpt from Common/GraphicsAPI_D3D12.h*
 
-	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET`` for color and ``D3D12_RESOURCE_STATE_DEPTH_WRITE`` for depth. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_D3D12_enable>`_.
+	For DirectX 3D 12, the ``ID3D12Resource *`` returned has of its all subresource states in ``D3D12_RESOURCE_STATE_RENDER_TARGET`` for color and ``D3D12_RESOURCE_STATE_DEPTH_WRITE`` for depth. This is a requirement of the OpenXR 1.0 D3D12 extension. See: `12.13. XR_KHR_D3D12_enable <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_D3D12_enable>`_.
 
 .. only:: opengl
 
@@ -639,7 +639,7 @@ Each graphics API overrides the virtual function ``GraphicsAPI::GetSwapchainImag
 		:end-before: XR_DOCS_TAG_END_GetSwapchainImage_Vulkan
 		:dedent: 4
 
-	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`` for color and ``VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL`` for depth. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_vulkan_enable>`_.
+	For Vulkan, the ``VkImage`` returned has all of its subresource states in ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`` for color and ``VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL`` for depth. This is a requirement of the OpenXR 1.0 Vulkan extension. See: `12.20. XR_KHR_vulkan_enable <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_vulkan_enable>`_.
 
 	*The above code is an excerpt from Common/GraphicsAPI_Vulkan.h*
 
@@ -677,21 +677,21 @@ Update the methods and members in the class. Copy the highlighted code:
 
 	public:
 		// [...] Constructor and Destructor created in previous chapters.
-	
+
 		void Run() {
 			CreateInstance();
 			CreateDebugMessenger();
-	
+
 			GetInstanceProperties();
 			GetSystemID();
-	
+
 			GetViewConfigurationViews();
 			GetEnvironmentBlendModes();
-	
+
 			CreateSession();
 			CreateReferenceSpace();
 			CreateSwapchains();
-	
+
 			while (m_applicationRunning) {
 				PollSystemEvents();
 				PollEvents();
@@ -699,18 +699,18 @@ Update the methods and members in the class. Copy the highlighted code:
 					RenderFrame();
 				}
 			}
-	
+
 			DestroySwapchains();
 			DestroyReferenceSpace();
 			DestroySession();
-	
+
 			DestroyDebugMessenger();
 			DestroyInstance();
 		}
-	
+
 	private:
 		// [...] Methods created in previous chapters.
-		
+
 		void GetViewConfigurationViews()
 		{
 			// [...]
@@ -723,13 +723,13 @@ Update the methods and members in the class. Copy the highlighted code:
 		{
 			// [...]
 		}
-		void GetEnvironmentBlendModes() 
+		void GetEnvironmentBlendModes()
 		{
 		}
 		void CreateReferenceSpace()
 		{
 		}
-		void DestroyReferenceSpace() 
+		void DestroyReferenceSpace()
 		{
 		}
 		void RenderFrame()
@@ -772,7 +772,7 @@ Update the methods and members in the class. Copy the highlighted code:
 
 Some XR experiences rely on blending the real world and rendered graphics together. Choosing the correct environment blend mode is vital for creating immersion in both virtual and augmented realities.
 
-This blending is done at the final stage after the compositor has flattened and blended all the compositing layers passed to OpenXR at the end of the XR frame. 
+This blending is done at the final stage after the compositor has flattened and blended all the compositing layers passed to OpenXR at the end of the XR frame.
 
 The enum `XrEnvironmentBlendMode` describes how OpenXR should blend the rendered view(s) with the external environment behind the screen(s). The values are:
 
@@ -794,7 +794,7 @@ The enum `XrEnvironmentBlendMode` describes how OpenXR should blend the rendered
 |                                       | level of blending with the real world behind the display.                                                                     |
 +---------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+
 
-`XrEnvironmentBlendMode - Enumerant Descriptions <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#compositing>`_.
+`XrEnvironmentBlendMode - Enumerant Descriptions <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#compositing>`_.
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -824,7 +824,7 @@ Now that OpenXR knows what the user should see, we need to tell OpenXR about the
 	:end-before: XR_DOCS_TAG_END_CreateReferenceSpace
 	:dedent: 8
 
-We fill out a :openxr_ref:`XrReferenceSpaceCreateInfo` structure. The first member is of type :openxr_ref:`XrReferenceSpaceType`, which we will discuss shortly. 
+We fill out a :openxr_ref:`XrReferenceSpaceCreateInfo` structure. The first member is of type :openxr_ref:`XrReferenceSpaceType`, which we will discuss shortly.
 
 When we create the *reference space*, we need to specify an :openxr_ref:`XrPosef`, which will be the origin transform of the space. In this case, we will set :openxr_ref:`XrReferenceSpaceCreateInfo` ``::poseInReferenceSpace`` to an "identity" pose - an identity quaternion and a zero position.
 
@@ -840,7 +840,7 @@ An :openxr_ref:`XrSpace` is a frame of reference defined not by its instantaneou
 One kind of reference space is view space (``XR_REFERENCE_SPACE_TYPE_VIEW``), which is oriented with the user's head, and is useful for user interfaces and many other purposes. We don't use it to generate view matrices for rendering, because those are often offset from the view space due to stereo rendering.
 
 The View Reference Space uses the view origin (or the centroid of the views in the case of stereo) as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The space is aligned in front of the viewer and it is not gravity aligned. It is most often used for rendering small head-locked content like a HUD (Head-up display).
-	
+
 .. figure:: images/LocalSpace.png
 	:alt: OpenXR Reference Space Local
 	:width: 50%
@@ -849,7 +849,7 @@ The View Reference Space uses the view origin (or the centroid of the views in t
 By using ``XR_REFERENCE_SPACE_TYPE_LOCAL`` we specify that the views are relative to the XR hardware's 'local' space - either the headset's starting position or some other world-locked origin.
 
 The Local Reference Space uses an initial location to establish a world-locked, gravity-aligned point as the origin of the space. +Y is up,+X is to the right, and -Z is forward. The origin is also locked for pitch(x) and roll(z). The initial position may be established at the application start up or from a calibrated origin point.
-  
+
 It may be used for rendering seated-scale experiences such as driving or aircraft simulation, where a virtual floor is not required. When recentering, the runtime will queue a :openxr_ref:`XrEventDataReferenceSpaceChangePending` structure for the application to process.
 
 .. figure:: images/StageSpace.png
@@ -861,7 +861,7 @@ Some devices support stage space (``XR_REFERENCE_SPACE_TYPE_STAGE``); this impli
 
 The Stage Reference Space defines a rectangular area that is flat and devoid of obstructions. The origin is defined to be on the floor and at the center of the rectangular area. +Y is up, +X is to the right, and -Z is forward. The origin is axis-aligned to the XZ plane. It is most often used for rendering standing-scale experiences (no bounds) or roomscale experiences (with bounds) where a physical floor is required. When the user is redefining the origin or bounds of the area, the runtime will queue a :openxr_ref:`XrEventDataReferenceSpaceChangePending` structure for the application to process.
 
-For more information on reference spaces see `the OpenXR Specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#reference-spaces>`_.
+For more information on reference spaces see `the OpenXR Specification <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#reference-spaces>`_.
 
 .. figure:: OpenXR-Coordinate-System.png
 	:alt: OpenXR Default Coordinate System
@@ -872,7 +872,7 @@ The default coordinate system in OpenXR is right-handed with +Y up, +X to the ri
 
 The XR_EXT_local_floor extension bridges the use-case of applications wanting to use a seated-scale experience, but also with a physical floor. Neither ``XR_REFERENCE_SPACE_TYPE_LOCAL`` nor ``XR_REFERENCE_SPACE_TYPE_STAGE`` truly fits this requirement.
 
-The Local Floor Reference Space establishes a world-locked, gravity-aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is the same as ``XR_REFERENCE_SPACE_TYPE_LOCAL`` in the X and Z coordinates, but not the Y coordinate. See more here: `12.34. XR_EXT_local_floor <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_local_floor>`_.
+The Local Floor Reference Space establishes a world-locked, gravity-aligned point as the origin of the space. +Y is up, +X is to the right, and -Z is forward. The origin is the same as ``XR_REFERENCE_SPACE_TYPE_LOCAL`` in the X and Z coordinates, but not the Y coordinate. See more here: `12.34. XR_EXT_local_floor <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_EXT_local_floor>`_.
 
 You may wish to call :openxr_ref:`xrEnumerateReferenceSpaces` to get all :openxr_ref:`XrReferenceSpaceType` s available to the system, before choosing one that is suitable for your application and the user's environment.
 
@@ -926,7 +926,7 @@ Below is a table of the ``XrCompositionLayer...`` types provided by the OpenXR 1
 
 .. table::
 	:widths: grid
-	
+
 	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 	| Extension                                               | Structure                                         | Description                                                                                                                                 |
 	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
@@ -947,7 +947,7 @@ Below is a table of the ``XrCompositionLayer...`` types provided by the OpenXR 1
 	| :openxr_ref:`XR_KHR_composition_layer_equirect2`        | :openxr_ref:`XrCompositionLayerEquirect2KHR`      | Like :openxr_ref:`XrCompositionLayerEquirectKHR`, but uses different parameters similar to :openxr_ref:`XR_KHR_composition_layer_cylinder`. |
 	+---------------------------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 
-Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` are also in the OpenXR 1.0 specification. 
+Other hardware vendor specific extensions relating to ``XrCompositionLayer...`` are also in the OpenXR 1.0 specification.
 
 In our ``RenderLayerInfo`` struct, we have used a single :openxr_ref:`XrCompositionLayerProjection`. The structure describes the :openxr_ref:`XrCompositionLayerFlags`, an :openxr_ref:`XrSpace` and a count and pointer to an array of :openxr_ref:`XrCompositionLayerProjectionView`.
 
@@ -972,7 +972,7 @@ The compositing of layers can be set on a per-layer basis through the use of the
 | XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT        | States that the color channels have not been pre-multiplied with alpha for transparency                   |
 +-------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+
 
-See more here: `10.6.1. Composition Layer Flags <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#composition-layer-flags>`_.
+See more here: `10.6.1. Composition Layer Flags <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#composition-layer-flags>`_.
 
 Before we call ``RenderLayer()``, we check that the :openxr_ref:`XrSession` is active, as we don't want to needlessly render graphics, and we also check whether OpenXR wants us to render via the use of :openxr_ref:`XrFrameState` ``::shouldRender``.
 
@@ -999,7 +999,7 @@ Our first call is to :openxr_ref:`xrLocateViews`, which takes a :openxr_ref:`XrV
 
 The :openxr_ref:`XrViewLocateInfo` structure takes a reference space and a display time from our ``RenderLayerInfo``, from which the view poses are calculated, and also takes our :openxr_ref:`XrViewConfigurationType` to locate the correct number of views for the system. If we can't locate the views, we return ``false`` from this method.
 
-We resize our ``std::vector<XrCompositionLayerProjectionView>`` member in ``RenderLayerInfo``, and for each view, we render our graphics based on the acquired :openxr_ref:`XrView`. 
+We resize our ``std::vector<XrCompositionLayerProjectionView>`` member in ``RenderLayerInfo``, and for each view, we render our graphics based on the acquired :openxr_ref:`XrView`.
 
 The following sections are repeated for each view whilst we are in the loop, which iterates over the views.
 
@@ -1015,7 +1015,7 @@ Now, we have rendered both views and exited the loop.
 
 We fill out the :openxr_ref:`XrCompositionLayerProjection` structure and assign our compositing flags of ``XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT`` and assign our reference space. We assign to the member ``viewCount`` the size of the ``std::vector<XrCompositionLayerProjectionView>`` and to the member ``views`` a pointer to the first element in the ``std::vector<XrCompositionLayerProjectionView>``. Finally, we return ``true`` from the function to state that we have successfully completed our rendering.
 
-We should now have clear colors rendered to each view in your XR system. From here, you can easily expand the graphical complexity of the scene. 
+We should now have clear colors rendered to each view in your XR system. From here, you can easily expand the graphical complexity of the scene.
 
 *********************
 3.3 Rendering Cuboids
@@ -1035,22 +1035,22 @@ Update the methods and members in the class. Copy the highlighted code:
 
 	public:
 		// [...] Constructor and Destructor created in previous chapters.
-	
+
 		void Run() {
 			CreateInstance();
 			CreateDebugMessenger();
-	
+
 			GetInstanceProperties();
 			GetSystemID();
-	
+
 			GetViewConfigurationViews();
 			GetEnvironmentBlendModes();
-	
+
 			CreateSession();
 			CreateReferenceSpace();
 			CreateSwapchains();
 			CreateResources();
-	
+
 			while (m_applicationRunning) {
 				PollSystemEvents();
 				PollEvents();
@@ -1058,19 +1058,19 @@ Update the methods and members in the class. Copy the highlighted code:
 					RenderFrame();
 				}
 			}
-	
+
 			DestroyResources();
 			DestroySwapchains();
 			DestroyReferenceSpace();
 			DestroySession();
-	
+
 			DestroyDebugMessenger();
 			DestroyInstance();
 		}
-	
+
 	private:
 		// [...] Methods created in previous chapters.
-		
+
 		void GetViewConfigurationViews()
 		{
 			// [...]
@@ -1083,7 +1083,7 @@ Update the methods and members in the class. Copy the highlighted code:
 		{
 			// [...]
 		}
-		void GetEnvironmentBlendModes() 
+		void GetEnvironmentBlendModes()
 		{
 			// [...]
 		}
@@ -1091,7 +1091,7 @@ Update the methods and members in the class. Copy the highlighted code:
 		{
 			// [...]
 		}
-		void DestroyReferenceSpace() 
+		void DestroyReferenceSpace()
 		{
 			// [...]
 		}
@@ -1146,7 +1146,7 @@ Update the methods and members in the class. Copy the highlighted code:
 		void *m_vertexBuffer = nullptr;
 		void *m_indexBuffer = nullptr;
 		void *m_uniformBuffer_Camera = nullptr;
-		void *m_uniformBuffer_Normals = nullptr;	
+		void *m_uniformBuffer_Normals = nullptr;
 		void *m_vertexShader = nullptr, *m_fragmentShader = nullptr;
 		void *m_pipeline = nullptr;
 	};
@@ -1193,9 +1193,9 @@ Now, we will add the code to load and create our shaders with ``GraphicsAPI::Cre
 		:end-before: XR_DOCS_TAG_END_CreateResources2_OpenGL
 		:dedent: 8
 
-.. only:: vulkan 
+.. only:: vulkan
 
-	.. only:: windows or linux 
+	.. only:: windows or linux
 
 	 	For Vulkan, we will use GLSL version 450. Add this code to define our vertex and pixel shaders:
 
@@ -1204,8 +1204,8 @@ Now, we will add the code to load and create our shaders with ``GraphicsAPI::Cre
 			:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_VulkanWindowsLinux
 			:end-before: XR_DOCS_TAG_END_CreateResources2_VulkanWindowsLinux
 			:dedent: 8
-	
-	.. only:: android 
+
+	.. only:: android
 
 		For Vulkan, we will use GLSL version 450. Add this code to define our vertex and pixel shaders:
 
@@ -1214,7 +1214,7 @@ Now, we will add the code to load and create our shaders with ``GraphicsAPI::Cre
 			:start-after: XR_DOCS_TAG_BEGIN_CreateResources2_VulkanAndroid
 			:end-before: XR_DOCS_TAG_END_CreateResources2_VulkanAndroid
 			:dedent: 8
-	
+
 .. only:: opengles
 
 	For OpenGL ES, we will use GLSL version 310 es. Add this code to define our vertex and pixel shaders:

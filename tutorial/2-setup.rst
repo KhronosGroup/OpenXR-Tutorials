@@ -1,4 +1,4 @@
-﻿##############
+##############
 2 OpenXR Setup
 ##############
 
@@ -14,14 +14,14 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 
 .. code-block:: cpp
 	:emphasize-lines: 4, 9-16 , 20-31, 36-48
-	
+
 	class OpenXRTutorial {
 	public:
 		OpenXRTutorial(GraphicsAPI_Type apiType)
 			: m_apiType(apiType)  {
 		}
 		~OpenXRTutorial() = default;
-	
+
 		void Run() {
 			CreateInstance();
 			CreateDebugMessenger();
@@ -48,7 +48,7 @@ Here, we will add the following highlighted text to the ``OpenXRTutorial`` class
 		}
 		void PollSystemEvents() {
 		}
-	
+
 	private:
 		XrInstance m_xrInstance = {};
 		std::vector<const char *> m_activeAPILayers = {};
@@ -107,9 +107,9 @@ Not all API layers and extensions are available to use, so we must check which o
 	:end-before: XR_DOCS_TAG_END_find_apiLayer_extension
 	:dedent: 8
 
-These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures - this is called the "two-call idiom". Before the second call, we need to set :openxr_ref:`XrApiLayerProperties` ``::type`` or :openxr_ref:`XrExtensionProperties` ``::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layer and extension, we use a nested loop to check to see whether an API layers or extensions is available and add it to the ``m_activeAPILayers`` and/or ``m_activeInstanceExtensions`` respectively. 
+These functions are called twice. The first time is to get the count of the API layers or extensions and the second is to fill out the array of structures - this is called the "two-call idiom". Before the second call, we need to set :openxr_ref:`XrApiLayerProperties` ``::type`` or :openxr_ref:`XrExtensionProperties` ``::type`` to the correct value, so that the second call can correctly fill out the data. After we have enumerated the API layer and extension, we use a nested loop to check to see whether an API layers or extensions is available and add it to the ``m_activeAPILayers`` and/or ``m_activeInstanceExtensions`` respectively.
 
-In OpenXR, we provide an explicit input capacity to both :openxr_ref:`xrEnumerateApiLayerProperties` and :openxr_ref:`xrEnumerateInstanceExtensionProperties`, which provides an additional layer of memory-safety. :openxr_ref:`xrEnumerateInstanceExtensionProperties` also allows you to query instance extensions by API layer name. In this tutorial, we just query the non-layer extensions that are implicitly loaded by the runtime. 
+In OpenXR, we provide an explicit input capacity to both :openxr_ref:`xrEnumerateApiLayerProperties` and :openxr_ref:`xrEnumerateInstanceExtensionProperties`, which provides an additional layer of memory-safety. :openxr_ref:`xrEnumerateInstanceExtensionProperties` also allows you to query instance extensions by API layer name. In this tutorial, we just query the non-layer extensions that are implicitly loaded by the runtime.
 
 .. only:: vulkan
 
@@ -153,14 +153,14 @@ The message severities are:
  * Info: Output at least information messages helpful in debugging.
  * Warning: Output at least messages that could suggest an application bug and that need reviewing.
  * Error: Output messages from errors that may cause undefined behavior and/or crashes.
- 
+
 The message types are:
  * General: General information.
  * Validation: indicates possibly invalid usage of OpenXR.
  * Performance: indicates possible non-optimal usage of OpenXR.
  * Conformance: indicates a non-conformant OpenXR result from the runtime.
 
-See also `Debug Message Categorization <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#debug-message-categorization>`_ in the OpenXR Specification. 
+See also `Debug Message Categorization <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#debug-message-categorization>`_ in the OpenXR Specification.
 
 Copy the following code into ``CreateDebugMessenger()`` and ``DestroyDebugMessenger()`` respectively:
 
@@ -183,7 +183,7 @@ Another feature of OpenXR is the API Layers, which may also assist you in debugg
 2.1.3 Obtaining the System Id
 =============================
 
-The next object we want to get is the :openxr_ref:`XrSystemId`. According to `System <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#system>`_ in the OpenXR spec, OpenXR *separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences*. So, an :openxr_ref:`XrSystemId` could represent a VR headset and a pair of controllers, or perhaps a mobile device with video pass-through for AR. So we need to decide what type of :openxr_ref:`XrFormFactor` we want to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``. OpenXR currently offers two options for the :openxr_ref:`XrFormFactor`:
+The next object we want to get is the :openxr_ref:`XrSystemId`. According to `System <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#system>`_ in the OpenXR spec, OpenXR *separates the concept of physical systems of XR devices from the logical objects that applications interact with directly. A system represents a collection of related devices in the runtime, often made up of several individual hardware components working together to enable XR experiences*. So, an :openxr_ref:`XrSystemId` could represent a VR headset and a pair of controllers, or perhaps a mobile device with video pass-through for AR. So we need to decide what type of :openxr_ref:`XrFormFactor` we want to use, as some runtimes support multiple form factors. Here, we are selecting ``XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY``. OpenXR currently offers two options for the :openxr_ref:`XrFormFactor`:
 
 .. literalinclude:: ../build/_deps/openxr-build/include/openxr/openxr.h
 	:language: cpp
@@ -223,7 +223,7 @@ You can now run the application to check that you have a valid :openxr_ref:`XrIn
 
 The next major component of OpenXR that needs to be created is an :openxr_ref:`XrSession`. An :openxr_ref:`XrSession` encapsulates the state of the application from the perspective of OpenXR. When an :openxr_ref:`XrSession` is created, it starts in the :openxr_ref:`XrSessionState` ``XR_SESSION_STATE_IDLE``. It is up to the runtime to provide any updates to the :openxr_ref:`XrSessionState` and for the application to query them and react to them. We will explore this in :ref:`Chapter 2.3<2.3 Polling the Event Loop>`.
 
-For now, we are just going to create an :openxr_ref:`XrSession`. At this point, you'll need to select which Graphics API you wish to use. Only one Graphics API can be used with an :openxr_ref:`XrSession`. This tutorial demonstrates how to use D3D11, D3D12, OpenGL, OpenGL ES and Vulkan in conjunction with OpenXR to render graphics to the provided views. Ultimately, you will most likely be bringing your own rendering solution to this tutorial, therefore the code examples provided for the Graphics APIs are `placeholders` for your own code base; demonstrating in this sub-chapter what objects are needed from your Graphics API to create an :openxr_ref:`XrSession`. At compile time the Graphics API is selected and the macro XR_TUTORIAL_GRAPHICS_API is set accordingly. At runtime, in CheckGraphicsAPI_TypeIsValidForPlatform, we double check that the Graphics API is supported in the current platform. This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. We construct an appropriate derived class through the use of ``std::unique_ptr<>``. 
+For now, we are just going to create an :openxr_ref:`XrSession`. At this point, you'll need to select which Graphics API you wish to use. Only one Graphics API can be used with an :openxr_ref:`XrSession`. This tutorial demonstrates how to use D3D11, D3D12, OpenGL, OpenGL ES and Vulkan in conjunction with OpenXR to render graphics to the provided views. Ultimately, you will most likely be bringing your own rendering solution to this tutorial, therefore the code examples provided for the Graphics APIs are `placeholders` for your own code base; demonstrating in this sub-chapter what objects are needed from your Graphics API to create an :openxr_ref:`XrSession`. At compile time the Graphics API is selected and the macro XR_TUTORIAL_GRAPHICS_API is set accordingly. At runtime, in CheckGraphicsAPI_TypeIsValidForPlatform, we double check that the Graphics API is supported in the current platform. This tutorial uses polymorphic classes; ``GraphicsAPI_...`` derives from the base ``GraphicsAPI`` class. We construct an appropriate derived class through the use of ``std::unique_ptr<>``.
 
 
 Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Run()`` method, and add the definitions of the new methods and data members to their separate private sections. All the new code is highlighted below.
@@ -248,10 +248,10 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 
 			GetInstanceProperties();
 			GetSystemID();
-		
+
 			CreateSession();
 			DestroySession();
-		
+
 			DestroyDebugMessenger();
 			DestroyInstance();
 		}
@@ -287,7 +287,7 @@ Update the constructor of the ``OpenXRTutorial`` class, the ``OpenXRTutorial::Ru
 		void DestroySession()
 		{
 		}
-		void PollSystemEvents() 
+		void PollSystemEvents()
 		{
 		}
 
@@ -381,9 +381,9 @@ For the ``DestroySession()`` method, add the following code:
 	:end-before: XR_DOCS_TAG_END_DestroySession
 	:dedent: 8
 
-Above is the code for creating and destroying an :openxr_ref:`XrSession`. :openxr_ref:`xrDestroySession` will destroy the :openxr_ref:`XrSession` when we are finished and shutting down the application. :openxr_ref:`xrCreateSession` takes the :openxr_ref:`XrInstance`, :openxr_ref:`XrSessionCreateInfo` and a :openxr_ref:`XrSession` return. If the function call is successful, :openxr_ref:`xrCreateSession` will return ``XR_SUCCESS`` and ``m_session`` will be non-null. 
+Above is the code for creating and destroying an :openxr_ref:`XrSession`. :openxr_ref:`xrDestroySession` will destroy the :openxr_ref:`XrSession` when we are finished and shutting down the application. :openxr_ref:`xrCreateSession` takes the :openxr_ref:`XrInstance`, :openxr_ref:`XrSessionCreateInfo` and a :openxr_ref:`XrSession` return. If the function call is successful, :openxr_ref:`xrCreateSession` will return ``XR_SUCCESS`` and ``m_session`` will be non-null.
 
-In the :openxr_ref:`XrSessionCreateInfo` structure we specify the system id we got from :openxr_ref:`xrGetSystem`, we do not set any flags (``createFlags``), and we define which Graphics API we wish to use. The Graphics API is defined via the :openxr_ref:`XrSessionCreateInfo` ``::next`` void pointer. Following the Vulkan style of extensibility, structures for creating objects can be extended to enable extra functionality. In our case, the extension is required and thus :openxr_ref:`XrSessionCreateInfo` ``::next`` can not be a nullptr. That pointer must point to 'exactly one graphics API binding structure (a structure whose name begins with "XrGraphicsBinding")' (`XrSessionCreateInfo(3) Manual Page <https://registry.khronos.org/OpenXR/specs/1.0/man/html/XrSessionCreateInfo.html>`_). We get a pointer to the correct *Graphics Binding* structure by calling ``GraphicsAPI::GetGraphicsBinding();``.
+In the :openxr_ref:`XrSessionCreateInfo` structure we specify the system id we got from :openxr_ref:`xrGetSystem`, we do not set any flags (``createFlags``), and we define which Graphics API we wish to use. The Graphics API is defined via the :openxr_ref:`XrSessionCreateInfo` ``::next`` void pointer. Following the Vulkan style of extensibility, structures for creating objects can be extended to enable extra functionality. In our case, the extension is required and thus :openxr_ref:`XrSessionCreateInfo` ``::next`` can not be a nullptr. That pointer must point to 'exactly one graphics API binding structure (a structure whose name begins with "XrGraphicsBinding")' (`XrSessionCreateInfo(3) Manual Page <https://registry.khronos.org/OpenXR/specs/1.1/man/html/XrSessionCreateInfo.html>`_). We get a pointer to the correct *Graphics Binding* structure by calling ``GraphicsAPI::GetGraphicsBinding();``.
 
 
 **************************
@@ -506,7 +506,7 @@ Copy the following code into the ``PollEvents()`` method:
 
 In ``PollEvents()`` we use a lambda to call :openxr_ref:`xrPollEvent`. This call will fill in the :openxr_ref:`XrEventDataBuffer` structure that is accessible via the by-reference capture (``[&]``). We also check that the returned :openxr_ref:`XrResult` is ``XR_SUCCESS``. Whilst :openxr_ref:`xrPollEvent` returns ``XR_SUCCESS``, there are events for us to process, and therefore we use a while loop to continually check for new events. :openxr_ref:`xrPollEvent` will update the member variable ``type``, which then determines how we respond to the event. Depending on the updated type, we use a ``reinterpret_cast<>()`` to get the actual data that :openxr_ref:`xrPollEvent` returned. In certain cases, we also check that the returned :openxr_ref:`XrSession` matches the one we created.
 
-The description of the events comes from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_xrpollevent>`_.
+The description of the events comes from `2.22.1. Event Polling of the OpenXR specification <https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#_xrpollevent>`_.
 
 +---------------------------------------------------+--------------------------------------------------------------------------------+
 | Event Type                                        | Description                                                                    |

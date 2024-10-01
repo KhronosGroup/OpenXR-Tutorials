@@ -9,7 +9,10 @@ set(TUTORIAL_SPHINX_BUILD
     "${CMAKE_CURRENT_SOURCE_DIR}/../openxr-tutorial"
     CACHE PATH "Set the location of the HTML build."
 )
-set(TUTORIAL_BASE_URL "https:////openxr-tutorial.simul.co/" CACHE PATH "Base URL of the site to be built.")
+set(TUTORIAL_BASE_URL
+    "https:////openxr-tutorial.simul.co/"
+    CACHE PATH "Base URL of the site to be built."
+)
 
 file(GLOB_RECURSE RST_FILES "*.rst")
 file(GLOB_RECURSE MD_FILES "*.md")
@@ -27,8 +30,9 @@ function(SiteVariant Platform Api)
         ${targetname} ALL
         COMMAND
             "${SPHINX_EXECUTABLE}" -a -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
-            "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D html_baseurl=${TUTORIAL_BASE_URL}
-            -t ${Platform} -t ${Api} -t OPENXR_SUBSITE 
+            "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D
+            html_baseurl=${TUTORIAL_BASE_URL} -t ${Platform} -t ${Api} -t
+            OPENXR_SUBSITE
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         DEPENDS
             # Other docs files you want to track should go here (or in some variable)
@@ -37,7 +41,8 @@ function(SiteVariant Platform Api)
             conf.py
             tutorial_sphinx_theme_1/static/css/theme.css
             ${SPHINX_SOURCE}/conf.py
-        COMMENT "Generating documentation with Sphinx\n\"${SPHINX_EXECUTABLE}\" -a -c \"${CMAKE_CURRENT_SOURCE_DIR}\" -b html
+        COMMENT
+            "Generating documentation with Sphinx\n\"${SPHINX_EXECUTABLE}\" -a -c \"${CMAKE_CURRENT_SOURCE_DIR}\" -b html
             \"${SPHINX_SOURCE}\" ${TUTORIAL_SPHINX_BUILD}/${Platform}/${Api} -D html_baseurl=${TUTORIAL_BASE_URL}
             -t ${Platform} -t ${Api} -t OPENXR_SUBSITE "
         SOURCES
@@ -48,23 +53,25 @@ function(SiteVariant Platform Api)
             ${HTM_FILES}
             conf.py
     )
-set_target_properties(${targetname} PROPERTIES FOLDER Docs)
+    set_target_properties(${targetname} PROPERTIES FOLDER Docs)
 endfunction()
 
-SiteVariant(windows vulkan)
-SiteVariant(windows opengl)
-SiteVariant(windows d3d11)
-SiteVariant(windows d3d12)
-SiteVariant(linux vulkan)
-SiteVariant(linux opengl)
-SiteVariant(android vulkan)
-SiteVariant(android opengles)
+sitevariant(windows vulkan)
+sitevariant(windows opengl)
+sitevariant(windows d3d11)
+sitevariant(windows d3d12)
+sitevariant(linux vulkan)
+sitevariant(linux opengl)
+sitevariant(android vulkan)
+sitevariant(android opengles)
 
 add_custom_target(
     MainSite ALL
     COMMAND
         "${SPHINX_EXECUTABLE}" -c "${CMAKE_CURRENT_SOURCE_DIR}" -b html
-        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=${TUTORIAL_BASE_URL} -D html_extra_path=.htaccess -t OPENXR_MAINSITE 
+        "${SPHINX_SOURCE}" ${TUTORIAL_SPHINX_BUILD} index.rst -D
+        html_baseurl=${TUTORIAL_BASE_URL} -D html_extra_path=.htaccess -t
+        OPENXR_MAINSITE
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS
         # Other docs files you want to track should go here (or in some variable)
@@ -73,7 +80,8 @@ add_custom_target(
         conf.py
         tutorial_sphinx_theme_1/static/css/theme.css
         ${SPHINX_SOURCE}/conf.py
-    COMMENT "Generating documentation with Sphinx\n\"${SPHINX_EXECUTABLE}\" -c \"${CMAKE_CURRENT_SOURCE_DIR}\" -b html
+    COMMENT
+        "Generating documentation with Sphinx\n\"${SPHINX_EXECUTABLE}\" -c \"${CMAKE_CURRENT_SOURCE_DIR}\" -b html
         \"${SPHINX_SOURCE}\" ${TUTORIAL_SPHINX_BUILD} index.rst -D html_baseurl=${TUTORIAL_BASE_URL} -t OPENXR_MAINSITE"
     SOURCES
         index.rst
@@ -96,7 +104,7 @@ if(TUTORIAL_VALIDATOR_EXECUTABLE)
     add_custom_target(
         Validator ALL
         COMMAND
-            ${TUTORIAL_VALIDATOR_EXECUTABLE} --format gnu --asciiquotes 
+            ${TUTORIAL_VALIDATOR_EXECUTABLE} --format gnu --asciiquotes
             --skip-non-html ${TUTORIAL_SPHINX_BUILD}
         WORKING_DIRECTORY ${TUTORIAL_SPHINX_BUILD}
         COMMENT "Validating documentation nu validator"

@@ -987,14 +987,14 @@ private:
         OPENXR_CHECK(xrCreateSwapchain(m_session, &swapchainCI, &m_depthSwapchainInfo.swapchain), "Failed to create Depth Swapchain");
         m_depthSwapchainInfo.swapchainFormat = swapchainCI.format;  // Save the swapchain format for later use.
         // XR_DOCS_TAG_END_CreateSwapchains
-        
+
         // XR_DOCS_TAG_BEGIN_EnumerateSwapchainImages
         // Get the number of images in the color/depth swapchain and allocate Swapchain image data via GraphicsAPI to store the returned array.
         uint32_t colorSwapchainImageCount = 0;
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_colorSwapchainInfo.swapchain, 0, &colorSwapchainImageCount, nullptr), "Failed to enumerate Color Swapchain Images.");
         XrSwapchainImageBaseHeader *colorSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(m_colorSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::COLOR, colorSwapchainImageCount);
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_colorSwapchainInfo.swapchain, colorSwapchainImageCount, &colorSwapchainImageCount, colorSwapchainImages), "Failed to enumerate Color Swapchain Images.");
-        
+
         uint32_t depthSwapchainImageCount = 0;
         OPENXR_CHECK(xrEnumerateSwapchainImages(m_depthSwapchainInfo.swapchain, 0, &depthSwapchainImageCount, nullptr), "Failed to enumerate Depth Swapchain Images.");
         XrSwapchainImageBaseHeader *depthSwapchainImages = m_graphicsAPI->AllocateSwapchainImageData(m_depthSwapchainInfo.swapchain, GraphicsAPI::SwapchainType::DEPTH, depthSwapchainImageCount);
@@ -1492,7 +1492,7 @@ void android_main(struct android_app *app) {
     JNIEnv *env;
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
-    // https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#XR_KHR_loader_init
+    // https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XR_KHR_loader_init
     // Load xrInitializeLoaderKHR() function pointer. On Android, the loader must be initialized with variables from android_app *.
     // Without this, there's is no loader and thus our function calls to OpenXR would fail.
     XrInstance m_xrInstance = XR_NULL_HANDLE;  // Dummy XrInstance variable for OPENXR_CHECK macro.

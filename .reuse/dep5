@@ -33,12 +33,12 @@ License: Apache-2.0
 
 Files: tutorial/*
 Copyright: 2023 The Khronos Group Inc.
-License: CC-BY-4.0 
+License: CC-BY-4.0
 Comment: https://github.com/KhronosGroup/OpenXR-Tutorials/issues/12 (Text)
 
 Files: thirdparty/*
 Copyright: 2023 The Khronos Group Inc.
-License: Apache-2.0 
+License: Apache-2.0
 Comment: https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/LICENSE
 
 Files: .clang-format

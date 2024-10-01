@@ -122,7 +122,7 @@ private:
     std::unordered_map<VkImage, VkImageLayout> imageStates;
     std::unordered_map<VkImage, std::pair<VkDeviceMemory, ImageCreateInfo>> imageResources;
     std::unordered_map<VkImageView, ImageViewCreateInfo> imageViewResources;
-    
+
     std::unordered_map<VkBuffer, std::pair<VkDeviceMemory, BufferCreateInfo>> bufferResources;
 
     std::unordered_map<VkShaderModule, ShaderCreateInfo> shaderResources;

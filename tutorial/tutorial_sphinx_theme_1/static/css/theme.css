@@ -7569,8 +7569,8 @@ span[id*=MathJax-Span]
 }
 
 
-#selectwindows img, 
-#selectlinux img, 
+#selectwindows img,
+#selectlinux img,
 #selectandroid img
 {
 	display: block;
@@ -7578,8 +7578,8 @@ span[id*=MathJax-Span]
 	margin:auto;
 }
 
-#selectwindows label, 
-#selectlinux label, 
+#selectwindows label,
+#selectlinux label,
 #selectandroid label
 {
 	width:90%;
@@ -7600,7 +7600,7 @@ span[id*=MathJax-Span]
 
 #selectandroid
 {
-	
+
 }
 .select-platform-container-inline
 {

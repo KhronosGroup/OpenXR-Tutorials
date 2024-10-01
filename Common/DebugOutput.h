@@ -149,7 +149,7 @@ public:
     AndroidStreambuf androidCout;
     AndroidStreambuf androidCerr;
 
-    DebugOutput() 
+    DebugOutput()
         : androidCout(), androidCerr(ANDROID_LOG_ERROR) {
         auto *oldout = std::cout.rdbuf(&androidCout);
         auto *olderr = std::cerr.rdbuf(&androidCerr);
