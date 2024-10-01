@@ -46,7 +46,8 @@ set(SOURCES
     ../Common/GraphicsAPI_OpenGL.cpp
     ../Common/GraphicsAPI_OpenGL_ES.cpp
     ../Common/GraphicsAPI_Vulkan.cpp
-    ../Common/OpenXRDebugUtils.cpp)
+    ../Common/OpenXRDebugUtils.cpp
+)
 set(HEADERS
     ../Common/DebugOutput.h
     ../Common/GraphicsAPI.h
@@ -57,43 +58,46 @@ set(HEADERS
     ../Common/GraphicsAPI_Vulkan.h
     ../Common/HelperFunctions.h
     ../Common/OpenXRDebugUtils.h
-    ../Common/OpenXRHelper.h)
+    ../Common/OpenXRHelper.h
+)
 
 # XR_DOCS_TAG_BEGIN_DX11_SHADERS
-set(DX11_SHADERS
-    "../ShadersMultiview/VertexShader_DX11_MV.hlsl"
-    "../ShadersMultiview/PixelShader_DX11_MV.hlsl")
+set(DX11_SHADERS "../ShadersMultiview/VertexShader_DX11_MV.hlsl"
+                 "../ShadersMultiview/PixelShader_DX11_MV.hlsl"
+)
 # XR_DOCS_TAG_END_DX11_SHADERS
 # XR_DOCS_TAG_BEGIN_DX12_SHADERS
-set(DX12_SHADERS
-    "../ShadersMultiview/VertexShader_DX12_MV.hlsl"
-    "../ShadersMultiview/PixelShader_DX12_MV.hlsl")
+set(DX12_SHADERS "../ShadersMultiview/VertexShader_DX12_MV.hlsl"
+                 "../ShadersMultiview/PixelShader_DX12_MV.hlsl"
+)
 # XR_DOCS_TAG_END_DX12_SHADERS
 # XR_DOCS_TAG_BEGIN_GL_SHADERS
-set(GL_SHADERS
-    "../ShadersMultiview/VertexShader_GL_MV.glsl"
-    "../ShadersMultiview/PixelShader_GL_MV.glsl")
+set(GL_SHADERS "../ShadersMultiview/VertexShader_GL_MV.glsl"
+               "../ShadersMultiview/PixelShader_GL_MV.glsl"
+)
 # XR_DOCS_TAG_END_GL_SHADERS
 # XR_DOCS_TAG_BEGIN_ES_GLSL_SHADERS
-set(ES_GLSL_SHADERS
-    "../ShadersMultiview/VertexShader_GLES_MV.glsl"
-    "../ShadersMultiview/PixelShader_GLES_MV.glsl")
+set(ES_GLSL_SHADERS "../ShadersMultiview/VertexShader_GLES_MV.glsl"
+                    "../ShadersMultiview/PixelShader_GLES_MV.glsl"
+)
 # XR_DOCS_TAG_END_ES_GLSL_SHADERS
 # XR_DOCS_TAG_BEGIN_VK_SHADERS
-set(VK_SHADERS
-    "../ShadersMultiview/VertexShader_VK_MV.glsl"
-    "../ShadersMultiview/PixelShader_VK_MV.glsl")
+set(VK_SHADERS "../ShadersMultiview/VertexShader_VK_MV.glsl"
+               "../ShadersMultiview/PixelShader_VK_MV.glsl"
+)
 # XR_DOCS_TAG_END_VK_SHADERS
 
-if (ANDROID) # Android
+if(ANDROID) # Android
     # XR_DOCS_TAG_BEGIN_Android
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        # In this repo
-        ../Common/
-        # From OpenXR repo
-        "${openxr_SOURCE_DIR}/src/common"
-        "${openxr_SOURCE_DIR}/external/include"
+    target_include_directories(
+        ${PROJECT_NAME}
+        PRIVATE
+            # In this repo
+            ../Common/
+            # From OpenXR repo
+            "${openxr_SOURCE_DIR}/src/common"
+            "${openxr_SOURCE_DIR}/external/include"
     )
 
     # export ANativeActivity_onCreate for java to call.
@@ -110,27 +114,38 @@ if (ANDROID) # Android
     target_link_libraries(${PROJECT_NAME} android native_app_glue openxr_loader)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-cast-calling-convention)
     # XR_DOCS_TAG_END_Android
-    AddGraphicsAPIDefine(${PROJECT_NAME})
+    addgraphicsapidefine(${PROJECT_NAME})
     # XR_DOCS_TAG_BEGIN_AndroidEnableMultiview
-    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_ENABLE_MULTIVIEW)
+    target_compile_definitions(
+        ${PROJECT_NAME} PUBLIC XR_TUTORIAL_ENABLE_MULTIVIEW
+    )
     # XR_DOCS_TAG_END_AndroidEnableMultiview
 
     # XR_DOCS_TAG_BEGIN_VulkanNDK
     # VulkanNDK
     find_library(vulkan-lib vulkan)
-    if (vulkan-lib)
-        target_include_directories(${PROJECT_NAME} PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include)
+    if(vulkan-lib)
+        target_include_directories(
+            ${PROJECT_NAME}
+            PUBLIC ${ANDROID_NDK}/sources/third_party/vulkan/src/include
+        )
         target_link_libraries(${PROJECT_NAME} ${vulkan-lib})
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
+        target_compile_definitions(
+            ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN
+        )
     endif()
     # XR_DOCS_TAG_END_VulkanNDK
 
     # XR_DOCS_TAG_BEGIN_Gfxwrapper
     include(../cmake/gfxwrapper.cmake)
     if(TARGET openxr-gfxwrapper)
-        target_include_directories(${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common)
+        target_include_directories(
+            ${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common
+        )
         target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL_ES)
+        target_compile_definitions(
+            ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL_ES
+        )
     endif()
     # XR_DOCS_TAG_END_Gfxwrapper
 
@@ -138,18 +153,28 @@ if (ANDROID) # Android
     # Vulkan GLSL
     set(SHADER_DEST "${CMAKE_CURRENT_SOURCE_DIR}/app/src/main/assets/shaders")
     include(glsl_shader)
-    set_source_files_properties(../ShadersMultiview/VertexShader_VK_MV.glsl PROPERTIES ShaderType "vert")
-    set_source_files_properties(../ShadersMultiview/PixelShader_VK_MV.glsl PROPERTIES ShaderType "frag")
+    set_source_files_properties(
+        ../ShadersMultiview/VertexShader_VK_MV.glsl PROPERTIES ShaderType
+                                                               "vert"
+    )
+    set_source_files_properties(
+        ../ShadersMultiview/PixelShader_VK_MV.glsl PROPERTIES ShaderType "frag"
+    )
 
     foreach(FILE ${VK_SHADERS})
         get_filename_component(FILE_WE ${FILE} NAME_WE)
         get_source_file_property(shadertype ${FILE} ShaderType)
         glsl_spv_shader(
-           INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
-           OUTPUT "${SHADER_DEST}/${FILE_WE}.spv"
-           STAGE ${shadertype}
-           ENTRY_POINT main
-           TARGET_ENV vulkan1.0
+            INPUT
+            "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+            OUTPUT
+            "${SHADER_DEST}/${FILE_WE}.spv"
+            STAGE
+            ${shadertype}
+            ENTRY_POINT
+            main
+            TARGET_ENV
+            vulkan1.0
         )
         # Make our project depend on these files
         target_sources(${PROJECT_NAME} PRIVATE "${SHADER_DEST}/${FILE_WE}.spv")
@@ -164,8 +189,7 @@ if (ANDROID) # Android
         add_custom_command(
             OUTPUT "${SHADER_DEST}/${FILE_WE}.glsl"
             COMMAND
-                ${CMAKE_COMMAND} -E copy
-                "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+                ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
                 "${SHADER_DEST}/${FILE_WE}.glsl"
             COMMENT "GLSL ${FILE}"
             MAIN_DEPENDENCY "${FILE}"
@@ -183,24 +207,31 @@ else() # Windows / Linux
     add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
     if(NOT "${XR_RUNTIME_JSON}" STREQUAL "")
-        set_target_properties( ${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}")
+        set_target_properties(
+            ${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT
+                                       "XR_RUNTIME_JSON=${XR_RUNTIME_JSON}"
+        )
     endif()
 
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        # In this repo
-        ../Common/
-        # From OpenXR repo
-        "${openxr_SOURCE_DIR}/src/common"
-        "${openxr_SOURCE_DIR}/external/include"
+    target_include_directories(
+        ${PROJECT_NAME}
+        PRIVATE
+            # In this repo
+            ../Common/
+            # From OpenXR repo
+            "${openxr_SOURCE_DIR}/src/common"
+            "${openxr_SOURCE_DIR}/external/include"
     )
     target_link_libraries(${PROJECT_NAME} openxr_loader)
     # XR_DOCS_TAG_END_WindowsLinux
-    AddGraphicsAPIDefine(${PROJECT_NAME})
+    addgraphicsapidefine(${PROJECT_NAME})
     # XR_DOCS_TAG_BEGIN_WindowsLinuxEnableMultiview
-    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_ENABLE_MULTIVIEW)
+    target_compile_definitions(
+        ${PROJECT_NAME} PUBLIC XR_TUTORIAL_ENABLE_MULTIVIEW
+    )
     # XR_DOCS_TAG_END_WindowsLinuxEnableMultiview
 
-    if (WIN32) # Windows
+    if(WIN32) # Windows
         # XR_DOCS_TAG_BEGIN_D3D11
         # D3D11
         target_link_libraries(${PROJECT_NAME} "d3d11.lib")
@@ -217,17 +248,23 @@ else() # Windows / Linux
         # XR_DOCS_TAG_END_D3D11_12
     else() # Linux
         # XR_DOCS_TAG_BEGIN_Linux
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_LINUX_XLIB)
+        target_compile_definitions(
+            ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_LINUX_XLIB
+        )
         # XR_DOCS_TAG_END_Linux
     endif()
 
     # XR_DOCS_TAG_BEGIN_VulkanSDK
     # VulkanSDK
     find_package(Vulkan)
-    if (Vulkan_FOUND)
-        target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+    if(Vulkan_FOUND)
+        target_include_directories(
+            ${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS}
+        )
         target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
+        target_compile_definitions(
+            ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN
+        )
     endif()
     # XR_DOCS_TAG_END_VulkanSDK
 
@@ -236,7 +273,9 @@ else() # Windows / Linux
     include(../cmake/gfxwrapper.cmake)
     if(TARGET openxr-gfxwrapper)
         target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
-        target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
+        target_compile_definitions(
+            ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL
+        )
     endif()
     # XR_DOCS_TAG_END_OpenGL
 
@@ -245,44 +284,80 @@ else() # Windows / Linux
     if(WIN32)
         # D3D11: Using Shader Model 5.0
         include(fxc_shader)
-        set_property(SOURCE ${DX11_SHADERS} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
-        set_source_files_properties(../ShadersMultiview/VertexShader_DX11_MV.hlsl PROPERTIES ShaderType "vs")
-        set_source_files_properties(../ShadersMultiview/PixelShader_DX11_MV.hlsl PROPERTIES ShaderType "ps")
+        set_property(
+            SOURCE ${DX11_SHADERS} PROPERTY VS_SETTINGS
+                                            "ExcludedFromBuild=true"
+        )
+        set_source_files_properties(
+            ../ShadersMultiview/VertexShader_DX11_MV.hlsl PROPERTIES ShaderType
+                                                                     "vs"
+        )
+        set_source_files_properties(
+            ../ShadersMultiview/PixelShader_DX11_MV.hlsl PROPERTIES ShaderType
+                                                                    "ps"
+        )
 
         set(shadermodel 5_0)
         foreach(FILE ${DX11_SHADERS})
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
             fxc_shader(
-                INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
-                OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso"
-                OUTPUT_PDB "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb"
-                PROFILE ${shadertype}_${shadermodel}
-                ENTRY_POINT main
+                INPUT
+                "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+                OUTPUT
+                "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso"
+                OUTPUT_PDB
+                "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb"
+                PROFILE
+                ${shadertype}_${shadermodel}
+                ENTRY_POINT
+                main
             )
             # Make our project depend on these files
-            target_sources(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso")
+            target_sources(
+                ${PROJECT_NAME}
+                PRIVATE
+                    "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso"
+            )
         endforeach()
 
         # D3D12: Using Shader Model 6.1 for SV_ViewID
         include(dxc_shader)
-        set_property(SOURCE ${DX12_SHADERS} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
-        set_source_files_properties(../ShadersMultiview/VertexShader_DX12_MV.hlsl PROPERTIES ShaderType "vs")
-        set_source_files_properties(../ShadersMultiview/PixelShader_DX12_MV.hlsl PROPERTIES ShaderType "ps")
+        set_property(
+            SOURCE ${DX12_SHADERS} PROPERTY VS_SETTINGS
+                                            "ExcludedFromBuild=true"
+        )
+        set_source_files_properties(
+            ../ShadersMultiview/VertexShader_DX12_MV.hlsl PROPERTIES ShaderType
+                                                                     "vs"
+        )
+        set_source_files_properties(
+            ../ShadersMultiview/PixelShader_DX12_MV.hlsl PROPERTIES ShaderType
+                                                                    "ps"
+        )
 
         set(shadermodel 6_1)
         foreach(FILE ${DX12_SHADERS})
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
             dxc_shader(
-                INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
-                OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso"
-                OUTPUT_PDB "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb"
-                PROFILE ${shadertype}_${shadermodel}
-                ENTRY_POINT main
+                INPUT
+                "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+                OUTPUT
+                "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso"
+                OUTPUT_PDB
+                "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.pdb"
+                PROFILE
+                ${shadertype}_${shadermodel}
+                ENTRY_POINT
+                main
             )
             # Make our project depend on these files
-            target_sources(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso")
+            target_sources(
+                ${PROJECT_NAME}
+                PRIVATE
+                    "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}_${shadermodel}.cso"
+            )
         endforeach()
     endif()
     # XR_DOCS_TAG_END_BuildShadersWindows
@@ -290,23 +365,36 @@ else() # Windows / Linux
     # XR_DOCS_TAG_BEGIN_BuildShadersVulkanWindowsLinux
     # Vulkan GLSL
     set(SHADER_DEST "${CMAKE_CURRENT_BINARY_DIR}")
-    if (Vulkan_FOUND)
+    if(Vulkan_FOUND)
         include(glsl_shader)
-        set_source_files_properties(../ShadersMultiview/VertexShader_VK_MV.glsl PROPERTIES ShaderType "vert")
-        set_source_files_properties(../ShadersMultiview/PixelShader_VK_MV.glsl PROPERTIES ShaderType "frag")
+        set_source_files_properties(
+            ../ShadersMultiview/VertexShader_VK_MV.glsl PROPERTIES ShaderType
+                                                                   "vert"
+        )
+        set_source_files_properties(
+            ../ShadersMultiview/PixelShader_VK_MV.glsl PROPERTIES ShaderType
+                                                                  "frag"
+        )
 
         foreach(FILE ${VK_SHADERS})
             get_filename_component(FILE_WE ${FILE} NAME_WE)
             get_source_file_property(shadertype ${FILE} ShaderType)
             glsl_spv_shader(
-               INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
-               OUTPUT "${SHADER_DEST}/${FILE_WE}.spv"
-               STAGE ${shadertype}
-               ENTRY_POINT main
-               TARGET_ENV vulkan1.0
+                INPUT
+                "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+                OUTPUT
+                "${SHADER_DEST}/${FILE_WE}.spv"
+                STAGE
+                ${shadertype}
+                ENTRY_POINT
+                main
+                TARGET_ENV
+                vulkan1.0
             )
             # Make our project depend on these files
-            target_sources(${PROJECT_NAME} PRIVATE "${SHADER_DEST}/${FILE_WE}.spv")
+            target_sources(
+                ${PROJECT_NAME} PRIVATE "${SHADER_DEST}/${FILE_WE}.spv"
+            )
         endforeach()
     endif()
     # XR_DOCS_TAG_END_BuildShadersVulkanWindowsLinux
@@ -319,8 +407,7 @@ else() # Windows / Linux
         add_custom_command(
             OUTPUT "${SHADER_DEST}/${FILE_WE}.glsl"
             COMMAND
-                ${CMAKE_COMMAND} -E copy
-                "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+                ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
                 "${SHADER_DEST}/${FILE_WE}.glsl"
             COMMENT "GLSL ${FILE}"
             MAIN_DEPENDENCY "${FILE}"
