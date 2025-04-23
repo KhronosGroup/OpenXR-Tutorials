@@ -1,0 +1,144 @@
+version = 1
+SPDX-PackageName = "OpenXR-Tutorials"
+SPDX-PackageSupplier = "The Khronos Group Inc."
+SPDX-PackageDownloadLocation = "https://github.com/KhronosGroup/OpenXR-Tutorials"
+
+[[annotations]]
+path = ".github/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "Chapter1/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "Chapter2/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "Chapter3/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "Chapter4/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "Chapter5/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "Chapter6_1_Multiview/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "tutorial/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "CC-BY-4.0"
+SPDX-FileComment = "https://github.com/KhronosGroup/OpenXR-Tutorials/issues/12 (Text)"
+
+[[annotations]]
+path = "thirdparty/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+SPDX-FileComment = "https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/LICENSE"
+
+[[annotations]]
+path = ".clang-format"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ".gitignore"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "build-android-arch.bat"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "build-android-arch.sh"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "build-common-archs.bat"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "build-common-archs.sh"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "build-eoc-archs.bat"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "build-eoc-archs.sh"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "build-site.sh"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "BUILD.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "CONTRIBUTORS.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "README.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "requirements.txt"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "Schedule.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 The Khronos Group Inc."
+SPDX-License-Identifier = "Apache-2.0"
