@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # XR_DOCS_TAG_BEGIN_SetProjectName1
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.28.3)
 set(PROJECT_NAME OpenXRTutorialChapter1)
 project("${PROJECT_NAME}")
 # XR_DOCS_TAG_END_SetProjectName1
@@ -19,21 +19,24 @@ include("../cmake/graphics_api_select.cmake")
 include(FetchContent)
 
 # openxr_loader - From github.com/KhronosGroup
-set(BUILD_TESTS
-    OFF
-    CACHE INTERNAL "Build tests"
-)
 set(BUILD_API_LAYERS
-    ON
-    CACHE INTERNAL "Use OpenXR layers"
+        ON
+        CACHE INTERNAL "Use OpenXR layers"
+)
+set(BUILD_TESTS
+        OFF
+        CACHE INTERNAL "Build tests"
 )
 FetchContent_Declare(
     OpenXR
-    URL_HASH MD5=924a94a2da0b5ef8e82154c623d88644
-    URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.34.zip
-        SOURCE_DIR
-        openxr
+    EXCLUDE_FROM_ALL
+    DOWNLOAD_EXTRACT_TIMESTAMP
+    URL_HASH MD5=f52248ef83da9134bec2b2d8e0970677
+    URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.1.49.tar.gz
+    SOURCE_DIR
+    openxr
 )
+
 FetchContent_MakeAvailable(OpenXR)
 # XR_DOCS_TAG_END_FetchContent
 
@@ -64,14 +67,12 @@ set(HEADERS
 if(ANDROID) # Android
     # XR_DOCS_TAG_BEGIN_Android
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+    add_dependencies(${PROJECT_NAME} XrApiLayer_core_validation)
     target_include_directories(
         ${PROJECT_NAME}
         PRIVATE
             # In this repo
             ../Common/
-            # From OpenXR repo
-            "${openxr_SOURCE_DIR}/src/common"
-            "${openxr_SOURCE_DIR}/external/include"
     )
 
     # export ANativeActivity_onCreate for java to call.
@@ -106,9 +107,9 @@ if(ANDROID) # Android
     # XR_DOCS_TAG_END_VulkanNDK
 
     # XR_DOCS_TAG_BEGIN_Gfxwrapper
-    include(../cmake/gfxwrapper.cmake)
-    if(TARGET openxr-gfxwrapper)
-        target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
+    include(../thirdparty/glwrapper/CMakeLists.txt)
+    if(TARGET tutorial_glwrapper)
+        target_link_libraries(${PROJECT_NAME} tutorial_glwrapper)
         target_compile_definitions(
             ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL_ES
         )
@@ -131,11 +132,9 @@ else() # Windows / Linux
         PRIVATE
             # In this repo
             ../Common/
-            # From OpenXR repo
-            "${openxr_SOURCE_DIR}/src/common"
-            "${openxr_SOURCE_DIR}/external/include"
     )
     target_link_libraries(${PROJECT_NAME} openxr_loader)
+    add_dependencies(${PROJECT_NAME} XrApiLayer_core_validation)
     # XR_DOCS_TAG_END_WindowsLinux
     addgraphicsapidefine(${PROJECT_NAME})
 
@@ -178,12 +177,9 @@ else() # Windows / Linux
 
     # XR_DOCS_TAG_BEGIN_OpenGL
     # OpenGL
-    include(../cmake/gfxwrapper.cmake)
-    if(TARGET openxr-gfxwrapper)
-        target_include_directories(
-            ${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common
-        )
-        target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
+    include(../thirdparty/glwrapper/CMakeLists.txt)
+    if(TARGET tutorial_glwrapper)
+        target_link_libraries(${PROJECT_NAME} tutorial_glwrapper)
         target_compile_definitions(
             ${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL
         )
