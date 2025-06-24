@@ -26,8 +26,8 @@ set(BUILD_API_LAYERS
 )
 FetchContent_Declare(
     OpenXR
-    URL_HASH MD5=924a94a2da0b5ef8e82154c623d88644
-    URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.34.zip
+    #URL_HASH MD5=924a94a2da0b5ef8e82154c623d88644
+    URL https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-1.1.49.zip
         DOWNLOAD_EXTRACT_TIMESTAMP
         TRUE
         SOURCE_DIR
@@ -88,7 +88,7 @@ endif()
 target_include_directories(
     ${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common
 )
-target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
+target_link_libraries(${PROJECT_NAME} tutorial-gfxwrapper)
 target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
 
 #Shaders

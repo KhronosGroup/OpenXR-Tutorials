@@ -45,7 +45,8 @@ Download [Android Studio](https://developer.android.com/studio) 2022.1.1 or late
 Android Prequisites:
 * SDK: 29
 * NDK: 23.1.7779620
-* Android Studio/Gradle Plugin Version: 7.4.2
+* Android Studio/Gradle Plugin Version: 9.10
+* Android Studio: 2024.3.2
 
 See additional [prerequisites](#Prerequisites).
 
