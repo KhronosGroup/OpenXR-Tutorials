@@ -22,7 +22,7 @@ jobs:
           sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev libgl1-mesa-dev
           sudo apt install vulkan-tools
           sudo apt install libvulkan-dev
-          sudo apt install vulkan-validationlayers-dev spirv-tools glslang-tools
+          sudo apt install vulkan-utility-libraries-dev spirv-tools glslang-tools
           sudo apt install libxrandr-dev libxxf86vm-dev
           sudo apt-get install libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev
           sudo apt-get install libgl1-mesa-dev libvulkan-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev libxrandr-dev libxxf86vm-dev mesa-common-dev
@@ -36,4 +36,3 @@ jobs:
           cd build
           cmake ..
           cmake --build .
-
