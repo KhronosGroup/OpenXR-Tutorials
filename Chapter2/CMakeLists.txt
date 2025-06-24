@@ -24,7 +24,7 @@ set(BUILD_TESTS
     CACHE INTERNAL "Build tests"
 )
 set(BUILD_API_LAYERS
-    ON
+    OFF
     CACHE INTERNAL "Use OpenXR layers"
 )
 set(BUILD_CONFORMANCE_TESTS
@@ -42,17 +42,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(OpenXR)
 # XR_DOCS_TAG_END_FetchContent
-
-# Temporary workaround for compile warning in OpenXR's gfxwrapper.
-if (TARGET openxr-gfxwrapper)
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(openxr-gfxwrapper PRIVATE "--warn-no-unused-parameter")
-endif()
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(openxr-gfxwrapper PRIVATE "--warn-no-unused-parameter")
-endif()
-endif()
 
 
 # Files
@@ -87,9 +76,6 @@ if(ANDROID) # Android
         PRIVATE
             # In this repo
             ../Common/
-            # From OpenXR repo
-            "${openxr_SOURCE_DIR}/src/common"
-            "${openxr_SOURCE_DIR}/external/include"
     )
 
     # export ANativeActivity_onCreate for java to call.
@@ -149,9 +135,6 @@ else() # Windows / Linux
         PRIVATE
             # In this repo
             ../Common/
-            # From OpenXR repo
-            "${openxr_SOURCE_DIR}/src/common"
-            "${openxr_SOURCE_DIR}/external/include"
     )
     target_link_libraries(${PROJECT_NAME} openxr_loader)
     # XR_DOCS_TAG_END_WindowsLinux
