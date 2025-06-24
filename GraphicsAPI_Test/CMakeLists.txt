@@ -9,7 +9,7 @@ include(FetchContent)
 
 # openxr_loader - From github.com/KhronosGroup
 set(BUILD_ALL_EXTENSIONS
-    ON
+    OFF
     CACHE INTERNAL "Build loader and layers with all extensions"
 )
 set(BUILD_TESTS
@@ -21,17 +21,15 @@ set(BUILD_CONFORMANCE_TESTS
     CACHE INTERNAL "Build conformance tests"
 )
 set(BUILD_API_LAYERS
-    ON
+    OFF
     CACHE INTERNAL "Use OpenXR layers"
 )
 FetchContent_Declare(
     OpenXR
-    #URL_HASH MD5=924a94a2da0b5ef8e82154c623d88644
-    URL https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-1.1.49.zip
-        DOWNLOAD_EXTRACT_TIMESTAMP
-        TRUE
-        SOURCE_DIR
-        openxr
+    #URL_HASH MD5=f52248ef83da9134bec2b2d8e0970677
+    URL https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-1.1.49.tar.gz
+    SOURCE_DIR
+    openxr
 )
 FetchContent_MakeAvailable(OpenXR)
 
@@ -84,11 +82,8 @@ if(Vulkan_FOUND)
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
 endif()
 
-# Fix redirection to a different project's build folder
-target_include_directories(
-    ${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common
-)
-target_link_libraries(${PROJECT_NAME} tutorial-gfxwrapper)
+include(../thirdparty/glwrapper/CMakeLists.txt)
+target_link_libraries(${PROJECT_NAME} tutorial_glwrapper)
 target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
 
 #Shaders
