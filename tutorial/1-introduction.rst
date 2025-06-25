@@ -87,7 +87,7 @@ This section will help you set up your development environment. Here your choice
 
 	.. rubric:: CMake
 
-	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake to generate the Visual Studio Solution and Project files. At least CMake 3.22.1 will be needed, so follow the instructions on the CMake download page to ensure that you have an up-to-date version.
+	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake to generate the Visual Studio Solution and Project files. At least CMake 3.28.3 will be needed, so follow the instructions on the CMake download page to ensure that you have an up-to-date version.
 
 	Next, you'll want to choose which graphics API you'll be using.
 
@@ -124,7 +124,7 @@ This section will help you set up your development environment. Here your choice
 
 	.. rubric:: Install CMake
 
-	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake with Visual Studio Code to build the project. At least CMake 3.22.1 will be needed, so follow the instructions on the CMake download page to ensure that you have an up-to-date version.
+	Install the latest `CMake <https://cmake.org/download/>`_. This tutorial uses CMake with Visual Studio Code to build the project. At least CMake 3.28.3 will be needed, so follow the instructions on the CMake download page to ensure that you have an up-to-date version.
 
 	Now choose which graphics API you want to use from the tabs at the top of the page. For Linux you can either use OpenGL or Vulkan.
 
@@ -470,7 +470,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 		:start-after: XR_DOCS_TAG_BEGIN_SetProjectName2
 		:end-before: XR_DOCS_TAG_END_SetProjectName2
 
-	Here we have declared our tutorial project. At least CMake 3.22.1 is needed to use all the features in the tutorial. Now add:
+	Here we have declared our tutorial project. At least CMake 3.28.3 is needed to use all the features in the tutorial. Now add:
 
 	.. literalinclude:: ../Chapter2/CMakeLists.txt
 		:language: cmake

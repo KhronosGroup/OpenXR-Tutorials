@@ -17,7 +17,8 @@ do
             Common/GraphicsAPI_D3D11.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h
+            Common/OpenXRHelper.h \
+            thirdparty/glwrapper
     fi
     if [[ "$api" == "D3D12" ]]; then
         # D3D12
@@ -31,7 +32,8 @@ do
             Common/GraphicsAPI_D3D12.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h
+            Common/OpenXRHelper.h \
+            thirdparty/glwrapper
     fi
     if [[ "$api" == "OPENGL" ]]; then
         # OPENGL
@@ -45,7 +47,8 @@ do
             Common/GraphicsAPI_OpenGL.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h
+            Common/OpenXRHelper.h \
+            thirdparty/glwrapper
     fi
     if [[ "$api" == "OPENGL_ES" ]]; then
         # OPENGL_ES
@@ -59,7 +62,8 @@ do
             Common/GraphicsAPI_OpenGL_ES.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h
+            Common/OpenXRHelper.h \
+            thirdparty/glwrapper
     fi
     if [[ "$api" == "VULKAN" ]]; then
         # VULKAN
@@ -73,7 +77,8 @@ do
             Common/GraphicsAPI_Vulkan.h \
             Common/HelperFunctions.h \
             Common/OpenXRDebugUtils.h \
-            Common/OpenXRHelper.h
+            Common/OpenXRHelper.h \
+            thirdparty/glwrapper
     fi
 done
 
@@ -97,3 +102,4 @@ zip -r build/common_archs/Common.zip \
     Common/HelperFunctions.h \
     Common/OpenXRDebugUtils.h \
     Common/OpenXRHelper.h \
+    thirdparty/glwrapper
