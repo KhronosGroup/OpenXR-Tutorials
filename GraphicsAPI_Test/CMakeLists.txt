@@ -2,36 +2,20 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.28.3)
 
 # For FetchContent_Declare() and FetchContent_MakeAvailable()
 include(FetchContent)
 
 # openxr_loader - From github.com/KhronosGroup
-set(BUILD_ALL_EXTENSIONS
-    ON
-    CACHE INTERNAL "Build loader and layers with all extensions"
-)
-set(BUILD_TESTS
-    OFF
-    CACHE INTERNAL "Build tests"
-)
-set(BUILD_CONFORMANCE_TESTS
-    OFF
-    CACHE INTERNAL "Build conformance tests"
-)
-set(BUILD_API_LAYERS
-    ON
-    CACHE INTERNAL "Use OpenXR layers"
-)
 FetchContent_Declare(
     OpenXR
-    URL_HASH MD5=924a94a2da0b5ef8e82154c623d88644
-    URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.0.34.zip
-        DOWNLOAD_EXTRACT_TIMESTAMP
-        TRUE
-        SOURCE_DIR
-        openxr
+    EXCLUDE_FROM_ALL
+    DOWNLOAD_EXTRACT_TIMESTAMP
+    URL_HASH MD5=f52248ef83da9134bec2b2d8e0970677
+    URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.1.49.tar.gz
+    SOURCE_DIR
+    openxr
 )
 FetchContent_MakeAvailable(OpenXR)
 
@@ -84,11 +68,8 @@ if(Vulkan_FOUND)
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
 endif()
 
-# Fix redirection to a different project's build folder
-target_include_directories(
-    ${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common
-)
-target_link_libraries(${PROJECT_NAME} openxr-gfxwrapper)
+include(../thirdparty/glwrapper/CMakeLists.txt)
+target_link_libraries(${PROJECT_NAME} tutorial_glwrapper)
 target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
 
 #Shaders

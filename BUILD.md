@@ -1,8 +1,8 @@
 # Build
 
 ## Prerequisites
-* [CMake 3.22.1](https://cmake.org/download/)
-* [Python 3.6+](https://www.python.org/downloads/)
+* [CMake 3.28.3+](https://cmake.org/download/)
+* [Python 3.6 <= 3.12](https://www.python.org/downloads/)
 
 ## Windows
 
@@ -40,12 +40,12 @@ Open the `openxr-tutorial` solution file and build the `ALL_BUILD` project. Sele
 
 ## Android
 
-Download [Android Studio](https://developer.android.com/studio) 2022.1.1 or later.
+Download [Android Studio](https://developer.android.com/studio) 2024.3.2 or later.
 
 Android Prequisites:
 * SDK: 29
-* NDK: 23.1.7779620
-* Android Studio/Gradle Plugin Version: 7.4.2
+* NDK: 27.2.12479018
+* CMake: 3.28.3+
 
 See additional [prerequisites](#Prerequisites).
 
