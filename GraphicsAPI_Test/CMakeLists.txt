@@ -68,11 +68,8 @@ if(Vulkan_FOUND)
     target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_VULKAN)
 endif()
 
-# Fix redirection to a different project's build folder
-target_include_directories(
-    ${PROJECT_NAME} PUBLIC ${openxr_SOURCE_DIR}/src/common
-)
-target_link_libraries(${PROJECT_NAME} tutorial-gfxwrapper)
+include(../thirdparty/glwrapper/CMakeLists.txt)
+target_link_libraries(${PROJECT_NAME} tutorial_glwrapper)
 target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_USE_OPENGL)
 
 #Shaders
