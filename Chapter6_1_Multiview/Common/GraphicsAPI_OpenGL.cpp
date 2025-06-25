@@ -418,8 +418,7 @@ GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance m_xrInstance, XrSystemId syste
     GLint n = 0;
     glGetIntegerv(GL_NUM_EXTENSIONS, &n);
 
-    PFNGLGETSTRINGIPROC glGetStringi = 0;
-    glGetStringi = (PFNGLGETSTRINGIPROC)wglGetProcAddress("glGetStringi");
+    PFNGLGETSTRINGIPROC glGetStringi = (PFNGLGETSTRINGIPROC)GetExtension("glGetStringi");
 
     const char* foundExtension = nullptr;
     for (GLint i = 0; i < n; i++)
