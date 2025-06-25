@@ -1,7 +1,7 @@
 # Build
 
 ## Prerequisites
-* [CMake 3.30.5+](https://cmake.org/download/)
+* [CMake 3.28.3+](https://cmake.org/download/)
 * [Python 3.6 <= 3.12](https://www.python.org/downloads/)
 
 ## Windows
@@ -44,9 +44,8 @@ Download [Android Studio](https://developer.android.com/studio) 2024.3.2 or late
 
 Android Prequisites:
 * SDK: 29
-* NDK: 28.1.13356709
-* Android Studio/Gradle Plugin Version: 9.10
-* CMake: 3.30.5+
+* NDK: 27.2.12479018
+* CMake: 3.28.3+
 
 See additional [prerequisites](#Prerequisites).
 
