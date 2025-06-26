@@ -11,14 +11,14 @@ An API is an application programming interface, a set of rules for how a softwar
 
 This tutorial introduces programming with OpenXR. If you use a game engine such as Unreal Engine, Unity or Godot, you may not need to interact directly with OpenXR: the engine abstracts this away. However, it may be beneficial to learn the underlying concepts.
 
-OpenXR is designed to work with various different graphics APIs: Vulkan, Direct3D 11, Direct3D 12, OpenGL and OpenGL ES are all supported at present. You will need some familiarity with your graphics API of choice to get the most out of this tutorial.
+OpenXR is designed to work with various different graphics APIs: Vulkan, Direct3D 11, Direct3D 12, OpenGL and OpenGL ES are all supported at present. You will need some familiarity with your graphics API of choice to get the most out of this tutorial. Please note that the graphics abstraction provided here is not intended to be production ready. It is intended as a minimal example of how you could integrate OpenXR into your own application.
 
 Other prerequisites are:
 
 * A Windows or Linux PC to compile the code.
 * An IDE (integrated development environment) that supports your target device: either Visual Studio 2017 or later; or Android Studio.
 * Some XR hardware to run on: either an XR device that connects to your PC, or an Android-based device like a Meta Quest or Pico Neo. It is also possible to use `Monado <https://monado.freedesktop.org/>`_ to emulate XR hardware.
-* CMake 3.22.1 is required.
+* CMake 3.28.3+ is required.
 * Python 3.6+ is required to build the OpenXR-SDK-Source repository. See `OpenXR-SDK-Source/BUILDING.md <https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/main/BUILDING.md>`_.
 
 Tutorial Structure
