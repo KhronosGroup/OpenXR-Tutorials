@@ -976,6 +976,8 @@ See more here: `10.6.1. Composition Layer Flags <https://registry.khronos.org/Op
 
 Before we call ``RenderLayer()``, we check that the :openxr_ref:`XrSession` is active, as we don't want to needlessly render graphics, and we also check whether OpenXR wants us to render via the use of :openxr_ref:`XrFrameState` ``::shouldRender``.
 
+For more information on OpenXR Frame Submission and Frame Timing see the `OpenXR Guide` <https://github.com/KhronosGroup/OpenXR-Guide/blob/main/chapters/frame_submission.md>`_.
+
 3.2.4 Rendering Layers
 ======================
 
