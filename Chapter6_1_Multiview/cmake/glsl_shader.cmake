@@ -60,15 +60,12 @@ function(glsl_spv_shader)
         add_custom_command(
             OUTPUT "${_glsl_spv_OUTPUT}"
             COMMAND
-                "${GLSL_COMPILER}"
-                ${_glsl_spv_output_type_arg}
-                -o "${_glsl_spv_OUTPUT}"
-                "-fshader-stage=${_glsl_spv_STAGE}"
+                "${GLSL_COMPILER}" ${_glsl_spv_output_type_arg} -o
+                "${_glsl_spv_OUTPUT}" "-fshader-stage=${_glsl_spv_STAGE}"
                 "-fentry-point=${_glsl_spv_ENTRY_POINT}"
                 $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>,-g,>
                 $<IF:$<CONFIG:Debug>,-O0,-O>
-                "--target-env=${_glsl_spv_TARGET_ENV}"
-                "${_glsl_spv_INPUT}"
+                "--target-env=${_glsl_spv_TARGET_ENV}" "${_glsl_spv_INPUT}"
             MAIN_DEPENDENCY "${_glsl_spv_INPUT}"
             DEPENDS "${_glsl_spv_INPUT}" ${_glsl_spv_EXTRA_DEPENDS}
             USES_TERMINAL VERBATIM COMMAND_EXPAND_LISTS
@@ -83,16 +80,12 @@ function(glsl_spv_shader)
         add_custom_command(
             OUTPUT "${_glsl_spv_OUTPUT}"
             COMMAND
-                "${GLSLANG_VALIDATOR}"
-                -o "${_glsl_spv_OUTPUT}"
-                -S "${_glsl_spv_STAGE}"
-                -e "${_glsl_spv_ENTRY_POINT}"
+                "${GLSLANG_VALIDATOR}" -o "${_glsl_spv_OUTPUT}" -S
+                "${_glsl_spv_STAGE}" -e "${_glsl_spv_ENTRY_POINT}"
                 -x # output as hex
-                $<$<CONFIG:Debug,RelWithDebInfo>:-gVS>
-                $<$<CONFIG:Debug>:-Od>
-                $<$<CONFIG:Release>:-g0>
-                "--target-env" "${_glsl_spv_TARGET_ENV}"
-                "-V ${_glsl_spv_INPUT}"
+                $<$<CONFIG:Debug,RelWithDebInfo>:-gVS> $<$<CONFIG:Debug>:-Od>
+                $<$<CONFIG:Release>:-g0> "--target-env"
+                "${_glsl_spv_TARGET_ENV}" "-V ${_glsl_spv_INPUT}"
             MAIN_DEPENDENCY "${_glsl_spv_INPUT}"
             DEPENDS "${_glsl_spv_INPUT}" ${_glsl_spv_EXTRA_DEPENDS}
             USES_TERMINAL VERBATIM COMMAND_EXPAND_LISTS

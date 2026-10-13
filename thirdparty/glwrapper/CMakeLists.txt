@@ -6,7 +6,6 @@
 
 include(${CMAKE_CURRENT_LIST_DIR}/glad2/CMakeLists.txt)
 
-
 if(NOT TARGET tutorial_glwrapper)
     if(ANDROID)
         find_package(OpenGLES REQUIRED COMPONENTS V31)
@@ -17,20 +16,23 @@ if(NOT TARGET tutorial_glwrapper)
 
     if(OpenGL_FOUND OR OpenGLES_FOUND)
         add_library(
-                tutorial_glwrapper STATIC
-                ${CMAKE_CURRENT_LIST_DIR}/gfxwrapper_opengl.c
+            tutorial_glwrapper STATIC
+            ${CMAKE_CURRENT_LIST_DIR}/gfxwrapper_opengl.c
         )
         target_include_directories(
-                tutorial_glwrapper PUBLIC
-                ${CMAKE_CURRENT_LIST_DIR}
+            tutorial_glwrapper PUBLIC ${CMAKE_CURRENT_LIST_DIR}
         )
         if(ANDROID)
-            target_link_libraries(tutorial_glwrapper PUBLIC tutorial-glad-loader)
             target_link_libraries(
-                    tutorial_glwrapper PUBLIC ${OpenGLES_V3_LIBRARY} EGL::EGL
+                tutorial_glwrapper PUBLIC tutorial-glad-loader
+            )
+            target_link_libraries(
+                tutorial_glwrapper PUBLIC ${OpenGLES_V3_LIBRARY} EGL::EGL
             )
         else()
-            target_link_libraries(tutorial_glwrapper PUBLIC OpenGL::GL tutorial-glad-loader)
+            target_link_libraries(
+                tutorial_glwrapper PUBLIC OpenGL::GL tutorial-glad-loader
+            )
         endif()
     endif()
 
