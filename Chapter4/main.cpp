@@ -248,9 +248,9 @@ private:
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
         XR_TUT_LOG("OpenXR Runtime: " << instanceProperties.runtimeName << " - "
-                                    << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << "."
-                                    << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << "."
-                                    << XR_VERSION_PATCH(instanceProperties.runtimeVersion));
+                                      << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << "."
+                                      << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << "."
+                                      << XR_VERSION_PATCH(instanceProperties.runtimeVersion));
         // XR_DOCS_TAG_END_GetInstanceProperties
     }
 
@@ -673,7 +673,7 @@ private:
                     XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                     m_blocks.push_back({{q, {x, y, z}}, {0.095f, 0.095f, 0.095f}, color});
                     if (m_blocks.size() > m_maxBlockCount) {
-                      m_blocks.pop_front();
+                        m_blocks.pop_front();
                     }
                 }
             }
@@ -735,7 +735,7 @@ private:
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 XR_TUT_LOG("OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session);
                 if (referenceSpaceChangePending->session != m_session) {
-                   XR_TUT_LOG("XrEventDataReferenceSpaceChangePending for unknown Session");
+                    XR_TUT_LOG("XrEventDataReferenceSpaceChangePending for unknown Session");
                     break;
                 }
                 break;
@@ -901,8 +901,8 @@ private:
                         XrQuaternionf q = {0.0f, 0.0f, 0.0f, 1.0f};
                         XrVector3f color = {pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator), pseudorandom_distribution(pseudo_random_generator)};
                         m_blocks.push_back({{q, FixPosition(m_handPose[i].position)}, {0.095f, 0.095f, 0.095f}, color});
-                        while ( m_blocks.size() > m_maxBlockCount) {
-                          m_blocks.pop_front();
+                        while (m_blocks.size() > m_maxBlockCount) {
+                            m_blocks.pop_front();
                         }
                     }
                 }
@@ -951,7 +951,7 @@ private:
         // XR_DOCS_TAG_END_EnumerateSwapchainFormats
 
         // XR_DOCS_TAG_BEGIN_ResizeSwapchainInfos
-        //Resize the SwapchainInfo to match the number of view in the View Configuration.
+        // Resize the SwapchainInfo to match the number of view in the View Configuration.
         m_colorSwapchainInfos.resize(m_viewConfigurationViews.size());
         m_depthSwapchainInfos.resize(m_viewConfigurationViews.size());
         // XR_DOCS_TAG_END_ResizeSwapchainInfos
@@ -1332,7 +1332,7 @@ private:
             int events = 0;
             // The timeout depends on whether the application is active.
             const int timeoutMilliseconds = (!androidAppState.resumed && !m_sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
-            if (ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void**)&source) >= 0) {
+            if (ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
                 if (source != nullptr) {
                     source->process(androidApp, source);
                 }

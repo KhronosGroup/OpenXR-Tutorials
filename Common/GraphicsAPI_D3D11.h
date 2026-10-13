@@ -81,8 +81,8 @@ private:
     IDXGIFactory4* factory = nullptr;
     ID3D11Device* device = nullptr;
 
-	ID3D11Debug *d3dDebug=nullptr;
-	ID3D11InfoQueue *infoQueue=nullptr;
+    ID3D11Debug* d3dDebug = nullptr;
+    ID3D11InfoQueue* infoQueue = nullptr;
     ID3D11DeviceContext* immediateContext = nullptr;
 
     PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR = nullptr;

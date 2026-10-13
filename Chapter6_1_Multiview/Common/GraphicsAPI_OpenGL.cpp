@@ -420,11 +420,10 @@ GraphicsAPI_OpenGL::GraphicsAPI_OpenGL(XrInstance m_xrInstance, XrSystemId syste
 
     PFNGLGETSTRINGIPROC glGetStringi = (PFNGLGETSTRINGIPROC)GetExtension("glGetStringi");
 
-    const char* foundExtension = nullptr;
-    for (GLint i = 0; i < n; i++)
-    {
-        const char* extension = (const char*)glGetStringi(GL_EXTENSIONS, i);
-        foundExtension = strstr((const char*)extension, "GL_OVR_multiview");
+    const char *foundExtension = nullptr;
+    for (GLint i = 0; i < n; i++) {
+        const char *extension = (const char *)glGetStringi(GL_EXTENSIONS, i);
+        foundExtension = strstr((const char *)extension, "GL_OVR_multiview");
         if (foundExtension) {
             break;
         }
@@ -449,14 +448,14 @@ void GraphicsAPI_OpenGL::PresentDesktopSwapchainImage(void *swapchain, uint32_t 
 #if defined(XR_USE_PLATFORM_WIN32)
     SwapBuffers(window.hDC);
 #elif defined(XR_USE_PLATFORM_XLIB) || defined(XR_USE_PLATFORM_XCB)
-	glXSwapBuffers(window.context.xDisplay, window.context.glxDrawable);
+    glXSwapBuffers(window.context.xDisplay, window.context.glxDrawable);
 #endif
 }
 
 size_t GraphicsAPI_OpenGL::AlignSizeForUniformBuffer(size_t size) {
     static size_t align = 0;
     if (align == 0) {
-        glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, (GLint*)&align);
+        glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, (GLint *)&align);
     }
     return Align<size_t>(size, align);
 }
