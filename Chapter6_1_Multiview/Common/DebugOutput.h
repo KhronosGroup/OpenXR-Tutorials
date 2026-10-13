@@ -171,22 +171,24 @@ public:
     }
 };
 
-
 #endif
 
 #ifdef __ANDROID__
 #include <android/log.h>
+
 #include <sstream>
 
 #define XR_TUT_LOG_TAG "openxr_tutorial"
-#define XR_TUT_LOG(...) {                                                           \
+#define XR_TUT_LOG(...)                                                             \
+    {                                                                               \
         std::ostringstream ostr;                                                    \
-        ostr<<__VA_ARGS__;                                                          \
+        ostr << __VA_ARGS__;                                                        \
         __android_log_write(ANDROID_LOG_DEBUG, XR_TUT_LOG_TAG, ostr.str().c_str()); \
     }
-#define XR_TUT_LOG_ERROR(...) {                                                     \
+#define XR_TUT_LOG_ERROR(...)                                                       \
+    {                                                                               \
         std::ostringstream ostr;                                                    \
-        ostr<<__VA_ARGS__;                                                          \
+        ostr << __VA_ARGS__;                                                        \
         __android_log_write(ANDROID_LOG_ERROR, XR_TUT_LOG_TAG, ostr.str().c_str()); \
     }
 #else

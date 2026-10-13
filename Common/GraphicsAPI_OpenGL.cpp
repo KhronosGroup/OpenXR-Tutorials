@@ -428,7 +428,7 @@ void GraphicsAPI_OpenGL::PresentDesktopSwapchainImage(void *swapchain, uint32_t 
 #if defined(XR_USE_PLATFORM_WIN32)
     SwapBuffers(window.hDC);
 #elif defined(XR_USE_PLATFORM_XLIB) || defined(XR_USE_PLATFORM_XCB)
-	glXSwapBuffers(window.context.xDisplay, window.context.glxDrawable);
+    glXSwapBuffers(window.context.xDisplay, window.context.glxDrawable);
 #endif
 }
 

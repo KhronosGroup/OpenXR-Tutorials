@@ -48,23 +48,17 @@ function(fxc_shader)
         OUTPUT "${_fxc_OUTPUT}"
         BYPRODUCTS "${_fxc_OUTPUT_PDB}"
         COMMAND
-            "${_fxc}"
-            /nologo
-            ${_fxc_output_args} ${_fxc_OUTPUT}
+            "${_fxc}" /nologo ${_fxc_output_args} ${_fxc_OUTPUT}
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:/Fd>
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:${_fxc_OUTPUT_PDB}>
-            /T${_fxc_PROFILE}
-            /E${_fxc_ENTRY_POINT}
-            $<$<CONFIG:Debug>:/Od>
+            /T${_fxc_PROFILE} /E${_fxc_ENTRY_POINT} $<$<CONFIG:Debug>:/Od>
             $<$<CONFIG:Debug>:/Zss>
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:/Zi>
             "${_fxc_INPUT}"
         MAIN_DEPENDENCY "${_fxc_INPUT}"
         DEPENDS "${_fxc_INPUT}" ${_fxc_EXTRA_DEPENDS}
         COMMENT "FXC: ${_fxc_INPUT}"
-        USES_TERMINAL
-        VERBATIM
-        COMMAND_EXPAND_LISTS
+        USES_TERMINAL VERBATIM COMMAND_EXPAND_LISTS
     )
 
 endfunction()
