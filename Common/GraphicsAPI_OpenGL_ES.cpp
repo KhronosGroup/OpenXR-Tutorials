@@ -102,7 +102,7 @@ GLint ToGLAddressMode(GraphicsAPI::SamplerCreateInfo::AddressMode mode) {
     case GraphicsAPI::SamplerCreateInfo::AddressMode::CLAMP_TO_BORDER:
         return GL_CLAMP_TO_BORDER;
     case GraphicsAPI::SamplerCreateInfo::AddressMode::MIRROR_CLAMP_TO_EDGE:
-        return 0; // GL_MIRROR_CLAMP_TO_EDGE // None for ES
+        return 0;  // GL_MIRROR_CLAMP_TO_EDGE // None for ES
     default:
         return 0;
     }
@@ -137,7 +137,8 @@ inline GLenum ToGLTopology(GraphicsAPI::PrimitiveTopology topology) {
         default:
             return 0;
     }
-};*/ // None for ES
+};*/
+// None for ES
 inline GLenum ToGLCullMode(GraphicsAPI::CullMode cullMode) {
     switch (cullMode) {
     case GraphicsAPI::CullMode::NONE:
@@ -275,7 +276,8 @@ inline GLenum ToGLBlendOp(GraphicsAPI::BlendOp op) {
     default:
         return 0;
     }
-};*/ // None for ES
+};*/
+// None for ES
 #pragma endregion
 
 void GLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
@@ -817,7 +819,8 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
         glEnable(GL_DEPTH_CLAMP);
     } else {
         glDisable(GL_DEPTH_CLAMP);
-    }*/ // None for ES
+    }*/
+    // None for ES
 
     if (RS.rasteriserDiscardEnable) {
         glEnable(GL_RASTERIZER_DISCARD);
@@ -827,7 +830,8 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
 
     /*if (RS.cullMode == CullMode::FRONT_AND_BACK) {
         glPolygonMode(GL_FRONT_AND_BACK, ToGLPolygonMode(RS.polygonMode));
-    }*/ // None for ES
+    }*/
+    // None for ES
 
     if (RS.cullMode > CullMode::NONE) {
         glEnable(GL_CULL_FACE);
@@ -846,11 +850,11 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
         break;
     }
     case PolygonMode::LINE: {
-        polygonOffsetMode = 0; //GL_POLYGON_OFFSET_LINE; //None for ES
+        polygonOffsetMode = 0;  // GL_POLYGON_OFFSET_LINE; //None for ES
         break;
     }
     case PolygonMode::POINT: {
-        polygonOffsetMode = 0; //GL_POLYGON_OFFSET_POINT; //None for ES
+        polygonOffsetMode = 0;  // GL_POLYGON_OFFSET_POINT; //None for ES
         break;
     }
     }
@@ -871,7 +875,8 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
         glEnable(GL_MULTISAMPLE);
     } else {
         glDisable(GL_MULTISAMPLE);
-    }*/ // None for ES
+    }*/
+    // None for ES
 
     if (MS.sampleShadingEnable) {
         glEnable(GL_SAMPLE_SHADING);
@@ -897,7 +902,8 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
         glEnable(GL_SAMPLE_ALPHA_TO_ONE);
     } else {
         glDisable(GL_SAMPLE_ALPHA_TO_ONE);
-    }*/ // None for ES
+    }*/
+    // None for ES
 
     // DepthStencilState
     const DepthStencilState &DSS = pipelineCI.depthStencilState;
@@ -920,7 +926,8 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
         } else {
             glDisable(GL_DEPTH_BOUNDS_TEST_EXT);
         }
-    }*/ // None for ES
+    }*/
+    // None for ES
 
     if (DSS.stencilTestEnable) {
         glEnable(GL_STENCIL_TEST);
@@ -956,7 +963,8 @@ void GraphicsAPI_OpenGL_ES::SetPipeline(void *pipeline) {
         glLogicOp(ToGLLogicOp(CBS.logicOp));
     } else {
         glDisable(GL_COLOR_LOGIC_OP);
-    }*/ // None for ES
+    }*/
+    // None for ES
 
     for (int i = 0; i < (int)CBS.attachments.size(); i++) {
         const ColorBlendAttachmentState &CBA = CBS.attachments[i];
@@ -1043,7 +1051,7 @@ void GraphicsAPI_OpenGL_ES::SetIndexBuffer(void *indexBuffer) {
 
 void GraphicsAPI_OpenGL_ES::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) {
     GLenum indexType = buffers[setIndexBuffer].stride == 4 ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT;
-    glDrawElementsInstanced(ToGLTopology(pipelines[setPipeline].inputAssemblyState.topology),indexCount, indexType, nullptr,instanceCount);
+    glDrawElementsInstanced(ToGLTopology(pipelines[setPipeline].inputAssemblyState.topology), indexCount, indexType, nullptr, instanceCount);
 }
 
 void GraphicsAPI_OpenGL_ES::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {

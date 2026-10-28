@@ -132,7 +132,7 @@ static const XrColor4f XrColorCyan = {0.0f, 1.0f, 1.0f, 1.0f};
 static const XrColor4f XrColorLightGrey = {0.7f, 0.7f, 0.7f, 1.0f};
 static const XrColor4f XrColorDarkGrey = {0.3f, 0.3f, 0.3f, 1.0f};
 
-//typedef enum GraphicsAPI_Type { GRAPHICS_VULKAN, GRAPHICS_OPENGL, GRAPHICS_OPENGL_ES, GRAPHICS_D3D } GraphicsAPI_Type;
+// typedef enum GraphicsAPI_Type { GRAPHICS_VULKAN, GRAPHICS_OPENGL, GRAPHICS_OPENGL_ES, GRAPHICS_D3D } GraphicsAPI_Type;
 
 // Column-major, pre-multiplied. This type does not exist in the OpenXR API and is provided for convenience.
 typedef struct XrMatrix4x4f {

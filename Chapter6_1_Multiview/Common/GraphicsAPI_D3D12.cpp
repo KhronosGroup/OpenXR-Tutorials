@@ -163,7 +163,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12() {
 
     IDXGIAdapter *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
-    for(UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+    for (UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
         adapter->GetDesc(&adapterDesc);
         break;
     }
@@ -241,7 +241,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
 
     IDXGIAdapter *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
-    for(UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+    for (UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
         adapter->GetDesc(&adapterDesc);
         if (memcmp(&graphicsRequirements.adapterLuid, &adapterDesc.AdapterLuid, sizeof(LUID)) == 0) {
             break;  // We have the matching adapter that OpenXR wants.
@@ -1001,23 +1001,21 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
 
 #if XR_TUTORIAL_ENABLE_MULTIVIEW
     if (pipelineCI.viewMask != 0) {
-        //Pipeline Extensions
+        // Pipeline Extensions
         CD3DX12_PIPELINE_STATE_STREAM1 gpss1(GPSD);
 
         D3D12_VIEW_INSTANCING_DESC viewInstancingDesc;
         std::vector<D3D12_VIEW_INSTANCE_LOCATION> viewInstanceLocations;
 
         uint32_t viewIndex = 1, viewCount = 0;
-        while (viewIndex != 0)
-        {
+        while (viewIndex != 0) {
             viewIndex = (pipelineCI.viewMask >> viewCount & 0x00000001);
             viewCount += viewIndex;
         }
 
         viewInstancingDesc.ViewInstanceCount = viewCount;
         viewInstanceLocations.resize(viewInstancingDesc.ViewInstanceCount);
-        for (size_t i = 0; i < viewInstanceLocations.size(); i++)
-        {
+        for (size_t i = 0; i < viewInstanceLocations.size(); i++) {
             viewInstanceLocations[i].RenderTargetArrayIndex = static_cast<UINT>(i);
             viewInstanceLocations[i].ViewportArrayIndex = 0;
         }
@@ -1030,7 +1028,7 @@ void *GraphicsAPI_D3D12::CreatePipeline(const PipelineCreateInfo &pipelineCI) {
         gpssd.SizeInBytes = sizeof(gpss1);
         gpssd.pPipelineStateSubobjectStream = &gpss1;
 
-        ID3D12Device2* device2 = nullptr;
+        ID3D12Device2 *device2 = nullptr;
         if (device->QueryInterface<ID3D12Device2>(&device2) != S_OK) {
             std::cout << "Error in querying for ID3D12Device2." << std::endl;
             DEBUG_BREAK;

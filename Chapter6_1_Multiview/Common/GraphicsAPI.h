@@ -72,6 +72,7 @@
 #if defined(XR_USE_GRAPHICS_API_D3D12)
 #include <d3d12.h>
 #include <dxgi1_6.h>
+
 #include "d3dx12.h"
 #endif
 
