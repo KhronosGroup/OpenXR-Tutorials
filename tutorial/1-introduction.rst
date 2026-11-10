@@ -207,7 +207,11 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 	.. only:: opengl
 
-		:download:`gfxwrapper.cmake <../cmake/gfxwrapper.cmake>`
+		.. only:: linux
+
+			:download:`presentation.cmake <../cmake/presentation.cmake>`
+
+		OpenGL support is provided by the ``glwrapper`` library, which is made up of several source files and its own ``CMakeLists.txt``. Create a folder called ``thirdparty`` in the *workspace* directory and put the ``glwrapper`` folder inside it, so that you have ``thirdparty/glwrapper/CMakeLists.txt``. The ``glwrapper`` folder is included in the :git_release:`Common_OpenGL.zip` archive, which is also linked in :ref:`Chapter 1.4.2<1.4.2 Common Files>`, so you can download it now and extract the ``thirdparty`` folder into the *workspace* directory.
 
 	.. only:: vulkan
 
@@ -389,7 +393,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 			:end-before: XR_DOCS_TAG_END_OpenGL
 			:dedent: 4
 
-		We include the ``gfxwrapper.cmake`` from our ``cmake`` folder in the *workspace* directory. This file creates a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL. We link against ``openxr-gfxwrapper``, which also provide us with the needed include directories. We've added the ``XR_TUTORIAL_USE_OPENGL`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
+		We include the ``CMakeLists.txt`` from the ``thirdparty/glwrapper`` folder in the *workspace* directory. This file creates a static library called ``tutorial_glwrapper``, which will allow us to use OpenGL. We link against ``tutorial_glwrapper``, which also provides us with the needed include directories. We've added the ``XR_TUTORIAL_USE_OPENGL`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
 	.. only:: vulkan
 
@@ -449,9 +453,10 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 
 		Create a folder called ``cmake`` in the *workspace* directory. Download the linked files below and put them in ``cmake``. These will be used by CMake to help build our project.
 
-		:download:`gfxwrapper.cmake <../cmake/gfxwrapper.cmake>`
 		:download:`FindEGL.cmake <../cmake/FindEGL.cmake>`
 		:download:`FindOpenGLES.cmake <../cmake/FindOpenGLES.cmake>`
+
+		OpenGL ES support is provided by the ``glwrapper`` library, which is made up of several source files and its own ``CMakeLists.txt``. Create a folder called ``thirdparty`` in the *workspace* directory and put the ``glwrapper`` folder inside it, so that you have ``thirdparty/glwrapper/CMakeLists.txt``. The ``glwrapper`` folder is included in the :git_release:`Common_OpenGL_ES.zip` archive, which is also linked in :ref:`Chapter 1.4.2<1.4.2 Common Files>`, so you can download it now and extract the ``thirdparty`` folder into the *workspace* directory.
 
 	.. only:: vulkan
 
@@ -546,7 +551,7 @@ This section explains how to set up your project ready for :ref:`Chapter 2<2.1 C
 			:end-before: XR_DOCS_TAG_END_Gfxwrapper
 			:dedent: 4
 
-		We include the ``gfxwrapper.cmake`` from our ``cmake`` folder in the *workspace* directory. This file creates a static library called ``openxr-gfxwrapper``, which will allow us to use OpenGL ES. We link against ``openxr-gfxwrapper``, which also provides us with the needed include directories. We've added the ``XR_TUTORIAL_USE_OPENGL_ES`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
+		We include the ``CMakeLists.txt`` from the ``thirdparty/glwrapper`` folder in the *workspace* directory. This file creates a static library called ``tutorial_glwrapper``, which will allow us to use OpenGL ES. We link against ``tutorial_glwrapper``, which also provides us with the needed include directories. We've added the ``XR_TUTORIAL_USE_OPENGL_ES`` compiler definition to specify which graphics APIs should be supported and have their headers included in ``GraphicsAPI.h``.
 
 	.. only:: vulkan
 
@@ -627,7 +632,7 @@ Create a folder called ``Common`` in the *workspace* directory. Download each of
 	* :download:`Common/GraphicsAPI_Vulkan.h <../Common/GraphicsAPI_Vulkan.h>`
 	* :download:`Common/GraphicsAPI_Vulkan.cpp <../Common/GraphicsAPI_Vulkan.cpp>`
 
-Or, you can download the ``zip`` archive containing all the required files. Extract the archive to get the ``Common`` folder.
+Or, you can download the ``zip`` archive containing all the required files. Extract the archive to get the ``Common`` folder and the ``thirdparty/glwrapper`` folder used for OpenGL and OpenGL ES support.
 
 .. only:: d3d11
 
