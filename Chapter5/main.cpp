@@ -340,12 +340,13 @@ private:
         // XR_DOCS_TAG_END_CreateActionSet
 
         // XR_DOCS_TAG_BEGIN_CreateActionLambda
-        auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType, std::vector<const char *> subaction_paths = {}) -> void {
+        auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType, const std::vector<const char *> &subaction_paths = {}) -> void {
             XrActionCreateInfo actionCI{XR_TYPE_ACTION_CREATE_INFO};
             // The type of action: float input, pose, haptic output etc.
             actionCI.actionType = xrActionType;
             // Subaction paths, e.g. left and right hand. To distinguish the same action performed on different devices.
             std::vector<XrPath> subaction_xrpaths;
+            subaction_xrpaths.reserve(subaction_paths.size());
             for (auto p : subaction_paths) {
                 subaction_xrpaths.push_back(CreateXrPath(p));
             }
@@ -424,7 +425,7 @@ private:
     void RecordCurrentBindings() {
         if (m_session) {
             // now we are ready to:
-            XrInteractionProfileState interactionProfile = {XR_TYPE_INTERACTION_PROFILE_STATE, 0, 0};
+            XrInteractionProfileState interactionProfile = {XR_TYPE_INTERACTION_PROFILE_STATE, nullptr, 0};
             // for each action, what is the binding?
             OPENXR_CHECK(xrGetCurrentInteractionProfile(m_session, m_handPaths[0], &interactionProfile), "Failed to get profile.");
             if (interactionProfile.interactionProfile) {
@@ -1565,7 +1566,7 @@ private:
     // Each tracked hand has a live list of joint locations.
     struct Hand {
         XrHandJointLocationEXT m_jointLocations[XR_HAND_JOINT_COUNT_EXT];
-        XrHandTrackerEXT m_handTracker = 0;
+        XrHandTrackerEXT m_handTracker = XR_NULL_HANDLE;
     };
     Hand m_hands[2];
     // XR_DOCS_TAG_END_HandTracking

@@ -13,7 +13,7 @@
         HRESULT result = (x);                                                                     \
         if (FAILED(result)) {                                                                     \
             std::cout << "ERROR: D3D11: " << std::hex << "0x" << result << std::dec << std::endl; \
-            std::cout << "ERROR: D3D11: " << y << std::endl;                                      \
+            std::cout << "ERROR: D3D11: " << (y) << std::endl;                                    \
         }                                                                                         \
     }
 
@@ -191,7 +191,7 @@ GraphicsAPI_D3D11::GraphicsAPI_D3D11() {
         break;
     }
     D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
-    D3D11_CHECK(D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, 0, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &immediateContext), "Failed to create D3D11 Device.");
+    D3D11_CHECK(D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &immediateContext), "Failed to create D3D11 Device.");
 }
 
 // XR_DOCS_TAG_BEGIN_GraphicsAPI_D3D11
@@ -214,7 +214,7 @@ GraphicsAPI_D3D11::GraphicsAPI_D3D11(XrInstance m_xrInstance, XrSystemId systemI
     }
     OPENXR_CHECK(adapter != nullptr ? XR_SUCCESS : XR_ERROR_VALIDATION_FAILURE, "Failed to find matching graphics adapter from xrGetD3D11GraphicsRequirementsKHR.");
 
-    D3D11_CHECK(D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, 0, D3D11_CREATE_DEVICE_DEBUG, &graphicsRequirements.minFeatureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &immediateContext), "Failed to create D3D11 Device.");
+    D3D11_CHECK(D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, D3D11_CREATE_DEVICE_DEBUG, &graphicsRequirements.minFeatureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &immediateContext), "Failed to create D3D11 Device.");
 
     device->QueryInterface(__uuidof(ID3D11Debug), (void **)&d3dDebug);
     d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void **)&infoQueue);
@@ -766,7 +766,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
 
     // Vertex Input
     ID3D11VertexShader *vertexShader = nullptr;
-    immediateContext->VSGetShader(&vertexShader, nullptr, 0);
+    immediateContext->VSGetShader(&vertexShader, nullptr, nullptr);
     if (vertexShader) {
         std::vector<char> vsCompiledBinary = shaderCompiledBinaries[vertexShader];
 

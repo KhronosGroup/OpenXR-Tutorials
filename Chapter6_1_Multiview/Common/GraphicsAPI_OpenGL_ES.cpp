@@ -302,6 +302,9 @@ void GLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
     case GL_DEBUG_SOURCE_OTHER:
         std::cout << "Source: Other";
         break;
+    default:
+        std::cout << "Source: Unknown";
+        break;
     }
     std::cout << std::endl;
 
@@ -333,6 +336,9 @@ void GLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
     case GL_DEBUG_TYPE_OTHER:
         std::cout << "Type: Other";
         break;
+    default:
+        std::cout << "Type: Unknown";
+        break;
     }
     std::cout << std::endl;
 
@@ -348,6 +354,9 @@ void GLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
         break;
     case GL_DEBUG_SEVERITY_NOTIFICATION:
         std::cout << "Severity: notification";
+        break;
+    default:
+        std::cout << "Severity: unknown";
         break;
     }
     std::cout << std::endl;

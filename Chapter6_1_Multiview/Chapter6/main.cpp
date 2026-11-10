@@ -308,7 +308,7 @@ private:
         // XR_DOCS_TAG_END_CreateActionSet
 
         // XR_DOCS_TAG_BEGIN_CreateActionLambda
-        auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType, std::vector<const char *> subaction_paths = {}) -> void {
+        auto CreateAction = [this](XrAction &xrAction, const char *name, XrActionType xrActionType, const std::vector<const char *> &subaction_paths = {}) -> void {
             XrActionCreateInfo actionCI{XR_TYPE_ACTION_CREATE_INFO};
             // The type of action: float input, pose, haptic output etc.
             actionCI.actionType = xrActionType;
@@ -385,7 +385,7 @@ private:
     void RecordCurrentBindings() {
         if (m_session) {
             // now we are ready to:
-            XrInteractionProfileState interactionProfile = {XR_TYPE_INTERACTION_PROFILE_STATE, 0, 0};
+            XrInteractionProfileState interactionProfile = {XR_TYPE_INTERACTION_PROFILE_STATE, nullptr, 0};
             // for each action, what is the binding?
             OPENXR_CHECK(xrGetCurrentInteractionProfile(m_session, m_handPaths[0], &interactionProfile), "Failed to get profile.");
             if (interactionProfile.interactionProfile) {

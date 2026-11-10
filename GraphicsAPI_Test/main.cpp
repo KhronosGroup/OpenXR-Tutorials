@@ -28,7 +28,7 @@ static LRESULT CALLBACK WindProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lp
 }
 
 static void WindowUpdate() {
-    MSG msg = {0};
+    MSG msg = {nullptr};
     if (PeekMessage(&msg, window, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
@@ -246,7 +246,7 @@ int main() {
     wc.lpszClassName = "GraphicsAPI_Test";
     RegisterClass(&wc);
 
-    window = CreateWindow(wc.lpszClassName, wc.lpszClassName, WS_OVERLAPPEDWINDOW, 100, 100, width, height, 0, 0, 0, 0);
+    window = CreateWindow(wc.lpszClassName, wc.lpszClassName, WS_OVERLAPPEDWINDOW, 100, 100, width, height, nullptr, nullptr, nullptr, nullptr);
     ShowWindow(window, SW_SHOW);
 
     // Swapchain

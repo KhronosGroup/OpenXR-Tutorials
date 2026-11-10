@@ -2,6 +2,7 @@
 !.github
 !.gitignore
 !.clang-format
+!.clang-tidy
 !.cmake-format.*
 
 # Prerequisites

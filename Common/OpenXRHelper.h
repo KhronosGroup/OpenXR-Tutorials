@@ -26,12 +26,12 @@ inline const char* GetXRErrorString(XrInstance xrInstance, XrResult result) {
     return string;
 }
 
-#define OPENXR_CHECK(x, y)                                                                                                                                  \
-    {                                                                                                                                                       \
-        XrResult result = (x);                                                                                                                              \
-        if (!XR_SUCCEEDED(result)) {                                                                                                                        \
-            std::cerr << "ERROR: OPENXR: " << int(result) << "(" << (m_xrInstance ? GetXRErrorString(m_xrInstance, result) : "") << ") " << y << std::endl; \
-            OpenXRDebugBreak();                                                                                                                             \
-        }                                                                                                                                                   \
+#define OPENXR_CHECK(x, y)                                                                                                                                    \
+    {                                                                                                                                                         \
+        XrResult result = (x);                                                                                                                                \
+        if (!XR_SUCCEEDED(result)) {                                                                                                                          \
+            std::cerr << "ERROR: OPENXR: " << int(result) << "(" << (m_xrInstance ? GetXRErrorString(m_xrInstance, result) : "") << ") " << (y) << std::endl; \
+            OpenXRDebugBreak();                                                                                                                               \
+        }                                                                                                                                                     \
     }
 // XR_DOCS_TAG_END_Helper_Functions0

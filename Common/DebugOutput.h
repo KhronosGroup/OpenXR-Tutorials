@@ -31,7 +31,7 @@ public:
             char *ptr = new char[bufferSize];
             setp(ptr, ptr + bufferSize);
         } else
-            setp(0, 0);
+            setp(nullptr, nullptr);
     }
     virtual ~vsBufferedStringStreamBuf() {
         // sync();
@@ -69,7 +69,7 @@ private:
 class DebugOutput : public vsBufferedStringStreamBuf {
 public:
     DebugOutput(size_t bufsize = (size_t)16)
-        : vsBufferedStringStreamBuf((int)bufsize), old_cout_buffer(NULL), old_cerr_buffer(NULL) {
+        : vsBufferedStringStreamBuf((int)bufsize), old_cout_buffer(nullptr), old_cerr_buffer(nullptr) {
         old_cout_buffer = std::cout.rdbuf(this);
         old_cerr_buffer = std::cerr.rdbuf(this);
     }
