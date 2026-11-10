@@ -117,7 +117,7 @@ private:
         AI.applicationVersion = 1;
         strncpy(AI.engineName, "OpenXR Engine", XR_MAX_ENGINE_NAME_SIZE);
         AI.engineVersion = 1;
-        AI.apiVersion = XR_CURRENT_API_VERSION;
+        AI.apiVersion = XR_API_VERSION_1_0;
         // XR_DOCS_TAG_END_XrApplicationInfo
 
         // Add additional instance layers/extensions that the application wants.
@@ -127,6 +127,10 @@ private:
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
             // Ensure m_apiType is already defined when we call this line.
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
+#if defined(__ANDROID__)
+            // On Android, the runtime may need the JavaVM and Activity to create an XrInstance. These are provided through XR_KHR_android_create_instance.
+            m_instanceExtensions.push_back(XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME);
+#endif
             // XR_DOCS_TAG_END_instanceExtensions
         }
 
@@ -188,6 +192,13 @@ private:
         instanceCI.enabledApiLayerNames = m_activeAPILayers.data();
         instanceCI.enabledExtensionCount = static_cast<uint32_t>(m_activeInstanceExtensions.size());
         instanceCI.enabledExtensionNames = m_activeInstanceExtensions.data();
+#if defined(__ANDROID__)
+        // Chain an XrInstanceCreateInfoAndroidKHR structure with the JavaVM and Activity from android_app.
+        XrInstanceCreateInfoAndroidKHR instanceCIAndroid{XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR};
+        instanceCIAndroid.applicationVM = androidApp->activity->vm;
+        instanceCIAndroid.applicationActivity = androidApp->activity->clazz;
+        instanceCI.next = &instanceCIAndroid;
+#endif
         OPENXR_CHECK(xrCreateInstance(&instanceCI, &m_xrInstance), "Failed to create Instance.");
         // XR_DOCS_TAG_END_XrInstanceCreateInfo
     }

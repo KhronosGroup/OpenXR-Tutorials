@@ -81,7 +81,7 @@ The :openxr_ref:`XrInstance` is the foundational object that we need to create f
 	:end-before: XR_DOCS_TAG_END_XrApplicationInfo
 	:dedent: 8
 
-This structure allows you to specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the :openxr_ref:`XrApplicationInfo` ``::apiVersion``. Here we use the :openxr_ref:`XR_CURRENT_API_VERSION` macro to specify the OpenXR version that we want to run. Also, note here the use of ``strncpy()`` to set the name strings. If you look at :openxr_ref:`XrApplicationInfo` ``::applicationName`` and :openxr_ref:`XrApplicationInfo` ``::engineName`` members, they are of type ``char[]``, so you must copy your string into that buffer. Also, be aware of the allowable length. :openxr_ref:`XrApplicationInfo` will be used later when we will fill out :openxr_ref:`XrInstanceCreateInfo`.
+This structure allows you to specify both the name and the version for your application and engine. These members are solely for your use as the application developer. The main member here is the :openxr_ref:`XrApplicationInfo` ``::apiVersion``. Here we use the ``XR_API_VERSION_1_0`` macro to specify that we want to run OpenXR 1.0. This tutorial only uses OpenXR 1.0 functionality, so requesting 1.0 lets it run on runtimes that don't support later versions. To use newer core features, you could request :openxr_ref:`XR_CURRENT_API_VERSION` instead, but :openxr_ref:`xrCreateInstance` will return ``XR_ERROR_API_VERSION_UNSUPPORTED`` if the runtime doesn't support it. Also, note here the use of ``strncpy()`` to set the name strings. If you look at :openxr_ref:`XrApplicationInfo` ``::applicationName`` and :openxr_ref:`XrApplicationInfo` ``::engineName`` members, they are of type ``char[]``, so you must copy your string into that buffer. Also, be aware of the allowable length. :openxr_ref:`XrApplicationInfo` will be used later when we will fill out :openxr_ref:`XrInstanceCreateInfo`.
 
 .. only:: vulkan
 
@@ -97,7 +97,7 @@ Similarly to Vulkan, OpenXR allows applications to extend functionality past wha
 	:end-before: XR_DOCS_TAG_END_instanceExtensions
 	:dedent: 12
 
-Here, we store in a vector of strings the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is an extension that checks the validity of calls made to OpenXR and can use a callback function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro you defined, this code will add the relevant extension.
+Here, we store in a vector of strings the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is an extension that checks the validity of calls made to OpenXR and can use a callback function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro you defined, this code will add the relevant extension. On Android, we also add ``XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME``. XR_KHR_android_create_instance lets us pass the application's ``JavaVM`` and ``Activity`` to the runtime when creating the :openxr_ref:`XrInstance`.
 
 Not all API layers and extensions are available to use, so we must check which ones are available when OpenXR is initialized. We will use :openxr_ref:`xrEnumerateApiLayerProperties` and :openxr_ref:`xrEnumerateInstanceExtensionProperties` to check which ones the runtime can provide. Let's do this now by adding the following code to the ``CreateInstance()`` method:
 
@@ -124,6 +124,10 @@ Note that ``m_activeAPILayers`` and ``m_activeInstanceExtensions`` are of type `
 	:dedent: 8
 
 This section is fairly simple: we have used the previously collected data and assigned it to the members in the :openxr_ref:`XrInstanceCreateInfo` structure. Then, we called :openxr_ref:`xrCreateInstance` where we took pointers to the :openxr_ref:`XrInstanceCreateInfo` and :openxr_ref:`XrInstance` objects. When the function is called, if successful, it returns ``XR_SUCCESS`` and :openxr_ref:`XrInstance` will be non-null (i.e. not equal to :openxr_ref:`XR_NULL_HANDLE`).
+
+.. only:: android
+
+	On Android, we fill out an :openxr_ref:`XrInstanceCreateInfoAndroidKHR` structure with the ``JavaVM`` and ``Activity`` from ``androidApp->activity`` and chain it to :openxr_ref:`XrInstanceCreateInfo` ``::next``. Some runtimes need these to create the :openxr_ref:`XrInstance`, and may crash if they're not provided.
 
 At the end of the app, we should destroy the :openxr_ref:`XrInstance` with :openxr_ref:`xrDestroyInstance`. Add the following to the ``DestroyInstance()`` method:
 
