@@ -235,9 +235,11 @@ private:
         // XR_DOCS_TAG_END_XrInstanceCreateInfo
 
         // XR_DOCS_TAG_BEGIN_ExtensionFunctions
-        OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrCreateHandTrackerEXT", (PFN_xrVoidFunction *)&xrCreateHandTrackerEXT), "Failed to get xrCreateHandTrackerEXT.");
-        OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrDestroyHandTrackerEXT", (PFN_xrVoidFunction *)&xrDestroyHandTrackerEXT), "Failed to get xrDestroyHandTrackerEXT.");
-        OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrLocateHandJointsEXT", (PFN_xrVoidFunction *)&xrLocateHandJointsEXT), "Failed to get xrLocateHandJointsEXT.");
+        if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_HAND_TRACKING_EXTENSION_NAME)) {
+            OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrCreateHandTrackerEXT", (PFN_xrVoidFunction*)&xrCreateHandTrackerEXT), "Failed to get xrCreateHandTrackerEXT.");
+            OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrDestroyHandTrackerEXT", (PFN_xrVoidFunction*)&xrDestroyHandTrackerEXT), "Failed to get xrDestroyHandTrackerEXT.");
+            OPENXR_CHECK(xrGetInstanceProcAddr(m_xrInstance, "xrLocateHandJointsEXT", (PFN_xrVoidFunction*)&xrLocateHandJointsEXT), "Failed to get xrLocateHandJointsEXT.");
+        }
         // XR_DOCS_TAG_END_ExtensionFunctions
     }
 
@@ -396,10 +398,12 @@ private:
         // XR_DOCS_TAG_END_SuggestTouchNativeBindings
         // XR_DOCS_TAG_BEGIN_HandInteractionBindings
         // These bindings are for the hand interaction extension.
-        any_ok |= SuggestBindings("/interaction_profiles/ext/hand_interaction_ext", {{m_grabCubeAction, CreateXrPath("/user/hand/left/input/grasp_ext/value")},
-                                                                                     {m_grabCubeAction, CreateXrPath("/user/hand/right/input/grasp_ext/value")},
-                                                                                     {m_changeColorAction, CreateXrPath("/user/hand/right/input/pinch_ext/value")},
-                                                                                     {m_changeColorAction, CreateXrPath("/user/hand/right/input/pinch_ext/value")}});
+        if (IsStringInVector(m_activeInstanceExtensions, XR_EXT_HAND_INTERACTION_EXTENSION_NAME)) {
+            any_ok |= SuggestBindings("/interaction_profiles/ext/hand_interaction_ext", {{m_grabCubeAction, CreateXrPath("/user/hand/left/input/grasp_ext/value")},
+                                                                                         {m_grabCubeAction, CreateXrPath("/user/hand/right/input/grasp_ext/value")},
+                                                                                         {m_changeColorAction, CreateXrPath("/user/hand/right/input/pinch_ext/value")},
+                                                                                         {m_changeColorAction, CreateXrPath("/user/hand/right/input/pinch_ext/value")}});
+        }
         // XR_DOCS_TAG_END_HandInteractionBindings
         // XR_DOCS_TAG_BEGIN_SuggestBindings3
         if (!any_ok) {
