@@ -33,14 +33,14 @@ public:
         } else
             setp(nullptr, nullptr);
     }
-    virtual ~vsBufferedStringStreamBuf() {
+    ~vsBufferedStringStreamBuf() override {
         // sync();
         delete[] pbase();
     }
     virtual void writeString(const std::string &str) = 0;
 
 private:
-    int overflow(int c) {
+    int overflow(int c) override {
         sync();
 
         if (c != EOF) {
@@ -55,7 +55,7 @@ private:
         return 0;
     }
 
-    int sync() {
+    int sync() override {
         if (pbase() != pptr()) {
             int len = int(pptr() - pbase());
             std::string temp(pbase(), len);
@@ -73,11 +73,11 @@ public:
         old_cout_buffer = std::cout.rdbuf(this);
         old_cerr_buffer = std::cerr.rdbuf(this);
     }
-    virtual ~DebugOutput() {
+    ~DebugOutput() override {
         std::cout.rdbuf(old_cout_buffer);
         std::cerr.rdbuf(old_cerr_buffer);
     }
-    virtual void writeString(const std::string &str) {
+    void writeString(const std::string &str) override {
         OutputDebugStringA(str.c_str());
     }
 
