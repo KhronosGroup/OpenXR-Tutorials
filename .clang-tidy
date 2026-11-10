@@ -25,6 +25,7 @@ Checks: >
   -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
   misc-redundant-expression,
   modernize-use-nullptr,
+  modernize-use-override,
   performance-*,
   -performance-avoid-endl,
   -performance-enum-size,
