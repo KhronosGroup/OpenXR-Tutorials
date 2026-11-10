@@ -186,7 +186,7 @@ GraphicsAPI_D3D11::GraphicsAPI_D3D11() {
 
     IDXGIAdapter *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
-    for(UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+    for (UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
         adapter->GetDesc(&adapterDesc);
         break;
     }
@@ -204,7 +204,7 @@ GraphicsAPI_D3D11::GraphicsAPI_D3D11(XrInstance m_xrInstance, XrSystemId systemI
 
     IDXGIAdapter *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
-    for(UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+    for (UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
         adapter->GetDesc(&adapterDesc);
         if (memcmp(&graphicsRequirements.adapterLuid, &adapterDesc.AdapterLuid, sizeof(LUID)) == 0) {
             break;  // We have the matching adapter that OpenXR wants.
@@ -216,10 +216,10 @@ GraphicsAPI_D3D11::GraphicsAPI_D3D11(XrInstance m_xrInstance, XrSystemId systemI
 
     D3D11_CHECK(D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, 0, D3D11_CREATE_DEVICE_DEBUG, &graphicsRequirements.minFeatureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &immediateContext), "Failed to create D3D11 Device.");
 
-	device->QueryInterface( __uuidof(ID3D11Debug), (void**)&d3dDebug );
-	d3dDebug->QueryInterface( __uuidof(ID3D11InfoQueue), (void**)&infoQueue );
-	infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
-	infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+    device->QueryInterface(__uuidof(ID3D11Debug), (void **)&d3dDebug);
+    d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void **)&infoQueue);
+    infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
+    infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
 }
 
 GraphicsAPI_D3D11::~GraphicsAPI_D3D11() {
@@ -261,7 +261,7 @@ void *GraphicsAPI_D3D11::GetDesktopSwapchainImage(void *swapchain, uint32_t inde
     return texture;
 }
 
-void GraphicsAPI_D3D11::AcquireDesktopSwapchanImage(void *swapchain, uint32_t& index) {
+void GraphicsAPI_D3D11::AcquireDesktopSwapchanImage(void *swapchain, uint32_t &index) {
     IDXGISwapChain3 *d3d11Swapchain = reinterpret_cast<IDXGISwapChain3 *>(swapchain);
     index = d3d11Swapchain->GetCurrentBackBufferIndex();
 }
@@ -849,7 +849,7 @@ void GraphicsAPI_D3D11::SetPipeline(void *pipeline) {
     blendDesc.IndependentBlendEnable = true;
     size_t i = 0;
     for (auto &blend : pipelineCI.colorBlendState.attachments) {
-		blendDesc.RenderTarget[i].RenderTargetWriteMask=0xFF;
+        blendDesc.RenderTarget[i].RenderTargetWriteMask = 0xFF;
         blendDesc.RenderTarget[i].BlendEnable = blend.blendEnable;
         blendDesc.RenderTarget[i].SrcBlend = ToD3D11_BLEND(blend.srcColorBlendFactor);
         blendDesc.RenderTarget[i].DestBlend = ToD3D11_BLEND(blend.dstColorBlendFactor);

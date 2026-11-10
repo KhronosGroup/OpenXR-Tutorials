@@ -163,7 +163,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12() {
 
     IDXGIAdapter *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
-    for(UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+    for (UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
         adapter->GetDesc(&adapterDesc);
         break;
     }
@@ -232,7 +232,7 @@ GraphicsAPI_D3D12::GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemI
 
     IDXGIAdapter *adapter = nullptr;
     DXGI_ADAPTER_DESC adapterDesc = {};
-    for(UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+    for (UINT i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
         adapter->GetDesc(&adapterDesc);
         if (memcmp(&graphicsRequirements.adapterLuid, &adapterDesc.AdapterLuid, sizeof(LUID)) == 0) {
             break;  // We have the matching adapter that OpenXR wants.

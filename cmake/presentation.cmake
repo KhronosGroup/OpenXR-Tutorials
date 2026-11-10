@@ -7,14 +7,22 @@ set(PRESENTATION_BACKEND
     xlib
     CACHE STRING "Presentation backend chosen at configure time"
 )
-set_property(CACHE PRESENTATION_BACKEND PROPERTY STRINGS ${PRESENTATION_BACKENDS})
+set_property(
+    CACHE PRESENTATION_BACKEND PROPERTY STRINGS ${PRESENTATION_BACKENDS}
+)
 
 list(FIND PRESENTATION_BACKENDS ${PRESENTATION_BACKEND} index)
 if(index EQUAL -1)
-    message(FATAL_ERROR "Presentation backend must be one of ${PRESENTATION_BACKENDS}")
+    message(
+        FATAL_ERROR
+            "Presentation backend must be one of ${PRESENTATION_BACKENDS}"
+    )
 endif()
 
-message(STATUS "Presentation backend selected for hello_xr, loader_test, conformance: ${PRESENTATION_BACKEND}")
+message(
+    STATUS
+        "Presentation backend selected for hello_xr, loader_test, conformance: ${PRESENTATION_BACKEND}"
+)
 
 find_package(X11)
 
@@ -29,13 +37,24 @@ endif()
 
 include(CMakeDependentOption)
 cmake_dependent_option(
-    BUILD_WITH_XLIB_HEADERS "Build with support for X11/Xlib-related features." ON "X11_FOUND" OFF
+    BUILD_WITH_XLIB_HEADERS
+    "Build with support for X11/Xlib-related features."
+    ON
+    "X11_FOUND"
+    OFF
 )
 cmake_dependent_option(
-    BUILD_WITH_XCB_HEADERS "Build with support for XCB-related features." ON "X11_FOUND AND XCB_FOUND AND XCB_GLX_FOUND" OFF
+    BUILD_WITH_XCB_HEADERS
+    "Build with support for XCB-related features."
+    ON
+    "X11_FOUND AND XCB_FOUND AND XCB_GLX_FOUND"
+    OFF
 )
 cmake_dependent_option(
-    BUILD_WITH_WAYLAND_HEADERS "Build with support for Wayland-related features." ON "WAYLAND_CLIENT_FOUND"
+    BUILD_WITH_WAYLAND_HEADERS
+    "Build with support for Wayland-related features."
+    ON
+    "WAYLAND_CLIENT_FOUND"
     OFF
 )
 
@@ -51,19 +70,27 @@ if(PRESENTATION_BACKEND MATCHES "xlib")
         )
     endif()
     if(BUILD_TESTS AND (NOT X11_Xxf86vm_LIB OR NOT X11_Xrandr_LIB))
-        message(FATAL_ERROR "OpenXR tests using xlib backend requires Xxf86vm and Xrandr")
+        message(
+            FATAL_ERROR
+                "OpenXR tests using xlib backend requires Xxf86vm and Xrandr"
+        )
     endif()
 
     if(TARGET tutorial_glwrapper)
         target_compile_definitions(tutorial_glwrapper PUBLIC OS_LINUX_XLIB)
-        target_link_libraries(tutorial_glwrapper PRIVATE ${X11_X11_LIB} ${X11_Xxf86vm_LIB} ${X11_Xrandr_LIB})
+        target_link_libraries(
+            tutorial_glwrapper PRIVATE ${X11_X11_LIB} ${X11_Xxf86vm_LIB}
+                                       ${X11_Xrandr_LIB}
+        )
 
         # OpenGL::OpenGL already linked, we just need to add GLX.
         if(TARGET OpenGL::GLX)
             target_link_libraries(tutorial_glwrapper PUBLIC OpenGL::GLX)
         else()
             if(${OPENGL_glx_LIBRARY})
-                target_link_libraries(tutorial_glwrapper PUBLIC ${OPENGL_glx_LIBRARY})
+                target_link_libraries(
+                    tutorial_glwrapper PUBLIC ${OPENGL_glx_LIBRARY}
+                )
             endif()
             target_link_libraries(tutorial_glwrapper PUBLIC ${OPENGL_LIBRARIES})
         endif()
@@ -87,7 +114,10 @@ elseif(PRESENTATION_BACKEND MATCHES "xcb")
         # XCB + Xlib GLX 1.3
         target_compile_definitions(tutorial_glwrapper PUBLIC OS_LINUX_XCB_GLX)
 
-        target_link_libraries(tutorial_glwrapper PRIVATE ${X11_X11_LIB} ${XCB_KEYSYMS_LIBRARIES} ${XCB_RANDR_LIBRARIES})
+        target_link_libraries(
+            tutorial_glwrapper PRIVATE ${X11_X11_LIB} ${XCB_KEYSYMS_LIBRARIES}
+                                       ${XCB_RANDR_LIBRARIES}
+        )
 
     endif()
 elseif(PRESENTATION_BACKEND MATCHES "wayland")
@@ -112,39 +142,55 @@ elseif(PRESENTATION_BACKEND MATCHES "wayland")
         pkg_get_variable(WAYLAND_SCANNER wayland-scanner wayland_scanner)
 
         set(PROTOCOL xdg-shell-unstable-v6)
-        set(PROTOCOL_XML ${WAYLAND_PROTOCOLS_DATADIR}/unstable/xdg-shell/${PROTOCOL}.xml)
+        set(PROTOCOL_XML
+            ${WAYLAND_PROTOCOLS_DATADIR}/unstable/xdg-shell/${PROTOCOL}.xml
+        )
 
         if(NOT EXISTS ${PROTOCOL_XML})
-            message(FATAL_ERROR "xdg-shell-unstable-v6.xml not found in " ${WAYLAND_PROTOCOLS_DATADIR}
-                                "\nYour wayland-protocols package does not " "contain xdg-shell-unstable-v6."
+            message(
+                FATAL_ERROR
+                    "xdg-shell-unstable-v6.xml not found in "
+                    ${WAYLAND_PROTOCOLS_DATADIR}
+                    "\nYour wayland-protocols package does not "
+                    "contain xdg-shell-unstable-v6."
             )
         endif()
         add_custom_command(
             OUTPUT ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.c
-            COMMAND ${WAYLAND_SCANNER} code ${PROTOCOL_XML} ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.c
+            COMMAND
+                ${WAYLAND_SCANNER} code ${PROTOCOL_XML}
+                ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.c
             VERBATIM
         )
         add_custom_command(
             OUTPUT ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.h
-            COMMAND ${WAYLAND_SCANNER} client-header ${PROTOCOL_XML} ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.h
+            COMMAND
+                ${WAYLAND_SCANNER} client-header ${PROTOCOL_XML}
+                ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.h
             VERBATIM
         )
 
-        target_sources(tutorial_glwrapper
-            PRIVATE
-            ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.c
-            ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.h
+        target_sources(
+            tutorial_glwrapper PRIVATE ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.c
+                                       ${WAYLAND_PROTOCOLS_DIR}/${PROTOCOL}.h
         )
 
-        target_include_directories(tutorial_glwrapper PUBLIC ${WAYLAND_PROTOCOLS_DIR} ${WAYLAND_CLIENT_INCLUDE_DIRS})
+        target_include_directories(
+            tutorial_glwrapper PUBLIC ${WAYLAND_PROTOCOLS_DIR}
+                                      ${WAYLAND_CLIENT_INCLUDE_DIRS}
+        )
         target_link_libraries(
-            tutorial_glwrapper PRIVATE ${EGL_LIBRARIES} ${WAYLAND_CLIENT_LIBRARIES} ${WAYLAND_EGL_LIBRARIES}
+            tutorial_glwrapper
+            PRIVATE ${EGL_LIBRARIES} ${WAYLAND_CLIENT_LIBRARIES}
+                    ${WAYLAND_EGL_LIBRARIES}
         )
         target_compile_definitions(tutorial_glwrapper PUBLIC OS_LINUX_WAYLAND)
-        target_link_libraries(tutorial_glwrapper PRIVATE ${EGL_LIBRARIES} ${WAYLAND_CLIENT_LIBRARIES})
+        target_link_libraries(
+            tutorial_glwrapper PRIVATE ${EGL_LIBRARIES}
+                                       ${WAYLAND_CLIENT_LIBRARIES}
+        )
     endif()
 endif()
-
 
 if(TARGET tutorial_glwrapper AND NOT (PRESENTATION_BACKEND MATCHES "wayland"))
     if(TARGET OpenGL::GLX)
@@ -152,8 +198,10 @@ if(TARGET tutorial_glwrapper AND NOT (PRESENTATION_BACKEND MATCHES "wayland"))
         target_link_libraries(tutorial_glwrapper PUBLIC OpenGL::GLX)
     else()
         if(${OPENGL_glx_LIBRARY})
-            target_link_libraries(tutorial_glwrapper PUBLIC ${OPENGL_glx_LIBRARY})
+            target_link_libraries(
+                tutorial_glwrapper PUBLIC ${OPENGL_glx_LIBRARY}
+            )
         endif()
-            target_link_libraries(tutorial_glwrapper PUBLIC ${OPENGL_LIBRARIES})
+        target_link_libraries(tutorial_glwrapper PUBLIC ${OPENGL_LIBRARIES})
     endif()
 endif()

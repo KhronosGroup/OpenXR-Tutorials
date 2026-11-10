@@ -37,23 +37,17 @@ function(dxc_shader)
         OUTPUT "${_dxc_OUTPUT}"
         BYPRODUCTS "${_dxc_OUTPUT_PDB}"
         COMMAND
-            "${_dxc}"
-            /nologo
-            ${_dxc_output_args} ${_dxc_OUTPUT}
+            "${_dxc}" /nologo ${_dxc_output_args} ${_dxc_OUTPUT}
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:/Fd>
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:${_dxc_OUTPUT_PDB}>
-            /T${_dxc_PROFILE}
-            /E${_dxc_ENTRY_POINT}
-            $<$<CONFIG:Debug>:/Od>
+            /T${_dxc_PROFILE} /E${_dxc_ENTRY_POINT} $<$<CONFIG:Debug>:/Od>
             $<$<CONFIG:Debug>:/Zss>
             $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:/Zi>
             "${_dxc_INPUT}"
         MAIN_DEPENDENCY "${_dxc_INPUT}"
         DEPENDS "${_dxc_INPUT}" ${_dxc_EXTRA_DEPENDS}
         COMMENT "dxc: ${_dxc_INPUT}"
-        USES_TERMINAL
-        VERBATIM
-        COMMAND_EXPAND_LISTS
+        USES_TERMINAL VERBATIM COMMAND_EXPAND_LISTS
     )
 
 endfunction()

@@ -36,7 +36,7 @@ public:
         VkImage image = swapchainImagesMap[swapchain].second[index].image;
         VkImageLayout layout = swapchainImagesMap[swapchain].first == SwapchainType::COLOR ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         imageStates[image] = layout;
-        return (void *)image;
+        return (void*)image;
     }
     // XR_DOCS_TAG_END_GetSwapchainImage_Vulkan
 
@@ -133,6 +133,5 @@ private:
     VkPipeline setPipeline = VK_NULL_HANDLE;
     std::unordered_map<VkCommandBuffer, std::vector<VkDescriptorSet>> cmdBufferDescriptorSets;
     std::vector<std::tuple<VkWriteDescriptorSet, VkDescriptorBufferInfo, VkDescriptorImageInfo>> writeDescSets;
-
 };
 #endif

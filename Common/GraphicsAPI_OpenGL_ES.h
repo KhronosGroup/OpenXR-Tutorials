@@ -83,7 +83,7 @@ private:
     PFN_xrGetOpenGLESGraphicsRequirementsKHR xrGetOpenGLESGraphicsRequirementsKHR = nullptr;
     XrGraphicsBindingOpenGLESAndroidKHR graphicsBinding{};
 
-    std::unordered_map < XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageOpenGLESKHR>>> swapchainImagesMap{};
+    std::unordered_map<XrSwapchain, std::pair<SwapchainType, std::vector<XrSwapchainImageOpenGLESKHR>>> swapchainImagesMap{};
 
     std::unordered_map<GLuint, BufferCreateInfo> buffers{};
     std::unordered_map<GLuint, ImageCreateInfo> images{};

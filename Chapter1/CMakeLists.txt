@@ -20,21 +20,20 @@ include(FetchContent)
 
 # openxr_loader - From github.com/KhronosGroup
 set(BUILD_API_LAYERS
-        ON
-        CACHE INTERNAL "Use OpenXR layers"
+    ON
+    CACHE INTERNAL "Use OpenXR layers"
 )
 set(BUILD_TESTS
-        OFF
-        CACHE INTERNAL "Build tests"
+    OFF
+    CACHE INTERNAL "Build tests"
 )
 FetchContent_Declare(
     OpenXR
-    EXCLUDE_FROM_ALL
-    DOWNLOAD_EXTRACT_TIMESTAMP
+    EXCLUDE_FROM_ALL DOWNLOAD_EXTRACT_TIMESTAMP
     URL_HASH MD5=f52248ef83da9134bec2b2d8e0970677
     URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.1.49.tar.gz
-    SOURCE_DIR
-    openxr
+        SOURCE_DIR
+        openxr
 )
 
 FetchContent_MakeAvailable(OpenXR)
@@ -69,10 +68,8 @@ if(ANDROID) # Android
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
     add_dependencies(${PROJECT_NAME} XrApiLayer_core_validation)
     target_include_directories(
-        ${PROJECT_NAME}
-        PRIVATE
-            # In this repo
-            ../Common/
+        ${PROJECT_NAME} PRIVATE # In this repo
+                                ../Common/
     )
 
     # export ANativeActivity_onCreate for java to call.
@@ -128,10 +125,8 @@ else() # Windows / Linux
     endif()
 
     target_include_directories(
-        ${PROJECT_NAME}
-        PRIVATE
-            # In this repo
-            ../Common/
+        ${PROJECT_NAME} PRIVATE # In this repo
+                                ../Common/
     )
     target_link_libraries(${PROJECT_NAME} openxr_loader)
     add_dependencies(${PROJECT_NAME} XrApiLayer_core_validation)

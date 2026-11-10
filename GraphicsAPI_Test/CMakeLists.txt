@@ -10,12 +10,11 @@ include(FetchContent)
 # openxr_loader - From github.com/KhronosGroup
 FetchContent_Declare(
     OpenXR
-    EXCLUDE_FROM_ALL
-    DOWNLOAD_EXTRACT_TIMESTAMP
+    EXCLUDE_FROM_ALL DOWNLOAD_EXTRACT_TIMESTAMP
     URL_HASH MD5=f52248ef83da9134bec2b2d8e0970677
     URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.1.49.tar.gz
-    SOURCE_DIR
-    openxr
+        SOURCE_DIR
+        openxr
 )
 FetchContent_MakeAvailable(OpenXR)
 

@@ -246,9 +246,9 @@ private:
         OPENXR_CHECK(xrGetInstanceProperties(m_xrInstance, &instanceProperties), "Failed to get InstanceProperties.");
 
         XR_TUT_LOG("OpenXR Runtime: " << instanceProperties.runtimeName << " - "
-                                    << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << "."
-                                    << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << "."
-                                    << XR_VERSION_PATCH(instanceProperties.runtimeVersion));
+                                      << XR_VERSION_MAJOR(instanceProperties.runtimeVersion) << "."
+                                      << XR_VERSION_MINOR(instanceProperties.runtimeVersion) << "."
+                                      << XR_VERSION_PATCH(instanceProperties.runtimeVersion));
         // XR_DOCS_TAG_END_GetInstanceProperties
     }
 
@@ -731,7 +731,7 @@ private:
                 XrEventDataReferenceSpaceChangePending *referenceSpaceChangePending = reinterpret_cast<XrEventDataReferenceSpaceChangePending *>(&eventData);
                 XR_TUT_LOG("OPENXR: Reference Space Change pending for Session: " << referenceSpaceChangePending->session);
                 if (referenceSpaceChangePending->session != m_session) {
-                   XR_TUT_LOG("XrEventDataReferenceSpaceChangePending for unknown Session");
+                    XR_TUT_LOG("XrEventDataReferenceSpaceChangePending for unknown Session");
                     break;
                 }
                 break;
@@ -1035,10 +1035,10 @@ private:
     void DestroySwapchains() {
         // XR_DOCS_TAG_BEGIN_DestroySwapchains
         // Destroy the color and depth image views from GraphicsAPI.
-        for (void*& imageView : m_colorSwapchainInfo.imageViews) {
+        for (void *&imageView : m_colorSwapchainInfo.imageViews) {
             m_graphicsAPI->DestroyImageView(imageView);
         }
-        for (void*& imageView : m_depthSwapchainInfo.imageViews) {
+        for (void *&imageView : m_depthSwapchainInfo.imageViews) {
             m_graphicsAPI->DestroyImageView(imageView);
         }
 
@@ -1059,7 +1059,7 @@ private:
         // XR_DOCS_TAG_BEGIN_RenderCuboid2
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
 
-        const uint32_t viewCount = 2; // This will only work for stereo rendering.
+        const uint32_t viewCount = 2;  // This will only work for stereo rendering.
         for (uint32_t i = 0; i < viewCount; i++) {
             XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj[i], &cameraConstants.viewProj[i], &cameraConstants.model);
         }
@@ -1076,7 +1076,7 @@ private:
 
         m_graphicsAPI->SetVertexBuffers(&m_vertexBuffer, 1);
         m_graphicsAPI->SetIndexBuffer(m_indexBuffer);
-        m_graphicsAPI->DrawIndexed(36, m_apiType == D3D11 ? 2 : 1); // For D3D11, use instanced rendering for multiview.
+        m_graphicsAPI->DrawIndexed(36, m_apiType == D3D11 ? 2 : 1);  // For D3D11, use instanced rendering for multiview.
 
         renderCuboidIndex++;
         // XR_DOCS_TAG_END_RenderCuboid2
@@ -1174,7 +1174,7 @@ private:
         // This also associates the swapchain image with this layer projection view.
         // Per view in the view configuration:
         for (uint32_t i = 0; i < viewCount; i++) {
-            renderLayerInfo.layerProjectionViews[i] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
+            renderLayerInfo.layerProjectionViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
             renderLayerInfo.layerProjectionViews[i].pose = views[i].pose;
             renderLayerInfo.layerProjectionViews[i].fov = views[i].fov;
             renderLayerInfo.layerProjectionViews[i].subImage.swapchain = m_colorSwapchainInfo.swapchain;
@@ -1209,7 +1209,7 @@ private:
             XrMatrix4x4f proj;
             XrMatrix4x4f_CreateProjectionFov(&proj, m_apiType, views[i].fov, nearZ, farZ);
             XrMatrix4x4f toView;
-            XrVector3f scale1m{ 1.0f, 1.0f, 1.0f };
+            XrVector3f scale1m{1.0f, 1.0f, 1.0f};
             XrMatrix4x4f_CreateTranslationRotationScale(&toView, &views[i].pose.position, &views[i].pose.orientation, &scale1m);
             XrMatrix4x4f view;
             XrMatrix4x4f_InvertRigidBody(&view, &toView);
@@ -1323,7 +1323,7 @@ private:
             int events = 0;
             // The timeout depends on whether the application is active.
             const int timeoutMilliseconds = (!androidAppState.resumed && !m_sessionRunning && androidApp->destroyRequested == 0) ? -1 : 0;
-            if (ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void**)&source) >= 0) {
+            if (ALooper_pollOnce(timeoutMilliseconds, nullptr, &events, (void **)&source) >= 0) {
                 if (source != nullptr) {
                     source->process(androidApp, source);
                 }

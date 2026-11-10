@@ -4,14 +4,20 @@
 
 include_guard()
 
+set(XR_TUTORIAL_GRAPHICS_API
+    "VULKAN"
+    CACHE STRING
+          "Which graphics API to use when building the tutorial projects."
+)
 
-set(XR_TUTORIAL_GRAPHICS_API "VULKAN" CACHE STRING "Which graphics API to use when building the tutorial projects.")
-
-IF(DEFINED ENV{GFX})
-    message(STATUS, "Overriding graphics api: " $ENV{GFX} )
+if(DEFINED ENV{GFX})
+    message(STATUS, "Overriding graphics api: " $ENV{GFX})
     set_property(CACHE XR_TUTORIAL_GRAPHICS_API PROPERTY VALUE $ENV{GFX})
 endif()
 
 function(AddGraphicsAPIDefine PROJECT_NAME)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC XR_TUTORIAL_GRAPHICS_API=${XR_TUTORIAL_GRAPHICS_API})
+    target_compile_definitions(
+        ${PROJECT_NAME}
+        PUBLIC XR_TUTORIAL_GRAPHICS_API=${XR_TUTORIAL_GRAPHICS_API}
+    )
 endfunction(AddGraphicsAPIDefine)

@@ -77,21 +77,21 @@ void CreateResources() {
 #define CUBE_FACE(V1, V2, V3, V4, V5, V6) vertexPositions[V1], vertexPositions[V2], vertexPositions[V3], vertexPositions[V4], vertexPositions[V5], vertexPositions[V6],
 
     XrVector4f cubeVertices[] = {
-        CUBE_FACE(2, 1, 0, 2, 3, 1) // -X
-        CUBE_FACE(6, 4, 5, 6, 5, 7) // +X
-        CUBE_FACE(0, 1, 5, 0, 5, 4) // -Y
-        CUBE_FACE(2, 6, 7, 2, 7, 3) // +Y
-        CUBE_FACE(0, 4, 6, 0, 6, 2) // -Z
-        CUBE_FACE(1, 3, 7, 1, 7, 5) // +Z
+        CUBE_FACE(2, 1, 0, 2, 3, 1)  // -X
+        CUBE_FACE(6, 4, 5, 6, 5, 7)  // +X
+        CUBE_FACE(0, 1, 5, 0, 5, 4)  // -Y
+        CUBE_FACE(2, 6, 7, 2, 7, 3)  // +Y
+        CUBE_FACE(0, 4, 6, 0, 6, 2)  // -Z
+        CUBE_FACE(1, 3, 7, 1, 7, 5)  // +Z
     };
 
     uint32_t cubeIndices[36] = {
-         0,  1,  2,  3,  4,  5, // -X
-         6,  7,  8,  9, 10, 11, // +X
-        12, 13, 14, 15, 16, 17, // -Y
-        18, 19, 20, 21, 22, 23, // +Y
-        24, 25, 26, 27, 28, 29, // -Z
-        30, 31, 32, 33, 34, 35, // +Z
+        0, 1, 2, 3, 4, 5,        // -X
+        6, 7, 8, 9, 10, 11,      // +X
+        12, 13, 14, 15, 16, 17,  // -Y
+        18, 19, 20, 21, 22, 23,  // +Y
+        24, 25, 26, 27, 28, 29,  // -Z
+        30, 31, 32, 33, 34, 35,  // +Z
     };
     vertexBuffer = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices),
@@ -187,46 +187,40 @@ void RenderCuboid(XrPosef pose, XrVector3f scale) {
     graphicsAPI->DrawIndexed(36);
 }
 
-void DrawTestObject()
-{
+void DrawTestObject() {
+    // Compute the view-projection transform.
+    // All matrices (including OpenXR's) are column-major, right-handed.
+    XrMatrix4x4f proj;
+    XrFovf fov = {-.5f, .5f, .5f, -.5f};
+    XrMatrix4x4f_CreateProjectionFov(&proj, OPENGL_ES, fov, 0.05f, 100.0f);
+    XrMatrix4x4f toView;
+    XrVector3f scale1m{1.0f, 1.0f, 1.0f};
+    XrVector3f view_position = {0, 0, 0};
+    XrQuaternionf view_orientation = {0, 0, 0, 1.0f};
+    XrMatrix4x4f_CreateTranslationRotationScale(&toView, &view_position, &view_orientation, &scale1m);
+    XrMatrix4x4f view;
+    XrMatrix4x4f_InvertRigidBody(&view, &toView);
+    XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
 
-	// Compute the view-projection transform.
-	// All matrices (including OpenXR's) are column-major, right-handed.
-	XrMatrix4x4f proj;
-	XrFovf fov={-.5f,.5f,.5f,-.5f};
-	XrMatrix4x4f_CreateProjectionFov(&proj, OPENGL_ES, fov, 0.05f, 100.0f);
-	XrMatrix4x4f toView;
-	XrVector3f scale1m{1.0f, 1.0f, 1.0f};
-	XrVector3f view_position={0,0,0};
-	XrQuaternionf view_orientation={0,0,0,1.0f};
-	XrMatrix4x4f_CreateTranslationRotationScale(&toView, &view_position, &view_orientation, &scale1m);
-	XrMatrix4x4f view;
-	XrMatrix4x4f_InvertRigidBody(&view, &toView);
-	XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
-
-	// Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
-	RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -1.5f, 0.0f}}, {2.0f, 0.1f, 2.0f});
-	float scale=1.0f;
-	static float time=0.f;
-	time+=0.1f;
-    float angleRad=float(time)*0.002f;
-	for(int i=0;i<4;i++)
-	{
-		float x=scale*(float(i)-1.5f);
-		for(int j=0;j<4;j++)
-		{
-			float y=scale*(float(j)-1.5f);
-			for(int k=0;k<4;k++)
-			{
-				float z=scale*(float(k)-1.5f);
-				XrQuaternionf q;
-				XrVector3f axis={0,0.707f,0.707f};
-				XrQuaternionf_CreateFromAxisAngle(&q,&axis,angleRad);
-				RenderCuboid({q, {x,y,z}}, {0.1f, 0.2f, 0.1f});
-
-			}
-		}
-	}
+    // Let's draw a cuboid at the floor. Scale it by 2 in the X and Z, and 0.1 in the Y,
+    RenderCuboid({{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, -1.5f, 0.0f}}, {2.0f, 0.1f, 2.0f});
+    float scale = 1.0f;
+    static float time = 0.f;
+    time += 0.1f;
+    float angleRad = float(time) * 0.002f;
+    for (int i = 0; i < 4; i++) {
+        float x = scale * (float(i) - 1.5f);
+        for (int j = 0; j < 4; j++) {
+            float y = scale * (float(j) - 1.5f);
+            for (int k = 0; k < 4; k++) {
+                float z = scale * (float(k) - 1.5f);
+                XrQuaternionf q;
+                XrVector3f axis = {0, 0.707f, 0.707f};
+                XrQuaternionf_CreateFromAxisAngle(&q, &axis, angleRad);
+                RenderCuboid({q, {x, y, z}}, {0.1f, 0.2f, 0.1f});
+            }
+        }
+    }
 }
 
 int main() {
@@ -308,7 +302,7 @@ int main() {
     imageViewCI.layerCount = 1;
     void *depthImageView = graphicsAPI->CreateImageView(imageViewCI);
 
-    //CreateResources();
+    // CreateResources();
 
     struct CameraConstants {
         XrMatrix4x4f viewProj;
@@ -355,22 +349,22 @@ int main() {
         30, 31, 32, 33, 34, 35,  // +Z
     };
 
-    void* vertexBuffer = graphicsAPI->CreateBuffer(
+    void *vertexBuffer = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::VERTEX, sizeof(float) * 4, sizeof(cubeVertices),
          &cubeVertices});
 
-    void* indexBuffer = graphicsAPI->CreateBuffer(
+    void *indexBuffer = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::INDEX, sizeof(uint32_t), sizeof(cubeIndices),
          &cubeIndices});
 
-    void* uniformBuffer_Frag = graphicsAPI->CreateBuffer(
+    void *uniformBuffer_Frag = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(colors), colors});
 
-    void* uniformBuffer_Vert = graphicsAPI->CreateBuffer(
+    void *uniformBuffer_Vert = graphicsAPI->CreateBuffer(
         {GraphicsAPI::BufferCreateInfo::Type::UNIFORM, 0, sizeof(CameraConstants), &cameraConstants});
 
     void *vertexShader = nullptr;
-    void *fragmentShader =  nullptr;
+    void *fragmentShader = nullptr;
     if (apiType == OPENGL) {
         std::string vertexSource = ReadTextFile("VertexShader.glsl");
         vertexShader = graphicsAPI->CreateShader({GraphicsAPI::ShaderCreateInfo::Type::VERTEX, vertexSource.data(), vertexSource.size()});
@@ -412,7 +406,7 @@ int main() {
     pipelineCI.colorFormats = {swapchainFormat};
     pipelineCI.depthFormat = graphicsAPI->GetDepthFormat();
     pipelineCI.layout = {{1, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false}, {0, nullptr, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false}};
-    void* pipeline = graphicsAPI->CreatePipeline(pipelineCI);
+    void *pipeline = graphicsAPI->CreatePipeline(pipelineCI);
 
     // Main Render Loop
     while (!g_WindowQuit) {
@@ -435,7 +429,7 @@ int main() {
         float fov_deg_v = 90.0f;
         float fov_deg_h = fov_deg_v * (float(height) / float(width));
         XrFovf fov;
-        fov.angleLeft = -(fov_deg_h /2.0f);
+        fov.angleLeft = -(fov_deg_h / 2.0f);
         fov.angleRight = +(fov_deg_h / 2.0f);
         fov.angleUp = -(fov_deg_v / 2.0f);
         fov.angleDown = +(fov_deg_v / 2.0f);
@@ -447,11 +441,10 @@ int main() {
             1.0f, 0.0f, 0.0f, 0.0f,
             0.0f, 1.0f, 0.0f, 0.0f,
             0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        };
+            0.0f, 0.0f, 0.0f, 1.0f};
         XrMatrix4x4f_Multiply(&cameraConstants.viewProj, &proj, &view);
         XrVector3f scale = {1.0f, 1.0f, 1.0f};
-        XrPosef pose = { {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, -2.0f} };
+        XrPosef pose = {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, -2.0f}};
         XrMatrix4x4f_CreateTranslationRotationScale(&cameraConstants.model, &pose.position, &pose.orientation, &scale);
         XrMatrix4x4f_Multiply(&cameraConstants.modelViewProj, &cameraConstants.viewProj, &cameraConstants.model);
 
@@ -459,7 +452,7 @@ int main() {
 
         graphicsAPI->SetBufferData(uniformBuffer_Vert, 0, sizeof(CameraConstants), &cameraConstants);
         graphicsAPI->SetDescriptor({1, uniformBuffer_Vert, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::VERTEX, false});
-        graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colors), (void*)colors);
+        graphicsAPI->SetBufferData(uniformBuffer_Frag, 0, sizeof(colors), (void *)colors);
         graphicsAPI->SetDescriptor({0, uniformBuffer_Frag, GraphicsAPI::DescriptorInfo::Type::BUFFER, GraphicsAPI::DescriptorInfo::Stage::FRAGMENT, false});
         graphicsAPI->UpdateDescriptors();
 
