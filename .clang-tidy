@@ -1,0 +1,31 @@
+# Copyright 2026, The Khronos Group Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Basic clang-tidy checks for the tutorial code: likely bugs, performance issues and a few
+# low-noise modernizations. Checks that conflict with the style the tutorial deliberately uses
+# (C-style casts to OpenXR function pointer types, strncpy into fixed-size OpenXR buffers,
+# reinterpret_cast of XrEventDataBuffer) are disabled.
+#
+# Run with a compilation database, e.g. configure with -DCMAKE_EXPORT_COMPILE_COMMANDS=ON, then:
+#   clang-tidy -p build Chapter2/main.cpp
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -bugprone-narrowing-conversions,
+  clang-analyzer-*,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  misc-redundant-expression,
+  modernize-use-nullptr,
+  modernize-use-override,
+  performance-*,
+  -performance-enum-size,
+  readability-container-size-empty,
+  readability-misleading-indentation,
+  readability-redundant-string-cstr
+# Only report warnings from the tutorial's own headers directly in Common/ or a Chapter folder,
+# not from OpenXR (including copies fetched under Chapter*/app/.cxx), thirdparty or system headers.
+HeaderFilterRegex: '.*[/\\](Common|Chapter[^/\\]*)[/\\][^/\\]*$'
+FormatStyle: file
