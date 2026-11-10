@@ -15,21 +15,6 @@
 # sys.path.insert(0, os.path.abspath('.'))
 import subprocess, os
 
-def createSiteMap(root):
-    variant_pages = ['1-introduction','2-setup','3-graphics','4-actions','5-extensions','6-next-steps']
-    static_pages=['index','search'];
-    platforms = ['linux','windows','android']
-    apis=[['vulkan','opengl'],['vulkan','opengl','d3d11','d3d12'],['vulkan','opengles']]
-    with open('sitemap.txt', 'w') as f:
-        for pg in static_pages:
-            f.write(root+'/'+pg+'/')
-            f.write('\n')
-        for pg in variant_pages:
-            for i in range(len(platforms)):
-                platform=platforms[i]
-                for api in apis[i]:
-                    f.write(root+'/'+pg+'/'+platform+'/'+api+'/')
-                    f.write('\n')
 def configureDoxyfile(input_dir, output_dir):
     with open('Doxyfile.in', 'r') as file :
         filedata = file.read()
@@ -76,7 +61,6 @@ project = 'OpenXR Tutorial'
 copyright = ''
 author = 'Simul Software Ltd'
 
-createSiteMap('https://openxr-tutorial.com')
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
