@@ -3,16 +3,22 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Basic clang-tidy checks for the tutorial code: likely bugs, performance issues and a few
-# low-noise modernizations. Checks that conflict with the style the tutorial deliberately uses
-# (C-style casts to OpenXR function pointer types, strncpy into fixed-size OpenXR buffers,
-# reinterpret_cast of XrEventDataBuffer) are disabled.
+# low-noise modernizations. Checks that flag patterns the tutorial uses on purpose are disabled:
+#   bugprone-branch-clone: empty #if branches for graphics APIs that aren't being built.
+#   bugprone-exception-escape: main() and logging destructors that could in theory throw.
+#   clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling: strncpy/memcpy into
+#     fixed-size OpenXR structure buffers.
+#   performance-avoid-endl: std::endl is used throughout the tutorial's logging.
+#   performance-no-int-to-ptr: OpenGL buffer offsets and D3D12 descriptor handles.
 #
 # Run with a compilation database, e.g. configure with -DCMAKE_EXPORT_COMPILE_COMMANDS=ON, then:
 #   clang-tidy -p build Chapter2/main.cpp
 Checks: >
   -*,
   bugprone-*,
+  -bugprone-branch-clone,
   -bugprone-easily-swappable-parameters,
+  -bugprone-exception-escape,
   -bugprone-implicit-widening-of-multiplication-result,
   -bugprone-narrowing-conversions,
   clang-analyzer-*,
@@ -21,7 +27,9 @@ Checks: >
   modernize-use-nullptr,
   modernize-use-override,
   performance-*,
+  -performance-avoid-endl,
   -performance-enum-size,
+  -performance-no-int-to-ptr,
   readability-container-size-empty,
   readability-misleading-indentation,
   readability-redundant-string-cstr
