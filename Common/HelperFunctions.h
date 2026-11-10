@@ -25,7 +25,7 @@
 #endif
 
 // XR_DOCS_TAG_BEGIN_Helper_Functions1
-inline bool IsStringInVector(std::vector<const char *> list, const char *name) {
+inline bool IsStringInVector(const std::vector<const char *> &list, const char *name) {
     bool found = false;
     for (auto &item : list) {
         if (strcmp(name, item) == 0) {

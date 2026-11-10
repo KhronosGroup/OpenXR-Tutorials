@@ -13,7 +13,7 @@
         HRESULT result = (x);                                                                     \
         if (FAILED(result)) {                                                                     \
             std::cout << "ERROR: D3D12: " << std::hex << "0x" << result << std::dec << std::endl; \
-            std::cout << "ERROR: D3D12: " << y << std::endl;                                      \
+            std::cout << "ERROR: D3D12: " << (y) << std::endl;                                    \
         }                                                                                         \
     }
 

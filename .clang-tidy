@@ -25,7 +25,6 @@ Checks: >
   -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
   misc-redundant-expression,
   modernize-use-nullptr,
-  modernize-use-override,
   performance-*,
   -performance-avoid-endl,
   -performance-enum-size,
@@ -33,7 +32,8 @@ Checks: >
   readability-container-size-empty,
   readability-misleading-indentation,
   readability-redundant-string-cstr
-# Only report warnings from the tutorial's own headers directly in Common/ or a Chapter folder,
-# not from OpenXR (including copies fetched under Chapter*/app/.cxx), thirdparty or system headers.
-HeaderFilterRegex: '.*[/\\](Common|Chapter[^/\\]*)[/\\][^/\\]*$'
+# Only report warnings from the tutorial's own headers in Common/ or a Chapter folder. This skips
+# OpenXR (including copies fetched under Chapter*/app/.cxx), thirdparty, system headers and
+# Microsoft's d3dx12.h in Chapter6_1_Multiview/Common. Add new tutorial headers to the list.
+HeaderFilterRegex: '.*[/\\](Common|Chapter[^/\\]*)[/\\](DebugOutput|GraphicsAPI|HelperFunctions|OpenXR)[^/\\]*\.h$'
 FormatStyle: file
