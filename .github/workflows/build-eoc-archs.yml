@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Build
         run: ./build-eoc-archs.sh
       - name: Upload End of Chapter Archives
         id: upload
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             ./build/eoc_archs/Chapter1.zip
