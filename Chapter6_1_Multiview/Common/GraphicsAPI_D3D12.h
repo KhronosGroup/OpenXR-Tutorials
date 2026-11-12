@@ -12,28 +12,28 @@ class GraphicsAPI_D3D12 : public GraphicsAPI {
 public:
     GraphicsAPI_D3D12();
     GraphicsAPI_D3D12(XrInstance m_xrInstance, XrSystemId systemId);
-    ~GraphicsAPI_D3D12();
+    ~GraphicsAPI_D3D12() override;
 
     // XR_DOCS_TAG_BEGIN_GetDepthFormat_D3D12
-    virtual int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }
+    int64_t GetDepthFormat() override { return (int64_t)DXGI_FORMAT_D32_FLOAT; }
     // XR_DOCS_TAG_END_GetDepthFormat_D3D12
-    virtual size_t AlignSizeForUniformBuffer(size_t size) override { return Align<size_t>(size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT); }
+    size_t AlignSizeForUniformBuffer(size_t size) override { return Align<size_t>(size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT); }
 
-    virtual void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) override;
-    virtual void DestroyDesktopSwapchain(void*& swapchain) override;
-    virtual void* GetDesktopSwapchainImage(void* swapchain, uint32_t index) override;
-    virtual void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) override;
-    virtual void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
+    void* CreateDesktopSwapchain(const SwapchainCreateInfo& swapchainCI) override;
+    void DestroyDesktopSwapchain(void*& swapchain) override;
+    void* GetDesktopSwapchainImage(void* swapchain, uint32_t index) override;
+    void AcquireDesktopSwapchanImage(void* swapchain, uint32_t& index) override;
+    void PresentDesktopSwapchainImage(void* swapchain, uint32_t index) override;
 
-    virtual void* GetGraphicsBinding() override;
-    virtual XrSwapchainImageBaseHeader* AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) override;
-    virtual void FreeSwapchainImageData(XrSwapchain swapchain) override {
+    void* GetGraphicsBinding() override;
+    XrSwapchainImageBaseHeader* AllocateSwapchainImageData(XrSwapchain swapchain, SwapchainType type, uint32_t count) override;
+    void FreeSwapchainImageData(XrSwapchain swapchain) override {
         swapchainImagesMap[swapchain].second.clear();
         swapchainImagesMap.erase(swapchain);
     }
-    virtual XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
+    XrSwapchainImageBaseHeader* GetSwapchainImageData(XrSwapchain swapchain, uint32_t index) override { return (XrSwapchainImageBaseHeader*)&swapchainImagesMap[swapchain].second[index]; }
     // XR_DOCS_TAG_BEGIN_GetSwapchainImage_D3D12
-    virtual void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override {
+    void* GetSwapchainImage(XrSwapchain swapchain, uint32_t index) override {
         ID3D12Resource* image = swapchainImagesMap[swapchain].second[index].texture;
         D3D12_RESOURCE_STATES state = swapchainImagesMap[swapchain].first == SwapchainType::COLOR ? D3D12_RESOURCE_STATE_RENDER_TARGET : D3D12_RESOURCE_STATE_DEPTH_WRITE;
         imageStates[image] = state;
@@ -41,47 +41,47 @@ public:
     }
     // XR_DOCS_TAG_END_GetSwapchainImage_D3D12
 
-    virtual void* CreateImage(const ImageCreateInfo& imageCI) override;
-    virtual void DestroyImage(void*& image) override;
+    void* CreateImage(const ImageCreateInfo& imageCI) override;
+    void DestroyImage(void*& image) override;
 
-    virtual void* CreateImageView(const ImageViewCreateInfo& imageViewCI) override;
-    virtual void DestroyImageView(void*& imageView) override;
+    void* CreateImageView(const ImageViewCreateInfo& imageViewCI) override;
+    void DestroyImageView(void*& imageView) override;
 
-    virtual void* CreateSampler(const SamplerCreateInfo& samplerCI) override;
-    virtual void DestroySampler(void*& sampler) override;
+    void* CreateSampler(const SamplerCreateInfo& samplerCI) override;
+    void DestroySampler(void*& sampler) override;
 
-    virtual void* CreateBuffer(const BufferCreateInfo& bufferCI) override;
-    virtual void DestroyBuffer(void*& buffer) override;
+    void* CreateBuffer(const BufferCreateInfo& bufferCI) override;
+    void DestroyBuffer(void*& buffer) override;
 
-    virtual void* CreateShader(const ShaderCreateInfo& shaderCI) override;
-    virtual void DestroyShader(void*& shader) override;
+    void* CreateShader(const ShaderCreateInfo& shaderCI) override;
+    void DestroyShader(void*& shader) override;
 
-    virtual void* CreatePipeline(const PipelineCreateInfo& pipelineCI) override;
-    virtual void DestroyPipeline(void*& pipeline) override;
+    void* CreatePipeline(const PipelineCreateInfo& pipelineCI) override;
+    void DestroyPipeline(void*& pipeline) override;
 
-    virtual void BeginRendering() override;
-    virtual void EndRendering() override;
+    void BeginRendering() override;
+    void EndRendering() override;
 
-    virtual void ClearColor(void* imageView, float r, float g, float b, float a) override;
-    virtual void ClearDepth(void* imageView, float d) override;
+    void ClearColor(void* imageView, float r, float g, float b, float a) override;
+    void ClearDepth(void* imageView, float d) override;
 
-    virtual void SetBufferData(void* buffer, size_t offset, size_t size, void* data) override;
+    void SetBufferData(void* buffer, size_t offset, size_t size, void* data) override;
 
-    virtual void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView, uint32_t width, uint32_t height, void* pipeline) override;
-    virtual void SetViewports(Viewport* viewports, size_t count) override;
-    virtual void SetScissors(Rect2D* scissors, size_t count) override;
+    void SetRenderAttachments(void** colorViews, size_t colorViewCount, void* depthStencilView, uint32_t width, uint32_t height, void* pipeline) override;
+    void SetViewports(Viewport* viewports, size_t count) override;
+    void SetScissors(Rect2D* scissors, size_t count) override;
 
-    virtual void SetPipeline(void* pipeline) override;
-    virtual void SetDescriptor(const DescriptorInfo& descriptorInfo) override;
-    virtual void UpdateDescriptors() override;
-    virtual void SetVertexBuffers(void** vertexBuffers, size_t count) override;
-    virtual void SetIndexBuffer(void* indexBuffer) override;
-    virtual void DrawIndexed(uint32_t indexCount, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0) override;
-    virtual void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) override;
+    void SetPipeline(void* pipeline) override;
+    void SetDescriptor(const DescriptorInfo& descriptorInfo) override;
+    void UpdateDescriptors() override;
+    void SetVertexBuffers(void** vertexBuffers, size_t count) override;
+    void SetIndexBuffer(void* indexBuffer) override;
+    void DrawIndexed(uint32_t indexCount, uint32_t instanceCount = 1, uint32_t firstIndex = 0, int32_t vertexOffset = 0, uint32_t firstInstance = 0) override;
+    void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t firstVertex = 0, uint32_t firstInstance = 0) override;
 
 private:
-    virtual const std::vector<int64_t> GetSupportedColorSwapchainFormats() override;
-    virtual const std::vector<int64_t> GetSupportedDepthSwapchainFormats() override;
+    const std::vector<int64_t> GetSupportedColorSwapchainFormats() override;
+    const std::vector<int64_t> GetSupportedDepthSwapchainFormats() override;
 
 private:
     ID3D12Debug* debug = nullptr;
