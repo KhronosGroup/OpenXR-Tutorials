@@ -1,8 +1,13 @@
 #!/bin/bash
 
+# Stop at the first failure, so a broken Sphinx build fails CI instead of packaging an empty site.
+set -e
+
 mkdir -p build/_deps
 pushd build/_deps
-git clone --depth 1 https://github.com/KhronosGroup/OpenXR-SDK.git openxr-build
+if [ ! -d openxr-build ]; then
+    git clone --depth 1 https://github.com/KhronosGroup/OpenXR-SDK.git openxr-build
+fi
 popd
 
 python3 -m pip install -r requirements.txt
