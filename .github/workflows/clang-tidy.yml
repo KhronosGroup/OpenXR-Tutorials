@@ -13,12 +13,16 @@ jobs:
     name: clang-tidy (Linux)
     runs-on: ubuntu-24.04
     steps:
+      # Same packages as the Linux build. glslang-tools is needed to configure: the chapters
+      # compile their Vulkan shaders with glslangValidator.
       - name: Setup
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev mesa-common-dev libvulkan-dev \
+          sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev \
+            libvulkan-dev vulkan-utility-libraries-dev spirv-tools glslang-tools \
             libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
-            libxcb-randr0-dev libxrandr-dev libxxf86vm-dev
+            libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev \
+            libxrandr-dev libxxf86vm-dev
       - name: Checkout
         uses: actions/checkout@v7
       # Pin the version: newer versions add checks under the bugprone-* and performance-* globs.
