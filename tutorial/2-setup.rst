@@ -97,7 +97,17 @@ Similarly to Vulkan, OpenXR allows applications to extend functionality past wha
 	:end-before: XR_DOCS_TAG_END_instanceExtensions
 	:dedent: 12
 
-Here, we store in a vector of strings the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is an extension that checks the validity of calls made to OpenXR and can use a callback function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro you defined, this code will add the relevant extension. On Android, we also add ``XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME``. XR_KHR_android_create_instance lets us pass the application's ``JavaVM`` and ``Activity`` to the runtime when creating the :openxr_ref:`XrInstance`.
+Here, we store in a vector of strings the extension names that we would like to use. ``XR_EXT_DEBUG_UTILS_EXTENSION_NAME`` is a macro of a string defined in ``openxr.h``. The XR_EXT_debug_utils is an extension that checks the validity of calls made to OpenXR and can use a callback function to handle any raised errors. We will explore this extension more in :ref:`Chapter 2.1<2.1.2 XR_EXT_debug_utils>`. Depending on which ``XR_USE_GRAPHICS_API_...`` macro you defined, this code will add the relevant extension.
+
+.. only:: android
+
+	On Android, also add ``XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME``. XR_KHR_android_create_instance lets us pass the application's ``JavaVM`` and ``Activity`` to the runtime when creating the :openxr_ref:`XrInstance`.
+
+	.. literalinclude:: ../Chapter2/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_instanceExtensionsAndroid
+		:end-before: XR_DOCS_TAG_END_instanceExtensionsAndroid
+		:dedent: 12
 
 Not all API layers and extensions are available to use, so we must check which ones are available when OpenXR is initialized. We will use :openxr_ref:`xrEnumerateApiLayerProperties` and :openxr_ref:`xrEnumerateInstanceExtensionProperties` to check which ones the runtime can provide. Let's do this now by adding the following code to the ``CreateInstance()`` method:
 
@@ -123,11 +133,25 @@ Note that ``m_activeAPILayers`` and ``m_activeInstanceExtensions`` are of type `
 	:end-before: XR_DOCS_TAG_END_XrInstanceCreateInfo
 	:dedent: 8
 
-This section is fairly simple: we have used the previously collected data and assigned it to the members in the :openxr_ref:`XrInstanceCreateInfo` structure. Then, we called :openxr_ref:`xrCreateInstance` where we took pointers to the :openxr_ref:`XrInstanceCreateInfo` and :openxr_ref:`XrInstance` objects. When the function is called, if successful, it returns ``XR_SUCCESS`` and :openxr_ref:`XrInstance` will be non-null (i.e. not equal to :openxr_ref:`XR_NULL_HANDLE`).
-
 .. only:: android
 
-	On Android, we fill out an :openxr_ref:`XrInstanceCreateInfoAndroidKHR` structure with the ``JavaVM`` and ``Activity`` from ``androidApp->activity`` and chain it to :openxr_ref:`XrInstanceCreateInfo` ``::next``. Some runtimes need these to create the :openxr_ref:`XrInstance`, and may crash if they're not provided.
+	On Android, we also fill out an :openxr_ref:`XrInstanceCreateInfoAndroidKHR` structure with the ``JavaVM`` and ``Activity`` from ``androidApp->activity`` and chain it to :openxr_ref:`XrInstanceCreateInfo` ``::next``. Some runtimes need these to create the :openxr_ref:`XrInstance`, and may crash if they're not provided. Add the following:
+
+	.. literalinclude:: ../Chapter2/main.cpp
+		:language: cpp
+		:start-after: XR_DOCS_TAG_BEGIN_XrInstanceCreateInfoAndroid
+		:end-before: XR_DOCS_TAG_END_XrInstanceCreateInfoAndroid
+		:dedent: 8
+
+Then create the :openxr_ref:`XrInstance`:
+
+.. literalinclude:: ../Chapter2/main.cpp
+	:language: cpp
+	:start-after: XR_DOCS_TAG_BEGIN_xrCreateInstance
+	:end-before: XR_DOCS_TAG_END_xrCreateInstance
+	:dedent: 8
+
+This section is fairly simple: we have used the previously collected data and assigned it to the members in the :openxr_ref:`XrInstanceCreateInfo` structure. Then, we called :openxr_ref:`xrCreateInstance` where we took pointers to the :openxr_ref:`XrInstanceCreateInfo` and :openxr_ref:`XrInstance` objects. When the function is called, if successful, it returns ``XR_SUCCESS`` and :openxr_ref:`XrInstance` will be non-null (i.e. not equal to :openxr_ref:`XR_NULL_HANDLE`).
 
 At the end of the app, we should destroy the :openxr_ref:`XrInstance` with :openxr_ref:`xrDestroyInstance`. Add the following to the ``DestroyInstance()`` method:
 
