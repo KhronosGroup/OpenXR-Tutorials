@@ -1,0 +1,26 @@
+name: 'Check Formatting'
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      # Pin the version: different clang-format versions format some code differently.
+      - name: Install clang-format
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install clang-format==17.0.6
+      # Check all C/C++ files except third-party code. Run clang-format -i on any file it reports.
+      - name: Check C/C++ formatting
+        run: |
+          git ls-files -z -- '*.c' '*.cpp' '*.h' '*.hpp' ':!:thirdparty/' ':!:Chapter6_1_Multiview/Common/d3dx12.h' \
+            | xargs -0 "$RUNNER_TEMP/venv/bin/clang-format" --dry-run --Werror
