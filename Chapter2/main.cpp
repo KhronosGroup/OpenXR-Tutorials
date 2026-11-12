@@ -85,11 +85,13 @@ private:
             m_instanceExtensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
             // Ensure m_apiType is already defined when we call this line.
             m_instanceExtensions.push_back(GetGraphicsAPIInstanceExtensionString(m_apiType));
+            // XR_DOCS_TAG_END_instanceExtensions
 #if defined(__ANDROID__)
+            // XR_DOCS_TAG_BEGIN_instanceExtensionsAndroid
             // On Android, the runtime may need the JavaVM and Activity to create an XrInstance. These are provided through XR_KHR_android_create_instance.
             m_instanceExtensions.push_back(XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME);
+            // XR_DOCS_TAG_END_instanceExtensionsAndroid
 #endif
-            // XR_DOCS_TAG_END_instanceExtensions
         }
 
         // XR_DOCS_TAG_BEGIN_find_apiLayer_extension
@@ -150,15 +152,19 @@ private:
         instanceCI.enabledApiLayerNames = m_activeAPILayers.data();
         instanceCI.enabledExtensionCount = static_cast<uint32_t>(m_activeInstanceExtensions.size());
         instanceCI.enabledExtensionNames = m_activeInstanceExtensions.data();
+        // XR_DOCS_TAG_END_XrInstanceCreateInfo
 #if defined(__ANDROID__)
+        // XR_DOCS_TAG_BEGIN_XrInstanceCreateInfoAndroid
         // Chain an XrInstanceCreateInfoAndroidKHR structure with the JavaVM and Activity from android_app.
         XrInstanceCreateInfoAndroidKHR instanceCIAndroid{XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR};
         instanceCIAndroid.applicationVM = androidApp->activity->vm;
         instanceCIAndroid.applicationActivity = androidApp->activity->clazz;
         instanceCI.next = &instanceCIAndroid;
+        // XR_DOCS_TAG_END_XrInstanceCreateInfoAndroid
 #endif
+        // XR_DOCS_TAG_BEGIN_xrCreateInstance
         OPENXR_CHECK(xrCreateInstance(&instanceCI, &m_xrInstance), "Failed to create Instance.");
-        // XR_DOCS_TAG_END_XrInstanceCreateInfo
+        // XR_DOCS_TAG_END_xrCreateInstance
     }
 
     void DestroyInstance() {
