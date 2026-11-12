@@ -1,0 +1,54 @@
+name: 'clang-tidy'
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  clang-tidy:
+    name: clang-tidy (Linux)
+    runs-on: ubuntu-24.04
+    # Not blocking yet: the Vulkan, OpenGL (GLX) and Linux-only code hasn't been run through
+    # clang-tidy before. Remove this once the findings are fixed.
+    continue-on-error: true
+    steps:
+      - name: Setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev mesa-common-dev libvulkan-dev \
+            libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
+            libxcb-randr0-dev libxrandr-dev libxxf86vm-dev
+      - name: Checkout
+        uses: actions/checkout@v4
+      # Pin the version: newer versions add checks under the bugprone-* and performance-* globs.
+      - name: Install clang-tidy
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install clang-tidy==17.0.6
+      # Only generate the OpenXR headers; clang-tidy doesn't need the projects to be built.
+      # Chapter6_1_Multiview is a separate CMake project.
+      - name: Configure
+        run: |
+          for project in . Chapter6_1_Multiview; do
+            build="build-tidy/$project"
+            cmake -S "$project" -B "$build" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+            cmake --build "$build" --target generate_openxr_header xr_global_generated_files
+          done
+      # Check each of the tutorial's source files once. Header warnings are limited by
+      # HeaderFilterRegex in .clang-tidy.
+      - name: Run clang-tidy
+        run: |
+          status=0
+          for project in . Chapter6_1_Multiview; do
+            build="build-tidy/$project"
+            jq -r '.[].file' "$build/compile_commands.json" \
+              | grep -E '/(Common|Chapter[0-9][^/]*)/[^/]+\.(c|cpp)$' | grep -v -E '/(build-tidy|thirdparty)/' \
+              | sort -u \
+              | xargs -r -P "$(nproc)" -n 1 "$RUNNER_TEMP/venv/bin/clang-tidy" -p "$build" --quiet --warnings-as-errors='*' \
+              || status=1
+          done
+          exit $status
