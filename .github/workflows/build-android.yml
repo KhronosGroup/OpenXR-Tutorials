@@ -19,7 +19,7 @@ jobs:
         chapter: [Chapter1, Chapter2, Chapter3, Chapter4, Chapter5]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Build ${{ matrix.chapter }} using ${{ matrix.gfx }} on ${{ matrix.os }}
         run: |
           echo "Building ${{ matrix.chapter }} using ${{ matrix.gfx }} on ${{ matrix.os }} ${{ github.ref_name }}"
