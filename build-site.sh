@@ -5,6 +5,9 @@ pushd build/_deps
 git clone --depth 1 https://github.com/KhronosGroup/OpenXR-SDK.git openxr-build
 popd
 
+# Install the Python dependencies into a virtual environment instead of the system Python.
+python3 -m venv build/venv
+source build/venv/bin/activate
 python3 -m pip install -r requirements.txt
 
 sphinx-build --version
